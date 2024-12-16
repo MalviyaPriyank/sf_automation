@@ -1,0 +1,9 @@
+_name_label = 'NAME'
+_credit_quota_label = 'CREDIT_QUOTA'
+_frequency_label = 'FREQUENCY'
+_start_timestamp_label = 'START_TIMESTAMP'
+_end_timestamp_label = 'END_TIMESTAMP'
+_notify_users_label = 'NOTIFY_USERS'
+_triggers_label = 'TRIGGERS'
+_allowed_values_frequency = ['MONTHLY','DAILY','WEEKLY','YEARLY','NEVER']
+_allowed_actions_triggers = ['SUSPEND','SUSPEND_IMMEDIATE','NOTIFY']

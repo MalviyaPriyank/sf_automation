@@ -1,0 +1,7 @@
+name_label = 'NAME'
+credit_quota_label = 'CREDIT_QUOTA'
+frequency_label = 'FREQUENCY'
+start_timestamp_label = 'START_TIMESTAMP'
+end_timestamp_label = 'END_TIMESTAMP'
+notify_users_label = 'NOTIFY_USERS'
+triggers_label = 'TRIGGERS'
