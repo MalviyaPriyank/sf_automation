@@ -1,5 +1,10 @@
 
-from accountglobalvars import *
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from databaserole_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):
@@ -75,14 +80,14 @@ class DatabaseRole:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[DBRLT._name_tag] = 1
+            self.flag_dic[_name_tag] = 1
         else:
-            self.flag_dic[DBRLT._name_tag] = 0
+            self.flag_dic[_name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[DBRLT._comment_tag] = 1
+            self.flag_dic[_comment_tag] = 1
         else:
-            self.flag_dic[DBRLT._comment_tag] = 0
+            self.flag_dic[_comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -96,9 +101,9 @@ class DatabaseRole:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == DBRLT._name_tag:
+                if prop == _name_tag:
                     self.qry = f" {self.qry} {self.attr.name_tag}  = {self.attr.name} "
-                if prop == DBRLT._comment_tag:
+                if prop == _comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -110,13 +115,12 @@ class DatabaseRole:
 
 def main(session,**kwargs):
     databaserole = DatabaseRole()
-    databaserole_tags = DBRLT()
 
-    databaserole.set_name(kwargs[databaserole_tags._name_tag])
-    databaserole.set_name_tag(databaserole_tags._name_tag)
+    databaserole.set_name(kwargs[_name_tag])
+    databaserole.set_name_tag(_name_tag)
 
-    databaserole.set_comment(kwargs[databaserole_tags._comment_tag])
-    databaserole.set_comment_tag(databaserole_tags._comment_tag)
+    databaserole.set_comment(kwargs[_comment_tag])
+    databaserole.set_comment_tag(_comment_tag)
 
     databaserole.prepare_query()
 

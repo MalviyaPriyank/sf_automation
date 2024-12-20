@@ -1,5 +1,12 @@
 import pandas as pd
 
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from table_global_vars import *
+
 class Database:
     def __get__(self,instance,owner):
         return instance._database

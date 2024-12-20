@@ -1,5 +1,10 @@
 
-from accountglobalvars import *
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from role_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):
@@ -8,7 +13,7 @@ class Name:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
-        elif type(value) != ROLET._allowed_type_name: #string
+        elif type(value) != _allowed_type_name: #string
             raise TypeError
         else:
             instance._name = value
@@ -31,9 +36,9 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        if type(value) != ROLET._allowed_type_comment: #string
+        if type(value) != _allowed_type_comment: #string
             raise TypeError
-        elif len(value) > ROLET._allowed_len_comment: #256
+        elif len(value) > _allowed_len_comment: #256
             raise TypeError
         else:
             instance._comment = value
@@ -82,14 +87,14 @@ class Role:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[ROLET._name_tag] = 1
+            self.flag_dic[_name_tag] = 1
         else:
-            self.flag_dic[ROLET._name_tag] = 0
+            self.flag_dic[_name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[ROLET._comment_tag] = 1
+            self.flag_dic[_comment_tag] = 1
         else:
-            self.flag_dic[ROLET._comment_tag] = 0
+            self.flag_dic[_comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -103,7 +108,7 @@ class Role:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == ROLET._comment_tag:
+                if prop == _comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -115,13 +120,12 @@ class Role:
 
 def main(session,**kwargs):
     role = Role()
-    role_tags = ROLET()
 
-    role.set_name(kwargs[role_tags._name_tag])
-    role.set_name_tag(role_tags._name_tag)
+    role.set_name(kwargs[_name_tag])
+    role.set_name_tag(_name_tag)
 
-    role.set_comment(kwargs[role_tags._comment_tag])
-    role.set_comment_tag(role_tags._comment_tag)
+    role.set_comment(kwargs[_comment_tag])
+    role.set_comment_tag(_comment_tag)
 
     role.prepare_query()
 

@@ -1,5 +1,10 @@
 
-from accountglobalvars import *
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from share_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):
@@ -75,14 +80,14 @@ class Share:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[SHRT._name_tag] = 1
+            self.flag_dic[_name_tag] = 1
         else:
-            self.flag_dic[SHRT._name_tag] = 0
+            self.flag_dic[_name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[SHRT._comment_tag] = 1
+            self.flag_dic[_comment_tag] = 1
         else:
-            self.flag_dic[SHRT._comment_tag] = 0
+            self.flag_dic[_comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -96,7 +101,7 @@ class Share:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == SHRT._comment_tag:
+                if prop == _comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -108,13 +113,12 @@ class Share:
 
 def main(session,**kwargs):
     share = Share()
-    share_tags = SHRT()
 
-    share.set_name(kwargs[share_tags._name_tag])
-    share.set_name_tag(share_tags._name_tag)
+    share.set_name(kwargs[_name_tag])
+    share.set_name_tag(_name_tag)
 
-    share.set_comment(kwargs[share_tags._comment_tag])
-    share.set_comment_tag(share_tags._comment_tag)
+    share.set_comment(kwargs[_comment_tag])
+    share.set_comment_tag(_comment_tag)
 
     share.prepare_query()
 

@@ -1,5 +1,9 @@
-import stagevars as SV
+import sys
+import os 
 
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from stage_global_vars import *
 class Name:
     def __get__(self,instance,owner):
         return instance._name

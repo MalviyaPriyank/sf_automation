@@ -1,5 +1,9 @@
+import sys
+import os 
 
-from accountglobalvars import *
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from database_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):
@@ -75,14 +79,14 @@ class Database:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[DBT._name_tag] = 1
+            self.flag_dic[_name_tag] = 1
         else:
-            self.flag_dic[DBT._name_tag] = 0
+            self.flag_dic[_name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[DBT._comment_tag] = 1
+            self.flag_dic[_comment_tag] = 1
         else:
-            self.flag_dic[DBT._comment_tag] = 0
+            self.flag_dic[_comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -96,7 +100,7 @@ class Database:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == DBT._comment_tag:
+                if prop == _comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -108,13 +112,12 @@ class Database:
 
 def main(session,**kwargs):
     database = Database()
-    database_tags = DBT()
+    
+    database.set_name(kwargs[_name_tag])
+    database.set_name_tag(_name_tag)
 
-    database.set_name(kwargs[database_tags._name_tag])
-    database.set_name_tag(database_tags._name_tag)
-
-    database.set_comment(kwargs[database_tags._comment_tag])
-    database.set_comment_tag(database_tags._comment_tag)
+    database.set_comment(kwargs[_comment_tag])
+    database.set_comment_tag(_comment_tag)
 
     database.prepare_query()
 

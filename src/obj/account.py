@@ -1,5 +1,9 @@
+import sys
+import os 
 
-from accountglobalvars import *
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from account_global_vars import * 
 
 class AccountNamne:
     def __get__(self,instance,owner):
@@ -75,7 +79,7 @@ class AdminUserType:
         return instance._admin_user_type
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_admin_user_type_values: # ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
+        if value not in AccountTags._allowed_values_admin_user_type:
             raise ValueError
         else:
             instance._admin_user_type = value
@@ -162,7 +166,7 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_must_change_password_values: # ['TRUE','FALSE']
+        if value not in AccountTags._allowed_values_must_change_password:
             raise ValueError
         else:
             instance._must_change_password = value
@@ -188,7 +192,7 @@ class Edition:
         if value == None:
             raise KeyError
         else:
-            if value not in ADMT._allowed_edition_values: # ['STANDARD','ENTERPRISE','BUSINESS_CRITICAL']
+            if value not in AccountTags._allowed_values_edition: 
                 raise ValueError
             else:
                 instance._edition = value
@@ -272,7 +276,7 @@ class Polaris:
         return instance._polaris
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_polaris_values: #['TRUE','FALSE']
+        if value not in AccountTags._allowed_values_polaris:
             raise ValueError
         else:
             instance._polaris = value
@@ -524,47 +528,46 @@ class Admin:
     
 def main(session,**kwargs):
     adm = Admin()
-    adm_tags = ADMT()
 
-    adm.set_account_name(kwargs[adm_tags._account_name_tag])
-    adm.set_account_name_tag(adm_tags._account_name_tag)
+    adm.set_account_name(kwargs[_account_name_tag])
+    adm.set_account_name_tag(_account_name_tag)
 
-    adm.set_admin_name(kwargs[adm_tags._admin_name_tag])
-    adm.set_admin_name_tag(adm_tags._admin_name_tag)
+    adm.set_admin_name(kwargs[_admin_name_tag])
+    adm.set_admin_name_tag(_admin_name_tag)
 
-    adm.set_admin_password(kwargs[adm_tags._admin_password_tag])
-    adm.set_admin_password_tag(adm_tags._admin_password_tag)
+    adm.set_admin_password(kwargs[_admin_password_tag])
+    adm.set_admin_password_tag(_admin_password_tag)
 
-    adm.set_admin_user_type(kwargs[adm_tags._admin_user_type_tag])
-    adm.set_admin_user_type_tag(adm_tags._admin_user_type_tag)
+    adm.set_admin_user_type(kwargs[_admin_user_type_tag])
+    adm.set_admin_user_type_tag(_admin_user_type_tag)
 
-    adm.set_first_name(kwargs[adm_tags._first_name_tag])
-    adm.set_first_name_tag(adm_tags._first_name_tag)
+    adm.set_first_name(kwargs[_first_name_tag])
+    adm.set_first_name_tag(_first_name_tag)
 
-    adm.set_last_name(kwargs[adm_tags._last_name_tag])
-    adm.set_last_name_tag(adm_tags._last_name_tag)
+    adm.set_last_name(kwargs[_last_name_tag])
+    adm.set_last_name_tag(_last_name_tag)
 
-    adm.set_email(kwargs[adm_tags._email_tag])
-    adm.set_email_tag(adm_tags._email_tag)
+    adm.set_email(kwargs[_email_tag])
+    adm.set_email_tag(_email_tag)
 
-    adm.set_must_change_password(kwargs[adm_tags._must_change_password_tag])
-    adm.set_must_change_password_tag(adm_tags._must_change_password_tag)
+    adm.set_must_change_password(kwargs[_must_change_password_tag])
+    adm.set_must_change_password_tag(_must_change_password_tag)
 
-    adm.set_edition(kwargs[adm_tags._edition_tag])
-    adm.set_edition_tag(adm_tags._edition_tag)
+    adm.set_edition(kwargs[_edition_tag])
+    adm.set_edition_tag(_edition_tag)
 
-    adm.set_region_group(kwargs[adm_tags._region_group_tag])
-    adm.set_region_group_tag(adm_tags._region_group_tag)
+    adm.set_region_group(kwargs[_region_group_tag])
+    adm.set_region_group_tag(_region_group_tag)
 
-    adm.set_region(kwargs[adm_tags._region_tag])
-    adm.set_region_tag(adm_tags._region_tag)
+    adm.set_region(kwargs[_region_tag])
+    adm.set_region_tag(_region_tag)
 
-    adm.set_comment(kwargs[adm_tags._comment_tag])
-    adm.set_comment_tag(adm_tags._comment_tag)
+    adm.set_comment(kwargs[_comment_tag])
+    adm.set_comment_tag(_comment_tag)
 
 
-    adm.set_polaris(kwargs[adm_tags._polaris_tag])
-    adm.set_polaris_tag(adm_tags._polaris_tag)
+    adm.set_polaris(kwargs[_polaris_tag])
+    adm.set_polaris_tag(_polaris_tag)
 
     adm.prepare_query()
 

@@ -3,7 +3,13 @@
 
 import snowflake.snowpark as snowpark
 from snowflake.snowpark.functions import col
-import warehousevars as WHV
+
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from warehouse_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):

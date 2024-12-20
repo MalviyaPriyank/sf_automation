@@ -1,5 +1,10 @@
 
-from accountglobalvars import *
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+
+from user_global_vars import *
 
 class Name:
     def __get__(self,instance,owner):
@@ -321,7 +326,7 @@ class DefaultSecondaryRoles:
         return instance._default_secondary_roles
     
     def __set__(self,instance,value):
-        if value not in USRT._allowed_default_secondary_roles_values:#['ALL',{}]
+        if value not in _allowed_default_secondary_roles_values:#['ALL',{}]
             raise ValueError
         else:
             instance._default_secondary_roles = value
@@ -502,7 +507,7 @@ class EnableUnredactedQuerySyntaxError:
         return instance._enable_unredacted_query_syntax_error
     
     def __set__(self,instance,value):
-        if value not in USRT._allowed_values_enable_unredacted_query_syntax_error:# TRUE FALSE
+        if value not in _allowed_values_enable_unredacted_query_syntax_error:# TRUE FALSE
             raise ValueError
         else:
             instance._enable_unredacted_query_syntax_error = value
@@ -733,114 +738,114 @@ class User:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[USRT._name_tag] = 1
+            self.flag_dic[_name_tag] = 1
         else:
-            self.flag_dic[USRT._name_tag] = 0
+            self.flag_dic[_name_tag] = 0
 
         if self.attr.password is not None:
-            self.flag_dic[USRT._password_tag] = 1
+            self.flag_dic[_password_tag] = 1
         else:
-            self.flag_dic[USRT._password_tag] = 0
+            self.flag_dic[_password_tag] = 0
 
         if self.attr.login_name is not None:
-            self.flag_dic[USRT._login_name_tag] = 1
+            self.flag_dic[_login_name_tag] = 1
         else:
-            self.flag_dic[USRT._login_name_tag] = 0
+            self.flag_dic[_login_name_tag] = 0
 
         if self.attr.display_name is not None:
-            self.flag_dic[USRT._display_name_tag] = 1
+            self.flag_dic[_display_name_tag] = 1
         else:
-            self.flag_dic[USRT.__display_name_tag] = 0
+            self.flag_dic[__display_name_tag] = 0
 
         if self.attr.first_name is not None:
-            self.flag_dic[USRT._first_name_tag] = 1
+            self.flag_dic[_first_name_tag] = 1
         else:
-            self.flag_dic[USRT._first_name_tag] = 0
+            self.flag_dic[_first_name_tag] = 0
 
         if self.attr.last_name is not None:
-            self.flag_dic[USRT._last_name_tag] = 1
+            self.flag_dic[_last_name_tag] = 1
         else:
-            self.flag_dic[USRT._last_name_tag] = 0
+            self.flag_dic[_last_name_tag] = 0
 
         if self.attr.email is not None:
-            self.flag_dic[USRT._email_tag] = 1
+            self.flag_dic[_email_tag] = 1
         else:
-            self.flag_dic[USRT._email_tag] = 0
+            self.flag_dic[_email_tag] = 0
         
         if self.attr.must_change_password is not None:
-            self.flag_dic[USRT._must_change_password_tag] = 1
+            self.flag_dic[_must_change_password_tag] = 1
         else:
-            self.flag_dic[USRT._must_change_password_tag] = 0
+            self.flag_dic[_must_change_password_tag] = 0
 
         if self.attr.disabled is not None:
-            self.flag_dic[USRT._disabled_tag] = 1
+            self.flag_dic[_disabled_tag] = 1
         else:
-            self.flag_dic[USRT._disabled_tag] = 0
+            self.flag_dic[_disabled_tag] = 0
 
         if self.attr.days_to_expiry is not None:
-            self.flag_dic[USRT._days_to_expiry_tag] = 1
+            self.flag_dic[_days_to_expiry_tag] = 1
         else:
-            self.flag_dic[USRT._days_to_expiry_tag] = 0
+            self.flag_dic[_days_to_expiry_tag] = 0
 
         if self.attr.mins_to_unlock is not None:
-            self.flag_dic[USRT._mins_to_unlock_tag] = 1
+            self.flag_dic[_mins_to_unlock_tag] = 1
         else:
-            self.flag_dic[USRT._mins_to_unlock_tag] = 0
+            self.flag_dic[_mins_to_unlock_tag] = 0
 
         if self.attr.default_warehouse is not None:
-            self.flag_dic[USRT._default_warehouse_tag] = 1
+            self.flag_dic[_default_warehouse_tag] = 1
         else:
-            self.flag_dic[USRT._default_warehouse_tag] = 0
+            self.flag_dic[_default_warehouse_tag] = 0
 
         if self.attr.default_role is not None:
-            self.flag_dic[USRT._default_role_tag] = 1
+            self.flag_dic[_default_role_tag] = 1
         else:
-            self.flag_dic[USRT._default_role_tag] = 0
+            self.flag_dic[_default_role_tag] = 0
 
         if self.attr.default_secondary_roles is not None:
-            self.flag_dic[USRT._default_secondary_roles_tag] = 1
+            self.flag_dic[_default_secondary_roles_tag] = 1
         else:
-            self.flag_dic[USRT._default_secondary_roles_tag] = 0
+            self.flag_dic[_default_secondary_roles_tag] = 0
 
         if self.attr.mins_to_by_pass_mfa is not None:
-            self.flag_dic[USRT._mins_to_by_pass_mfa_tag] = 1
+            self.flag_dic[_mins_to_by_pass_mfa_tag] = 1
         else:
-            self.flag_dic[USRT._mins_to_by_pass_mfa_tag] = 0
+            self.flag_dic[_mins_to_by_pass_mfa_tag] = 0
 
         if self.attr.rsa_public_key is not None:
-            self.flag_dic[USRT._rsa_public_key_tag] = 1
+            self.flag_dic[_rsa_public_key_tag] = 1
         else:
-            self.flag_dic[USRT._rsa_public_key_tag] = 0
+            self.flag_dic[_rsa_public_key_tag] = 0
 
         if self.attr.rsa_public_key_fp is not None:
-            self.flag_dic[USRT._rsa_public_key_fp_tag] = 1
+            self.flag_dic[_rsa_public_key_fp_tag] = 1
         else:
-            self.flag_dic[USRT._rsa_public_key_fp_tag] = 0
+            self.flag_dic[_rsa_public_key_fp_tag] = 0
 
         if self.attr.rsa_public_key_2 is not None:
-            self.flag_dic[USRT._rsa_public_key_2_tag] = 1
+            self.flag_dic[_rsa_public_key_2_tag] = 1
         else:
-            self.flag_dic[USRT._rsa_public_key_2_tag] = 0
+            self.flag_dic[_rsa_public_key_2_tag] = 0
 
         if self.attr.rsa_public_key_2_fp is not None:
-            self.flag_dic[USRT._rsa_public_key_2_fp_tag] = 1
+            self.flag_dic[_rsa_public_key_2_fp_tag] = 1
         else:
-            self.flag_dic[USRT._rsa_public_key_2_fp_tag] = 0
+            self.flag_dic[_rsa_public_key_2_fp_tag] = 0
 
         if self.attr.type is not None:
-            self.flag_dic[USRT._type_tag] = 1
+            self.flag_dic[_type_tag] = 1
         else:
-            self.flag_dic[USRT._type_tag] = 0
+            self.flag_dic[_type_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[USRT._comment_tag] = 1
+            self.flag_dic[_comment_tag] = 1
         else:
-            self.flag_dic[USRT._comment_tag] = 0
+            self.flag_dic[_comment_tag] = 0
             
         if self.attr.enable_unredacted_query_syntax_error is not None:
-            self.flag_dic[USRT._enable_unredacted_query_syntax_error_tag] = 1
+            self.flag_dic[_enable_unredacted_query_syntax_error_tag] = 1
         else:
-            self.flag_dic[USRT._enable_unredacted_query_syntax_error_tag] = 0
+            self.flag_dic[_enable_unredacted_query_syntax_error_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -854,47 +859,47 @@ class User:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == USRT._name_tag:
+                if prop == _name_tag:
                     self.qry = f" {self.qry} {self.attr.name_tag}  = {self.attr.name} "
-                if prop == USRT._password_tag:
+                if prop == _password_tag:
                     self.qry = f" {self.qry} {self.attr.password_tag} = {self.attr.password} "
-                if prop == USRT._display_name_tag:
+                if prop == _display_name_tag:
                     self.qry = f" {self.qry} {self.attr.display_name_tag} = {self.attr.display_name} "
-                if prop == USRT._first_name_tag:
+                if prop == _first_name_tag:
                     self.qry = f" {self.qry} {self.attr.first_name_tag} = {self.attr.first_name} "
-                if prop == USRT._last_name_tag:
+                if prop == _last_name_tag:
                     self.qry = f" {self.qry} {self.attr.last_name_tag} = {self.attr.last_name} "
-                if prop == USRT._email_tag:
+                if prop == _email_tag:
                     self.qry = f" {self.qry} {self.attr.email_tag} = {self.attr.email} "
-                if prop == USRT._must_change_password_tag:
+                if prop == _must_change_password_tag:
                     self.qry = f" {self.qry} {self.attr.must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == USRT._disabled_tag:
+                if prop == _disabled_tag:
                     self.qry = f" {self.qry} {self.attr.disabled_tag} = {self.attr.disabled} "
-                if prop == USRT._days_to_expiry_tag:
+                if prop == _days_to_expiry_tag:
                     self.qry = f" {self.qry} {self.attr.days_to_expiry_tag} = {self.attr.days_to_expiry} "
-                if prop == USRT.mins_to_unlock_tag:
+                if prop == mins_to_unlock_tag:
                     self.qry = f" {self.qry} {self.attr.mins_to_unlock_tag} = {self.attr.mins_to_unlock} "
-                if prop == USRT._default_warehouse_tag:
+                if prop == _default_warehouse_tag:
                     self.qry = f" {self.qry} {self.attr.default_warehouse_tag} = {self.attr.default_warehouse} "
-                if prop == USRT._default_role_tag:
+                if prop == _default_role_tag:
                     self.qry = f" {self.qry} {self.attr.default_role_tag} = {self.attr.default_role} "
-                if prop == USRT._default_secondary_roles_tag:
+                if prop == _default_secondary_roles_tag:
                     self.qry = f" {self.qry} {self.attr.default_secondary_roles_tag} = {self.attr.default_secondary_roles} "
-                if prop == USRT._mins_to_by_pass_mfa_tag:
+                if prop == _mins_to_by_pass_mfa_tag:
                     self.qry = f" {self.qry} {self.attr.mins_to_by_pass_mfa_tag} = {self.attr.mins_to_by_pass_mfa} "
-                if prop == USRT._rsa_public_key_tag:
+                if prop == _rsa_public_key_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_tag} = {self.attr.rsa_public_key} "
-                if prop == USRT._rsa_public_key_fp_tag:
+                if prop == _rsa_public_key_fp_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_fp_tag} = {self.attr.rsa_public_key_fp} "
-                if prop == USRT._rsa_public_key_2_tag:
+                if prop == _rsa_public_key_2_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_2_tag} = {self.attr.rsa_public_key_2} "
-                if prop == USRT._rsa_public_key_2_fp_tag:
+                if prop == _rsa_public_key_2_fp_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_2_fp_tag} = {self.attr.rsa_public_key_2_fp} "
-                if prop == USRT._type_tag:
+                if prop == _type_tag:
                     self.qry = f" {self.qry} {self.attr.type_tag} = {self.attr.type} "
-                if prop == USRT._comment_tag:
+                if prop == _comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == USRT._enable_unredacted_query_syntax_error_tag:
+                if prop == _enable_unredacted_query_syntax_error_tag:
                     self.qry = f" {self.qry} {self.attr.enable_unredacted_query_syntax_error_tag} = {self.attr.enable_unredacted_query_syntax_error} "
 
 
@@ -907,74 +912,73 @@ class User:
 
 def main(session,**kwargs):
     user = User()
-    user_tags = USRT()
 
-    user.set_name(kwargs[user_tags._name_tag])
-    user.set_name_tag(user_tags._name_tag)
+    user.set_name(kwargs[_name_tag])
+    user.set_name_tag(_name_tag)
 
-    user.set_password(kwargs[user_tags._password_tag])
-    user.set_password_tag(user_tags._password_tag)
+    user.set_password(kwargs[_password_tag])
+    user.set_password_tag(_password_tag)
 
-    user.set_login_name(kwargs[user_tags._login_name_tag])
-    user.set_login_name_tag(user_tags._login_name_tag)
+    user.set_login_name(kwargs[_login_name_tag])
+    user.set_login_name_tag(_login_name_tag)
 
-    user.set_display_name(kwargs[user_tags._display_name_tag])
-    user.set_display_name_tag(user_tags._display_name_tag)
+    user.set_display_name(kwargs[_display_name_tag])
+    user.set_display_name_tag(_display_name_tag)
 
-    user.set_first_name(kwargs[user_tags._first_name_tag])
-    user.set_first_name_tag(user_tags._first_name_tag)
+    user.set_first_name(kwargs[_first_name_tag])
+    user.set_first_name_tag(_first_name_tag)
 
-    user.set_last_name(kwargs[user_tags._last_name_tag])
-    user.set_last_name_tag(user_tags._last_name_tag)
+    user.set_last_name(kwargs[_last_name_tag])
+    user.set_last_name_tag(_last_name_tag)
 
-    user.set_email(kwargs[user_tags._email_tag])
-    user.set_email_tag(user_tags._email_tag)
+    user.set_email(kwargs[_email_tag])
+    user.set_email_tag(_email_tag)
 
-    user.set_must_change_password(kwargs[user_tags._must_change_password_tag])
-    user.set_must_change_password_tag(user_tags._must_change_password_tag)
+    user.set_must_change_password(kwargs[_must_change_password_tag])
+    user.set_must_change_password_tag(_must_change_password_tag)
 
-    user.set_disabled(kwargs[user_tags._disabled_tag])
-    user.set_disabled_tag(user_tags._disabled_tag)
+    user.set_disabled(kwargs[_disabled_tag])
+    user.set_disabled_tag(_disabled_tag)
 
-    user.set_days_to_expiry(kwargs[user_tags._days_to_expiry_tag])
-    user.set_days_to_expiry_tag(user_tags._days_to_expiry_tag)
+    user.set_days_to_expiry(kwargs[_days_to_expiry_tag])
+    user.set_days_to_expiry_tag(_days_to_expiry_tag)
 
-    user.set_mins_to_unlock(kwargs[user_tags._mins_to_unlock_tag])
-    user.set_mins_to_unlock_tag(user_tags._mins_to_unlock_tag)
+    user.set_mins_to_unlock(kwargs[_mins_to_unlock_tag])
+    user.set_mins_to_unlock_tag(_mins_to_unlock_tag)
 
-    user.set_default_warehouse(kwargs[user_tags._default_warehouse_tag])
-    user.set_default_warehouse_tag(user_tags._default_warehouse_tag)
+    user.set_default_warehouse(kwargs[_default_warehouse_tag])
+    user.set_default_warehouse_tag(_default_warehouse_tag)
 
 
-    user.set_default_role(kwargs[user_tags._default_role_tag])
-    user.set_default_role_tag(user_tags._default_role_tag)
+    user.set_default_role(kwargs[_default_role_tag])
+    user.set_default_role_tag(_default_role_tag)
 
-    user.set_default_secondary_roles(kwargs[user_tags._default_secondary_roles_tag])
-    user.set_default_secondary_roles_tag(user_tags._default_secondary_roles_tag)
+    user.set_default_secondary_roles(kwargs[_default_secondary_roles_tag])
+    user.set_default_secondary_roles_tag(_default_secondary_roles_tag)
 
-    user.set_mins_to_by_pass_mfa(kwargs[user_tags._mins_to_by_pass_mfa_tag])
-    user.set_mins_to_by_pass_mfa_tag(user_tags._mins_to_by_pass_mfa_tag)
+    user.set_mins_to_by_pass_mfa(kwargs[_mins_to_by_pass_mfa_tag])
+    user.set_mins_to_by_pass_mfa_tag(_mins_to_by_pass_mfa_tag)
 
-    user.set_rsa_public_key(kwargs[user_tags._rsa_public_key_tag])
-    user.set_rsa_public_key_tag(user_tags._rsa_public_key_tag)
+    user.set_rsa_public_key(kwargs[_rsa_public_key_tag])
+    user.set_rsa_public_key_tag(_rsa_public_key_tag)
 
-    user.set_rsa_public_key_fp(kwargs[user_tags._rsa_public_key_fp_tag])
-    user.set_rsa_public_key_fp_tag(user_tags._rsa_public_key_fp_tag)
+    user.set_rsa_public_key_fp(kwargs[_rsa_public_key_fp_tag])
+    user.set_rsa_public_key_fp_tag(_rsa_public_key_fp_tag)
 
-    user.set_rsa_public_key_2(kwargs[user_tags._rsa_public_key_2_tag])
-    user.set_rsa_public_key_2_tag(user_tags._rsa_public_key_2_tag)
+    user.set_rsa_public_key_2(kwargs[_rsa_public_key_2_tag])
+    user.set_rsa_public_key_2_tag(_rsa_public_key_2_tag)
 
-    user.set_rsa_public_key_2_fp(kwargs[user_tags._rsa_public_key_2_fp_tag])
-    user.set_rsa_public_key_2_fp_tag(user_tags._rsa_public_key_2_fp_tag)
+    user.set_rsa_public_key_2_fp(kwargs[_rsa_public_key_2_fp_tag])
+    user.set_rsa_public_key_2_fp_tag(_rsa_public_key_2_fp_tag)
 
-    user.set_type(kwargs[user_tags._type_tag])
-    user.set_type_tag(user_tags._type_tag)
+    user.set_type(kwargs[_type_tag])
+    user.set_type_tag(_type_tag)
 
-    user.set_comment(kwargs[user_tags._comment_tag])
-    user.set_comment_tag(user_tags._comment_tag)
+    user.set_comment(kwargs[_comment_tag])
+    user.set_comment_tag(_comment_tag)
 
-    user.set_enable_unredacted_query_syntax_error(kwargs[user_tags._enable_unredacted_query_syntax_error_tag])
-    user.set_enable_unredacted_query_syntax_error_tag(user_tags._enable_unredacted_query_syntax_error_tag)
+    user.set_enable_unredacted_query_syntax_error(kwargs[_enable_unredacted_query_syntax_error_tag])
+    user.set_enable_unredacted_query_syntax_error_tag(_enable_unredacted_query_syntax_error_tag)
 
     user.prepare_query()
 
