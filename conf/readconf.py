@@ -50,7 +50,7 @@ class ReadConfig:
         return data
 
     
-    read_cfg = ReadConfig()
+
 
     read_cfg.set_object_type(object_type= object_type)
     read_cfg.set_conf_file_to_read()

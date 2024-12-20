@@ -8,6 +8,8 @@ class Name:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
+        elif type(value) != ROLET._allowed_type_name: #string
+            raise TypeError
         else:
             instance._name = value
 
@@ -29,8 +31,12 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        if type(value) != 
-        instance._comment = value
+        if type(value) != ROLET._allowed_type_comment: #string
+            raise TypeError
+        elif len(value) > ROLET._allowed_len_comment: #256
+            raise TypeError
+        else:
+            instance._comment = value
     
     def __delete__(self,instance):
         del instance._comment
@@ -45,7 +51,7 @@ class CommentTag:
     def __delete__(self,instance):
         del instance._comment_tag
 
-class DatabaseRoleAttrs:
+class RoleAttrs:
     name = Name()
     name_tag = NameTag()
 
@@ -53,9 +59,9 @@ class DatabaseRoleAttrs:
     comment_tag = CommentTag()
 
 
-class DatabaseRole:
+class Role:
     def __init__(self,session):
-        self.attr = DatabaseRoleAttrs()
+        self.attr = RoleAttrs()
         self.session = session
         self.qry = ""
 
@@ -108,15 +114,15 @@ class DatabaseRole:
 
 
 def main(session,**kwargs):
-    databaserole = DatabaseRole()
-    databaserole_tags = ROLET()
+    role = Role()
+    role_tags = ROLET()
 
-    databaserole.set_name(kwargs[databaserole_tags._name_tag])
-    databaserole.set_name_tag(databaserole_tags._name_tag)
+    role.set_name(kwargs[role_tags._name_tag])
+    role.set_name_tag(role_tags._name_tag)
 
-    databaserole.set_comment(kwargs[databaserole_tags._comment_tag])
-    databaserole.set_comment_tag(databaserole_tags._comment_tag)
+    role.set_comment(kwargs[role_tags._comment_tag])
+    role.set_comment_tag(role_tags._comment_tag)
 
-    databaserole.prepare_query()
+    role.prepare_query()
 
-    return databaserole.qry
+    return role.qry
