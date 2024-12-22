@@ -2,8 +2,10 @@ import sys
 import os 
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from account_global_vars import * 
+from validatestring import ValidateString
 
 class AccountNamne:
     def __get__(self,instance,owner):

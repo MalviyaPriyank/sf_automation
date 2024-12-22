@@ -1,6 +1,11 @@
+import sys
+import os 
 
-from accountglobalvars import *
-from snowpipe import Snowpipe
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+
+from task_global_vars import * 
+from validatestring import ValidateString
 
 class Name:
     def __get__(self,instance,owner):
@@ -9,6 +14,14 @@ class Name:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
+        elif ValidateString.is_enclosed_in_double_quotes(value):
+            instance._name = value
+        elif not ValidateString.starts_with_alphabet(value):
+            raise ValueError
+        elif ValidateString.has_space(value):
+            raise ValueError
+        elif ValidateString.has_special_characters(value):
+            raise ValueError
         else:
             instance._name = value
 
@@ -103,25 +116,25 @@ class WarehouseTag:
     def __delete__(self,instance):
         del instance._warehouse_tag
 
-class UserTaskManagedInitialWarehouse:
+class UserTaskManagedInitialWarehouseSize:
     def __get__(self,instance,owner):
-        return instance._user_task_managed_initial_warehouse
+        return instance._user_task_managed_initial_warehouse_size
     
     def __set__(self,instance,value):
-        instance._user_task_managed_initial_warehouse = value
+        instance._user_task_managed_initial_warehouse_size = value
 
     def __delete__(self,instance):
-        del instance._user_task_managed_initial_warehouse
+        del instance._user_task_managed_initial_warehouse_size
 
-class UserTaskManagedInitialWarehouseTag:
+class UserTaskManagedInitialWarehouseSizeTag:
     def __get__(self,instance,owner):
-        return instance._user_task_managed_initial_warehouse_tag
+        return instance._user_task_managed_initial_warehouse_size_tag
     
     def __set__(self,instance,value):
-        instance._user_task_managed_initial_warehouse_tag = value
+        instance._user_task_managed_initial_warehouse_size_tag = value
 
     def __delete__(self,instance):
-        del instance._user_task_managed_initial_warehouse_tag
+        del instance._user_task_managed_initial_warehouse_size_tag
 
 
 class Schedule:
@@ -478,8 +491,8 @@ class TaskAttrs:
     warehouse = Warehouse()
     warehouse_tag = WarehouseTag()
 
-    user_task_managed_initial_warehouse = UserTaskManagedInitialWarehouse()
-    user_task_managed_initial_warehouse_tag = UserTaskManagedInitialWarehouseTag()
+    user_task_managed_initial_warehouse_size = UserTaskManagedInitialWarehouse()
+    user_task_managed_initial_warehouse_size_tag = UserTaskManagedInitialWarehouseTag()
 
     schedule = Schedule()
     schedule_tag = ScheduleTag()
@@ -563,11 +576,11 @@ class Task:
     def set_warehouse_tag(self,warehouse_tag):
         self.attr.warehouse_tag = warehouse_tag
 
-    def set_user_task_managed_initial_warehouse(self,user_task_managed_initial_warehouse):
-        self.attr.user_task_managed_initial_warehouse = user_task_managed_initial_warehouse
+    def set_user_task_managed_initial_warehouse_size(self,user_task_managed_initial_warehouse_size):
+        self.attr.user_task_managed_initial_warehouse_size = user_task_managed_initial_warehouse_size
 
-    def set_user_task_managed_initial_warehouse_tag(self,user_task_managed_initial_warehouse_tag):
-        self.attr.user_task_managed_initial_warehouse_tag = user_task_managed_initial_warehouse_tag
+    def set_user_task_managed_initial_warehouse_size_tag(self,user_task_managed_initial_warehouse_size_tag):
+        self.attr.user_task_managed_initial_warehouse_size_tag = user_task_managed_initial_warehouse_size_tag
 
     def set_schedule(self,schedule):
         self.attr.schedule = schedule
@@ -674,25 +687,64 @@ class Task:
 
 
 def main(session,**kwargs):
-    ingest = Ingest()
+    task = Task()
 
-    ingest.set_name(kwargs['name'])
+    task.set_name(kwargs[_name_tag])
+    task.set_name_tag(_name_tag)
 
-    ingest.set_definition(kwargs['definition'])
+    task.set_definition(kwargs[_definition_tag])
+    task.set_definition_tag(_definition_tag)
 
-    ingest.set_database(kwargs['database'])
+    task.set_warehouse(kwargs[_warehouse_tag])
+    task.set_warehouse_tag(_warehouse_tag)
 
-    ingest.set_warehouse(kwargs['warehouse'])
+    task.set_user_task_managed_initial_warehouse_size(kwargs[_user_task_managed_initial_warehouse_tag])
+    task.set_user_task_managed_initial_warehouse_size_tag(_user_task_managed_initial_warehouse_tag)
 
-    ingest.set_user_task_managed_initial_warehouse(kwargs['user_task_managed_initial_warehouse'])
+    task.set_schedule(kwargs[_schedule_tag])
+    task.set_schedule_tag(_schedule_tag)
 
-    ingest.set_schedule(kwargs['schedule'])
-    
-    if ingest.attr.definition == 'SNOWPIPE':
-        sp = Snowpipe()
-        sp.set_auto_ingest(ingest.attr.schedule['auto_ingest'])
-        sp.set_aws_sns_topic(ingest.attr.schedule['aws_sns_topic'])
-        sp.set_error_integration(ingest.attr.schedule['error_integration'])
-        sp.set_integration(ingest.attr.schedule['integration'])
-        sp.set_comment(ingest.attr.schedule['comment'])
-        sp.get_create_snowpipe_qry(ingest)
+    task.set_config(kwargs[_config])
+    task.set_config_tag(_config)
+
+    task.set_allow_overlapping_execution(kwargs[_allow_overlapping_execution_tag])
+    task.set_allow_overlapping_execution_tag(_allow_overlapping_execution_tag)
+
+    task.set_user_task_timeout_ms(kwargs[_user_task_timeout_ms_tag])
+    task.set_user_task_timeout_ms_tag(_user_task_timeout_ms_tag)
+
+    task.set_suspend_task_after_num_failures(kwargs[_suspend_task_after_num_failures_tag])
+    task.set_suspend_task_after_num_failures_tag(_suspend_task_after_num_failures_tag)
+
+    task.set_error_integration(kwargs[_error_integration_tag])
+    task.set_error_integration(_error_integration_tag)
+
+    task.set_success_integration(kwargs[_success_integration_tag])
+    task.set_success_integration_tag(_success_integration_tag)
+
+    task.set_comment(kwargs[_comment_tag])
+    task.set_comment_tag(_comment_tag)
+
+    task.set_after(kwargs[_after_tag])
+    task.set_after_tag(_after_tag)
+
+    task.set_when(kwargs[_when_tag])
+    task.set_when_tag(_when_tag)
+
+    task.set_tag(kwargs[_tag_tag])
+    task.set_tag_tag(_tag_tag)
+
+    task.set_finalize(kwargs[_finalize_tag])
+    task.set_finalize_tag(_finalize_tag)
+
+    task.set_task_auto_retry_attempts(kwargs[_task_auto_retry_attempts_tag])
+    task.set_task_auto_retry_attempts_tag(_task_auto_retry_attempts_tag)
+
+    task.set_user_task_minimum_trigger_interval_in_seconds(kwargs[_user_task_minimum_trigger_interval_in_seconds_tag])
+    task.set_user_task_minimum_trigger_interval_in_seconds_tag(_user_task_minimum_trigger_interval_in_seconds_tag)
+
+    task.set_target_completion_interval(kwargs[_target_completion_interval_tag])
+    task.set_target_completion_interval_tag(_target_completion_interval_tag)
+
+    task.set_serverless_task_min_statement_size(kwargs[_serverless_task_min_statement_size_tag])
+    task.set_serverless_task_min_statement_size_tag(_serverless_task_min_statement_size_tag)

@@ -1,0 +1,2 @@
+_allowed_values_serverless_task_max_statement_size = ['XSMALL','SMALL','MEDIUM','LARGE','XLARGE','XXLARGE']
+_allowed_values_serverless_task_min_statement_size = ['XSMALL','SMALL','MEDIUM','LARGE','XLARGE','XXLARGE']
