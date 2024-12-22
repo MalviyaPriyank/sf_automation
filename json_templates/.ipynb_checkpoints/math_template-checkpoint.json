@@ -1,0 +1,21 @@
+{
+    "tools":
+        [
+            "toolSpec": {
+                "name":"addition",
+                "description":"adds two numbers provided as input",
+                "inputSchema":{
+                    "json":{
+                        "type":"object",
+                        "properties":{
+                            "type":"string",
+                            "description":"User input for two numbers"
+                        }
+                    },
+                    "required":[
+                        "query"
+                    ]
+                }
+            }
+        ]
+}
