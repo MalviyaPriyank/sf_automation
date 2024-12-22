@@ -4,8 +4,10 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from task_global_vars import * 
-from validatestring import ValidateString
+import taskglobalvars as tgv
+import validatevalue as vv
+
+
 
 class Name:
     def __get__(self,instance,owner):
@@ -14,13 +16,13 @@ class Name:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
-        elif ValidateString.is_enclosed_in_double_quotes(value):
+        elif vv.ValidateString.is_enclosed_in_double_quotes(value):
             instance._name = value
-        elif not ValidateString.starts_with_alphabet(value):
+        elif not vv.ValidateString.starts_with_alphabet(value):
             raise ValueError
-        elif ValidateString.has_space(value):
+        elif vv.ValidateString.has_space(value):
             raise ValueError
-        elif ValidateString.has_special_characters(value):
+        elif vv.ValidateString.has_special_characters(value):
             raise ValueError
         else:
             instance._name = value
@@ -67,41 +69,12 @@ class DefinitionTag:
     def __delete__(self,instance):
         del instance._definition_tag
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
-            instance._database = value
-
-    def __delete__(self,instance):
-        del instance._database
-
-class DatabaseTag:
-    def __get__(self,instance,owner):
-        return instance._database_tag
-    
-    def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
-            instance._database_tag = value
-
-    def __delete__(self,instance):
-        del instance._database_tag
-
 class Warehouse:
     def __get__(self,instance,owner):
         return instance._warehouse
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_warehouse_values: # ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
-            raise ValueError
-        else:
-            instance._warehouse = value
+        instance._warehouse = value
 
     def __delete__(self,instance):
         del instance._warehouse
@@ -121,7 +94,11 @@ class UserTaskManagedInitialWarehouseSize:
         return instance._user_task_managed_initial_warehouse_size
     
     def __set__(self,instance,value):
-        instance._user_task_managed_initial_warehouse_size = value
+        if value not in tgv._allowed_values__user_task_managed_initial_warehouse_size:
+            raise ValueError
+        if instance._warehouse is None:
+            instance._user_task_managed_initial_warehouse_size = value
+
 
     def __delete__(self,instance):
         del instance._user_task_managed_initial_warehouse_size
@@ -142,7 +119,10 @@ class Schedule:
         return instance._schedule
     
     def __set__(self,instance,value):
-        instance._schedule = value
+        if not vv.is_valid_cron(value):
+            raise ValueError
+        else:
+            instance._schedule = value
     
     def __delete__(self,instance):
         del instance._schedule
@@ -162,7 +142,10 @@ class Config:
         return instance._config
     
     def __set__(self,instance,value):
-        instance._config = value
+        if not vv.is_json(value):
+            raise ValueError
+        else:
+            instance._config = value
     
     def __delete__(self,instance):
         del instance._config
@@ -182,7 +165,13 @@ class AllowOverlappingExecution:
         return instance._allow_overlapping_execution
     
     def __set__(self,instance,value):
-        instance._allow_overlapping_execution = value
+        if value is None:
+            instance._allow_overlapping_execution = 'FALSE'
+        else:
+            if not vv.is_bool(value):
+                raise ValueError
+            else:
+                instance._allow_overlapping_execution = value
     
     def __delete__(self,instance):
         del instance._allow_overlapping_execution
@@ -213,20 +202,29 @@ class UserTaskTimeoutMsTag:
         return instance._user_task_timeout_ms_tag
     
     def __set__(self,instance,value):
-        instance._user_task_timeout_ms_tag = value
+        if not vv.is_positive_number(value):
+            raise ValueError
+        else:
+            if not 0<= float(value) <= 86400000:
+                raise ValueError
+            else:
+                instance._user_task_timeout_ms_tag = value
     
     def __delete__(self,instance):
         del instance._user_task_timeout_ms_tag
 
 class SuspendTaskAfterNumFailures:
     def __get__(self,instance,owner):
-        return instance._suspen_task_after_num_failures
+        return instance._suspend_task_after_num_failures
     
     def __set__(self,instance,value):
-        instance._suspen_task_after_num_failures = value
+        if not vv.is_positive_number(value):
+            raise ValueError
+        else:
+            instance._suspend_task_after_num_failures = value
     
     def __delete__(self,instance):
-        del instance._suspen_task_after_num_failures
+        del instance._suspend_task_after_num_failures
 
 class SuspendTaskAfterNumFailuresTag:
     def __get__(self,instance,owner):
