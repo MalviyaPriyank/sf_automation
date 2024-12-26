@@ -12,53 +12,76 @@ class ValidateValue:
     def __init__(self):
         pass
 
-    def starts_with_alphabet(self,value):
+    @staticmethod
+    def starts_with_alphabet(value):
         if value[0].isalpha():
             return True
         else:
             return False
         
-    def has_space(self,value):
+    @staticmethod
+    def has_space(value):
         if ' ' in value:
             return True
         else:
             return False
-        
-    def has_special_characters(self,value):
+
+    @staticmethod    
+    def has_special_characters(value):
         if re.search(r'[^a-zA-Z0-9]',value):
             return True
         else:
             return False
-    
-    def is_enclosed_in_double_quotes(self,value):
+
+    @staticmethod
+    def has_special_characters_except_underscore(value):
+        if re.search(r'[^a-zA-Z0-9_]',value):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_enclosed_in_double_quotes(value):
         if value[0] == '"' and value[-1] == '"':
             return True
         else:
             return False
         
-    def is_string(self,value):
+    @staticmethod
+    def is_enclosed_in_single_quotes(value):
+        if value[0] == "'" and value[-1] == "'":
+            return True
+        else:
+            return False
+        
+    @staticmethod
+    def is_string(value):
         if isinstance(value,str):
             return True
         
-    def is_json(self,value):
+    @staticmethod
+    def is_json(value):
         try:
             if json.loads(value):
                 return True
         except json.JSONDecodeError:
             return False
         
-    def is_bool(self,value):
+    @staticmethod
+    def is_bool(value):
         if value not in ['TRUE','FALSE']:
             return False
         
-    def is_positive_number(self,value):
+    @staticmethod
+    def is_positive_number(value):
         try:
             num = float(value)
             return True
         except ValueError:
             return False
 
-    def is_valid_cron(self,value):
+    @staticmethod
+    def is_valid_cron(value):
         if 'MINUTE' not in value:
             if len(value) != 5:
                 return False

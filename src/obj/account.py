@@ -6,9 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
 from account_global_vars import Account as agv
-from validatevalue import ValidateValue 
+from validatevalue import ValidateValue as vv
 
-vv = ValidateValue()
 
 class AccountNamne:
     def __get__(self,instance,owner):
@@ -18,6 +17,10 @@ class AccountNamne:
         if value == "NONE" :
             raise KeyError
         elif not vv.starts_with_alphabet(value):
+            raise ValueError
+        elif vv.has_space(value):
+            raise ValueError
+        elif vv.has_special_characters_except_underscore(value):
             raise ValueError
         else:
             instance._account_name = value
@@ -40,8 +43,10 @@ class AdminName:
         return instance._admin_name
     
     def __set__(self,instance,value):
-        if value == None:
+        if value == "NONE":
             raise KeyError
+        elif vv.has_special_characters_except_underscore(value):
+            raise ValueError
         else:
             instance._admin_name = value
 
@@ -63,8 +68,10 @@ class AdminPassword:
         return instance._admin_password
     
     def __set__(self,instance,value):
-        if value == None:
+        if value == "NONE":
             raise KeyError
+        elif not (vv.is_enclosed_in_single_quotes(value) or vv.is_enclosed_in_double_quotes(value)):
+            raise ValueError
         else:
             instance._admin_password = value
 
@@ -150,7 +157,7 @@ class Email:
         return instance._email
     
     def __set__(self,instance,value):
-        if value == None:
+        if value == "NONE":
             raise KeyError
         else:
             instance._email = value
@@ -196,7 +203,7 @@ class Edition:
         return instance._edition
     
     def __set__(self,instance,value):
-        if value == None:
+        if value == "NONE":
             raise KeyError
         else:
             if value not in agv._allowed_values_edition: 
@@ -421,57 +428,57 @@ class Admin:
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.account_name is not None:
+        if self.attr.account_name != "NONE":
             self.flag_dic['account_name'] = 1
         else:
             self.flag_dic['account_name'] = 0
 
-        if self.attr.admin_name is not None:
+        if self.attr.admin_name != "NONE":
             self.flag_dic['admin_name'] = 1
         else:
             self.flag_dic['admin_name'] = 0
 
-        if self.attr.admin_password is not None:
+        if self.attr.admin_password != "None":
             self.flag_dic['admin_password'] = 1
         else:
             self.flag_dic['admin_password'] = 0
 
-        if self.attr.admin_user_type is not None:
+        if self.attr.admin_user_type != "NONE":
             self.flag_dic['admin_user_type'] = 1
         else:
             self.flag_dic['admin_user_type'] = 0
 
-        if self.attr.first_name is not None:
+        if self.attr.first_name != "NONE":
             self.flag_dic['first_name'] = 1
         else:
             self.flag_dic['first_name'] = 0
 
-        if self.attr.last_name is not None:
+        if self.attr.last_name != "NONE":
             self.flag_dic['last_name'] = 1
         else:
             self.flag_dic['last_name'] = 0
 
-        if self.attr.email is not None:
+        if self.attr.email != "NONE":
             self.flag_dic['email'] = 1
         else:
             self.flag_dic['email'] = 0
         
-        if self.attr.must_change_password is not None:
+        if self.attr.must_change_password != "NONE":
             self.flag_dic['must_change_password'] = 1
         else:
             self.flag_dic['must_change_password'] = 0
 
-        if self.attr.edition is not None:
+        if self.attr.edition != "NONE":
             self.flag_dic['edition'] = 1
         else:
             self.flag_dic['edition'] = 0
 
-        if self.attr.region_group is not None:
+        if self.attr.region_group != "NONE":
             self.flag_dic['region_group'] = 1
         else:
             self.flag_dic['region_group'] = 0
 
-        if self.attr.region is not None:
+        if self.attr.region != "NONE":
             self.flag_dic['region'] = 1
         else:
             self.flag_dic['region'] = 0
@@ -481,12 +488,10 @@ class Admin:
         else:
             self.flag_dic['comment'] = 0
 
-        if self.attr.polaris is not None:
+        if self.attr.polaris != "NONE":
             self.flag_dic['polaris'] = 1
         else:
             self.flag_dic['polaris'] = 0
-
-
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -502,6 +507,8 @@ class Admin:
             for prop in self.property_lst:
                 if prop == 'admin_name':
                     self.qry = f" {self.qry} {self.attr.admin_name_tag} = {self.attr.admin_name} "
+                if prop == 'admin_password':
+                    self.qry = f" {self.qry} {self.attr.admin_password_tag} = {self.attr.admin_password} "
                 if prop == 'admin_user_type':
                     self.qry = f" {self.qry} {self.attr.admin_user_type_tag} = {self.attr.admin_user_type} "
                 if prop == 'first_name':

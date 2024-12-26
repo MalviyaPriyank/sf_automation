@@ -1,15 +1,15 @@
 {
     "ACCOUNT" : "Snowchain",
     "ADMIN_NAME" : "Admin",
-    "ADMIN_PASSWORD" : "123456",
+    "ADMIN_PASSWORD" : "'123456'",
     "ADMIN_USER_TYPE" : "PERSON",
     "FIRST_NAME" : "Priyank",
     "LAST_NAME" : "Malviya",
     "EMAIL": "priyankmalviya0@gmail.com",
     "MUST_CHANGE_PASSWORD" : "TRUE",
     "EDITION" : "STANDARD",
-    "REGION_GROUP" : "US",
-    "REGION" : "NA",
+    "REGION_GROUP" : "NONE",
+    "REGION" : "NONE",
     "COMMENT" : "NONE",
     "POLARIS" :"TRUE"
  
