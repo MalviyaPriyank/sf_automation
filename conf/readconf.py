@@ -1,5 +1,10 @@
 
 import json
+import sys
+import os
+
+sys.path.append((os.path.dirname(__file__)))
+
 
 class ObjectType:
     def __get__(self,instance,owner):
@@ -42,7 +47,7 @@ class ReadConfig:
         self.attr.object_type = object_type
 
     def set_conf_file_to_read(self):
-        self.attr.conf_file_to_read = f"{self.attr.object_type}.json"
+        self.attr.conf_file_to_read = f"/Users/priyankmalviya/Desktop/SF/sf_automation/conf/account.json"
 
     def read_conf_file(self):
         with open(self.attr.conf_file_to_read,'r') as conf:
@@ -51,7 +56,8 @@ class ReadConfig:
 
     
 
-
+def main(object_type):
+    read_cfg = ReadConfig()
     read_cfg.set_object_type(object_type= object_type)
     read_cfg.set_conf_file_to_read()
     config_dict = read_cfg.read_conf_file()

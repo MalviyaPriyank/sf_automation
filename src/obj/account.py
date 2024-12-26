@@ -1,19 +1,24 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from account_global_vars import * 
-import validatevalue
+
+from account_global_vars import Account as agv
+from validatevalue import ValidateValue 
+
+vv = ValidateValue()
 
 class AccountNamne:
     def __get__(self,instance,owner):
         return instance._account_name
     
     def __set__(self,instance,value):
-        if value == None :
+        if value == "NONE" :
             raise KeyError
+        elif not vv.starts_with_alphabet(value):
+            raise ValueError
         else:
             instance._account_name = value
 
@@ -81,7 +86,7 @@ class AdminUserType:
         return instance._admin_user_type
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_admin_user_type:
+        if value not in agv._allowed_values_admin_user_type:
             raise ValueError
         else:
             instance._admin_user_type = value
@@ -168,7 +173,7 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_must_change_password:
+        if value not in agv._allowed_values_must_change_password:
             raise ValueError
         else:
             instance._must_change_password = value
@@ -194,7 +199,7 @@ class Edition:
         if value == None:
             raise KeyError
         else:
-            if value not in AccountTags._allowed_values_edition: 
+            if value not in agv._allowed_values_edition: 
                 raise ValueError
             else:
                 instance._edition = value
@@ -278,7 +283,7 @@ class Polaris:
         return instance._polaris
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_polaris:
+        if value not in agv._allowed_values_polaris:
             raise ValueError
         else:
             instance._polaris = value
@@ -328,9 +333,9 @@ class AdminAttrs:
 
 
 class Admin:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = AdminAttrs()
-        self.session = session
+        self.session = 'session'
         self.qry = ""
 
     def set_account_name(self,account_name):
@@ -471,7 +476,7 @@ class Admin:
         else:
             self.flag_dic['region'] = 0
 
-        if self.attr.comment is not None:
+        if self.attr.comment != "NONE":
             self.flag_dic['comment'] = 1
         else:
             self.flag_dic['comment'] = 0
@@ -495,8 +500,6 @@ class Admin:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == 'account_name':
-                    self.qry = f" {self.qry} {self.attr.account_name_tag}  = {self.attr.account_name} "
                 if prop == 'admin_name':
                     self.qry = f" {self.qry} {self.attr.admin_name_tag} = {self.attr.admin_name} "
                 if prop == 'admin_user_type':
@@ -528,49 +531,50 @@ class Admin:
         self.add_properties_to_query()
 
     
-def main(session,**kwargs):
-    adm = Admin(session)
+def main(**kwargs):
+    adm = Admin()
 
-    adm.set_account_name(kwargs[_account_name_tag])
-    adm.set_account_name_tag(_account_name_tag)
+    adm.set_account_name(kwargs[agv._account_name_tag])
+    adm.set_account_name_tag(agv._account_name_tag)
 
-    adm.set_admin_name(kwargs[_admin_name_tag])
-    adm.set_admin_name_tag(_admin_name_tag)
+    adm.set_admin_name(kwargs[agv._admin_name_tag])
+    adm.set_admin_name_tag(agv._admin_name_tag)
 
-    adm.set_admin_password(kwargs[_admin_password_tag])
-    adm.set_admin_password_tag(_admin_password_tag)
+    adm.set_admin_password(kwargs[agv._admin_password_tag])
+    adm.set_admin_password_tag(agv._admin_password_tag)
 
-    adm.set_admin_user_type(kwargs[_admin_user_type_tag])
-    adm.set_admin_user_type_tag(_admin_user_type_tag)
+    adm.set_admin_user_type(kwargs[agv._admin_user_type_tag])
+    adm.set_admin_user_type_tag(agv._admin_user_type_tag)
 
-    adm.set_first_name(kwargs[_first_name_tag])
-    adm.set_first_name_tag(_first_name_tag)
+    adm.set_first_name(kwargs[agv._first_name_tag])
+    adm.set_first_name_tag(agv._first_name_tag)
 
-    adm.set_last_name(kwargs[_last_name_tag])
-    adm.set_last_name_tag(_last_name_tag)
+    adm.set_last_name(kwargs[agv._last_name_tag])
+    adm.set_last_name_tag(agv._last_name_tag)
 
-    adm.set_email(kwargs[_email_tag])
-    adm.set_email_tag(_email_tag)
+    adm.set_email(kwargs[agv._email_tag])
+    adm.set_email_tag(agv._email_tag)
 
-    adm.set_must_change_password(kwargs[_must_change_password_tag])
-    adm.set_must_change_password_tag(_must_change_password_tag)
+    adm.set_must_change_password(kwargs[agv._must_change_password_tag])
+    adm.set_must_change_password_tag(agv._must_change_password_tag)
 
-    adm.set_edition(kwargs[_edition_tag])
-    adm.set_edition_tag(_edition_tag)
+    adm.set_edition(kwargs[agv._edition_tag])
+    adm.set_edition_tag(agv._edition_tag)
 
-    adm.set_region_group(kwargs[_region_group_tag])
-    adm.set_region_group_tag(_region_group_tag)
+    adm.set_region_group(kwargs[agv._region_group_tag])
+    adm.set_region_group_tag(agv._region_group_tag)
 
-    adm.set_region(kwargs[_region_tag])
-    adm.set_region_tag(_region_tag)
+    adm.set_region(kwargs[agv._region_tag])
+    adm.set_region_tag(agv._region_tag)
 
-    adm.set_comment(kwargs[_comment_tag])
-    adm.set_comment_tag(_comment_tag)
+    adm.set_comment(kwargs[agv._comment_tag])
+    adm.set_comment_tag(agv._comment_tag)
 
 
-    adm.set_polaris(kwargs[_polaris_tag])
-    adm.set_polaris_tag(_polaris_tag)
+    adm.set_polaris(kwargs[agv._polaris_tag])
+    adm.set_polaris_tag(agv._polaris_tag)
 
     adm.prepare_query()
+    print(adm.qry)
 
     return adm.qry
