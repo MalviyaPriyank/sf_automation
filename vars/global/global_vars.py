@@ -56,3 +56,8 @@ class ResourceMonitor:
     _do_tag = "DO"
     _allowed_values_do = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
 
+class Schema:
+    def __init__(self):
+        pass
+    _name_tag = "NAME"
+    _comment_tag = "COMMENT"

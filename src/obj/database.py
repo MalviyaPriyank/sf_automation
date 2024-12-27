@@ -328,6 +328,11 @@ class Database:
         else:
             self.flag_dic[dbgv._catalog_tag] = 0
 
+        if self.attr.replace_invalid_characters != "NONE":
+            self.flag_dic[dbgv._replace_invalid_characters_tag] = 1
+        else:
+            self.flag_dic[dbgv._replace_invalid_characters_tag] = 0
+
         if self.attr.default_ddl_collation != "NONE":
             self.flag_dic[dbgv._default_ddl_collation_tag] = 1
         else:
@@ -363,6 +368,8 @@ class Database:
                     self.qry = f" {self.qry} {self.attr.external_volume_tag} = {self.attr.external_volume} "
                 if prop == dbgv._catalog_tag:
                     self.qry = f" {self.qry} {self.attr.catalog_tag} = {self.attr.catalog} "
+                if prop == dbgv._replace_invalid_characters_tag:
+                    self.qry = f" {self.qry} {self.attr.replace_invalid_characters_tag} = {self.attr.replace_invalid_characters} "
                 if prop == dbgv._default_ddl_collation_tag:
                     self.qry = f" {self.qry} {self.attr.default_ddl_collation_tag} = {self.attr.default_ddl_collation} "
                 if prop == dbgv._storage_serialization_policy_tag:
@@ -394,6 +401,9 @@ def main(**kwargs):
 
     database.set_catalog(kwargs[dbgv._catalog_tag])
     database.set_catalog_tag(dbgv._catalog_tag)
+
+    database.set_replace_invalid_characters(kwargs[dbgv._replace_invalid_characters_tag])
+    database.set_replace_invalid_characters_tag(dbgv._replace_invalid_characters_tag)
 
     database.set_default_ddl_collation(kwargs[dbgv._default_ddl_collation_tag])
     database.set_default_ddl_collation_tag(dbgv._default_ddl_collation_tag)
