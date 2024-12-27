@@ -5,11 +5,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from account_global_vars import Account as agv
+from global_vars import Account as agv
 from validatevalue import ValidateValue as vv
 
 
-class AccountNamne:
+class AccountName:
     def __get__(self,instance,owner):
         return instance._account_name
     
@@ -310,7 +310,7 @@ class PolarisTag:
 
 
 class AdminAttrs:
-    account_name = AccountNamne()
+    account_name = AccountName()
     account_name_tag = AccountNameTag()
     admin_name = AdminName()
     admin_name_tag = AdminNameTag()
@@ -429,69 +429,69 @@ class Admin:
         self.flag_dic = {}
 
         if self.attr.account_name != "NONE":
-            self.flag_dic['account_name'] = 1
+            self.flag_dic[agv._account_name_tag] = 1
         else:
-            self.flag_dic['account_name'] = 0
+            self.flag_dic[agv._account_name_tag] = 0
 
         if self.attr.admin_name != "NONE":
-            self.flag_dic['admin_name'] = 1
+            self.flag_dic[agv._admin_name_tag] = 1
         else:
-            self.flag_dic['admin_name'] = 0
+            self.flag_dic[agv._admin_name_tag] = 0
 
         if self.attr.admin_password != "None":
-            self.flag_dic['admin_password'] = 1
+            self.flag_dic[agv._admin_password_tag] = 1
         else:
-            self.flag_dic['admin_password'] = 0
+            self.flag_dic[agv._admin_password_tag] = 0
 
         if self.attr.admin_user_type != "NONE":
-            self.flag_dic['admin_user_type'] = 1
+            self.flag_dic[agv._admin_user_type_tag] = 1
         else:
-            self.flag_dic['admin_user_type'] = 0
+            self.flag_dic[agv._admin_user_type_tag] = 0
 
         if self.attr.first_name != "NONE":
-            self.flag_dic['first_name'] = 1
+            self.flag_dic[agv._first_name_tag] = 1
         else:
-            self.flag_dic['first_name'] = 0
+            self.flag_dic[agv._first_name_tag] = 0
 
         if self.attr.last_name != "NONE":
-            self.flag_dic['last_name'] = 1
+            self.flag_dic[agv._last_name_tag] = 1
         else:
-            self.flag_dic['last_name'] = 0
+            self.flag_dic[agv._last_name_tag] = 0
 
         if self.attr.email != "NONE":
-            self.flag_dic['email'] = 1
+            self.flag_dic[agv._email_tag] = 1
         else:
-            self.flag_dic['email'] = 0
+            self.flag_dic[agv._email_tag] = 0
         
         if self.attr.must_change_password != "NONE":
-            self.flag_dic['must_change_password'] = 1
+            self.flag_dic[agv._must_change_password_tag] = 1
         else:
-            self.flag_dic['must_change_password'] = 0
+            self.flag_dic[agv._must_change_password_tag] = 0
 
         if self.attr.edition != "NONE":
-            self.flag_dic['edition'] = 1
+            self.flag_dic[agv._edition_tag] = 1
         else:
-            self.flag_dic['edition'] = 0
+            self.flag_dic[agv._edition_tag] = 0
 
         if self.attr.region_group != "NONE":
-            self.flag_dic['region_group'] = 1
+            self.flag_dic[agv._region_group_tag] = 1
         else:
-            self.flag_dic['region_group'] = 0
+            self.flag_dic[agv._region_group_tag] = 0
 
         if self.attr.region != "NONE":
-            self.flag_dic['region'] = 1
+            self.flag_dic[agv._region_tag] = 1
         else:
-            self.flag_dic['region'] = 0
+            self.flag_dic[agv._region_tag] = 0
 
         if self.attr.comment != "NONE":
-            self.flag_dic['comment'] = 1
+            self.flag_dic[agv._comment_tag] = 1
         else:
-            self.flag_dic['comment'] = 0
+            self.flag_dic[agv._comment_tag] = 0
 
         if self.attr.polaris != "NONE":
-            self.flag_dic['polaris'] = 1
+            self.flag_dic[agv._polaris_tag] = 1
         else:
-            self.flag_dic['polaris'] = 0
+            self.flag_dic[agv._polaris_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -505,29 +505,29 @@ class Admin:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == 'admin_name':
+                if prop == agv._admin_name_tag:
                     self.qry = f" {self.qry} {self.attr.admin_name_tag} = {self.attr.admin_name} "
-                if prop == 'admin_password':
+                if prop == agv._admin_password_tag:
                     self.qry = f" {self.qry} {self.attr.admin_password_tag} = {self.attr.admin_password} "
-                if prop == 'admin_user_type':
+                if prop == agv._admin_user_type_tag:
                     self.qry = f" {self.qry} {self.attr.admin_user_type_tag} = {self.attr.admin_user_type} "
-                if prop == 'first_name':
+                if prop == agv._first_name_tag:
                     self.qry = f" {self.qry} {self.attr.first_name_tag} = {self.attr.first_name} "
-                if prop == 'last_name':
+                if prop == agv._last_name_tag:
                     self.qry = f" {self.qry} {self.attr.last_name_tag} = {self.attr.last_name} "
-                if prop == 'email':
+                if prop == agv._email_tag:
                     self.qry = f" {self.qry} {self.attr.email_tag} = {self.attr.email} "
-                if prop == 'must_change_password':
+                if prop == agv._must_change_password_tag:
                     self.qry = f" {self.qry} {self.attr.must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == 'edition':
+                if prop == agv._edition_tag:
                     self.qry = f" {self.qry} {self.attr.edition_tag} = {self.attr.edition} "
-                if prop == 'region_group':
+                if prop == agv._region_group_tag:
                     self.qry = f" {self.qry} {self.attr.region_group_tag} = {self.attr.region_group} "
-                if prop == 'region':
+                if prop == agv._region_tag:
                     self.qry = f" {self.qry} {self.attr.region_tag} = {self.attr.region} "
-                if prop == 'comment':
+                if prop == agv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == 'polaris':
+                if prop == agv._polaris_tag:
                     self.qry = f" {self.qry} {self.attr.polaris_tag} = {self.attr.polaris} "
 
 

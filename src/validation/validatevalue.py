@@ -79,6 +79,17 @@ class ValidateValue:
             return True
         except ValueError:
             return False
+        
+    @staticmethod
+    def is_between(value,num1,num2):
+        try:
+            num = float(value)
+            if num1 <= num <= num2:
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
 
     @staticmethod
     def is_valid_cron(value):

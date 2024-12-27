@@ -1,0 +1,10 @@
+{
+    "NAME" : "myresourcemonitor",
+    "CREDIT_QUOTA" : "75",
+    "FREQUENCY" : "DAILY",
+    "START_TIMESTAMP" : "NONE",
+    "END_TIMESTAMP" : "NONE",
+    "NOTIFY_USERS" : "ADMIN",
+    "TRIGGERS ON" : "75",
+    "DO" : "SUSPEND"
+}

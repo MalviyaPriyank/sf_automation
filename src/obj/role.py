@@ -2,21 +2,29 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from role_global_vars import *
+
+from global_vars import Role as rlgv
+from validatevalue import ValidateValue as vv
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
+        if value == "NONE" :
             raise KeyError
-        elif type(value) != _allowed_type_name: #string
-            raise TypeError
-        else:
-            instance._name = value
+        elif not vv.starts_with_alphabet(value):
+            raise ValueError
+        elif not vv.is_enclosed_in_double_quotes(value):
+            if vv.has_space(value):
+                raise ValueError
+            if vv.has_special_characters(value):
+                raise ValueError
+            else:
+                instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -36,12 +44,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        if type(value) != _allowed_type_comment: #string
-            raise TypeError
-        elif len(value) > _allowed_len_comment: #256
-            raise TypeError
-        else:
-            instance._comment = value
+        instance._comment = value
     
     def __delete__(self,instance):
         del instance._comment
@@ -65,9 +68,9 @@ class RoleAttrs:
 
 
 class Role:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = RoleAttrs()
-        self.session = session
+        self.session = 'session'
         self.qry = ""
 
     def set_name(self,name):
@@ -87,14 +90,14 @@ class Role:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[_name_tag] = 1
+            self.flag_dic[rlgv._name_tag] = 1
         else:
-            self.flag_dic[_name_tag] = 0
+            self.flag_dic[rlgv._name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[_comment_tag] = 1
+            self.flag_dic[rlgv._comment_tag] = 1
         else:
-            self.flag_dic[_comment_tag] = 0
+            self.flag_dic[rlgv._comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -108,7 +111,7 @@ class Role:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == _comment_tag:
+                if prop == rlgv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -118,14 +121,14 @@ class Role:
         self.add_properties_to_query()
 
 
-def main(session,**kwargs):
+def main(**kwargs):
     role = Role()
 
-    role.set_name(kwargs[_name_tag])
-    role.set_name_tag(_name_tag)
+    role.set_name(kwargs[rlgv._name_tag])
+    role.set_name_tag(rlgv._name_tag)
 
-    role.set_comment(kwargs[_comment_tag])
-    role.set_comment_tag(_comment_tag)
+    role.set_comment(kwargs[rlgv._comment_tag])
+    role.set_comment_tag(rlgv._comment_tag)
 
     role.prepare_query()
 

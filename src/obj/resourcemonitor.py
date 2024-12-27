@@ -2,19 +2,29 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from resourcemonitor_global_vars import *
+
+from global_vars import ResourceMonitor as rmgv
+from validatevalue import ValidateValue as vv
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
+        if value == "NONE" :
             raise KeyError
-        else:
-            instance._name = value
+        elif not vv.starts_with_alphabet(value):
+            raise ValueError
+        elif not vv.is_enclosed_in_double_quotes(value):
+            if vv.has_space(value):
+                raise ValueError
+            if vv.has_special_characters(value):
+                raise ValueError
+            else:
+                instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -34,9 +44,7 @@ class CreditQuota:
         return instance._credit_quota
     
     def __set__(self,instance,value):
-        if value == None:
-            instance._credit_quota = None
-        elif type(value) == int:
+        if  vv.is_positive_number(value):
             instance._credit_quota = value
         else:
             raise KeyError
@@ -60,7 +68,7 @@ class Frequency:
         return instance._frequency
     
     def __set__(self,instance,value):
-        if value not in _allowed_values_frequency:
+        if value not in rmgv._allowed_values_frequency:
             raise ValueError
         else:
             instance._frequency = value
@@ -83,9 +91,9 @@ class StartTimestamp:
         return instance._start_timestamp
     
     def __set__(self,instance,value):
-        if instance._frequency is None:
+        if instance._frequency == "NONE":
             raise ValueError
-        elif value == None:
+        elif value == "NONE":
             instance._start_timestamp = 'IMMEDIATELY'
         else:
             instance._start_timestamp = value
@@ -129,7 +137,18 @@ class NotifyUsers:
         return instance._notify_users
     
     def __set__(self,instance,value):
-        instance._notify_users = value
+        if vv.has_space(value):
+            if vv.is_enclosed_in_double_quotes(value):
+                instance._notify_users = value
+            else:
+                raise KeyError
+        elif vv.has_special_characters(value):
+            if vv.is_enclosed_in_double_quotes(value):
+                instance._notify_users = value
+            else:
+                raise KeyError
+        else:
+            instance._notify_users = value
     
     def __delete__(self,instance):
         del instance._notify_users
@@ -145,29 +164,52 @@ class NotifyUsersTag:
     def __delete__(self,instance):
         del instance._notify_users_tag
 
-class Triggers:
+class TriggersOn:
     def __get__(self,instance,owner):
-        return instance._triggers
-    
-    def __set__(self,instance,threshold,action):
-        if action not in _allowed_actions_triggers:
-            raise ValueError
-        else:
-            instance._triggers = f" ON {threshold} DO {action}"
-    
-    def __delete__(self,instance):
-        del instance._triggers
-
-class TriggersTag:
-    def __get__(self,instance,owner):
-        return instance._triggers_tag
+        return instance._triggers_on
     
     def __set__(self,instance,value):
-        instance._triggers_tag = value
+        if vv.is_positive_number(value):
+            instance._triggers_on = value
+        else:
+            raise ValueError
+        
     
     def __delete__(self,instance):
-        del instance._triggers_tag
+        del instance._triggers_on
 
+class TriggersOnTag:
+    def __get__(self,instance,owner):
+        return instance._triggers_on_tag
+    
+    def __set__(self,instance,value):
+        instance._triggers_on_tag = value
+    
+    def __delete__(self,instance):
+        del instance._triggers_on_tag
+
+class Do:
+    def __get__(self,instance,owner):
+        return instance._do
+    
+    def __set__(self,instance,value):
+        if value not in rmgv._allowed_values_do:
+            raise ValueError
+        else:
+            instance._do = value
+    
+    def __delete__(self,instance):
+        del instance._do
+
+class DoTag:
+    def __get__(self,instance,owner):
+        return instance._do_tag
+    
+    def __set__(self,instance,value):
+        instance._do_tag = value
+    
+    def __delete__(self,instance):
+        del instance._do_tag
 
 
 class ResourceMonitorAttrs:
@@ -183,14 +225,16 @@ class ResourceMonitorAttrs:
     end_timestamp_tag = EndTimestampTag()
     notify_users = NotifyUsers()
     notify_users_tag = NotifyUsersTag()
-    triggers = Triggers()
-    triggers_tag = TriggersTag()
+    triggers_on = TriggersOn()
+    triggers_on_tag = TriggersOnTag()
+    do = Do()
+    do_tag = DoTag()
 
 
 class ResourceMonitor:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = ResourceMonitorAttrs()
-        self.session = session
+        self.session = 'session'
         self.qry = ""
 
     def set_name(self,name):
@@ -229,49 +273,59 @@ class ResourceMonitor:
     def set_notify_users_tag(self,notify_users_tag):
         self.attr.notify_users_tag = notify_users_tag
     
-    def set_triggers(self,threshold,action):
-        self.attr.triggers = threshold,action
+    def set_triggers_on(self,triggers_on):
+        self.attr.triggers_on = triggers_on
     
-    def set_triggers_tag(self,triggers_tag):
-        self.attr.triggers_tag = triggers_tag
+    def set_triggers_on_tag(self,triggers_on_tag):
+        self.attr.triggers_on_tag = triggers_on_tag
 
+    def set_do(self,do):
+        self.attr.do = do
+    
+    def set_do_tag(self,do_tag):
+        self.attr.do_tag = do_tag
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        if self.attr.name is not None:
-            self.flag_dic['name'] = 1
+        if self.attr.name != "NONE":
+            self.flag_dic[rmgv._name_tag] = 1
         else:
-            self.flag_dic['name'] = 0
+            self.flag_dic[rmgv._name_tag] = 0
 
-        if self.attr.credit_quota is not None:
-            self.flag_dic['credit_quota'] = 1
+        if self.attr.credit_quota != "NONE":
+            self.flag_dic[rmgv._credit_quota_tag] = 1
         else:
-            self.flag_dic['credit_quota'] = 0
+            self.flag_dic[rmgv._credit_quota_tag] = 0
 
-        if self.attr.frequency is not None:
-            self.flag_dic['frequency'] = 1
+        if self.attr.frequency != "NONE":
+            self.flag_dic[rmgv._frequency_tag] = 1
         else:
-            self.flag_dic['frequency'] = 0
+            self.flag_dic[rmgv._frequency_tag] = 0
 
-        if self.attr.start_timestamp is not None:
-            self.flag_dic['start_timestamp'] = 1
+        if self.attr.start_timestamp != "NONE":
+            self.flag_dic[rmgv._start_timestamp_tag] = 1
         else:
-            self.flag_dic['start_timestamp'] = 0
+            self.flag_dic[rmgv._start_timestamp_tag] = 0
 
-        if self.attr.end_timestamp is not None:
-            self.flag_dic['end_timestamp'] = 1
+        if self.attr.end_timestamp != "NONE":
+            self.flag_dic[rmgv._end_timestamp_tag] = 1
         else:
-            self.flag_dic['end_timestamp'] = 0
+            self.flag_dic[rmgv._end_timestamp_tag] = 0
 
-        if self.attr.notify_users is not None:
-            self.flag_dic['notify_users'] = 1
+        if self.attr.notify_users != "NONE":
+            self.flag_dic[rmgv._notify_users_tag] = 1
         else:
-            self.flag_dic['notify_users'] = 0
+            self.flag_dic[rmgv._notify_users_tag] = 0
         
-        if self.attr.triggers is not None:
-            self.flag_dic['triggers'] = 1
+        if self.attr.triggers_on != "NONE":
+            self.flag_dic[rmgv._triggers_on_tag] = 1
         else:
-            self.flag_dic['triggers'] = 0
+            self.flag_dic[rmgv._triggers_on_tag] = 0
+
+        if self.attr.do != "NONE":
+            self.flag_dic[rmgv._do_tag] = 1
+        else:
+            self.flag_dic[rmgv._do_tag] = 0
 
 
     def check_properties_to_set(self): 
@@ -287,18 +341,20 @@ class ResourceMonitor:
         if len(self.property_lst) != 0 :
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
-                if prop == 'credit_quota':
+                if prop == rmgv._credit_quota_tag:
                     self.qry = f" {self.qry} {self.attr.credit_quota_tag}  = {self.attr.credit_quota} "
-                if prop == 'frequency':
+                if prop == rmgv._frequency_tag:
                     self.qry = f" {self.qry} {self.attr.frequency_tag} = {self.attr.frequency} "
-                if prop == 'start_timestamp':
+                if prop == rmgv._start_timestamp_tag:
                     self.qry = f" {self.qry} {self.attr.start_timestamp_tag} = {self.attr.start_timestamp} "
-                if prop == 'end_timestamp':
+                if prop == rmgv._end_timestamp_tag:
                     self.qry = f" {self.qry} {self.attr.end_timestamp_tag} = {self.attr.end_timestamp} "
-                if prop == 'notify_users':
+                if prop == rmgv._notify_users_tag:
                     self.qry = f" {self.qry} {self.attr.notify_users_tag} = {self.attr.notify_users} "
-                if prop == 'triggers':
-                    self.qry = f" {self.qry} {self.attr.triggers_tag} = {self.attr.triggers} "
+                if prop == rmgv._triggers_on_tag:
+                    self.qry = f" {self.qry} {self.attr.triggers_on_tag} = {self.attr.triggers_on} "
+                if prop == rmgv._do_tag:
+                    self.qry = f" {self.qry} {self.attr.do_tag} = {self.attr.do} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -307,23 +363,32 @@ class ResourceMonitor:
         self.add_properties_to_query()
 
 
-def main(session,**kwargs):
+def main(**kwargs):
     rm = ResourceMonitor()
 
-    rm.set_name(kwargs[_name_tag])
-    rm.set_name_tag(_name_tag)
-    rm.set_credit_quota(kwargs[_credit_quota_tag])
-    rm.set_credit_quota_tag(_credit_quota_tag)
-    rm.set_frequency(kwargs[_frequency_tag])
-    rm.set_frequency_tag(_frequency_tag)
-    rm.set_start_timestmap(kwargs[_start_timestamp_tag])
-    rm.set_start_timestamp_tag(_start_timestamp_tag)
-    rm.set_end_timestamp(kwargs[_end_timestamp_tag])
-    rm.set_end_timestamp_tag(_end_timestamp_tag)
-    rm.set_notify_users(kwargs[_notify_users_tag])
-    rm.set_notify_users_tag(_notify_users_tag)
-    rm.set_triggers(kwargs[_triggers_tag])
-    rm.set_triggers_tag(_triggers_tag)
+    rm.set_name(kwargs[rmgv._name_tag])
+    rm.set_name_tag(rmgv._name_tag)
+
+    rm.set_credit_quota(kwargs[rmgv._credit_quota_tag])
+    rm.set_credit_quota_tag(rmgv._credit_quota_tag)
+
+    rm.set_frequency(kwargs[rmgv._frequency_tag])
+    rm.set_frequency_tag(rmgv._frequency_tag)
+
+    rm.set_start_timestmap(kwargs[rmgv._start_timestamp_tag])
+    rm.set_start_timestamp_tag(rmgv._start_timestamp_tag)
+
+    rm.set_end_timestamp(kwargs[rmgv._end_timestamp_tag])
+    rm.set_end_timestamp_tag(rmgv._end_timestamp_tag)
+
+    rm.set_notify_users(kwargs[rmgv._notify_users_tag])
+    rm.set_notify_users_tag(rmgv._notify_users_tag)
+
+    rm.set_triggers_on(kwargs[rmgv._triggers_on_tag])
+    rm.set_triggers_on_tag(rmgv._triggers_on_tag)
+
+    rm.set_do(kwargs[rmgv._do_tag])
+    rm.set_do_tag(rmgv._do_tag)
 
     rm.prepare_query()
 

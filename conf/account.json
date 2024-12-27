@@ -1,7 +1,7 @@
 {
     "ACCOUNT" : "Snowchain",
-    "ADMIN_NAME" : "Admin",
-    "ADMIN_PASSWORD" : "'123456'",
+    "ADMIN_NAME" : "Priyank",
+    "ADMIN_PASSWORD" : "'1234'",
     "ADMIN_USER_TYPE" : "PERSON",
     "FIRST_NAME" : "Priyank",
     "LAST_NAME" : "Malviya",
@@ -12,6 +12,5 @@
     "REGION" : "NONE",
     "COMMENT" : "NONE",
     "POLARIS" :"TRUE"
- 
 }
 
