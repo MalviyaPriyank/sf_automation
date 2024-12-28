@@ -87,7 +87,7 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90):
+        if vv.is_positive_number(value):
             instance._max_data_extension_time_in_days = value
         else:
             raise ValueError
@@ -151,7 +151,7 @@ class ReplaceInvalidCharacters:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            instance._replace_invalid_characters = value
+            instance._replace_invalid_characters = "FALSE"
         elif vv.is_bool(value):
             instance._replace_invalid_characters = value
         else:
@@ -196,7 +196,12 @@ class LogLevel:
         return instance._log_level
     
     def __set__(self,instance,value):
-        instance._log_level = value
+        if value == "NONE":
+            instance._log_level = "OFF"
+        elif value not in gv._allowed_values_log_level:
+            raise ValueError
+        else:
+            instance._log_level = value
 
     def __delete__(self,instance):
         del instance._log_level
@@ -216,7 +221,12 @@ class TraceLevel:
         return instance._trace_level
     
     def __set__(self,instance,value):
-        instance._trace_level = value
+        if value == "NONE":
+            instance._trace_level = "OFF"
+        elif value not in gv._allowed_values_trace_level:
+            raise ValueError
+        else:
+            instance._trace_level = value
 
     def __delete__(self,instance):
         del instance._trace_level
@@ -230,6 +240,46 @@ class TraceLevelTag:
 
     def __delete__(self,instance):
         del instance._trace_level_tag
+
+class StorageSerializationPolicy:
+    def __get__(self,instance,owner):
+        return instance._storage_serialization_policy
+    
+    def __set__(self,instance,value):
+        instance._storage_serialization_policy = value
+
+    def __delete__(self,instance):
+        del instance._storage_serialization_policy
+
+class StorageSerializationPolicyTag:
+    def __get__(self,instance,owner):
+        return instance._storage_serialization_policy_tag
+    
+    def __set__(self,instance,value):
+        instance._storage_serialization_policy_tag = value
+
+    def __delete__(self,instance):
+        del instance._storage_serialization_policy_tag
+
+class ClassificationProfile:
+    def __get__(self,instance,owner):
+        return instance._classification_profile
+    
+    def __set__(self,instance,value):
+        instance._classification_profile = value
+
+    def __delete__(self,instance):
+        del instance._classification_profile
+
+class ClassificationProfileTag:
+    def __get__(self,instance,owner):
+        return instance._classification_profile_tag
+    
+    def __set__(self,instance,value):
+        instance._classification_profile_tag = value
+
+    def __delete__(self,instance):
+        del instance._classification_profile_tag
 
 class Comment:
     def __get__(self,instance,owner):
@@ -250,6 +300,26 @@ class CommentTag:
     
     def __delete__(self,instance):
         del instance._comment_tag
+
+class Tag:
+    def __get__(self,instance,owner):
+        return instance._tag
+    
+    def __set__(self,instance,value):
+        instance._tag = value
+    
+    def __delete__(self,instance):
+        del instance._tag
+
+class TagTag:
+    def __get__(self,instance,owner):
+        return instance._tag_tag
+    
+    def __set__(self,instance,value):
+        instance._tag_tag = value
+    
+    def __delete__(self,instance):
+        del instance._tag_tag
 
 class SchemaAttrs:
     name = Name()
@@ -282,9 +352,17 @@ class SchemaAttrs:
     trace_level = TraceLevel()
     trace_level_tag = TraceLevelTag()
 
+    storage_serialization_policy = StorageSerializationPolicy()
+    storage_serialization_policy_tag = StorageSerializationPolicyTag()
+
+    classification_profile = ClassificationProfile()
+    classification_profile_tag = ClassificationProfileTag()
 
     comment = Comment()
     comment_tag = CommentTag()
+
+    tag = Tag()
+    tag_tag = TagTag()
 
 
 class Schema:
@@ -353,11 +431,29 @@ class Schema:
     def set_trace_level_tag(self,trace_level_tag):
         self.attr.trace_level_tag = trace_level_tag
 
+    def set_storage_serialization_policy(self,storage_serialization_policy):
+        self.attr.storage_serialization_policy = storage_serialization_policy
+
+    def set_storage_serialization_policy_tag(self,storage_serialization_policy_tag):
+        self.attr.storage_serialization_policy_tag = storage_serialization_policy_tag
+
+    def set_classification_profile(self,classification_profile):
+        self.attr.classification_profile = classification_profile
+
+    def set_classification_profile_tag(self,classification_profile_tag):
+        self.attr.classification_profile_tag = classification_profile_tag
+
     def set_comment(self,comment):
         self.attr.comment = comment
 
     def set_comment_tag(self,comment_tag):
         self.attr.comment_tag = comment_tag
+
+    def set_tag(self,tag):
+        self.attr.tag = tag
+
+    def set_tag_tag(self,tag_tag):
+        self.attr.tag_tag = tag_tag
 
 
     def set_object_properties_flag(self):
@@ -413,10 +509,25 @@ class Schema:
         else:
             self.flag_dic[gv._trace_level_tag] = 0
 
+        if self.attr.storage_serialization_policy != "NONE":
+            self.flag_dic[gv._storage_serialization_policy_tag] = 1
+        else:
+            self.flag_dic[gv._storage_serialization_policy_tag] = 0
+
+        if self.attr.classification_profile != "NONE":
+            self.flag_dic[gv._classification_profile_tag] = 1
+        else:
+            self.flag_dic[gv._classification_profile_tag] = 0
+
         if self.attr.comment != "NONE":
             self.flag_dic[gv._comment_tag] = 1
         else:
             self.flag_dic[gv._comment_tag] = 0
+
+        if self.attr.tag != "NONE":
+            self.flag_dic[gv._tag_tag] = 1
+        else:
+            self.flag_dic[gv._tag_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -448,8 +559,15 @@ class Schema:
                     self.qry = f" {self.qry} {self.attr.log_level_tag} = {self.attr.log_level} "
                 if prop == gv._trace_level_tag:
                     self.qry = f" {self.qry} {self.attr.trace_level_tag} = {self.attr.trace_level} "
+                if prop == gv._storage_serialization_policy_tag:
+                    self.qry = f" {self.qry} {self.attr.storage_serialization_policy_tag} = {self.attr.storage_serialization_policy} "
+                if prop == gv._classification_profile_tag:
+                    self.qry = f" {self.qry} {self.attr.classification_profile_tag} = {self.attr.classification_profile} "
                 if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
+                if prop == gv._tag_tag:
+                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
+
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -491,11 +609,17 @@ def main(**kwargs):
     schema.set_trace_level(kwargs[gv._trace_level_tag])
     schema.set_trace_level_tag(gv._trace_level_tag)
 
-    schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-    schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+    schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+    schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+
+    schema.set_classification_profile(kwargs[gv._classification_profile_tag])
+    schema.set_classification_profile_tag(gv._classification_profile_tag)
 
     schema.set_comment(kwargs[gv._comment_tag])
     schema.set_comment_tag(gv._comment_tag)
+
+    schema.set_tag(kwargs[gv._tag_tag])
+    schema.set_tag_tag(gv._tag_tag)
 
     schema.prepare_query()
 

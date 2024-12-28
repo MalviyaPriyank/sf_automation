@@ -71,6 +71,8 @@ class ValidateValue:
     def is_bool(value):
         if value not in ['TRUE','FALSE']:
             return False
+        else:
+            return True
         
     @staticmethod
     def is_positive_number(value):

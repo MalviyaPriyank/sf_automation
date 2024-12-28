@@ -60,4 +60,19 @@ class Schema:
     def __init__(self):
         pass
     _name_tag = "NAME"
+    _with_managed_access_tag = "WITH MANAGED ACCESS"
+    _data_retention_time_in_days_tag = "DATA_RETENTION_TIME_IN_DAYS"
+    _max_data_extension_time_in_days_tag = "MAX_DATA_EXTENSION_TIME_IN_DAYS"
+    _external_volume_tag = "EXTERNAL_VOLUME"
+    _catalog_tag = "CATALOG"
+    _replace_invalid_characters_tag = "REPLACE_INVALID_CHARACTERS"
+    _default_ddl_collation_tag = "DEFAULT_DDL_COLLATION"
+    _log_level_tag = "LOG_LEVEL"
+    _trace_level_tag = "TRACE_LEVEL"
+    _storage_serialization_policy_tag = "STORAGE_SERIALIZATION_POLICY"
+    _classification_profile_tag = "CLASSIFICATION_PROFILE"
     _comment_tag = "COMMENT"
+    _tag_tag = "TAG"
+    _allowed_values_log_level = ["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
+    _allowed_values_trace_level = ["ALWAYS","ON_EVENT","OFF"]
+    _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
