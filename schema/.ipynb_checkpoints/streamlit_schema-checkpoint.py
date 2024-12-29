@@ -1,0 +1,12 @@
+APP_TITLE = 'Snowchain'
+
+ROLE = 'role'
+USER = 'user'
+TEXT = 'text'
+OUTPUT = 'output'
+CONTENT = 'content'
+MESSAGE = 'message'
+MESSAGES = 'messages'
+ASSISTANT = 'assistant'
+INITIALIZED = 'initialized'
+CHAT_HISTORY = 'chat_history'
