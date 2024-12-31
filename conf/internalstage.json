@@ -1,0 +1,10 @@
+{
+    "NAME" : "MySTAGE",
+    "FILE_FORMAT" : "MyFF",
+    "COMMENT" : "DEFAULT",
+    "TAG" : "DEF",
+    "ENCRYPTION" : "SNOWFLAKE_FULL",
+    "DIRECTORY" : "TRUE",
+    "REFRESH_ON_CREATE" : "TRUE"
+}
+

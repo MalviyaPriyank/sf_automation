@@ -97,3 +97,17 @@ class Share:
     _allowed_values_log_level = ["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
     _allowed_values_trace_level = ["ALWAYS","ON_EVENT","OFF"]
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
+
+
+class InternalStage:
+    def __init__(self):
+        pass
+    _name_tag = "NAME"
+    _file_format_tag = "FILE_FORMAT"
+    _comment_tag = "COMMENT"
+    _tag_tag = "TAG"
+    _encryption_tag = "ENCRYPTION"
+    _directory_tag = "DIRECTORY"
+    _refresh_on_create_tag = "REFRESH_ON_CREATE"
+    _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
+

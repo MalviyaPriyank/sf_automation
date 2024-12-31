@@ -13,7 +13,7 @@ class ObjectType:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
-        elif value not in ['account','connection','database','databaserole','fileformat','resourcemonitor','role','schema','share','stage','table','user','warehouse']:
+        elif value not in ['account','connection','database','databaserole','fileformat','resourcemonitor','role','schema','share','internalstage','externalstage','table','user','warehouse']:
             raise TypeError
         else:
             instance._object_type = value
