@@ -9,9 +9,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../model'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
 
 from src import math_tools
-from src.obj import schema
+from src.obj import schema,account,share
 from conf import readconf
-from model.tools import LLMTools
+#from model.tools import LLMTools
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
 
@@ -85,8 +85,8 @@ if prompt := st.chat_input("How can I assist you today?"):
         #            with st.chat_message(ss.ASSISTANT):
         #                st.markdown(content[ss.TEXT])
         
-        data_dict = readconf.main('schema')
+        data_dict = readconf.main('share')
         print(data_dict)
         print(type(data_dict))
-        qry = schema.main(**data_dict)
+        qry = share.main(**data_dict)
         print(qry)

@@ -1,20 +1,32 @@
 
+
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from share_global_vars import *
+
+from global_vars import Share as gv
+from validatevalue import ValidateValue as vv
+
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
+        if value == "NONE" :
             raise KeyError
-        else:
-            instance._name = value
+        elif not vv.starts_with_alphabet(value):
+            raise ValueError
+        elif not vv.is_enclosed_in_double_quotes(value):
+            if vv.has_space(value):
+                raise ValueError
+            if vv.has_special_characters(value):
+                raise ValueError
+            else:
+                instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -58,9 +70,9 @@ class ShareAttrs:
 
 
 class Share:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = ShareAttrs()
-        self.session = session
+        self.session = 'session'
         self.qry = ""
 
     def set_name(self,name):
@@ -80,14 +92,14 @@ class Share:
         self.flag_dic = {}
 
         if self.attr.name is not None:
-            self.flag_dic[_name_tag] = 1
+            self.flag_dic[gv._name_tag] = 1
         else:
-            self.flag_dic[_name_tag] = 0
+            self.flag_dic[gv._name_tag] = 0
 
         if self.attr.comment is not None:
-            self.flag_dic[_comment_tag] = 1
+            self.flag_dic[gv._comment_tag] = 1
         else:
-            self.flag_dic[_comment_tag] = 0
+            self.flag_dic[gv._comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -96,12 +108,12 @@ class Share:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE DATABASE  {self.attr.name} "
+        self.qry = f"CREATE SHARE  {self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == _comment_tag:
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -111,14 +123,14 @@ class Share:
         self.add_properties_to_query()
 
 
-def main(session,**kwargs):
+def main(**kwargs):
     share = Share()
 
-    share.set_name(kwargs[_name_tag])
-    share.set_name_tag(_name_tag)
+    share.set_name(kwargs[gv._name_tag])
+    share.set_name_tag(gv._name_tag)
 
-    share.set_comment(kwargs[_comment_tag])
-    share.set_comment_tag(_comment_tag)
+    share.set_comment(kwargs[gv._comment_tag])
+    share.set_comment_tag(gv._comment_tag)
 
     share.prepare_query()
 
