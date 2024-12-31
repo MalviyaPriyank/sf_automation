@@ -111,3 +111,28 @@ class InternalStage:
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
 
+class ExternalStage:
+    def __init__(self):
+        pass
+    _name_tag = "NAME"
+    _file_format_tag = "FILE_FORMAT"
+    _comment_tag = "COMMENT"
+    _tag_tag = "TAG"
+    _url_tag = "URL"
+    _storage_integration_tag = "STORAGE_INTEGRATION"
+    _aws_key_id_tag = "AWS_KEY_ID"
+    _aws_secret_key_tag = "AWS_SECRET_KEY"
+    _aws_token_tag = "AWS_TOKEN"
+    _azure_sas_token_tag = "AZURE_SAS_TOKEN"
+    _aws_role_tag = "AWS_ROLE"
+    _encryption_tag = "ENCRYPTION"
+    _encryption_type_tag = "ENCRYPTION_TYPE"
+    _encryption_master_key_tag = "ENCRYPTION_MASTER_KEY"
+    _encryption_kms_key_id_tag ="ENCRYPTION_KMS_KEY_ID"
+    _use_privatelink_endpoint_tag = "USE_PRIVATELINK_ENDPOINT"
+    _directory_tag = "DIRECTORY"
+    _refresh_on_create_tag = "REFRESH_ON_CREATE"
+    _auto_refresh_tag = "AUTO_REFRESH"
+    _notification_integration_tag = "NOTIFICATION_INTEGRATION"
+    _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE","DEF"]
+

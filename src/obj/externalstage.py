@@ -1,48 +1,44 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from stage_global_vars import *
+
+from global_vars import ExternalStage as gv
+from validatevalue import ValidateValue as vv
+
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        instance._name = value
+        if value == "NONE" :
+            raise KeyError
+        elif not vv.starts_with_alphabet(value):
+            raise ValueError
+        elif not vv.is_enclosed_in_double_quotes(value):
+            if vv.has_space(value):
+                raise ValueError
+            if vv.has_special_characters(value):
+                raise ValueError
+            else:
+                instance._name = value
 
     def __del__(self,instance):
         del instance._name
 
-class NameLabel:
+class NameTag:
     def __get__(self,instance,owner):
-        return instance._name_label
+        return instance._name_tag
     
     def __set__(self,instance,value):
-        instance._name_label = value
+        instance._name_tag = value
 
     def __del__(self,instance):
-        del instance._name_label
+        del instance._name_tag
 
-class Type:
-    def __get__(self,instance,owner):
-        return instance._type
-    
-    def __set__(self,instance,value):
-        instance._type = value
 
-    def __del__(self,instance):
-        del instance._type
-
-class TypeLabel:
-    def __get__(self,instance,owner):
-        return instance._type_label
-    
-    def __set__(self,instance,value):
-        instance._type_label = value
-
-    def __del__(self,instance):
-        del instance._type_label
 
 class FileFormat:   
     def __get__(self,instance,owner):
@@ -55,1099 +51,804 @@ class FileFormat:
         del instance._file_format
 
 
-class FileFormatLabel:   
+class FileFormatTag:   
     def __get__(self,instance,owner):
-        return instance._file_format_label
+        return instance._file_format_tag
     
     def __set__(self,instance,value):
-        instance._file_format_label = value
+        instance._file_format_tag = value
 
     def __del__(self,instance):
-        del instance._file_format_label
+        del instance._file_format_tag
 
-class FileType:
+class Comment:
     def __get__(self,instance,owner):
-        return instance._file_type
+        return instance._comment
     
     def __set__(self,instance,value):
-        if value not in SV._allowed_values_file_type:
-            raise TypeError
+        instance._comment = value
+
+
+    def __del__(self,instance):
+        del instance._comment
+
+class CommentTag:
+    def __get__(self,instance,owner):
+        return instance._comment_tag
+    
+    def __set__(self,instance,value):
+        instance._comment_tag = value
+
+    def __del__(self,instance):
+        del instance._comment_tag
+
+class Tag:
+    def __get__(self,instance,owner):
+        return instance._tag
+    
+    def __set__(self,instance,value):
+        instance._tag = value
+
+
+    def __del__(self,instance):
+        del instance._tag
+
+class TagTag:
+    def __get__(self,instance,owner):
+        return instance._tag_tag
+    
+    def __set__(self,instance,value):
+        instance._tag_tag = value
+
+    def __del__(self,instance):
+        del instance._tag_tag
+
+class Url:
+    def __get__(self,instance,owner):
+        return instance._url
+    
+    def __set__(self,instance,value):
+        if vv.is_enclosed_in_single_quotes(value):
+            instance._url = value
         else:
-            instance._file_type = value
+            raise ValueError
+
+    def __del__(self,instance):
+        del instance._url
+
+class UrlTag:
+    def __get__(self,instance,owner):
+        return instance._url_tag
+    
+    def __set__(self,instance,value):
+        instance._url_tag = value
+
+    def __del__(self,instance):
+        del instance._url_tag
+
+class StorageIntegration:
+    def __get__(self,instance,owner):
+        return instance._storage_integration
+    
+    def __set__(self,instance,value):
+        instance._storage_integration = value
+
+    def __del__(self,instance):
+        del instance._storage_integration
+
+class StorageIntegrationTag:
+    def __get__(self,instance,owner):
+        return instance._storage_integration_tag
+    
+    def __set__(self,instance,value):
+        instance._storage_integration_tag = value
+
+    def __del__(self,instance):
+        del instance._storage_integration_tag
+
+class AwsKeyId:
+    def __get__(self,instance,owner):
+        return instance._aws_key_id
+    
+    def __set__(self,instance,value):
+        instance._aws_key_id = value
+
+    def __del__(self,instance):
+        del instance._aws_key_id
+
+class AwsKeyIdTag:
+    def __get__(self,instance,owner):
+        return instance._aws_key_id_tag
+    
+    def __set__(self,instance,value):
+        instance._aws_key_id_tag = value
+
+    def __del__(self,instance):
+        del instance._aws_key_id_tag
+
+class AwsSecretKey:
+    def __get__(self,instance,owner):
+        return instance._aws_secret_key
+    
+    def __set__(self,instance,value):
+        instance._aws_secret_key = value
+
+    def __del__(self,instance):
+        del instance._aws_secret_key
+
+class AwsSecretKeyTag:
+    def __get__(self,instance,owner):
+        return instance._aws_secret_key_tag
+    
+    def __set__(self,instance,value):
+        instance._aws_secret_key_tag = value
+
+    def __del__(self,instance):
+        del instance._aws_secret_key_tag
+
+class AwsToken:
+    def __get__(self,instance,owner):
+        return instance._aws_token
+    
+    def __set__(self,instance,value):
+        instance._aws_token = value
 
 
     def __del__(self,instance):
-        del instance._file_type
+        del instance._aws_token
 
-class FileTypeLabel:
+class AwsTokenTag:
     def __get__(self,instance,owner):
-        return instance._file_type_label
+        return instance._aws_token_tag
     
     def __set__(self,instance,value):
-        instance._file_type_label = value
+        instance._aws_token_tag = value
 
     def __del__(self,instance):
-        del instance._file_type_label
+        del instance._aws_token_tag
 
-class Compression:
+class AzureSasToken:
     def __get__(self,instance,owner):
-        return instance._compression
+        return instance._azure_sas_token
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_vlaues_file_type[0]: #CSV
-            if value not in SV._allowed_values_compression_for_csv:
-                raise KeyError
-            else:
-                instance._compression = value
-        elif instance._file_type == SV._allowed_vlaues_file_type[1]: #JSON
-            if value not in SV._allowed_values_compression_for_json:
-                raise KeyError
-            else:
-                instance._compression = value
-        elif instance._file_type == SV._allowed_vlaues_file_type[2]: #AVRO
-            if value not in SV._allowed_values_compression_for_avro:
-                raise KeyError
-            else:
-                instance._compression = value
-        elif instance._file_type == SV._allowed_vlaues_file_type[3]: #ORC
-            raise KeyError('Parameternot allowed')
-        elif instance._file_type == SV._allowed_vlaues_file_type[4]: #PARQUET
-            if value not in SV._allowed_values_compression_for_parquet:
-                raise KeyError
-            else:
-                instance._compression = value
-        elif instance._file_type == SV._allowed_vlaues_file_type[5]: #XML
-            if value not in SV._allowed_values_compression_for_xml:
-                raise KeyError
-            else:
-                instance._compression = value
-        
-
+        instance._azure_sas_token = value
 
     def __del__(self,instance):
-        del instance._compression
+        del instance._azure_sas_token
 
-class CompressionLabel:
+class AzureSasTokenTag:
     def __get__(self,instance,owner):
-        return instance._compression_label
+        return instance._azure_sas_token_tag
     
     def __set__(self,instance,value):
-        instance._compression_label = value
+        instance._azure_sas_token_tag = value
 
     def __del__(self,instance):
-        del instance._compression_label
+        del instance._azure_sas_token_tag
 
-class RecordDelimiter:
+class AwsRole:
     def __get__(self,instance,owner):
-        return instance._record_delimiter
+        return instance._aws_role
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_vlaues_file_type[0]:
-            if type(value) != str:
-                raise TypeError
-            elif len(value) > 20:
-                raise TypeError
-            else:
-                instance._record_delimiter = value
+        instance._aws_role = value
+
+    def __del__(self,instance):
+        del instance._aws_role
+
+class AwsRoleTag:
+    def __get__(self,instance,owner):
+        return instance._aws_role_tag
+    
+    def __set__(self,instance,value):
+        instance._aws_role_tag = value
+
+    def __del__(self,instance):
+        del instance._aws_role_tag
+
+class Encryption:
+    def __get__(self,instance,owner):
+        return instance._encryption
+    
+    def __set__(self,instance,value):
+        if value not in gv._allowed_values_encryption:
+            raise ValueError
         else:
-            raise 'Cant set for other file types'
+            instance._encryption = value
 
     def __del__(self,instance):
-        del instance._record_delimiter
+        del instance._encryption
 
-class RecordDelimiterLabel:
+class EncryptionTag:
     def __get__(self,instance,owner):
-        return instance._record_delimiter_label
+        return instance._encryption_tag
     
     def __set__(self,instance,value):
-        instance._record_delimiter_label = value
+        instance._encryption_tag = value
 
     def __del__(self,instance):
-        del instance._record_delimiter_label
+        del instance._encryption_tag
 
-class FieldDelimiter:
+class EncryptionType:
     def __get__(self,instance,owner):
-        return instance._field_delimiter
+        return instance._encryption_type
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if type(value) != str:
-                raise ValueError
-            elif len(value) > 20:
-                raise KeyError
-            else:
-                instance._field_delimiter = value
+        instance._encryption_type = value
+
+    def __del__(self,instance):
+        del instance._encryption_type
+
+class EncryptionTypeTag:
+    def __get__(self,instance,owner):
+        return instance._encryption_type_tag
+    
+    def __set__(self,instance,value):
+        instance._encryption_type_tag = value
+
+    def __del__(self,instance):
+        del instance._encryption_type_tag
+
+class EncryptionMasterKey:
+    def __get__(self,instance,owner):
+        return instance._encryption_master_key
+    
+    def __set__(self,instance,value):
+        instance._encryption_master_key = value
+
+    def __del__(self,instance):
+        del instance._encryption_master_key
+
+class EncryptionMasterKeyTag:
+    def __get__(self,instance,owner):
+        return instance._encryption_master_key_tag
+    
+    def __set__(self,instance,value):
+        instance._encryption_master_key_tag = value
+
+    def __del__(self,instance):
+        del instance._encryption_master_key_tag
+
+class EncryptionKmsKeyId:
+    def __get__(self,instance,owner):
+        return instance._encryption_kms_key_id
+    
+    def __set__(self,instance,value):
+        instance._encryption_kms_key_id = value
+
+    def __del__(self,instance):
+        del instance._encryption_kms_key_id
+
+class EncryptionKmsKeyIdTag:
+    def __get__(self,instance,owner):
+        return instance._encryption_kms_key_id_tag
+    
+    def __set__(self,instance,value):
+        instance._encryption_kms_key_id_tag = value
+
+    def __del__(self,instance):
+        del instance._encryption_kms_key_id_tag
+
+class UsePrivatelinkEndpoint:
+    def __get__(self,instance,owner):
+        return instance._use_privatelink_endpoint
+    
+    def __set__(self,instance,value):
+        instance._use_privatelink_endpoint = value
+
+    def __del__(self,instance):
+        del instance._use_privatelink_endpoint
+
+class UsePrivatelinkEndpointTag:
+    def __get__(self,instance,owner):
+        return instance._use_privatelink_endpoint_tag
+    
+    def __set__(self,instance,value):
+        instance._use_privatelink_endpoint_tag = value
+
+    def __del__(self,instance):
+        del instance._use_privatelink_endpoint_tag
+
+class Directory:
+    def __get__(self,instance,owner):
+        return instance._directory
+    
+    def __set__(self,instance,value):
+        if vv.is_bool(value):
+            instance._directory = value
         else:
-            raise "cant set for other file types"
+            raise ValueError
 
     def __del__(self,instance):
-        del instance._field_delimiter
+        del instance._directory
 
-class FieldDelimiterLabel:
+class DirectoryTag:
     def __get__(self,instance,owner):
-        return instance._field_delimiter_label
+        return instance._directory_tag
     
     def __set__(self,instance,value):
-        instance._field_delimiter_label = value
+        instance._directory_tag = value
 
     def __del__(self,instance):
-        del instance._field_delimiter_label
+        del instance._directory_tag
 
-class FileExtension:
+class RefreshOnCreate:
     def __get__(self,instance,owner):
-        return instance._file_extension
+        return instance._refresh_on_create
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if type(value) != str:
-                raise KeyError
-            else:
-                instance._file_extension = value
+        if vv.is_bool(value):
+            instance._refresh_on_create = value
         else:
-            raise "CANT SET FOR OTHERS"
+            raise ValueError
 
     def __del__(self,instance):
-        del instance._file_extension    
+        del instance._refresh_on_create
 
-class FileExtensionLabel:
+class RefreshOnCreateTag:
     def __get__(self,instance,owner):
-        return instance._file_extension_label
+        return instance._refresh_on_create_tag
     
     def __set__(self,instance,value):
-        instance._file_extension_label = value
+        instance._refresh_on_create_tag = value
 
     def __del__(self,instance):
-        del instance._file_extension_label    
+        del instance._refresh_on_create_tag
 
-class ParseHeader:
+class AutoRefresh:
     def __get__(self,instance,owner):
-        return instance._parse_header
+        return instance._auto_refresh
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if value not in SV._allowed_values_boolean:
-                raise KeyError
-            else:
-                instance._parse_header = value
-        else:
-            raise "CANT SET FOR OTHERS"
+        instance._auto_refresh = value
+
 
     def __del__(self,instance):
-        del instance._parse_header
+        del instance._auto_refresh
 
-class ParseHeaderLabel:
+class AutoRefreshTag:
     def __get__(self,instance,owner):
-        return instance._parse_header_label
+        return instance._auto_refresh_tag
     
     def __set__(self,instance,value):
-        instance._parse_header_label = value
+        instance._auto_refresh_tag = value
 
     def __del__(self,instance):
-        del instance._parse_header_label
+        del instance._auto_refresh_tag
 
-class SkipHeader:
+class NotificationIntegration:
     def __get__(self,instance,owner):
-        return instance._skip_header
+        return instance._notification_integration
     
     def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            instance._skip_header = value
-        else:
-            raise "Cant set for others"
+        instance._notification_integration = value
 
     def __del__(self,instance):
-        del instance._skip_header
+        del instance._notification_integration
 
-class SkipHeaderLabel:
+class NotificationIntegrationTag:
     def __get__(self,instance,owner):
-        return instance._skip_header_label
+        return instance._notification_integration_tag
     
     def __set__(self,instance,value):
-        instance._skip_header_label = value
+        instance._notification_integration_tag = value
 
     def __del__(self,instance):
-        del instance._skip_header_label
+        del instance._notification_integration_tag
 
-
-class SkipBlankLines:
-    def __get__(self,instance,owner):
-        return instance._skip_blank_lines
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if value not in SV._allowed_values_boolean:
-                raise KeyError
-            else:
-                instance._skip_blank_lines = value
-        else:
-            raise "CANT SET FOR OTHERS"
-
-    def __del__(self,instance):
-        del instance._skip_blank_lines
-
-class SkipBlankLinesLabel:
-    def __get__(self,instance,owner):
-        return instance._skip_blank_lines_label
-    
-    def __set__(self,instance,value):
-        instance._skip_blank_lines_label = value
-
-    def __del__(self,instance):
-        del instance._skip_blank_lines_label
-
-class DateFormat:
-    def __get__(self,instance,owner):
-        return instance._date_format
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0] or instance._file_type == SV._allowed_values_file_type[1]:
-            if type(value) != str:
-                raise KeyError
-            else:
-                instance._date_format = value
-        else:
-            raise "CANT SET FOR OTHERS"
-
-    def __del__(self,instance):
-        del instance._date_format
-
-class DateFormatLabel:
-    def __get__(self,instance,owner):
-        return instance._date_format_label
-    
-    def __set__(self,instance,value):
-        instance._date_format_label = value
-
-    def __del__(self,instance):
-        del instance._date_format_label
-
-class TimeFormat:
-    def __get__(self,instance,owner):
-        return instance._time_format
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0] or instance._file_type == SV._allowed_values_file_type[1]:
-            if type(value) != str:
-                raise KeyError
-            else:
-                instance._time_format = value
-        else:
-            raise "CANT SET FOR OTHERS"
-
-    def __del__(self,instance):
-        del instance._time_format
-
-class TimeFormatLabel:
-    def __get__(self,instance,owner):
-        return instance._time_format_label
-    
-    def __set__(self,instance,value):
-        instance._time_format_label = value
-
-    def __del__(self,instance):
-        del instance._time_format_label
-
-class TimestampFormat:
-    def __get__(self,instance,owner):
-        return instance._time_stamp_format
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0] or instance._file_type == SV._allowed_values_file_type[1]:
-            instance._time_stamp_format = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._time_stamp_format
-
-class TimestampFormatLabel:
-    def __get__(self,instance,owner):
-        return instance._time_stamp_format_label
-    
-    def __set__(self,instance,value):
-        instance._time_stamp_format_label = value
-
-    def __del__(self,instance):
-        del instance._time_stamp_format_label
-   
-class BinaryFormat:
-    def __get__(self,instance,owner):
-        return instance._binary_format
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0] or instance._file_type == SV._allowed_values_file_type[1]:
-            if value not in SV._allowed_values_binary_format:
-                raise KeyError
-            else:
-                instance._binary_format = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._binary_format
-
-class BinaryFormatLabel:
-    def __get__(self,instance,owner):
-        return instance._binary_format_label
-    
-    def __set__(self,instance,value):
-        instance._binary_format_label = value
-
-    def __del__(self,instance):
-        del instance._binary_format_label
-
-class Escape:
-    def __get__(self,instance,owner):
-        return instance._escape
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]: #CSV
-            if type(value) != chr:
-                raise KeyError
-            else:
-                instance._escape = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._escape
-
-
-class EscapeLabel:
-    def __get__(self,instance,owner):
-        return instance._escape_label
-    
-    def __set__(self,instance,value):
-        instance._escape_label = value
-
-    def __del__(self,instance):
-        del instance._escape_label
-
-class EscapeUnenclosedField:
-    def __get__(self,instance,owner):
-        return instance._escape_unenclosed_field
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]: #CSV
-            if type(value) != chr:
-                raise KeyError
-            else:
-                instance._escape_unenclosed_field = value
-        else:
-            raise "CANT SET"
-        
-    def __del__(self,instance):
-        del instance._escape_unenclosed_field
-
-class EscapeUnenclosedFieldLabel:
-    def __get__(self,instance,owner):
-        return instance._escape_unenclosed_field_label
-    
-    def __set__(self,instance,value):
-        instance._escape_unenclosed_field_label = value
-
-    def __del__(self,instance):
-        del instance._escape_unenclosed_field_label
-
-class TrimSpace:
-    def __get__(self,instance,owner):
-        return instance._trim_space
-    
-    def __set__(self,instance,value):
-        if (instance._file_type == SV._allowed_values_file_type[0] or
-            instance._file_type == SV._allowed_values_file_type[1] or
-            instance._file_type == SV._allowed_values_file_type[2] or
-            instance._file_type == SV._allowed_values_file_type[3] or
-            instance._file_type == SV._allowed_values_file_type[4] ):
-            if value not in SV._allowed_values_boolean:
-                raise KeyError
-            else:
-                instance._trim_space = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._trim_space
-
-class TrimSpaceLabel:
-    def __get__(self,instance,owner):
-        return instance._trim_space_label
-    
-    def __set__(self,instance,value):
-        instance._trim_space_label = value
-
-    def __del__(self,instance):
-        del instance._trim_space_label
-
-class FieldOptionallyEnclosedBy:
-    def __get__(self,instance,owner):
-        return instance._field_optionally_enclosed_by
-    
-    def __set__(self,instance,value):
-        if type(value) != chr:
-            raise KeyError
-        else:
-            instance._field_optionally_enclosed_by = value
-
-    def __del__(self,instance):
-        del instance._field_optionally_enclosed_by
-
-class FieldOptionallyEnclosedByLabel:
-    def __get__(self,instance,owner):
-        return instance._field_optionally_enclosed_by_label
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            instance._field_optionally_enclosed_by_label = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._field_optionally_enclosed_by_label
-
-class NullIf:
-    def __get__(self,instance,owner):
-        return instance._null_if
-    
-    def __set__(self,instance,value):
-        if (instance._file_type == SV._allowed_values_file_type[0] or
-            instance._file_type == SV._allowed_values_file_type[1] or
-            instance._file_type == SV._allowed_values_file_type[2] or
-            instance._file_type == SV._allowed_values_file_type[3] or
-            instance._file_type == SV._allowed_values_file_type[4]):
-            if type(value) != str:
-                raise KeyError
-            else:
-                instance._null_if = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._null_if
-
-class NullIfLabel:
-    def __get__(self,instance,owner):
-        return instance._null_if_label
-    
-    def __set__(self,instance,value):
-        instance._null_if_label = value
-
-    def __del__(self,instance):
-        del instance._null_if_label
-
-class ErrorOnColumnCountMismatch:
-    def __get__(self,instance,owner):
-        return instance._error_on_column_count_mismatch
-    
-    def __set__(self,instance,value):
-        if value not in SV._allowed_values_boolean:
-            raise KeyError
-        else:
-            instance._error_on_column_count_mismatch = value
-
-    def __del__(self,instance):
-        del instance._error_on_column_count_mismatch
-
-class ErrorOnColumnCountMismatchLabel:
-    def __get__(self,instance,owner):
-        return instance._error_on_column_count_mismatch_label
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            instance._error_on_column_count_mismatch_label = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._error_on_column_count_mismatch_label
-
-class ReplaceInvalidCharacters:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters
-    
-    def __set__(self,instance,value):
-        if value not in SV._allowed_values_boolean:
-            raise KeyError
-        else:
-            instance._replace_invalid_characters = value
-
-    def __del__(self,instance):
-        del instance._replace_invalid_characters
-
-class ReplaceInvalidCharactersLabel:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters_label
-    
-    def __set__(self,instance,value):
-        instance._replace_invalid_characters_label = value
-
-    def __del__(self,instance):
-        del instance._replace_invalid_characters_label
-
-class EmptyFieldAsNull:
-    def __get__(self,instance,owner):
-        return instance._empty_field_as_null
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if value not in SV._allowed_values_boolean:
-                raise KeyError
-            else:
-                instance._empty_field_as_null = value
-
-    def __del__(self,instance):
-        del instance._empty_field_as_null
-
-class EmptyFieldAsNullLabel:
-    def __get__(self,instance,owner):
-        return instance._empty_field_as_null_label
-    
-    def __set__(self,instance,value):
-        instance._empty_field_as_null_label = value
-
-    def __del__(self,instance):
-        del instance._empty_field_as_null_label
-
-class SkipByteOrderMark:
-    def __get__(self,instance,owner):
-        return instance._skip_byte_order_mark
-    
-    def __set__(self,instance,value):
-        if (instance._file_type == SV._allowed_values_file_type[0] or
-            instance._file_type == SV._allowed_values_file_type[1] or 
-            instance._file_type == SV._allowed_values_file_type[5] ):
-            if value not in SV._allowed_values_boolean:
-                raise KeyError
-            else:
-                instance._skip_byte_order_mark = value
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._skip_byte_order_mark
-
-class SkipByteOrderMarkLabel:
-    def __get__(self,instance,owner):
-        return instance._skip_byte_order_mark_label
-    
-    def __set__(self,instance,value):
-        instance._skip_byte_order_mark_label = value
-
-    def __del__(self,instance):
-        del instance._skip_byte_order_mark_label
-
-class Encoding:
-    def __get__(self,instance,owner):
-        return instance._encoding
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[0]:
-            if type(value) != str:
-                raise TypeError
-            else:
-                instance._encoding = value
-
-    def __del__(self,instance):
-        del instance._encoding
-
-class EncodingLabel:
-    def __get__(self,instance,owner):
-        return instance._encoding_label
-    
-    def __set__(self,instance,value):
-        instance._encoding_label = value
-
-    def __del__(self,instance):
-        del instance._encoding_label
-
-class EnableOctal:
-    def __get__(self,instance,owner):
-        return instance._enable_octal
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[1]:
-            if value in SV._allowed_values_boolean:
-                instance._enable_octal = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._enable_octal    
-
-class EnableOctalLabel:
-    def __get__(self,instance,owner):
-        return instance._enable_octal_label
-    
-    def __set__(self,instance,value):
-        instance._enable_octal_label = value
-
-    def __del__(self,instance):
-        del instance._enable_octal_label
-
-class AllowDuplicate:
-    def __get__(self,instance,owner):
-        return instance._allow_duplicate
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[1]:
-            if value in SV._allowed_values_boolean:
-                instance._allow_duplicate = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._allow_duplicate
-
-class AllowDuplicateLabel:
-    def __get__(self,instance,owner):
-        return instance._allow_duplicate_label
-    
-    def __set__(self,instance,value):
-        instance._allow_duplicate_label = value
-
-    def __del__(self,instance):
-        del instance._allow_duplicate_label
-
-class StripOuterArray:
-    def __get__(self,instance,owner):
-        return instance._strip_outer_array
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[1]: #JSON
-            if value in SV._allowed_values_boolean:
-                instance._strip_outer_array = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-        
-    def __del__(self,instance):
-        del instance._strip_outer_array
-
-class StripOuterArrayLabel:
-    def __get__(self,instance,owner):
-        return instance._strip_outer_array_label
-    
-    def __set__(self,instance,value):
-        instance._strip_outer_array_label = value
-
-    def __del__(self,instance):
-        del instance._strip_outer_array_label
-
-class StripNullValues:
-    def __get__(self,instance,owner):
-        return instance._strip_null_values
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[1]: #JSON
-            if value in SV._allowed_values_boolean:
-                instance._strip_null_values = value
-            else:
-                raise ValueError
-        else:
-            raise "CANT SET"
-        
-    def __del__(self,instance):
-        del instance._strip_null_values
-
-class StripNullValuesLabel:
-    def __get__(self,instance,owner):
-        return instance._strip_null_values_label
-    
-    def __set__(self,instance,value):
-        instance._strip_null_values_label = value
-
-    def __del__(self,instance):
-        del instance._strip_null_values_label
-
-class IgnoreUTF8Errors:
-    def __get__(self,instance,owner):
-        return instance._ignore_utf8_errors
-    
-    def __set__(self,instance,value):
-        if (instance._file_type == SV._allowed_values_file_type[1] or
-            instance._file_type == SV._allowed_values_file_type[5]): #JSON and XML
-            if value in SV._allowed_values_boolean:
-                instance._ignore_utf8_errors = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-        
-    def __del__(self,instance):
-        del instance._ignore_utf8_errors
-
-class IgnoreUTF8ErrorsLabel:
-    def __get__(self,instance,owner):
-        return instance._ignore_utf8_errors_label
-    
-    def __set__(self,instance,value):
-        instance._ignore_utf8_errors_label = value
-
-    def __del__(self,instance):
-        del instance._ignore_utf8_errors_label
-
-
-class SnappyCompression:
-    def __get__(self,instance,owner):
-        return instance._snappy_compression
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[4]: #PARQUET
-            if value in SV._allowed_values_boolean:
-                instance._snappy_compression = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._snappy_compression
-
-class SnappyCompressionLabel:
-    def __get__(self,instance,owner):
-        return instance._snappy_compression_label
-    
-    def __set__(self,instance,value):
-        instance._snappy_compression_label = value
-
-    def __del__(self,instance):
-        del instance._snappy_compression_label
-        
-class BinaryAsText:
-    def __get__(self,instance,owner):
-        return instance._binary_as_text
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[4]: #PARQUET
-            if value in SV._allowed_values_boolean:
-                instance._binary_as_text = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._binary_as_text
-
-class BinaryAsTextLabel:
-    def __get__(self,instance,owner):
-        return instance._binary_as_text_label
-    
-    def __set__(self,instance,value):
-        instance._binary_as_text_label = value
-
-    def __del__(self,instance):
-        del instance._binary_as_text_label
-
-class UseLogicalType:
-    def __get__(self,instance,owner):
-        return instance._use_logical_type
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[4]: #PARQUET
-            if value in SV._allowed_values_boolean:
-                instance._use_logical_type = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._use_logical_type
-
-class UseLogicalTypeLabel:
-    def __get__(self,instance,owner):
-        return instance._use_logical_type_label
-    
-    def __set__(self,instance,value):
-        instance._use_logical_type_label = value
-
-    def __del__(self,instance):
-        del instance._use_logical_type_label
-
-class PreserveSpace:
-    def __get__(self,instance,owner):
-        return instance._preserve_space
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[5]: #XML
-            if value in SV._allowed_values_boolean:
-                instance._preserve_space = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._preserve_space
-
-class PreserveSpaceLabel:
-    def __get__(self,instance,owner):
-        return instance._preserve_space_label
-    
-    def __set__(self,instance,value):
-        instance._preserve_space_label = value
-
-    def __del__(self,instance):
-        del instance._preserve_space_label
-
-class StripOuterElement:
-    def __get__(self,instance,owner):
-        return instance._strip_outer_element
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[5]: #XML
-            if value in SV._allowed_values_boolean:
-                instance._strip_outer_element = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._strip_outer_element
-
-class StripOuterElementLabel:
-    def __get__(self,instance,owner):
-        return instance._strip_outer_element_label
-    
-    def __set__(self,instance,value):
-        instance._strip_outer_element_label = value
-
-    def __del__(self,instance):
-        del instance._strip_outer_element_label
-
-class DisableSnowflakeData:
-    def __get__(self,instance,owner):
-        return instance._disable_snowflake_data
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[5]: #XML
-            if value in SV._allowed_values_boolean:
-                instance._disable_snowflake_data = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._disable_snowflake_data
-
-class DisableSnowflakeDataLabel:
-    def __get__(self,instance,owner):
-        return instance._disable_snowflake_data_label
-    
-    def __set__(self,instance,value):
-        instance._disable_snowflake_data_label = value
-
-    def __del__(self,instance):
-        del instance._disable_snowflake_data_label
-
-class DisableAutoConvert:
-    def __get__(self,instance,owner):
-        return instance._disable_auto_convert
-    
-    def __set__(self,instance,value):
-        if instance._file_type == SV._allowed_values_file_type[5]: #XML
-            if value in SV._allowed_values_boolean:
-                instance._disable_auto_convert = value
-            else:
-                raise TypeError
-        else:
-            raise "CANT SET"
-
-    def __del__(self,instance):
-        del instance._disable_auto_convert
-
-
-class DisableAutoConvertLabel:
-    def __get__(self,instance,owner):
-        return instance._disable_auto_convert_label
-    
-    def __set__(self,instance,value):
-        instance._disable_auto_convert_label = value
-
-    def __del__(self,instance):
-        del instance._disable_auto_convert_label
-    
-
-class StageAttrs:
+class ExternalStageAttrs:
     name = Name()
-    name_label = NameLabel()
-    type = Type()
-    type_label = TypeLabel()
+    name_tag = NameTag()
+
     file_format = FileFormat()
-    file_format_label = FileFormatLabel()
-    file_type = FileType()
-    file_type_label = FileTypeLabel()
-    compression = Compression()
-    compression_label = CompressionLabel()
-    record_delimiter = RecordDelimiter()
-    record_delimiter_label = RecordDelimiterLabel()
-    field_delimiter = FieldDelimiter()
-    field_delimiter_label = FieldDelimiterLabel()
-    file_extension = FileExtension()
-    file_extension_label = FileExtensionLabel()
-    parse_header = ParseHeader()
-    parse_header_label = ParseHeaderLabel()
-    skip_header = SkipHeader()
-    skip_header_label = SkipHeaderLabel()
-    skip_blank_line = SkipBlankLines()
-    skip_blank_line_label = SkipBlankLinesLabel()
-    date_format = DateFormat()
-    date_format_label = DateFormatLabel()
-    time_format = TimeFormat()
-    time_format_label = TimeFormatLabel()
-    timestamp_format = TimestampFormat()
-    timestamp_format_label = TimestampFormatLabel()
-    binary_format = BinaryFormat()
-    binary_format_label = BinaryFormatLabel()
-    escape = Escape()
-    escape_label = EscapeLabel()
-    escape_unenclosed_field = EscapeUnenclosedField()
-    escape_unenclosed_field_label = EscapeUnenclosedFieldLabel()
-    trim_space = TrimSpace()
-    trim_space_label = TrimSpaceLabel()
-    field_optionally_enclosed_by = FieldOptionallyEnclosedBy()
-    field_optionally_enclosed_by_label = FieldOptionallyEnclosedByLabel()
-    null_if = NullIf()
-    null_if_label = NullIfLabel()
-    error_on_column_count_mismatch = ErrorOnColumnCountMismatch()
-    error_on_column_count_mismatch_label = ErrorOnColumnCountMismatchLabel()
-    replace_invalid_characters = ReplaceInvalidCharacters()
-    replace_invalid_characters_label = ReplaceInvalidCharactersLabel()
-    empty_field_as_null = EmptyFieldAsNull()
-    empty_field_as_null_label = EmptyFieldAsNullLabel()
-    skip_byte_order_mark = SkipByteOrderMark()
-    skip_byte_order_mark_label = SkipByteOrderMarkLabel()
-    encoding = Encoding()
-    encoding_label = EncodingLabel()
-    enable_octal = EnableOctal()
-    enable_octal_label = EnableOctalLabel()
-    allow_duplicate = AllowDuplicate()
-    allow_duplicate_label = AllowDuplicateLabel()
-    strip_outer_array = StripOuterArray()
-    strip_outer_array_label = StripOuterArrayLabel()
-    strip_null_values = StripNullValues()
-    strip_null_values_label = StripNullValuesLabel()
-    ignore_utf8_errors = IgnoreUTF8Errors()
-    ignore_utf8_errors_label = IgnoreUTF8ErrorsLabel()
-    snappy_compression = SnappyCompression()
-    snappy_compression_label = SnappyCompressionLabel()
-    binary_as_text = BinaryAsText()
-    binary_as_text_label = BinaryAsTextLabel()
-    use_logical_type = UseLogicalType()
-    use_logical_type_label = UseLogicalTypeLabel()
-    preserve_space = PreserveSpace()
-    preserve_space_label = PreserveSpaceLabel()
-    strip_outer_element = StripOuterElement()
-    strip_outer_element_label = StripOuterElementLabel()
-    disable_snowflake_data = DisableSnowflakeData()
-    disable_snowflake_data_label = DisableSnowflakeDataLabel()
-    disable_auto_convert = DisableAutoConvert()
-    disable_auto_convert_label = DisableAutoConvertLabel()
+    file_format_tag = FileFormatTag()
 
+    comment = Comment()
+    comment_tag = CommentTag()
+    
+    tag = Tag()
+    tag_tag = TagTag()
 
-class Stage:
-    def __init__(self,session):
-        self.attr = StageAttrs()
-        self.session = session
+    url = Url()
+    url_tag = UrlTag()
+
+    storage_integration = StorageIntegration()
+    storage_integration_tag = StorageIntegrationTag()
+
+    aws_key_id = AwsKeyId()
+    aws_key_id_tag = AwsKeyIdTag()
+
+    aws_secret_key = AwsSecretKey()
+    aws_secret_key_tag = AwsSecretKeyTag()
+
+    aws_token = AwsToken()
+    aws_token_tag = AwsTokenTag()
+
+    azure_sas_token = AzureSasToken()
+    azure_sas_token_tag = AzureSasTokenTag()
+
+    aws_role = AwsRole()
+    aws_role_tag = AwsRoleTag()
+
+    encryption = Encryption()
+    encryption_tag = EncryptionTag()
+
+    encryption_type = EncryptionType()
+    encryption_type_tag = EncryptionTypeTag()
+
+    encryption_master_key = EncryptionMasterKey()
+    encryption_master_key_tag = EncryptionMasterKeyTag()
+
+    encryption_kms_key_id = EncryptionKmsKeyId()
+    encryption_kms_key_id_tag = EncryptionKmsKeyIdTag()
+
+    use_privatelink_endpoint = UsePrivatelinkEndpoint()
+    use_privatelink_endpoint_tag = UsePrivatelinkEndpointTag()
+
+    directory = Directory()
+    directory_tag = DirectoryTag()
+
+    refresh_on_create = RefreshOnCreate()
+    refresh_on_create_tag = RefreshOnCreateTag()
+
+    auto_refresh = AutoRefresh()
+    auto_refresh_tag = AutoRefreshTag()
+
+    notification_integration = NotificationIntegration()
+    notification_integration_tag = NotificationIntegrationTag()
+
+class ExternalStage:
+    def __init__(self):
+        self.attr = ExternalStageAttrs()
+        self.session = 'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name(self,val):
+        self.attr.name = val
     
-    def set_name_label(self):
-        self.attr.name_label = SV._name_label
+    def set_name_tag(self,val):
+        self.attr.name_tag = val
 
-    def set_type(self,type):
-        self.attr.type = type
+    def set_file_format(self,val):
+        self.attr.file_format = val
     
-    def set_type_label(self):
-        self.attr.type_label = SV._type_label
+    def set_file_format_tag(self,val):
+        self.attr.file_format_tag = val
+    
+    def set_comment(self,val):
+        self.attr.comment = val
+    
+    def set_comment_tag(self,val):
+        self.attr.comment_tag = val
 
-    def set_file_format(self,file_format):
-        self.attr.file_format = file_format
+    def set_tag(self,val):
+        self.attr.tag = val
     
-    def set_file_format_label(self):
-        self.attr.file_format_label = SV._file_format_label
-    
-    def set_file_type(self,file_type):
-        self.attr.file_type = file_type
-    
-    def set_file_type_label(self):
-        self.attr.file_type_label = SV._file_type_label
+    def set_tag_tag(self,val):
+        self.attr.tag_tag = val
 
-    def set_compression(self,compression):
-        self.attr.compression = compression
+    def set_url(self,val):
+        self.attr.url = val
     
-    def set_compression_label(self):
-        self.attr.compression_label = SV._compression_label
+    def set_url_tag(self,val):
+        self.attr.url_tag = val
 
-    def set_record_delimiter(self):
-        self.attr.record_delimiter = record_delimiter
+    def set_storage_integration(self,val):
+        self.attr.storage_integration = val
     
-    def set_record_delimiter_label(self,record_delimiter_label):
-        self.attr.record_delimiter_label = SV._record_delimiter_label
+    def set_storage_integration_tag(self,val):
+        self.attr.storage_integration_tag = val
 
-    def set_field_delimiter(self,field_delimiter):
-        self.attr.field_delimiter = field_delimiter
+    def set_aws_key_id(self,val):
+        self.attr.aws_key_id = val
     
-    def set_field_delimiter_label(self,field_delimiter_label):
-        self.attr.field_delimiter_label = SV._field_delimiter_label
+    def set_aws_key_id_tag(self,val):
+        self.attr.aws_key_id_tag = val
 
-    def set_file_extension(self,file_extension):
-        self.attr.file_extension = file_extension
+    def set_aws_secret_key(self,val):
+        self.attr.aws_secret_key = val
     
-    def set_file_extension_label(self,file_extension_label):
-        self.attr.file_extension_label = SV._file_extension_label
+    def set_aws_secret_key_tag(self,val):
+        self.attr.aws_secret_key_tag = val
 
-    def set_parse_header(self,parse_header):
-        self.attr.parse_header = parse_header
+    def set_aws_token(self,val):
+        self.attr.aws_token = val
     
-    def set_parse_header_label(self,parse_header_label):
-        self.attr.parse_header_label = SV._parse_header_label
+    def set_aws_token_tag(self,val):
+        self.attr.aws_token_tag = val
 
-    def set_skip_header(self,skip_header):
-        self.attr.skip_header = skip_header
+    def set_azure_sas_token(self,val):
+        self.attr.azure_sas_token = val
     
-    def set_skip_header_label(self,skip_header_label):
-        self.attr.skip_header_label = SV._skip_header_label
+    def set_azure_sas_token_tag(self,val):
+        self.attr.azure_sas_token_tag = val
 
-    def set_skip_blank_line(self,skip_blank_line):
-        self.attr.skip_blank_line = skip_blank_line
+    def set_aws_role(self,val):
+        self.attr.aws_role = val
     
-    def set_skip_blank_line_label(self,skip_blank_line_label):
-        self.attr.skip_blank_line_label = SV._skip_blank_line_label
+    def set_aws_role_tag(self,val):
+        self.attr.aws_role_tag = val
 
-    def set_date_format(self,date_format):
-        self.attr.date_format = date_format
+    def set_encryption(self,val):
+        self.attr.encryption = val
     
-    def set_date_format_label(self,date_format_label):
-        self.attr.date_format_label = SV._date_format_label
+    def set_encryption_tag(self,val):
+        self.attr.encryption_tag = val
 
-    def set_time_format(self,time_format):
-        self.attr.time_format = time_format
+    def set_encryption_type(self,val):
+        self.attr.encryption_type = val
     
-    def set_time_format_label(self,time_format_label):
-        self.attr.time_format_label = SV._time_format_label
+    def set_encryption_type_tag(self,val):
+        self.attr.encryption_type_tag = val
 
-    def set_timestamp_format(self,timestamp_format):
-        self.attr.timestamp_format = timestamp_format
+    def set_encryption_master_key(self,val):
+        self.attr.encryption_master_key = val
     
-    def set_timestamp_format_label(self):
-        self.attr.timestamp_format_label = SV._timestamp_format_label
+    def set_encryption_master_key_tag(self,val):
+        self.attr.encryption_master_key_tag = val
 
-    def set_binary_format(self,binary_format):
-        self.attr.binary_format = binary_format
+    def set_encryption_kms_key_id(self,val):
+        self.attr.encryption_kms_key_id = val
     
-    def set_binary_format_label(self):
-        self.attr.binary_format_label = SV._binary_format_label
+    def set_encryption_kms_key_id_tag(self,val):
+        self.attr.encryption_kms_key_id_tag = val
+
+    def set_use_privatelink_endpoint(self,val):
+        self.attr.use_privatelink_endpoint = val
+    
+    def set_use_privatelink_endpoint_tag(self,val):
+        self.attr.use_privatelink_endpoint_tag = val
+
+    def set_directory(self,val):
+        self.attr.directory = val
+    
+    def set_directory_tag(self,val):
+        self.attr.directory_tag = val
+
+    def set_refresh_on_create(self,val):
+        self.attr.refresh_on_create = val
+    
+    def set_refresh_on_create_tag(self,val):
+        self.attr.refresh_on_create_tag = val
+
+    def set_auto_refresh(self,val):
+        self.attr.auto_refresh = val
+    
+    def set_auto_refresh_tag(self,val):
+        self.attr.auto_refresh_tag = val
+
+    def set_notification_integration(self,val):
+        self.attr.notification_integration = val
+
+    def set_notification_integration_tag(self,val):
+        self.attr.notification_integration_tag = val
+
+    def set_object_properties_flag(self):
+        self.flag_dic = {}
+        if self.attr.name != "NONE":
+            self.flag_dic[gv._name_tag] = 1
+        else:
+            self.flag_dic[gv._name_tag] = 0
+
+        if self.attr.file_format != "NONE":
+            self.flag_dic[gv._file_format_tag] = 1
+        else:
+            self.flag_dic[gv._file_format_tag] = 0
+
+        if self.attr.comment != "NONE":
+            self.flag_dic[gv._comment_tag] = 1
+        else:
+            self.flag_dic[gv._comment_tag] = 0
+
+        if self.attr.tag != "NONE":
+            self.flag_dic[gv._tag_tag] = 1
+        else:
+            self.flag_dic[gv._tag_tag] = 0
+
+        if self.attr.url != "NONE":
+            self.flag_dic[gv._url_tag] = 1
+        else:
+            self.flag_dic[gv._url_tag] = 0
+
+        if self.attr.storage_integration != "NONE":
+            self.flag_dic[gv._storage_integration_tag] = 1
+        else:
+            self.flag_dic[gv._storage_integration_tag] = 0
+
+        if self.attr.aws_key_id != "NONE":
+            self.flag_dic[gv._aws_key_id_tag] = 1
+        else:
+            self.flag_dic[gv._aws_key_id_tag] = 0
+
+        if self.attr.aws_secret_key != "NONE":
+            self.flag_dic[gv._aws_secret_key_tag] = 1
+        else:
+            self.flag_dic[gv._aws_secret_key_tag] = 0
+
+        if self.attr.aws_token != "NONE":
+            self.flag_dic[gv._aws_token_tag] = 1
+        else:
+            self.flag_dic[gv._aws_token_tag] = 0
+
+        if self.attr.azure_sas_token != "NONE":
+            self.flag_dic[gv._azure_sas_token_tag] = 1
+        else:
+            self.flag_dic[gv._azure_sas_token_tag] = 0
+
+        if self.attr.aws_role != "NONE":
+            self.flag_dic[gv._aws_role_tag] = 1
+        else:
+            self.flag_dic[gv._aws_role_tag] = 0
+
+        if self.attr.encryption != "NONE":
+            self.flag_dic[gv._encryption_tag] = 1
+        else:
+            self.flag_dic[gv._encryption_tag] = 0
+
+        if self.attr.encryption_type != "NONE":
+            self.flag_dic[gv._encryption_type_tag] = 1
+        else:
+            self.flag_dic[gv._encryption_type_tag] = 0
+
+        if self.attr.encryption_master_key != "NONE":
+            self.flag_dic[gv._encryption_master_key_tag] = 1
+        else:
+            self.flag_dic[gv._encryption_master_key_tag] = 0
+
+        if self.attr.encryption_kms_key_id != "NONE":
+            self.flag_dic[gv._encryption_kms_key_id_tag] = 1
+        else:
+            self.flag_dic[gv._encryption_kms_key_id_tag] = 0
+
+        if self.attr.use_privatelink_endpoint != "NONE":
+            self.flag_dic[gv._use_privatelink_endpoint_tag] = 1
+        else:
+            self.flag_dic[gv._use_privatelink_endpoint_tag] = 0
+
+        if self.attr.directory != "NONE":
+            self.flag_dic[gv._directory_tag] = 1
+        else:
+            self.flag_dic[gv._directory_tag] = 0
+        
+        if self.attr.refresh_on_create != "NONE":
+            self.flag_dic[gv._refresh_on_create_tag] = 1
+        else:
+            self.flag_dic[gv._refresh_on_create_tag] = 0
+            
+        if self.attr.auto_refresh != "NONE":
+            self.flag_dic[gv._auto_refresh_tag] = 1
+        else:
+            self.flag_dic[gv._auto_refresh_tag] = 0
+
+        if self.attr.notification_integration != "NONE":
+            self.flag_dic[gv._notification_integration_tag] = 1
+        else:
+            self.flag_dic[gv._notification_integration_tag] = 0
+
+    def check_properties_to_set(self): 
+        self.property_lst = []
+        for prop in self.flag_dic.keys():
+            if self.flag_dic[prop] == 1:
+                self.property_lst.append(prop)
+
+    def set_create_qry(self):
+        self.qry = f"CREATE STAGE  {self.attr.name} "
+
+    def add_properties_to_query(self):
+        if len(self.property_lst) != 0 :
+            for prop in self.property_lst:
+                if prop == gv._file_format_tag:
+                    self.qry = f" {self.qry} {self.attr.file_format_tag} = {self.attr.file_format} "
+                if prop == gv._comment_tag:
+                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
+                if prop == gv._tag_tag:
+                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
+                if prop == gv._url_tag:
+                    self.qry = f" {self.qry} {self.attr.url_tag} = {self.attr.url} "
+                if prop == gv._storage_integration_tag:
+                    self.qry = f" {self.qry} {self.attr.storage_integration_tag} = {self.attr.storage_integration} "
+                if prop == gv._aws_key_id_tag:
+                    self.qry = f" {self.qry} {self.attr.aws_key_id_tag} = {self.attr.aws_key_id} "
+                if prop == gv._aws_secret_key_tag:
+                    self.qry = f" {self.qry} {self.attr.aws_secret_key_tag} = {self.attr.aws_secret_key} "
+                if prop == gv._aws_token_tag:
+                    self.qry = f" {self.qry} {self.attr.aws_token_tag} = {self.attr.aws_token} "
+                if prop == gv._azure_sas_token_tag:
+                    self.qry = f" {self.qry} {self.attr.azure_sas_token_tag} = {self.attr.azure_sas_token} "
+                if prop == gv._aws_role_tag:
+                    self.qry = f" {self.qry} {self.attr.aws_role_tag} = {self.attr.aws_role} "
+                if prop == gv._encryption_tag:
+                    self.qry = f" {self.qry} {self.attr.encryption_tag} = {self.attr.encryption} "
+                if prop == gv._encryption_type_tag:
+                    self.qry = f" {self.qry} {self.attr.encryption_type_tag} = {self.attr.encryption_type} "
+                if prop == gv._encryption_master_key_tag:
+                    self.qry = f" {self.qry} {self.attr.encryption_master_key_tag} = {self.attr.encryption_master_key} "
+                if prop == gv._encryption_kms_key_id_tag:
+                    self.qry = f" {self.qry} {self.attr.encryption_kms_key_id_tag} = {self.attr.encryption_kms_key_id} "
+                if prop == gv._use_privatelink_endpoint_tag:
+                    self.qry = f" {self.qry} {self.attr.use_privatelink_endpoint_tag} = {self.attr.use_privatelink_endpoint} "
+                if prop == gv._directory_tag:
+                    self.qry = f" {self.qry} {self.attr.directory_tag} = {self.attr.directory} "
+                if prop == gv._refresh_on_create_tag:
+                    self.qry = f" {self.qry} {self.attr.refresh_on_create_tag} = {self.attr.refresh_on_create} "
+                if prop == gv._auto_refresh_tag:
+                    self.qry = f" {self.qry} {self.attr.auto_refresh_tag} = {self.attr.auto_refresh} "
+                if prop == gv._notification_integration_tag:
+                    self.qry = f" {self.qry} {self.attr.notification_integration_tag} = {self.attr.notification_integration} "
+
+    def prepare_query(self):
+        self.set_object_properties_flag()
+        self.check_properties_to_set()
+        self.set_create_qry()
+        self.add_properties_to_query()
+
+def main(**kwargs):
+    external_stage = ExternalStage()
+
+    external_stage.set_name(kwargs[gv._name_tag])
+    external_stage.set_name_tag(gv._name_tag)
+
+    external_stage.set_file_format(kwargs[gv._file_format_tag])
+    external_stage.set_file_format_tag(gv._file_format_tag)
+
+    external_stage.set_comment(kwargs[gv._comment_tag])
+    external_stage.set_comment_tag(gv._comment_tag)
+
+    external_stage.set_tag(kwargs[gv._tag_tag])
+    external_stage.set_tag_tag(gv._tag_tag)
+
+    external_stage.set_url(kwargs[gv._url_tag])
+    external_stage.set_url_tag(gv._url_tag)
+
+    external_stage.set_storage_integration(kwargs[gv._storage_integration_tag])
+    external_stage.set_storage_integration_tag(gv._storage_integration_tag)
+
+    external_stage.set_aws_key_id(kwargs[gv._aws_key_id_tag])
+    external_stage.set_aws_key_id_tag(gv._aws_key_id_tag)
+
+    external_stage.set_aws_secret_key(kwargs[gv._aws_secret_key_tag])
+    external_stage.set_aws_secret_key_tag(gv._aws_secret_key_tag)
+
+    external_stage.set_aws_token(kwargs[gv._aws_token_tag])
+    external_stage.set_aws_token_tag(gv._aws_token_tag)
+
+    external_stage.set_azure_sas_token(kwargs[gv._azure_sas_token_tag])
+    external_stage.set_azure_sas_token_tag(gv._azure_sas_token_tag)
+
+    external_stage.set_aws_role(kwargs[gv._aws_role_tag])
+    external_stage.set_aws_role_tag(gv._aws_role_tag)
+
+    external_stage.set_encryption(kwargs[gv._encryption_tag])
+    external_stage.set_encryption_tag(gv._encryption_tag)
+
+    external_stage.set_encryption_type(kwargs[gv._encryption_type_tag])
+    external_stage.set_encryption_type_tag(gv._encryption_type_tag)
+
+    external_stage.set_encryption_master_key(kwargs[gv._encryption_master_key_tag])
+    external_stage.set_encryption_master_key_tag(gv._encryption_master_key_tag)
+
+    external_stage.set_encryption_kms_key_id(kwargs[gv._encryption_kms_key_id_tag])
+    external_stage.set_encryption_kms_key_id_tag(gv._encryption_kms_key_id_tag)
+
+    external_stage.set_use_privatelink_endpoint(kwargs[gv._use_privatelink_endpoint_tag])
+    external_stage.set_use_privatelink_endpoint_tag(gv._use_privatelink_endpoint_tag)
+
+    external_stage.set_directory(kwargs[gv._directory_tag])
+    external_stage.set_directory_tag(gv._directory_tag)
+
+    external_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
+    external_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+
+    external_stage.set_auto_refresh(kwargs[gv._auto_refresh_tag])
+    external_stage.set_auto_refresh_tag(gv._auto_refresh_tag)
+
+    external_stage.set_notification_integration(kwargs[gv._notification_integration_tag])
+    external_stage.set_notification_integration_tag(gv._notification_integration_tag)
+
+    external_stage.prepare_query()
+
+    return external_stage.qry
 
         
 
