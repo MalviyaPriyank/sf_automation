@@ -624,6 +624,8 @@ class ExternalStage:
     def set_notification_integration_tag(self,val):
         self.attr.notification_integration_tag = val
 
+
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
         if self.attr.name != "NONE":

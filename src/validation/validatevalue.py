@@ -69,7 +69,7 @@ class ValidateValue:
         
     @staticmethod
     def is_bool(value):
-        if value not in ['TRUE','FALSE']:
+        if value not in ["TRUE","FALSE"]:
             return False
         else:
             return True

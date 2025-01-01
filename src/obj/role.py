@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import Role as rlgv
+from global_vars import InternalStage as gv
 from validatevalue import ValidateValue as vv
 
 class Name:
@@ -25,6 +25,8 @@ class Name:
                 raise ValueError
             else:
                 instance._name = value
+        else:
+            instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -89,15 +91,11 @@ class Role:
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.name is not None:
-            self.flag_dic[rlgv._name_tag] = 1
-        else:
-            self.flag_dic[rlgv._name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.comment is not None:
-            self.flag_dic[rlgv._comment_tag] = 1
-        else:
-            self.flag_dic[rlgv._comment_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._comment_tag,"_comment")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -111,7 +109,7 @@ class Role:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == rlgv._comment_tag:
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -124,11 +122,11 @@ class Role:
 def main(**kwargs):
     role = Role()
 
-    role.set_name(kwargs[rlgv._name_tag])
-    role.set_name_tag(rlgv._name_tag)
+    role.set_name(kwargs[gv._name_tag])
+    role.set_name_tag(gv._name_tag)
 
-    role.set_comment(kwargs[rlgv._comment_tag])
-    role.set_comment_tag(rlgv._comment_tag)
+    role.set_comment(kwargs[gv._comment_tag])
+    role.set_comment_tag(gv._comment_tag)
 
     role.prepare_query()
 

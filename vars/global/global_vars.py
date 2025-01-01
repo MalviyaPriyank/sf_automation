@@ -136,3 +136,40 @@ class ExternalStage:
     _notification_integration_tag = "NOTIFICATION_INTEGRATION"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE","DEF"]
 
+class FileFormat:
+    def __init__(self):
+        pass
+    _name_tag = "FILE_FORMAT"
+    _type_tag = "TYPE"
+    _parse_header_tag = "PARSE_HEADER"
+    _skip_header_tag = "SKIP_HEADER"
+    _skip_blank_lines_tag = "SKIP_BLANK_LINES"
+    _date_format_tag = "DATE_FORMAT"
+    _time_format_tag = "TIME_FORMAT"
+    _timestamp_format_tag = "TIMESTAMP_FORMAT"
+    _binary_format_tag = "BINARY_FORMAT"
+    _escape_tag = "ESCAPE"
+    _escape_unenclosed_field_tag = "ESCAPE_UNENCLOSED_FIELD"
+    _trim_space_tag = "TRIM_SPACE"
+    _field_optionally_enclosed_by_tag = "FIELD_OPTIONALLY_ENCLOSED_BY"
+    _null_if_tag = "NULL_IF"
+    _error_on_column_count_mismatch_tag = "ERROR_ON_COLUMN_COUNT_MISMATCH"
+    _replace_invalid_characters_tag = "REPLACE_INVALID_CHARACTERS"
+    _empty_field_as_null_tag = "EMPTY_FIELD_AS_NULL"
+    _skip_byte_order_mark_tag = "SKIP_BYTE_ORDER_MARK"
+    _encoding_tag = "ENCODING"
+    _enable_octal_tag = "ENABLE_OCTAL"
+    _allow_duplicate_tag = "ALLOW_DUPLICATE"
+    _strip_outer_array_tag = "STRIP_OUTER_ARRAY"
+    _strip_null_values_tag = "STRIP_NULL_VALUES"
+    _ignore_utf8_errors_tag = "IGNORE_UTF8_ERRORS"
+    _snappy_compression_tag = "SNAPPY_COMPRESSION"
+    _binary_as_text_tag = "BINARY_AS_TEXT"
+    _use_logical_type_tag = "USE_LOGICAL_TYPE"
+    _use_vectorized_scanner_tag = "USE_VECTORIZED_SCANNER"
+    _preserve_space_tag = "PRESERVE_SPACE"
+    _strip_outer_element_tag = "STRIP_OUTER_ELEMENT"
+    _disable_snowflake_data_tag = "DISABLE_SNOWFLAKE_DATA"
+    _disable_auto_convert_tag = "DISABLE_AUTO_CONVERT"
+    _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
+    _allowed_values_binary_format = ["HEX","BASE64","UTF8"]    
