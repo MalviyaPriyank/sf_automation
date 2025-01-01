@@ -1,4 +1,3 @@
-
 import sys
 import os 
 
@@ -6,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import ResourceMonitor as rmgv
+from global_vars import ResourceMonitor as gv
 from validatevalue import ValidateValue as vv
 
 class Name:
@@ -68,7 +67,7 @@ class Frequency:
         return instance._frequency
     
     def __set__(self,instance,value):
-        if value not in rmgv._allowed_values_frequency:
+        if value not in gv._allowed_values_frequency:
             raise ValueError
         else:
             instance._frequency = value
@@ -193,7 +192,7 @@ class Do:
         return instance._do
     
     def __set__(self,instance,value):
-        if value not in rmgv._allowed_values_do:
+        if value not in gv._allowed_values_do:
             raise ValueError
         else:
             instance._do = value
@@ -287,45 +286,18 @@ class ResourceMonitor:
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        if self.attr.name != "NONE":
-            self.flag_dic[rmgv._name_tag] = 1
-        else:
-            self.flag_dic[rmgv._name_tag] = 0
 
-        if self.attr.credit_quota != "NONE":
-            self.flag_dic[rmgv._credit_quota_tag] = 1
-        else:
-            self.flag_dic[rmgv._credit_quota_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.frequency != "NONE":
-            self.flag_dic[rmgv._frequency_tag] = 1
-        else:
-            self.flag_dic[rmgv._frequency_tag] = 0
-
-        if self.attr.start_timestamp != "NONE":
-            self.flag_dic[rmgv._start_timestamp_tag] = 1
-        else:
-            self.flag_dic[rmgv._start_timestamp_tag] = 0
-
-        if self.attr.end_timestamp != "NONE":
-            self.flag_dic[rmgv._end_timestamp_tag] = 1
-        else:
-            self.flag_dic[rmgv._end_timestamp_tag] = 0
-
-        if self.attr.notify_users != "NONE":
-            self.flag_dic[rmgv._notify_users_tag] = 1
-        else:
-            self.flag_dic[rmgv._notify_users_tag] = 0
-        
-        if self.attr.triggers_on != "NONE":
-            self.flag_dic[rmgv._triggers_on_tag] = 1
-        else:
-            self.flag_dic[rmgv._triggers_on_tag] = 0
-
-        if self.attr.do != "NONE":
-            self.flag_dic[rmgv._do_tag] = 1
-        else:
-            self.flag_dic[rmgv._do_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._credit_quota_tag,"_credit_quota")
+        set_flag(gv._frequency_tag,"_frequency")
+        set_flag(gv._start_timestamp_tag,"_start_timestamp")
+        set_flag(gv._end_timestamp_tag,"_end_timestamp")
+        set_flag(gv._notify_users_tag,"_notify_users")
+        set_flag(gv._triggers_on_tag,"_triggers_on")
+        set_flag(gv._do_tag,"_do")
 
 
     def check_properties_to_set(self): 
@@ -341,19 +313,19 @@ class ResourceMonitor:
         if len(self.property_lst) != 0 :
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
-                if prop == rmgv._credit_quota_tag:
+                if prop == gv._credit_quota_tag:
                     self.qry = f" {self.qry} {self.attr.credit_quota_tag}  = {self.attr.credit_quota} "
-                if prop == rmgv._frequency_tag:
+                if prop == gv._frequency_tag:
                     self.qry = f" {self.qry} {self.attr.frequency_tag} = {self.attr.frequency} "
-                if prop == rmgv._start_timestamp_tag:
+                if prop == gv._start_timestamp_tag:
                     self.qry = f" {self.qry} {self.attr.start_timestamp_tag} = {self.attr.start_timestamp} "
-                if prop == rmgv._end_timestamp_tag:
+                if prop == gv._end_timestamp_tag:
                     self.qry = f" {self.qry} {self.attr.end_timestamp_tag} = {self.attr.end_timestamp} "
-                if prop == rmgv._notify_users_tag:
+                if prop == gv._notify_users_tag:
                     self.qry = f" {self.qry} {self.attr.notify_users_tag} = {self.attr.notify_users} "
-                if prop == rmgv._triggers_on_tag:
+                if prop == gv._triggers_on_tag:
                     self.qry = f" {self.qry} {self.attr.triggers_on_tag} = {self.attr.triggers_on} "
-                if prop == rmgv._do_tag:
+                if prop == gv._do_tag:
                     self.qry = f" {self.qry} {self.attr.do_tag} = {self.attr.do} "
 
     def prepare_query(self):
@@ -366,29 +338,29 @@ class ResourceMonitor:
 def main(**kwargs):
     rm = ResourceMonitor()
 
-    rm.set_name(kwargs[rmgv._name_tag])
-    rm.set_name_tag(rmgv._name_tag)
+    rm.set_name(kwargs[gv._name_tag])
+    rm.set_name_tag(gv._name_tag)
 
-    rm.set_credit_quota(kwargs[rmgv._credit_quota_tag])
-    rm.set_credit_quota_tag(rmgv._credit_quota_tag)
+    rm.set_credit_quota(kwargs[gv._credit_quota_tag])
+    rm.set_credit_quota_tag(gv._credit_quota_tag)
 
-    rm.set_frequency(kwargs[rmgv._frequency_tag])
-    rm.set_frequency_tag(rmgv._frequency_tag)
+    rm.set_frequency(kwargs[gv._frequency_tag])
+    rm.set_frequency_tag(gv._frequency_tag)
 
-    rm.set_start_timestmap(kwargs[rmgv._start_timestamp_tag])
-    rm.set_start_timestamp_tag(rmgv._start_timestamp_tag)
+    rm.set_start_timestmap(kwargs[gv._start_timestamp_tag])
+    rm.set_start_timestamp_tag(gv._start_timestamp_tag)
 
-    rm.set_end_timestamp(kwargs[rmgv._end_timestamp_tag])
-    rm.set_end_timestamp_tag(rmgv._end_timestamp_tag)
+    rm.set_end_timestamp(kwargs[gv._end_timestamp_tag])
+    rm.set_end_timestamp_tag(gv._end_timestamp_tag)
 
-    rm.set_notify_users(kwargs[rmgv._notify_users_tag])
-    rm.set_notify_users_tag(rmgv._notify_users_tag)
+    rm.set_notify_users(kwargs[gv._notify_users_tag])
+    rm.set_notify_users_tag(gv._notify_users_tag)
 
-    rm.set_triggers_on(kwargs[rmgv._triggers_on_tag])
-    rm.set_triggers_on_tag(rmgv._triggers_on_tag)
+    rm.set_triggers_on(kwargs[gv._triggers_on_tag])
+    rm.set_triggers_on_tag(gv._triggers_on_tag)
 
-    rm.set_do(kwargs[rmgv._do_tag])
-    rm.set_do_tag(rmgv._do_tag)
+    rm.set_do(kwargs[gv._do_tag])
+    rm.set_do_tag(gv._do_tag)
 
     rm.prepare_query()
 

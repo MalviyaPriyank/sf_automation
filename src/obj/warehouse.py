@@ -1,15 +1,15 @@
 # The Snowpark package is required for Python Worksheets. 
 # You can add more packages by selecting them using the Packages control and then importing them.
 
-import snowflake.snowpark as snowpark
-from snowflake.snowpark.functions import col
-
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from warehouse_global_vars import *
+
+from global_vars import Warehouse as gv
+from validatevalue import ValidateValue as vv
 
 class Name:
     def __get__(self,instance,owner):
@@ -23,64 +23,60 @@ class Name:
 
 class NameLabel:
     def __get__(self,instance,owner):
-        return instance._name_label
+        return instance._name_tag
 
     def __set__(self,instance,value):
-        instance._name_label = value
+        instance._name_tag = value
 
     def __delete__(self,instance):
-        del instance._name_label
+        del instance._name_tag
 
-class Type:
+class WarehouseType:
     def __get__(self,instance,owner):
-        return instance._type
+        return instance._warehouse_type
 
     def __set__(self,instance,value):
         
-        if value not in _allowed_values_type:
-            raise WarehouseTypeError
-        else:
-            instance._type = value
-
-    def __delete__(self,instance):
-        del instance._type
-
-class TypeLabel:
-    def __get__(self,instance,owner):
-        return instance._type_label
-
-    def __set__(self,instance,value):
-        instance._type_label = value
-
-    def __delete__(self,instance):
-        del instance._type_label
-
-class Size:
-    def __get__(self,instance,owner):
-        return instance._size
-
-    def __set__(self,instance,value):
-        if instance._type == 'SNOWPARK-OPTIMIZED':
-            allowed_values = _allow_allowed_values_wh_snowpark_optimized
-        else:
-            allowed_values = _allowed_values_wh_standard
-        if value not in allowed_values:
+        if value not in gv._allowed_values_warehouse_type:
             raise ValueError
         else:
-            instance._size = value
+            instance._warehouse_type = value
 
     def __delete__(self,instance):
-        del instance._size
+        del instance._warehouse_type
 
-class SizeLabel:
+class WarehouseTypeLabel:
     def __get__(self,instance,owner):
-        return instance._size_label
+        return instance._warehouse_type_tag
 
     def __set__(self,instance,value):
-        instance._size_label = value
+        instance._warehouse_type_tag = value
 
     def __delete__(self,instance):
-        del instance._size_label
+        del instance._warehouse_type_tag
+
+class WarehouseSize:
+    def __get__(self,instance,owner):
+        return instance._warehouse_size
+
+    def __set__(self,instance,value):
+        if value not in gv._allowed_values_warehouse_size:
+            raise ValueError
+        else:
+            instance._warehouse_size = value
+
+    def __delete__(self,instance):
+        del instance._warehouse_size
+
+class WarehouseSizeLabel:
+    def __get__(self,instance,owner):
+        return instance._warehouse_size_tag
+
+    def __set__(self,instance,value):
+        instance._warehouse_size_tag = value
+
+    def __delete__(self,instance):
+        del instance._warehouse_size_tag
 
 
 
@@ -89,9 +85,9 @@ class ResourceConstraint:
         return instance._resource_constraint
 
     def __set__(self,instance,value):
-        if instance._type == 'SNOWPARK-OPTIMIZED': 
+        if instance._warehouse_type == 'SNOWPARK-OPTIMIZED': 
             instance._resource_constraint = value
-        elif value == None:
+        elif value == "NONE":
             instance._resource_constraint = None
         else:
             raise ValueError
@@ -101,13 +97,13 @@ class ResourceConstraint:
 
 class ResourceConstraintLabel:
     def __get__(self,instance,owner):
-        return instance._resource_constraint_label
+        return instance._resource_constraint_tag
 
     def __set__(self,instance,value): 
-        instance._resource_constraint_label = value
+        instance._resource_constraint_tag = value
 
     def __delete__(self,instance):
-        del instance._resource_constraint_label
+        del instance._resource_constraint_tag
 
 class MaxClusterCount:
     def __get__(self,instance,owner):
@@ -125,22 +121,22 @@ class MaxClusterCount:
 
 class MaxClusterCountLabel:
     def __get__(self,instance,owner):
-        return instance._max_cluster_count_label
+        return instance._max_cluster_count_tag
 
     def __set__(self,instance,value):
-        instance._max_cluster_count_label = value
+        instance._max_cluster_count_tag = value
 
     def __delete__(self,instance):
-        del instance._max_cluster_count_label
+        del instance._max_cluster_count_tag
 
 class MinClusterCount:
     def __get__(self,instance,owner):
         return instance._min_cluster_count
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._min_cluster_count = None
-        elif value >= 1:
+        if value == "NONE":
+            instance._min_cluster_count = "NONE"
+        elif int(value) >= 1:
             instance._min_cluster_count = value   
         else:
             raise ValueError
@@ -151,21 +147,21 @@ class MinClusterCount:
 
 class MinClusterCountLabel:
     def __get__(self,instance,owner):
-        return instance._min_cluster_count_label
+        return instance._min_cluster_count_tag
 
     def __set__(self,instance,value):
-        instance._min_cluster_count_label = value
+        instance._min_cluster_count_tag = value
 
     def __delete__(self,instance):
-        del instance._min_cluster_count_label
+        del instance._min_cluster_count_tag
 
 class ScalingPolicy:
     def __get__(self,instance,owner):
         return instance._scaling_policy
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._scaling_policy = None
+        if value == "NONE":
+            instance._scaling_policy = "NONE"
         elif instance._scaling_policy > 1:
             instance._scaling_policy = value       
         else:
@@ -177,13 +173,13 @@ class ScalingPolicy:
 
 class ScalingPolicyLabel:
     def __get__(self,instance,owner):
-        return instance._scaling_policy_label
+        return instance._scaling_policy_tag
 
     def __set__(self,instance,value):
-        instance._scaling_policy_label = value
+        instance._scaling_policy_tag = value
 
     def __delete__(self,instance):
-        del instance._scaling_policy_label
+        del instance._scaling_policy_tag
 
 
 class AutoSuspend:
@@ -201,13 +197,13 @@ class AutoSuspend:
 
 class AutoSuspendLabel:
     def __get__(self,instance,owner):
-        return instance._auto_suspend_label
+        return instance._auto_suspend_tag
 
     def __set__(self,instance,value):
-        instance._auto_suspend_label = value
+        instance._auto_suspend_tag = value
 
     def __delete__(self,instance):
-        del instance._auto_suspend_label
+        del instance._auto_suspend_tag
 
 class AutoResume:
     def __get__(self,instance,owner):
@@ -224,14 +220,14 @@ class AutoResume:
 
 class AutoResumeLabel:
     def __get__(self,instance,owner):
-        return instance._auto_resume_label
+        return instance._auto_resume_tag
 
     def __set__(self,instance,value):
-        instance._auto_resume_label = value
+        instance._auto_resume_tag = value
 
 
     def __delete__(self,instance):
-        del instance._auto_resume_label
+        del instance._auto_resume_tag
 
 class InitiallySuspended:
     def __get__(self,instance,owner):
@@ -249,13 +245,13 @@ class InitiallySuspended:
 
 class InitiallySuspendedLabel:
     def __get__(self,instance,owner):
-        return instance._initially_suspended_label
+        return instance._initially_suspended_tag
 
     def __set__(self,instance,value):
-        instance._initially_suspended_label = value
+        instance._initially_suspended_tag = value
 
     def __delete__(self,instance):
-        del instance._initially_suspended_label
+        del instance._initially_suspended_tag
 
 class ResourceMonitor:
     def __get__(self,instance,owner):
@@ -272,13 +268,13 @@ class ResourceMonitor:
 
 class ResourceMonitorLabel:
     def __get__(self,instance,owner):
-        return instance._resource_monitor_label
+        return instance._resource_monitor_tag
 
     def __set__(self,instance,value):
-        instance._resource_monitor_label = value
+        instance._resource_monitor_tag = value
 
     def __delete__(self,instance):
-        del instance._resource_monitor_label
+        del instance._resource_monitor_tag
 
 class Comment:
     def __get__(self,instance,owner):
@@ -294,13 +290,13 @@ class Comment:
 
 class CommentLabel:
     def __get__(self,instance,owner):
-        return instance._comment_label
+        return instance._comment_tag
 
     def __set__(self,instance,value):
-        instance._comment_label = value
+        instance._comment_tag = value
 
     def __delete__(self,instance):
-        del instance._comment_label
+        del instance._comment_tag
 
 
 class Tag:
@@ -318,13 +314,13 @@ class Tag:
 
 class TagLabel:
     def __get__(self,instance,owner):
-        return instance._tag_label
+        return instance._tag_tag
 
     def __set__(self,instance,value):
-        instance._tag_label = value
+        instance._tag_tag = value
 
     def __delete__(self,instance):
-        del instance._tag_label
+        del instance._tag_tag
 
 
 class EnableQueryAcceleration:
@@ -332,9 +328,7 @@ class EnableQueryAcceleration:
         return instance._enable_query_acceleration
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._enable_query_acceleration = None
-        elif value in _allowed_values_query_acceleration:
+        if vv.is_bool(value):
             instance._enable_query_acceleration = value
         else:
             raise ValueError
@@ -345,13 +339,13 @@ class EnableQueryAcceleration:
 
 class EnableQueryAccelerationLabel:
     def __get__(self,instance,owner):
-        return instance._enable_query_acceleration_label
+        return instance._enable_query_acceleration_tag
 
     def __set__(self,instance,value):
-        instance._enable_query_acceleration_label = value
+        instance._enable_query_acceleration_tag = value
 
     def __delete__(self,instance):
-        del instance._enable_query_acceleration_label
+        del instance._enable_query_acceleration_tag
 
 class QueryAccelerationMaxScaleFactor:
     def __get__(self,instance,owner):
@@ -368,13 +362,13 @@ class QueryAccelerationMaxScaleFactor:
 
 class QueryAccelerationMaxScaleFactorLabel:
     def __get__(self,instance,owner):
-        return instance._query_acceleration_max_scale_factor_label
+        return instance._query_acceleration_max_scale_factor_tag
 
     def __set__(self,instance,value):
-        instance._query_acceleration_max_scale_factor_label = value
+        instance._query_acceleration_max_scale_factor_tag = value
 
     def __delete__(self,instance):
-        del instance._query_acceleration_max_scale_factor_label
+        del instance._query_acceleration_max_scale_factor_tag
 
 class MaxConcurrencyLevel:
     def __get__(self,instance,owner):
@@ -391,13 +385,13 @@ class MaxConcurrencyLevel:
 
 class MaxConcurrencyLevelLabel:
     def __get__(self,instance,owner):
-        return instance._max_concurrency_level_label
+        return instance._max_concurrency_level_tag
 
     def __set__(self,instance,value):
-        instance._max_concurrency_level_label = value
+        instance._max_concurrency_level_tag = value
 
     def __delete__(self,instance):
-        del instance._max_concurrency_level_label
+        del instance._max_concurrency_level_tag
 
 class StatementQueuedTimeoutInSeconds:
     def __get__(self,instance,owner):
@@ -414,13 +408,13 @@ class StatementQueuedTimeoutInSeconds:
 
 class StatementQueuedTimeoutInSecondsLabel:
     def __get__(self,instance,owner):
-        return instance._statement_queued_timeout_in_seconds_label
+        return instance._statement_queued_timeout_in_seconds_tag
 
     def __set__(self,instance,value):
-        instance._statement_queued_timeout_in_seconds_label = value
+        instance._statement_queued_timeout_in_seconds_tag = value
 
     def __delete__(self,instance):
-        del instance._statement_queued_timeout_in_seconds_label
+        del instance._statement_queued_timeout_in_seconds_tag
 
 class StatementTimeoutInSeconds:
     def __get__(self,instance,owner):
@@ -437,260 +431,194 @@ class StatementTimeoutInSeconds:
 
 class StatementTimeoutInSecondsLabel:
     def __get__(self,instance,owner):
-        return instance._statement_timeout_in_seconds_label
+        return instance._statement_timeout_in_seconds_tag
 
     def __set__(self,instance,value):
-        instance._statement_timeout_in_seconds_label = value
+        instance._statement_timeout_in_seconds_tag = value
 
     def __delete__(self,instance):
-        del instance._statement_timeout_in_seconds_label
+        del instance._statement_timeout_in_seconds_tag
 
 
 class WarehouseAttrs:
     name = Name()
-    name_label = NameLabel()
-    size = Size()
-    size_label = SizeLabel()
-    type = Type()
-    type_label = TypeLabel()
+    name_tag = NameLabel()
+    warehouse_size = WarehouseSize()
+    warehouse_size_tag = WarehouseSizeLabel()
+    warehouse_type = WarehouseType()
+    warehouse_type_tag = WarehouseTypeLabel()
     resource_constraint = ResourceConstraint()
-    resource_constraint_label = ResourceConstraintLabel()
+    resource_constraint_tag = ResourceConstraintLabel()
     max_cluster_count = MaxClusterCount()
-    max_cluster_count_label = MaxClusterCountLabel()
+    max_cluster_count_tag = MaxClusterCountLabel()
     min_cluster_count = MinClusterCount()
-    min_cluster_count_label = MinClusterCountLabel()
+    min_cluster_count_tag = MinClusterCountLabel()
     scaling_policy = ScalingPolicy()
-    scaling_policy_label = ScalingPolicyLabel()
+    scaling_policy_tag = ScalingPolicyLabel()
     auto_suspend = AutoSuspend()
-    auto_suspend_label = AutoSuspendLabel()
+    auto_suspend_tag = AutoSuspendLabel()
     auto_resume = AutoResume()
-    auto_resume_label = AutoResumeLabel()
+    auto_resume_tag = AutoResumeLabel()
     initially_suspended = InitiallySuspended()
-    initially_suspended_label = InitiallySuspendedLabel()
+    initially_suspended_tag = InitiallySuspendedLabel()
     resource_monitor = ResourceMonitor()
-    resource_monitor_label = ResourceMonitorLabel()
+    resource_monitor_tag = ResourceMonitorLabel()
     comment = Comment()
-    comment_label = CommentLabel()
+    comment_tag = CommentLabel()
     tag = Tag()
-    tag_label = TagLabel()
+    tag_tag = TagLabel()
     enable_query_acceleration = EnableQueryAcceleration()
-    enable_query_acceleration_label = EnableQueryAccelerationLabel()
+    enable_query_acceleration_tag = EnableQueryAccelerationLabel()
     query_acceleration_max_scale_factor = QueryAccelerationMaxScaleFactor()
-    query_acceleration_max_scale_factor_label = QueryAccelerationMaxScaleFactorLabel()
+    query_acceleration_max_scale_factor_tag = QueryAccelerationMaxScaleFactorLabel()
     max_concurrency_level = MaxConcurrencyLevel()
-    max_concurrency_level_label = MaxConcurrencyLevelLabel()
-    statemet_queued_timeout_in_seconds = StatementQueuedTimeoutInSeconds()
-    statemet_queued_timeout_in_seconds_label = StatementQueuedTimeoutInSecondsLabel()
+    max_concurrency_level_tag = MaxConcurrencyLevelLabel()
+    statement_queued_timeout_in_seconds = StatementQueuedTimeoutInSeconds()
+    statement_queued_timeout_in_seconds_tag = StatementQueuedTimeoutInSecondsLabel()
     statement_timeout_in_seconds = StatementTimeoutInSeconds()
-    statement_timeout_in_seconds_label = StatementTimeoutInSecondsLabel()
+    statement_timeout_in_seconds_tag = StatementTimeoutInSecondsLabel()
 
 
 
 class Warehouse:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = WarehouseAttrs()
-        self.session =  session
+        self.session =  'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name(self, value):
+        self.attr.name = value
 
-    def set_name_label(self,name_label):
-        self.attr.name_label = name_label
+    def set_name_tag(self, value):
+        self.attr.name_tag = value
 
-    def set_size(self,size):
-        self.attr.size =  size
+    def set_warehouse_size(self, value):
+        self.attr.warehouse_size = value
 
-    def set_size_label(self,size_label):
-        self.attr.size_label = size_label
+    def set_warehouse_size_tag(self, value):
+        self.attr.warehouse_size_tag = value
 
-    def set_type(self,type):
-        self.attr.type = type
+    def set_warehouse_type(self, value):
+        self.attr.warehouse_type = value
 
-    def set_type_label(self,type_label):
-        self.attr.type_label = type_label
-    
-    def set_resource_constraint(self,resource_constraint):
-        self.attr.resource_constraint = resource_constraint
+    def set_warehouse_type_tag(self, value):
+        self.attr.warehouse_type_tag = value
 
-    def set_resource_constraint_label(self,resource_constraint_label):
-        self.attr.resource_constraint_label = resource_constraint_label
+    def set_resource_constraint(self, value):
+        self.attr.resource_constraint = value
 
-    def set_max_cluster_count(self,max_cluster_count):
-        self.attr.max_cluster_count = max_cluster_count
+    def set_resource_constraint_tag(self, value):
+        self.attr.resource_constraint_tag = value
 
-    def set_max_cluster_count_label(self,max_cluster_count_label):
-        self.attr.max_cluster_count_label = max_cluster_count_label
+    def set_max_cluster_count(self, value):
+        self.attr.max_cluster_count = value
 
-    def set_min_cluster_count(self,min_cluster_count):
-        self.attr.min_cluster_count = min_cluster_count
+    def set_max_cluster_count_tag(self, value):
+        self.attr.max_cluster_count_tag = value
 
-    def set_min_cluster_count_label(self,min_cluster_count_label):
-        self.attr.min_cluster_count_label = min_cluster_count_label
-    
-    def set_scaling_policy(self,scaling_policy):
-        self.attr.scaling_policy = scaling_policy
+    def set_min_cluster_count(self, value):
+        self.attr.min_cluster_count = value
 
-    def set_scaling_policy_label(self,scaling_policy_label):
-        self.attr.scaling_policy_label = scaling_policy_label
-    
-    def set_auto_suspend(self,auto_suspend):
-        self.attr.auto_suspend = auto_suspend
+    def set_min_cluster_count_tag(self, value):
+        self.attr.min_cluster_count_tag = value
 
-    def set_auto_suspend_label(self,auto_suspend_label):
-        self.attr.auto_suspend_label = auto_suspend_label
+    def set_scaling_policy(self, value):
+        self.attr.scaling_policy = value
 
-    def set_auto_resume(self,auto_resume):
-        self.attr.auto_resume = auto_resume
+    def set_scaling_policy_tag(self, value):
+        self.attr.scaling_policy_tag = value
 
-    def set_auto_resume_label(self,auto_resume_label):
-        self.attr.auto_resume_label = auto_resume_label
+    def set_auto_suspend(self, value):
+        self.attr.auto_suspend = value
 
-    def set_initially_suspended(self,initially_suspended):
-        self.attr.initially_suspended = initially_suspended
+    def set_auto_suspend_tag(self, value):
+        self.attr.auto_suspend_tag = value
 
-    def set_initially_suspended_label(self,initially_suspended_label):
-        self.attr.initially_suspended_label = initially_suspended_label
-    
-    def set_resource_monitor(self,resource_monitor):
-        self.attr.resource_monitor = resource_monitor
+    def set_auto_resume(self, value):
+        self.attr.auto_resume = value
 
-    def set_resource_monitor_label(self,resource_monitor_label):
-        self.attr.resource_monitor_label = resource_monitor_label
+    def set_auto_resume_tag(self, value):
+        self.attr.auto_resume_tag = value
 
-    def set_comment(self,comment):
-        self.attr.comment = comment
+    def set_initially_suspended(self, value):
+        self.attr.initially_suspended = value
 
-    def set_comment_label(self,comment_label):
-        self.attr.comment_label = comment_label
-    
-    def set_tag(self,tag):
-        self.attr.tag = tag
+    def set_initially_suspended_tag(self, value):
+        self.attr.initially_suspended_tag = value
 
-    def set_tag_label(self,tag_label):
-        self.attr.tag_label = tag_label
-    
-    def set_enable_query_acceleration(self,enable_query_acceleration):
-        self.attr.enable_query_acceleration = enable_query_acceleration
+    def set_resource_monitor(self, value):
+        self.attr.resource_monitor = value
 
-    def set_enable_query_acceleration_label(self,enable_query_acceleration_label):
-        self.attr.enable_query_acceleration_label = enable_query_acceleration_label
-    
-    def set_query_acceleration_max_scale_factor(self,query_acceleration_max_scale_factor):
-        self.attr.query_acceleration_max_scale_factor = query_acceleration_max_scale_factor
+    def set_resource_monitor_tag(self, value):
+        self.attr.resource_monitor_tag = value
 
-    def set_query_acceleration_max_scale_factor_label(self,query_acceleration_max_scale_factor_label):
-        self.attr.query_acceleration_max_scale_factor_label = query_acceleration_max_scale_factor_label
+    def set_comment(self, value):
+        self.attr.comment = value
 
-    def set_max_concurrency_level(self,max_concurrency_level):
-        self.attr.max_concurrency_level = max_concurrency_level
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
 
-    def set_max_concurrency_level_label(self,max_concurrency_level_label):
-        self.attr.max_concurrency_level_label = max_concurrency_level_label
+    def set_tag(self, value):
+        self.attr.tag = value
 
-    def set_statemet_queued_timeout_in_seconds(self,statemet_queued_timeout_in_seconds):
-        self.attr.statemet_queued_timeout_in_seconds = statemet_queued_timeout_in_seconds
+    def set_tag_tag(self, value):
+        self.attr.tag_tag = value
 
-    def set_statemet_queued_timeout_in_seconds_label(self,statemet_queued_timeout_in_seconds_label):
-        self.attr.statemet_queued_timeout_in_seconds_label = statemet_queued_timeout_in_seconds_label
+    def set_enable_query_acceleration(self, value):
+        self.attr.enable_query_acceleration = value
 
-    def set_statement_timeout_in_seconds(self,statement_timeout_in_seconds):
-        self.attr.statement_timeout_in_seconds = statement_timeout_in_seconds
+    def set_enable_query_acceleration_tag(self, value):
+        self.attr.enable_query_acceleration_tag = value
 
-    def set_statement_timeout_in_seconds_label(self,statement_timeout_in_seconds_label):
-        self.attr.statement_timeout_in_seconds_label = statement_timeout_in_seconds_label
+    def set_query_acceleration_max_scale_factor(self, value):
+        self.attr.query_acceleration_max_scale_factor = value
+
+    def set_query_acceleration_max_scale_factor_tag(self, value):
+        self.attr.query_acceleration_max_scale_factor_tag = value
+
+    def set_max_concurrency_level(self, value):
+        self.attr.max_concurrency_level = value
+
+    def set_max_concurrency_level_tag(self, value):
+        self.attr.max_concurrency_level_tag = value
+
+    def set_statement_queued_timeout_in_seconds(self, value):
+        self.attr.statement_queued_timeout_in_seconds = value
+
+    def set_statement_queued_timeout_in_seconds_tag(self, value):
+        self.attr.statement_queued_timeout_in_seconds_tag = value
+
+    def set_statement_timeout_in_seconds(self, value):
+        self.attr.statement_timeout_in_seconds = value
+
+    def set_statement_timeout_in_seconds_tag(self, value):
+        self.attr.statement_timeout_in_seconds_tag = value
         
-    def execute_query(self,qry):
-        self.session.sql(qry).collect()
-
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        if self.attr.type is not None:
-            self.flag_dic['type'] = 1
-        else:
-            self.flag_dic['type'] = 0
 
-        if self.attr.size is not None:
-            self.flag_dic['size'] = 1
-        else:
-            self.flag_dic['size'] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.resource_constraint is not None:
-            self.flag_dic['resource_constraint'] = 1
-        else:
-            self.flag_dic['resource_constraint'] = 0
-
-        if self.attr.max_cluster_count is not None:
-            self.flag_dic['max_cluster_count'] = 1
-        else:
-            self.flag_dic['max_cluster_count'] = 0
-
-        if self.attr.min_cluster_count is not None:
-            self.flag_dic['min_cluster_count'] = 1
-        else:
-            self.flag_dic['min_cluster_count'] = 0
-
-        if self.attr.scaling_policy is not None:
-            self.flag_dic['scaling_policy'] = 1
-        else:
-            self.flag_dic['scaling_policy'] = 0
-
-        if self.attr.auto_suspend is not None:
-            self.flag_dic['auto_suspend'] = 1
-        else:
-            self.flag_dic['auto_suspend'] = 0
-
-        if self.attr.auto_resume is not None:
-            self.flag_dic['auto_resume'] = 1
-        else:
-            self.flag_dic['auto_resume'] = 0
-
-        if self.attr.initially_suspended is not None:
-            self.flag_dic['initially_suspended'] = 1
-        else:
-            self.flag_dic['initially_suspended'] = 0
-
-        if self.attr.resource_monitor is not None:
-            self.flag_dic['resource_monitor'] = 1
-        else:
-            self.flag_dic['resource_monitor'] = 0
-
-        if self.attr.comment is not None:
-            self.flag_dic['comment'] = 1
-        else:
-            self.flag_dic['comment'] = 0
-
-        if self.attr.tag is not None:
-            self.flag_dic['tag'] = 1
-        else:
-            self.flag_dic['tag'] = 0
-
-        if self.attr.enable_query_acceleration is not None:
-            self.flag_dic['enable_query_acceleration'] = 1
-        else:
-            self.flag_dic['enable_query_acceleration'] = 0
-
-        if self.attr.query_acceleration_max_scale_factor is not None:
-            self.flag_dic['query_acceleration_max_scale_factor'] = 1
-        else:
-            self.flag_dic['query_acceleration_max_scale_factor'] = 0
-
-        if self.attr.max_concurrency_level is not None:
-            self.flag_dic['max_concurrency_level'] = 1
-        else:
-            self.flag_dic['max_concurrency_level'] = 0
-
-        if self.attr.statemet_queued_timeout_in_seconds is not None:
-            self.flag_dic['statemet_queued_timeout_in_seconds'] = 1
-        else:
-            self.flag_dic['statemet_queued_timeout_in_seconds'] = 0
-
-        if self.attr.statement_timeout_in_seconds is not None:
-            self.flag_dic['statement_timeout_in_seconds'] = 1
-        else:
-            self.flag_dic['statement_timeout_in_seconds'] = 0
-
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._warehouse_size_tag,"_warehouse_size")
+        set_flag(gv._warehouse_type_tag,"_warehouse_type")
+        set_flag(gv._resource_constraint_tag,"_resource_constraint")
+        set_flag(gv._max_cluster_count_tag,"_max_cluster_count")
+        set_flag(gv._min_cluster_count_tag,"_min_cluster_count")
+        set_flag(gv._scaling_policy_tag,"_scaling_policy")
+        set_flag(gv._auto_suspend_tag,"_auto_suspend")
+        set_flag(gv._auto_resume_tag,"_auto_resume")
+        set_flag(gv._initially_suspended_tag,"_initially_suspended")
+        set_flag(gv._resource_monitor_tag,"_resource_monitor")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._tag_tag,"_tag")
+        set_flag(gv._enable_query_acceleration_tag,"_enable_query_acceleration")
+        set_flag(gv._query_acceleration_max_scale_factor_tag,"_query_acceleration_max_scale_factor")
+        set_flag(gv._max_concurrency_level_tag,"_max_concurrency_level")
+        set_flag(gv._statement_queued_timeout_in_seconds_tag,"_statement_queued_timeout_in_seconds")
+        set_flag(gv._statement_timeout_in_seconds_tag,"_statement_timeout_in_seconds")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -699,47 +627,47 @@ class Warehouse:
                 self.property_lst.append(prop)
 
     def set_create_warehouse_qry(self):
-        self.qry = f"CREATE OR REPLACE WAREHOUSE IF NOT EXISTS {self.attr.name} "
+        self.qry = f"CREATE WAREHOUSE IF NOT EXISTS {self.attr.name} "
 
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
-                if prop == 'type':
-                    self.qry = f" {self.qry} {self.attr.type_label}  = {self.attr.type} "
-                if prop == 'size':
-                    self.qry = f" {self.qry} {self.attr.size_label} = {self.attr.size} "
+                if prop == 'warehouse_type':
+                    self.qry = f" {self.qry} {self.attr.warehouse_type_tag}  = {self.attr.warehouse_type} "
+                if prop == 'warehouse_size':
+                    self.qry = f" {self.qry} {self.attr.warehouse_size_tag} = {self.attr.warehouse_size} "
                 if prop == 'resource_constraint':
-                    self.qry = f" {self.qry} {self.attr.resource_constraint_label} = {self.attr.resource_constraint} "
+                    self.qry = f" {self.qry} {self.attr.resource_constraint_tag} = {self.attr.resource_constraint} "
                 if prop == 'max_cluster_count':
-                    self.qry = f" {self.qry} {self.attr.max_cluster_count_label} = {self.attr.max_cluster_count} "
+                    self.qry = f" {self.qry} {self.attr.max_cluster_count_tag} = {self.attr.max_cluster_count} "
                 if prop == 'min_cluster_count':
-                    self.qry = f" {self.qry} {self.attr.min_cluster_count_label} = {self.attr.min_cluster_count} "
+                    self.qry = f" {self.qry} {self.attr.min_cluster_count_tag} = {self.attr.min_cluster_count} "
                 if prop == 'scaling_policy':
-                    self.qry = f" {self.qry} {self.attr.scaling_policy_label} = {self.attr.scaling_policy} "
+                    self.qry = f" {self.qry} {self.attr.scaling_policy_tag} = {self.attr.scaling_policy} "
                 if prop == 'auto_suspend':
-                    self.qry = f" {self.qry} {self.attr.auto_suspend_label} = {self.attr.auto_suspend} "
+                    self.qry = f" {self.qry} {self.attr.auto_suspend_tag} = {self.attr.auto_suspend} "
                 if prop == 'auto_resume':
-                    self.qry = f" {self.qry} {self.attr.auto_resume_label} = {self.attr.auto_resume} "
+                    self.qry = f" {self.qry} {self.attr.auto_resume_tag} = {self.attr.auto_resume} "
                 if prop == 'initially_suspended':
-                    self.qry = f" {self.qry} {self.attr.initially_suspended_label} = {self.attr.initially_suspended} "
+                    self.qry = f" {self.qry} {self.attr.initially_suspended_tag} = {self.attr.initially_suspended} "
                 if prop == 'resource_monitor':
-                    self.qry = f" {self.qry} {self.attr.resource_monitor_label} = {self.attr.resource_monitor} "
+                    self.qry = f" {self.qry} {self.attr.resource_monitor_tag} = {self.attr.resource_monitor} "
                 if prop == 'comment':
-                    self.qry = f" {self.qry} {self.attr.comment_label} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
                 if prop == 'tag':
-                    self.qry = f" {self.qry} {self.attr.tag_label} = {self.attr.tag} "
+                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
                 if prop == 'enable_query_acceleration':
-                    self.qry = f" {self.qry} {self.attr.enable_query_acceleration_label} = {self.attr.enable_query_acceleration} "
+                    self.qry = f" {self.qry} {self.attr.enable_query_acceleration_tag} = {self.attr.enable_query_acceleration} "
                 if prop == 'query_acceleration_max_scale_factor':
-                    self.qry = f" {self.qry} {self.attr.query_acceleration_max_scale_factor_label} = {self.attr.query_acceleration_max_scale_factor} "
+                    self.qry = f" {self.qry} {self.attr.query_acceleration_max_scale_factor_tag} = {self.attr.query_acceleration_max_scale_factor} "
                 if prop == 'max_concurrency_level':
-                    self.qry = f" {self.qry} {self.attr.max_concurrency_level_label} = {self.attr.max_concurrency_level} "
-                if prop == 'statemet_queued_timeout_in_seconds':
-                    self.qry = f" {self.qry} {self.attr.statemet_queued_timeout_in_seconds_label} = {self.attr.statemet_queued_timeout_in_seconds} "
+                    self.qry = f" {self.qry} {self.attr.max_concurrency_level_tag} = {self.attr.max_concurrency_level} "
+                if prop == 'statement_queued_timeout_in_seconds':
+                    self.qry = f" {self.qry} {self.attr.statement_queued_timeout_in_seconds_tag} = {self.attr.statement_queued_timeout_in_seconds} "
                 if prop == 'statement_timeout_in_seconds':
-                    self.qry = f" {self.qry} {self.attr.statement_timeout_in_seconds_label} = {self.attr.statement_timeout_in_seconds} "
+                    self.qry = f" {self.qry} {self.attr.statement_timeout_in_seconds_tag} = {self.attr.statement_timeout_in_seconds} "
 
 
     def prepare_create_query(self):
@@ -748,62 +676,46 @@ class Warehouse:
         self.set_create_warehouse_qry()
         self.add_properties_to_query()
         
-    
-    def drop_warehouse(self):
-       self.qry = f" DROP WAREHOUSE IF EXISTS {self.attr.name) "
-        
-
-        
                  
 
-def main(session,**kwargs):
-    if mode == "CREATE":
-        wh = Warehouse(session)
-        wh.set_name(kwargs[WHV._name_label])
-        wh.set_name_label(WHV._name_label)
-        wh.set_type(kwargs[WHV._type_label])
-        wh.set_type(WHV._type_label)
-        wh.set_size(kwargs[WHV._size_label])
-        wh.set_size_label(WHV._size_label)
-        wh.set_auto_resume(kwargs[WHV._auto_resume_label])
-        wh.set_auto_resume_label(WHV._auto_resume_label)
-        wh.set_auto_suspend(kwargs[WHV._auto_suspend_label])
-        wh.set_auto_suspend_label(WHV._auto_suspend_label)
-        wh.set_comment(kwargs[WHV._comment_label])
-        wh.set_comment_label(WHV._comment_label)
-        wh.set_enable_query_acceleration(kwargs[WHV._enable_query_acceleration_label])
-        wh.set_enable_query_acceleration_label(WHV._enable_query_acceleration_label)
-        wh.set_initially_suspended(kwargs[WHV._initially_suspended_label])
-        wh.set_initially_suspended_label(WHV._initially_suspended_label)
-        wh.set_max_cluster_count(kwargs[WHV._max_cluster_count_label])
-        wh.set_max_cluster_count_label(WHV._max_cluster_count_label)
-        wh.set_resource_constraint(kwargs[WHV._resource_constraint_label])
-        wh.set_resource_constraint_label(WHV._resource_constraint_label)
-        wh.set_max_concurrency_level(kwargs[WHV._max_concurrency_level_label])
-        wh.set_max_concurrency_level_label(WHV._max_concurrency_level_label)
-        wh.set_min_cluster_count(kwargs[WHV._min_cluster_count_label])
-        wh.set_min_cluster_count_label(WHV._min_cluster_count_label)
-        wh.set_query_acceleration_max_scale_factor(WHV._query_acceleration_max_scale_factor_label)
-        wh.set_query_acceleration_max_scale_factor_label(WHV._query_acceleration_max_scale_factor_label)
-        wh.set_resource_monitor(kwargs[WHV._resource_monitor_label])
-        wh.set_resource_monitor_label(WHV._resource_monitor_label)
-        wh.set_scaling_policy(kwargs[WHV._scaling_policy_label])
-        wh.set_scaling_policy_label(WHV._scaling_policy_label)
-        wh.set_statement_timeout_in_seconds(kwargs[WHV._statement_timeout_in_seconds_label])
-        wh.set_statement_timeout_in_seconds_label(WHV._statement_timeout_in_seconds_label)
-        wh.set_statemet_queued_timeout_in_seconds(WHV._statement_queued_timeout_in_seconds_label)
-        wh.set_statemet_queued_timeout_in_seconds_label(WHV._statement_queued_timeout_in_seconds_label)
-        wh.set_tag(WHV._tag_label)
-        wh.set_tag_label(WHV._tag_label)
-        wh.prepare_create_query()
-        wh.execute_query(wh.qry)
-        
-    elif mode == "DROP":
-        wh = Warehouse(session)
-        wh.set_name(kwargs[WHV._name_label])
-        wh.set_name_label(WHV._name_label)
-        wh.drop_warehouse()
-        wh.execute_query(wh.qry)
-        
+def main(**kwargs):
+    wh = Warehouse()
+    wh.set_name(kwargs[gv._name_tag])
+    wh.set_name_tag(gv._name_tag)
+    wh.set_warehouse_type(kwargs[gv._warehouse_type_tag])
+    wh.set_warehouse_type_tag(gv._warehouse_type_tag)
+    wh.set_warehouse_size(kwargs[gv._warehouse_size_tag])
+    wh.set_warehouse_size_tag(gv._warehouse_size_tag)
+    wh.set_auto_resume(kwargs[gv._auto_resume_tag])
+    wh.set_auto_resume_tag(gv._auto_resume_tag)
+    wh.set_auto_suspend(kwargs[gv._auto_suspend_tag])
+    wh.set_auto_suspend_tag(gv._auto_suspend_tag)
+    wh.set_comment(kwargs[gv._comment_tag])
+    wh.set_comment_tag(gv._comment_tag)
+    wh.set_enable_query_acceleration(kwargs[gv._enable_query_acceleration_tag])
+    wh.set_enable_query_acceleration_tag(gv._enable_query_acceleration_tag)
+    wh.set_initially_suspended(kwargs[gv._initially_suspended_tag])
+    wh.set_initially_suspended_tag(gv._initially_suspended_tag)
+    wh.set_max_cluster_count(kwargs[gv._max_cluster_count_tag])
+    wh.set_max_cluster_count_tag(gv._max_cluster_count_tag)
+    wh.set_resource_constraint(kwargs[gv._resource_constraint_tag])
+    wh.set_resource_constraint_tag(gv._resource_constraint_tag)
+    wh.set_max_concurrency_level(kwargs[gv._max_concurrency_level_tag])
+    wh.set_max_concurrency_level_tag(gv._max_concurrency_level_tag)
+    wh.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
+    wh.set_min_cluster_count_tag(gv._min_cluster_count_tag)
+    wh.set_query_acceleration_max_scale_factor(gv._query_acceleration_max_scale_factor_tag)
+    wh.set_query_acceleration_max_scale_factor_tag(gv._query_acceleration_max_scale_factor_tag)
+    wh.set_resource_monitor(kwargs[gv._resource_monitor_tag])
+    wh.set_resource_monitor_tag(gv._resource_monitor_tag)
+    wh.set_scaling_policy(kwargs[gv._scaling_policy_tag])
+    wh.set_scaling_policy_tag(gv._scaling_policy_tag)
+    wh.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
+    wh.set_statement_timeout_in_seconds_tag(gv._statement_timeout_in_seconds_tag)
+    wh.set_statement_queued_timeout_in_seconds(gv._statement_queued_timeout_in_seconds_tag)
+    wh.set_statement_queued_timeout_in_seconds_tag(gv._statement_queued_timeout_in_seconds_tag)
+    wh.set_tag(gv._tag_tag)
+    wh.set_tag_tag(gv._tag_tag)
+    wh.prepare_create_query()     
 
     return wh.qry

@@ -87,19 +87,15 @@ class Share:
     def set_comment_tag(self,comment_tag):
         self.attr.comment_tag = comment_tag
 
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.name is not None:
-            self.flag_dic[gv._name_tag] = 1
-        else:
-            self.flag_dic[gv._name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.comment is not None:
-            self.flag_dic[gv._comment_tag] = 1
-        else:
-            self.flag_dic[gv._comment_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._comment_tag,"_comment")
+
 
     def check_properties_to_set(self): 
         self.property_lst = []

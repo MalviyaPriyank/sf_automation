@@ -624,109 +624,33 @@ class ExternalStage:
     def set_notification_integration_tag(self,val):
         self.attr.notification_integration_tag = val
 
-
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        if self.attr.name != "NONE":
-            self.flag_dic[gv._name_tag] = 1
-        else:
-            self.flag_dic[gv._name_tag] = 0
 
-        if self.attr.file_format != "NONE":
-            self.flag_dic[gv._file_format_tag] = 1
-        else:
-            self.flag_dic[gv._file_format_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.comment != "NONE":
-            self.flag_dic[gv._comment_tag] = 1
-        else:
-            self.flag_dic[gv._comment_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._file_format_tag,"_file_format")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._tag_tag,"_tag")
+        set_flag(gv._url_tag,"_url")
+        set_flag(gv._storage_integration_tag,"_storage_integration")
+        set_flag(gv._aws_key_id_tag,"_aws_key_id")
+        set_flag(gv._aws_secret_key_tag,"_aws_secret_key")
+        set_flag(gv._aws_token_tag,"_aws_token")
+        set_flag(gv._azure_sas_token_tag,"_azure_sas_token")
+        set_flag(gv._aws_role_tag,"_aws_role")
+        set_flag(gv._encryption_tag,"_encryption")
+        set_flag(gv._encryption_type_tag,"_encryption_type")
+        set_flag(gv._encryption_master_key_tag,"_encryption_master_key")
+        set_flag(gv._encryption_kms_key_id_tag,"_encryption_kms_key_id")
+        set_flag(gv._use_privatelink_endpoint_tag,"_use_privatelink_endpoint")
+        set_flag(gv._directory_tag,"_directory")
+        set_flag(gv._refresh_on_create_tag,"_refresh_on_create")
+        set_flag(gv._auto_refresh_tag,"_auto_refresh")
+        set_flag(gv._notification_integration_tag,"_notification_integration")
 
-        if self.attr.tag != "NONE":
-            self.flag_dic[gv._tag_tag] = 1
-        else:
-            self.flag_dic[gv._tag_tag] = 0
-
-        if self.attr.url != "NONE":
-            self.flag_dic[gv._url_tag] = 1
-        else:
-            self.flag_dic[gv._url_tag] = 0
-
-        if self.attr.storage_integration != "NONE":
-            self.flag_dic[gv._storage_integration_tag] = 1
-        else:
-            self.flag_dic[gv._storage_integration_tag] = 0
-
-        if self.attr.aws_key_id != "NONE":
-            self.flag_dic[gv._aws_key_id_tag] = 1
-        else:
-            self.flag_dic[gv._aws_key_id_tag] = 0
-
-        if self.attr.aws_secret_key != "NONE":
-            self.flag_dic[gv._aws_secret_key_tag] = 1
-        else:
-            self.flag_dic[gv._aws_secret_key_tag] = 0
-
-        if self.attr.aws_token != "NONE":
-            self.flag_dic[gv._aws_token_tag] = 1
-        else:
-            self.flag_dic[gv._aws_token_tag] = 0
-
-        if self.attr.azure_sas_token != "NONE":
-            self.flag_dic[gv._azure_sas_token_tag] = 1
-        else:
-            self.flag_dic[gv._azure_sas_token_tag] = 0
-
-        if self.attr.aws_role != "NONE":
-            self.flag_dic[gv._aws_role_tag] = 1
-        else:
-            self.flag_dic[gv._aws_role_tag] = 0
-
-        if self.attr.encryption != "NONE":
-            self.flag_dic[gv._encryption_tag] = 1
-        else:
-            self.flag_dic[gv._encryption_tag] = 0
-
-        if self.attr.encryption_type != "NONE":
-            self.flag_dic[gv._encryption_type_tag] = 1
-        else:
-            self.flag_dic[gv._encryption_type_tag] = 0
-
-        if self.attr.encryption_master_key != "NONE":
-            self.flag_dic[gv._encryption_master_key_tag] = 1
-        else:
-            self.flag_dic[gv._encryption_master_key_tag] = 0
-
-        if self.attr.encryption_kms_key_id != "NONE":
-            self.flag_dic[gv._encryption_kms_key_id_tag] = 1
-        else:
-            self.flag_dic[gv._encryption_kms_key_id_tag] = 0
-
-        if self.attr.use_privatelink_endpoint != "NONE":
-            self.flag_dic[gv._use_privatelink_endpoint_tag] = 1
-        else:
-            self.flag_dic[gv._use_privatelink_endpoint_tag] = 0
-
-        if self.attr.directory != "NONE":
-            self.flag_dic[gv._directory_tag] = 1
-        else:
-            self.flag_dic[gv._directory_tag] = 0
-        
-        if self.attr.refresh_on_create != "NONE":
-            self.flag_dic[gv._refresh_on_create_tag] = 1
-        else:
-            self.flag_dic[gv._refresh_on_create_tag] = 0
-            
-        if self.attr.auto_refresh != "NONE":
-            self.flag_dic[gv._auto_refresh_tag] = 1
-        else:
-            self.flag_dic[gv._auto_refresh_tag] = 0
-
-        if self.attr.notification_integration != "NONE":
-            self.flag_dic[gv._notification_integration_tag] = 1
-        else:
-            self.flag_dic[gv._notification_integration_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []

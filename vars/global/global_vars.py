@@ -26,6 +26,7 @@ class Database:
         pass
 
     _name_tag = "NAME"
+    _replace_invalid_characters_tag = "REPLACE_INVALID_CHARACTERS"
     _data_retention_time_in_days_tag = "DATA_RETENTION_TIME_IN_DAYS"
     _max_data_extension_time_in_days_tag = "MAX_DATA_EXTENSION_TIME_IN_DAYS"
     _external_volume_tag = "EXTERNAL_VOLUME"
@@ -173,3 +174,58 @@ class FileFormat:
     _disable_auto_convert_tag = "DISABLE_AUTO_CONVERT"
     _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
     _allowed_values_binary_format = ["HEX","BASE64","UTF8"]    
+
+
+class User:
+    def __init__(self):
+        pass
+    _name_tag = "NAME"
+    _password_tag = "PASSWORD"
+    _login_name_tag = "LOGIN_NAME"
+    _display_name_tag = "DISPLAY_NAME"
+    _first_name_tag = "FIRST_NAME"
+    _last_name_tag = "LAST_NAME"
+    _email_tag = "EMAIL"
+    _must_change_password_tag = "MUST_CHANGE_PASSWORD"
+    _disabled_tag = "DISABLED"
+    _days_to_expiry_tag = "DAYS_TO_EXPIRY"
+    _mins_to_unlock_tag = "MINS_TO_UNLOCK"
+    _default_warehouse_tag = "DEFAULT_WAREHOUSE"
+    _default_role_tag = "DEFAULT_ROLE"
+    _default_secondary_roles_tag = "DEFAULT_SECONDARY_ROLES"
+    _mins_to_by_pass_mfa_tag = "MINS_TO_BY_PASS_MFA"
+    _rsa_public_key_tag = "RSA_PUBLIC_KEY"
+    _rsa_public_key_fp_tag = "RSA_PUBLIC_KEY_FP"
+    _rsa_public_key_2_tag = "RSA_PUBLIC_KEY_2"
+    _rsa_public_key_2_fp_tag = "RSA_PUBLIC_KEY_2_FP"
+    _type_tag = "TYPE"
+    _comment_tag = "COMMENT"
+    _enable_unredacted_query_syntax_error_tag = "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR"
+    _allowed_values_display_name = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
+    _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
+    _allowed_values_default_secondary_roles = ['ALL',{}]
+
+
+class Warehouse:
+    def __init__(self):
+        pass
+    _name_tag = "NAME"
+    _warehouse_size_tag = "SIZE"
+    _warehouse_type_tag = "TYPE"
+    _resource_constraint_tag = "RESOURCE_CONSTRAINT"
+    _max_cluster_count_tag = "MAX_CLUSTER_COUNT"
+    _min_cluster_count_tag = "MIN_CLUSTER_COUNT"
+    _scaling_policy_tag = "SCALING_POLICY"
+    _auto_suspend_tag = "AUTO_SUSPEND"
+    _auto_resume_tag = "AUTO_RESUME"
+    _initially_suspended_tag = "INITIALLY_SUSPENDED"
+    _resource_monitor_tag = "RESOURCE_MONITOR"
+    _comment_tag = "COMMENT"
+    _tag_tag = "TAG"
+    _enable_query_acceleration_tag = "ENABLE_QUERY_ACCELERATION"
+    _query_acceleration_max_scale_factor_tag = "QUERY_ACCELERATION_MAX_SCALE_FACTOR"
+    _max_concurrency_level_tag = "MAX_CONCURRENCY_LEVEL"
+    _statement_queued_timeout_in_seconds_tag = "STATEMET_QUEUED_TIMEOUT_IN_SECONDS"
+    _statement_timeout_in_seconds_tag = "STATEMENT_TIMEOUT_IN_SECONDS"
+    _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
+    _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]

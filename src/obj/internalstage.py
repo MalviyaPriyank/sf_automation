@@ -250,43 +250,19 @@ class InternalStage:
     def set_refresh_on_create_tag(self,val):
         self.attr.refresh_on_create_tag = val
 
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        if self.attr.name != "NONE":
-            self.flag_dic[gv._name_tag] = 1
-        else:
-            self.flag_dic[gv._name_tag] = 0
 
-        if self.attr.file_format != "NONE":
-            self.flag_dic[gv._file_format_tag] = 1
-        else:
-            self.flag_dic[gv._file_format_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.comment != "NONE":
-            self.flag_dic[gv._comment_tag] = 1
-        else:
-            self.flag_dic[gv._comment_tag] = 0
-
-        if self.attr.tag != "NONE":
-            self.flag_dic[gv._tag_tag] = 1
-        else:
-            self.flag_dic[gv._tag_tag] = 0
-
-        if self.attr.encryption != "NONE":
-            self.flag_dic[gv._encryption_tag] = 1
-        else:
-            self.flag_dic[gv._encryption_tag] = 0
-
-        if self.attr.directory != "NONE":
-            self.flag_dic[gv._directory_tag] = 1
-        else:
-            self.flag_dic[gv._directory_tag] = 0
-        
-        if self.attr.refresh_on_create != "NONE":
-            self.flag_dic[gv._refresh_on_create_tag] = 1
-        else:
-            self.flag_dic[gv._refresh_on_create_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._file_format_tag,"_file_format")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._tag_tag,"_tag")
+        set_flag(gv._encryption_tag,"_encryption")
+        set_flag(gv._directory_tag,"_directory")
+        set_flag(gv._refresh_on_create_tag,"_refresh_on_create")
 
     def check_properties_to_set(self): 
         self.property_lst = []

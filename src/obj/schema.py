@@ -455,79 +455,27 @@ class Schema:
     def set_tag_tag(self,tag_tag):
         self.attr.tag_tag = tag_tag
 
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.name != "NONE":
-            self.flag_dic[gv._name_tag] = 1
-        else:
-            self.flag_dic[gv._name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.with_managed_access != "NONE":
-            self.flag_dic[gv._with_managed_access_tag] = 1
-        else:
-            self.flag_dic[gv._with_managed_access_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._with_managed_access_tag,"_with_managed_access")
+        set_flag(gv._data_retention_time_in_days_tag,"_data_retention_time_in_days")
+        set_flag(gv._max_data_extension_time_in_days_tag,"_max_data_extension_time_in_days")
+        set_flag(gv._external_volume_tag,"_external_volume")
+        set_flag(gv._catalog_tag,"_catalog")
+        set_flag(gv._replace_invalid_characters_tag,"_replace_invalid_characters")
+        set_flag(gv._default_ddl_collation_tag,"_default_ddl_collation")
+        set_flag(gv._log_level_tag,"_log_level")
+        set_flag(gv._trace_level_tag,"_trace_level")
+        set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
+        set_flag(gv._classification_profile_tag,"_classification_profile")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._tag_tag,"_tag_tag")
 
-        if self.attr.data_retention_time_in_days != "NONE":
-            self.flag_dic[gv._data_retention_time_in_days_tag] = 1
-        else:
-            self.flag_dic[gv._data_retention_time_in_days_tag] = 0
-
-        if self.attr.max_data_extension_time_in_days != "NONE":
-            self.flag_dic[gv._max_data_extension_time_in_days_tag] = 1
-        else:
-            self.flag_dic[gv._max_data_extension_time_in_days_tag] = 0
-
-        if self.attr.external_volume != "NONE":
-            self.flag_dic[gv._external_volume_tag] = 1
-        else:
-            self.flag_dic[gv._external_volume_tag] = 0
-
-        if self.attr.catalog != "NONE":
-            self.flag_dic[gv._catalog_tag] = 1
-        else:
-            self.flag_dic[gv._catalog_tag] = 0
-
-        if self.attr.replace_invalid_characters != "NONE":
-            self.flag_dic[gv._replace_invalid_characters_tag] = 1
-        else:
-            self.flag_dic[gv._replace_invalid_characters_tag] = 0
-
-        if self.attr.default_ddl_collation != "NONE":
-            self.flag_dic[gv._default_ddl_collation_tag] = 1
-        else:
-            self.flag_dic[gv._default_ddl_collation_tag] = 0
-
-        if self.attr.log_level != "NONE":
-            self.flag_dic[gv._log_level_tag] = 1
-        else:
-            self.flag_dic[gv._log_level_tag] = 0
-
-        if self.attr.trace_level != "NONE":
-            self.flag_dic[gv._trace_level_tag] = 1
-        else:
-            self.flag_dic[gv._trace_level_tag] = 0
-
-        if self.attr.storage_serialization_policy != "NONE":
-            self.flag_dic[gv._storage_serialization_policy_tag] = 1
-        else:
-            self.flag_dic[gv._storage_serialization_policy_tag] = 0
-
-        if self.attr.classification_profile != "NONE":
-            self.flag_dic[gv._classification_profile_tag] = 1
-        else:
-            self.flag_dic[gv._classification_profile_tag] = 0
-
-        if self.attr.comment != "NONE":
-            self.flag_dic[gv._comment_tag] = 1
-        else:
-            self.flag_dic[gv._comment_tag] = 0
-
-        if self.attr.tag != "NONE":
-            self.flag_dic[gv._tag_tag] = 1
-        else:
-            self.flag_dic[gv._tag_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []

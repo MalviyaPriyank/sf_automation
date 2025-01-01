@@ -1,10 +1,14 @@
 
+
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from user_global_vars import *
+
+from global_vars import User as gv
+from validatevalue import ValidateValue as vv
 
 class Name:
     def __get__(self,instance,owner):
@@ -79,7 +83,7 @@ class DisplayName:
         return instance._display_name
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_display_name_values: # ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
+        if value not in gv._allowed_values_display_name: # ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
             raise ValueError
         else:
             instance._display_name = value
@@ -186,10 +190,10 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_must_change_password_values: # ['TRUE','FALSE']
-            raise ValueError
-        else:
+        if vv.is_bool(value):
             instance._must_change_password = value
+        else:
+            raise ValueError       
     
     def __delete__(self,instance):
         del instance._must_change_password
@@ -209,10 +213,10 @@ class Disabled:
         return instance._disabled
     
     def __set__(self,instance,value):
-        if value not in ADMT._allowed_disabled_values: # ['TRUE','FALSE']
-            raise ValueError
-        else:
+        if vv.is_bool(value): # ['TRUE','FALSE']
             instance._disabled = value
+        else:
+            raise ValueError
     
     def __delete__(self,instance):
         del instance._disabled
@@ -232,10 +236,11 @@ class DaysToExpiry:
         return instance._days_to_expiry
     
     def __set__(self,instance,value):
-        if type(value) != int:
-            raise TypeError
-        else:
+        if vv.is_positive_number(value):
             instance._days_to_expiry = value
+        else:
+            raise ValueError
+            
     
     def __delete__(self,instance):
         del instance._days_to_expiry
@@ -255,10 +260,10 @@ class MinsToUnlock:
         return instance._mins_to_unlock
     
     def __set__(self,instance,value):
-        if type(value) != int:
-            raise TypeError
-        else:
+        if vv.is_positive_number(value):
             instance._mins_to_unlock = value
+        else:
+            raise ValueError
     
     def __delete__(self,instance):
         del instance._mins_to_unlock
@@ -326,7 +331,7 @@ class DefaultSecondaryRoles:
         return instance._default_secondary_roles
     
     def __set__(self,instance,value):
-        if value not in _allowed_default_secondary_roles_values:#['ALL',{}]
+        if value not in gv._allowed_values_default_secondary_roles:#['ALL',{}]
             raise ValueError
         else:
             instance._default_secondary_roles = value
@@ -349,10 +354,11 @@ class MinsToByPassMFA:
         return instance._mins_to_by_pass_mfa
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_mins_to_by_pass_mfa_type:
-            raise TypeError
-        else:
+        if vv.is_positive_number(value):
             instance._mins_to_by_pass_mfa = value
+        else:
+            raise ValueError
+            
     
     def __delete__(self,instance):
         del instance._mins_to_by_pass_mfa
@@ -372,10 +378,7 @@ class RSAPublicKey:
         return instance._rsa_public_key
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_type_rsa_public_key:
-            raise TypeError
-        else:
-            instance._rsa_public_key = value
+        instance._rsa_public_key = value
     
     def __delete__(self,instance):
         del instance._rsa_public_key
@@ -395,10 +398,7 @@ class RSAPublicKeyFP:
         return instance._rsa_public_key_fp
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_type_rsa_public_key_fp:
-            raise TypeError
-        else:
-            instance._rsa_public_key_fp = value
+        instance._rsa_public_key_fp = value
     
     def __delete__(self,instance):
         del instance._rsa_public_key_fp
@@ -418,10 +418,7 @@ class RSAPublicKey2:
         return instance._rsa_public_key_2
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_type_rsa_public_key_2:
-            raise TypeError
-        else:
-            instance._rsa_public_key_2 = value
+        instance._rsa_public_key_2 = value
     
     def __delete__(self,instance):
         del instance._rsa_public_key_2
@@ -441,10 +438,7 @@ class RSAPublicKey2FP:
         return instance._rsa_public_key_2_fp
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_type_rsa_public_key_2_fp:
-            raise TypeError
-        else:
-            instance._rsa_public_key_2_fp = value
+        instance._rsa_public_key_2_fp = value
     
     def __delete__(self,instance):
         del instance._rsa_public_key_2_fp
@@ -464,7 +458,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
-        if type(value) != ADMT._allowed_type_type: #'PERSON','SERVICE','LEGACY_SERVICE','NULL'
+        if value not in gv._allowed_values_type: #'PERSON','SERVICE','LEGACY_SERVICE','NULL'
             raise TypeError
         else:
             instance._type = value
@@ -507,10 +501,11 @@ class EnableUnredactedQuerySyntaxError:
         return instance._enable_unredacted_query_syntax_error
     
     def __set__(self,instance,value):
-        if value not in _allowed_values_enable_unredacted_query_syntax_error:# TRUE FALSE
-            raise ValueError
-        else:
+        if vv.is_bool(value):
             instance._enable_unredacted_query_syntax_error = value
+        else:
+            raise ValueError
+            
     
     def __delete__(self,instance):
         del instance._enable_unredacted_query_syntax_error
@@ -583,8 +578,8 @@ class UserAttrs:
     rsa_public_key_2 = RSAPublicKey2()
     rsa_public_key_2_tag = RSAPublicKey2Tag()
 
-    rsa_public_key_2 = RSAPublicKey2FP()
-    rsa_public_key_2_tag = RSAPublicKey2FPTag()
+    rsa_public_key_2_fp = RSAPublicKey2FP()
+    rsa_public_key_2_fp_tag = RSAPublicKey2FPTag()
 
     type = Type()
     type_tag = TypeTag()
@@ -596,9 +591,9 @@ class UserAttrs:
     enable_unredacted_query_syntax_error_tag = EnableUnredactedQuerySyntaxErrorTag()
 
 class User:
-    def __init__(self,session):
+    def __init__(self):
         self.attr = UserAttrs()
-        self.session = session
+        self.session = 'session'
         self.qry = ""
 
     def set_name(self,name):
@@ -737,115 +732,31 @@ class User:
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.name is not None:
-            self.flag_dic[_name_tag] = 1
-        else:
-            self.flag_dic[_name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.password is not None:
-            self.flag_dic[_password_tag] = 1
-        else:
-            self.flag_dic[_password_tag] = 0
-
-        if self.attr.login_name is not None:
-            self.flag_dic[_login_name_tag] = 1
-        else:
-            self.flag_dic[_login_name_tag] = 0
-
-        if self.attr.display_name is not None:
-            self.flag_dic[_display_name_tag] = 1
-        else:
-            self.flag_dic[__display_name_tag] = 0
-
-        if self.attr.first_name is not None:
-            self.flag_dic[_first_name_tag] = 1
-        else:
-            self.flag_dic[_first_name_tag] = 0
-
-        if self.attr.last_name is not None:
-            self.flag_dic[_last_name_tag] = 1
-        else:
-            self.flag_dic[_last_name_tag] = 0
-
-        if self.attr.email is not None:
-            self.flag_dic[_email_tag] = 1
-        else:
-            self.flag_dic[_email_tag] = 0
-        
-        if self.attr.must_change_password is not None:
-            self.flag_dic[_must_change_password_tag] = 1
-        else:
-            self.flag_dic[_must_change_password_tag] = 0
-
-        if self.attr.disabled is not None:
-            self.flag_dic[_disabled_tag] = 1
-        else:
-            self.flag_dic[_disabled_tag] = 0
-
-        if self.attr.days_to_expiry is not None:
-            self.flag_dic[_days_to_expiry_tag] = 1
-        else:
-            self.flag_dic[_days_to_expiry_tag] = 0
-
-        if self.attr.mins_to_unlock is not None:
-            self.flag_dic[_mins_to_unlock_tag] = 1
-        else:
-            self.flag_dic[_mins_to_unlock_tag] = 0
-
-        if self.attr.default_warehouse is not None:
-            self.flag_dic[_default_warehouse_tag] = 1
-        else:
-            self.flag_dic[_default_warehouse_tag] = 0
-
-        if self.attr.default_role is not None:
-            self.flag_dic[_default_role_tag] = 1
-        else:
-            self.flag_dic[_default_role_tag] = 0
-
-        if self.attr.default_secondary_roles is not None:
-            self.flag_dic[_default_secondary_roles_tag] = 1
-        else:
-            self.flag_dic[_default_secondary_roles_tag] = 0
-
-        if self.attr.mins_to_by_pass_mfa is not None:
-            self.flag_dic[_mins_to_by_pass_mfa_tag] = 1
-        else:
-            self.flag_dic[_mins_to_by_pass_mfa_tag] = 0
-
-        if self.attr.rsa_public_key is not None:
-            self.flag_dic[_rsa_public_key_tag] = 1
-        else:
-            self.flag_dic[_rsa_public_key_tag] = 0
-
-        if self.attr.rsa_public_key_fp is not None:
-            self.flag_dic[_rsa_public_key_fp_tag] = 1
-        else:
-            self.flag_dic[_rsa_public_key_fp_tag] = 0
-
-        if self.attr.rsa_public_key_2 is not None:
-            self.flag_dic[_rsa_public_key_2_tag] = 1
-        else:
-            self.flag_dic[_rsa_public_key_2_tag] = 0
-
-        if self.attr.rsa_public_key_2_fp is not None:
-            self.flag_dic[_rsa_public_key_2_fp_tag] = 1
-        else:
-            self.flag_dic[_rsa_public_key_2_fp_tag] = 0
-
-        if self.attr.type is not None:
-            self.flag_dic[_type_tag] = 1
-        else:
-            self.flag_dic[_type_tag] = 0
-
-        if self.attr.comment is not None:
-            self.flag_dic[_comment_tag] = 1
-        else:
-            self.flag_dic[_comment_tag] = 0
-            
-        if self.attr.enable_unredacted_query_syntax_error is not None:
-            self.flag_dic[_enable_unredacted_query_syntax_error_tag] = 1
-        else:
-            self.flag_dic[_enable_unredacted_query_syntax_error_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._password_tag,"_password")
+        set_flag(gv._login_name_tag,"_login_name")
+        set_flag(gv._display_name_tag,"_display_name")
+        set_flag(gv._first_name_tag,"_first_name")
+        set_flag(gv._last_name_tag,"_last_name")
+        set_flag(gv._email_tag,"_email")
+        set_flag(gv._must_change_password_tag,"_must_change_password")
+        set_flag(gv._disabled_tag,"_disabled")
+        set_flag(gv._days_to_expiry_tag,"_days_to_expiry_tag")
+        set_flag(gv._mins_to_unlock_tag,"_mins_to_unlock")
+        set_flag(gv._default_warehouse_tag,"_default_warehouse")
+        set_flag(gv._default_role_tag,"_default_role")
+        set_flag(gv._default_secondary_roles_tag,"_default_secondary_roles")
+        set_flag(gv._mins_to_by_pass_mfa_tag,"_mins_to_by_pass_mfa")
+        set_flag(gv._rsa_public_key_tag,"_rsa_public_key")
+        set_flag(gv._rsa_public_key_fp_tag,"_rsa_public_key_fp")
+        set_flag(gv._rsa_public_key_2_tag,"_rsa_public_key_2")
+        set_flag(gv._rsa_public_key_2_fp_tag,"_rsa_public_key_2_fp")
+        set_flag(gv._type_tag,"_type")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._enable_unredacted_query_syntax_error_tag,"_enable_unredacted_query_syntax_error")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -859,47 +770,47 @@ class User:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == _name_tag:
+                if prop == gv._name_tag:
                     self.qry = f" {self.qry} {self.attr.name_tag}  = {self.attr.name} "
-                if prop == _password_tag:
+                if prop == gv._password_tag:
                     self.qry = f" {self.qry} {self.attr.password_tag} = {self.attr.password} "
-                if prop == _display_name_tag:
+                if prop == gv._display_name_tag:
                     self.qry = f" {self.qry} {self.attr.display_name_tag} = {self.attr.display_name} "
-                if prop == _first_name_tag:
+                if prop == gv._first_name_tag:
                     self.qry = f" {self.qry} {self.attr.first_name_tag} = {self.attr.first_name} "
-                if prop == _last_name_tag:
+                if prop == gv._last_name_tag:
                     self.qry = f" {self.qry} {self.attr.last_name_tag} = {self.attr.last_name} "
-                if prop == _email_tag:
+                if prop == gv._email_tag:
                     self.qry = f" {self.qry} {self.attr.email_tag} = {self.attr.email} "
-                if prop == _must_change_password_tag:
+                if prop == gv._must_change_password_tag:
                     self.qry = f" {self.qry} {self.attr.must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == _disabled_tag:
+                if prop == gv._disabled_tag:
                     self.qry = f" {self.qry} {self.attr.disabled_tag} = {self.attr.disabled} "
-                if prop == _days_to_expiry_tag:
+                if prop == gv._days_to_expiry_tag:
                     self.qry = f" {self.qry} {self.attr.days_to_expiry_tag} = {self.attr.days_to_expiry} "
-                if prop == mins_to_unlock_tag:
+                if prop == gv._mins_to_unlock_tag:
                     self.qry = f" {self.qry} {self.attr.mins_to_unlock_tag} = {self.attr.mins_to_unlock} "
-                if prop == _default_warehouse_tag:
+                if prop == gv._default_warehouse_tag:
                     self.qry = f" {self.qry} {self.attr.default_warehouse_tag} = {self.attr.default_warehouse} "
-                if prop == _default_role_tag:
+                if prop == gv._default_role_tag:
                     self.qry = f" {self.qry} {self.attr.default_role_tag} = {self.attr.default_role} "
-                if prop == _default_secondary_roles_tag:
+                if prop == gv._default_secondary_roles_tag:
                     self.qry = f" {self.qry} {self.attr.default_secondary_roles_tag} = {self.attr.default_secondary_roles} "
-                if prop == _mins_to_by_pass_mfa_tag:
+                if prop == gv._mins_to_by_pass_mfa_tag:
                     self.qry = f" {self.qry} {self.attr.mins_to_by_pass_mfa_tag} = {self.attr.mins_to_by_pass_mfa} "
-                if prop == _rsa_public_key_tag:
+                if prop == gv._rsa_public_key_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_tag} = {self.attr.rsa_public_key} "
-                if prop == _rsa_public_key_fp_tag:
+                if prop == gv._rsa_public_key_fp_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_fp_tag} = {self.attr.rsa_public_key_fp} "
-                if prop == _rsa_public_key_2_tag:
+                if prop == gv._rsa_public_key_2_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_2_tag} = {self.attr.rsa_public_key_2} "
-                if prop == _rsa_public_key_2_fp_tag:
+                if prop == gv._rsa_public_key_2_fp_tag:
                     self.qry = f" {self.qry} {self.attr.rsa_public_key_2_fp_tag} = {self.attr.rsa_public_key_2_fp} "
-                if prop == _type_tag:
+                if prop == gv._type_tag:
                     self.qry = f" {self.qry} {self.attr.type_tag} = {self.attr.type} "
-                if prop == _comment_tag:
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == _enable_unredacted_query_syntax_error_tag:
+                if prop == gv._enable_unredacted_query_syntax_error_tag:
                     self.qry = f" {self.qry} {self.attr.enable_unredacted_query_syntax_error_tag} = {self.attr.enable_unredacted_query_syntax_error} "
 
 
@@ -910,75 +821,75 @@ class User:
         self.add_properties_to_query()
 
 
-def main(session,**kwargs):
+def main(**kwargs):
     user = User()
 
-    user.set_name(kwargs[_name_tag])
-    user.set_name_tag(_name_tag)
+    user.set_name(kwargs[gv._name_tag])
+    user.set_name_tag(gv._name_tag)
 
-    user.set_password(kwargs[_password_tag])
-    user.set_password_tag(_password_tag)
+    user.set_password(kwargs[gv._password_tag])
+    user.set_password_tag(gv._password_tag)
 
-    user.set_login_name(kwargs[_login_name_tag])
-    user.set_login_name_tag(_login_name_tag)
+    user.set_login_name(kwargs[gv._login_name_tag])
+    user.set_login_name_tag(gv._login_name_tag)
 
-    user.set_display_name(kwargs[_display_name_tag])
-    user.set_display_name_tag(_display_name_tag)
+    user.set_display_name(kwargs[gv._display_name_tag])
+    user.set_display_name_tag(gv._display_name_tag)
 
-    user.set_first_name(kwargs[_first_name_tag])
-    user.set_first_name_tag(_first_name_tag)
+    user.set_first_name(kwargs[gv._first_name_tag])
+    user.set_first_name_tag(gv._first_name_tag)
 
-    user.set_last_name(kwargs[_last_name_tag])
-    user.set_last_name_tag(_last_name_tag)
+    user.set_last_name(kwargs[gv._last_name_tag])
+    user.set_last_name_tag(gv._last_name_tag)
 
-    user.set_email(kwargs[_email_tag])
-    user.set_email_tag(_email_tag)
+    user.set_email(kwargs[gv._email_tag])
+    user.set_email_tag(gv._email_tag)
 
-    user.set_must_change_password(kwargs[_must_change_password_tag])
-    user.set_must_change_password_tag(_must_change_password_tag)
+    user.set_must_change_password(kwargs[gv._must_change_password_tag])
+    user.set_must_change_password_tag(gv._must_change_password_tag)
 
-    user.set_disabled(kwargs[_disabled_tag])
-    user.set_disabled_tag(_disabled_tag)
+    user.set_disabled(kwargs[gv._disabled_tag])
+    user.set_disabled_tag(gv._disabled_tag)
 
-    user.set_days_to_expiry(kwargs[_days_to_expiry_tag])
-    user.set_days_to_expiry_tag(_days_to_expiry_tag)
+    user.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
+    user.set_days_to_expiry_tag(gv._days_to_expiry_tag)
 
-    user.set_mins_to_unlock(kwargs[_mins_to_unlock_tag])
-    user.set_mins_to_unlock_tag(_mins_to_unlock_tag)
+    user.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
+    user.set_mins_to_unlock_tag(gv._mins_to_unlock_tag)
 
-    user.set_default_warehouse(kwargs[_default_warehouse_tag])
-    user.set_default_warehouse_tag(_default_warehouse_tag)
+    user.set_default_warehouse(kwargs[gv._default_warehouse_tag])
+    user.set_default_warehouse_tag(gv._default_warehouse_tag)
 
 
-    user.set_default_role(kwargs[_default_role_tag])
-    user.set_default_role_tag(_default_role_tag)
+    user.set_default_role(kwargs[gv._default_role_tag])
+    user.set_default_role_tag(gv._default_role_tag)
 
-    user.set_default_secondary_roles(kwargs[_default_secondary_roles_tag])
-    user.set_default_secondary_roles_tag(_default_secondary_roles_tag)
+    user.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
+    user.set_default_secondary_roles_tag(gv._default_secondary_roles_tag)
 
-    user.set_mins_to_by_pass_mfa(kwargs[_mins_to_by_pass_mfa_tag])
-    user.set_mins_to_by_pass_mfa_tag(_mins_to_by_pass_mfa_tag)
+    user.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
+    user.set_mins_to_by_pass_mfa_tag(gv._mins_to_by_pass_mfa_tag)
 
-    user.set_rsa_public_key(kwargs[_rsa_public_key_tag])
-    user.set_rsa_public_key_tag(_rsa_public_key_tag)
+    user.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
+    user.set_rsa_public_key_tag(gv._rsa_public_key_tag)
 
-    user.set_rsa_public_key_fp(kwargs[_rsa_public_key_fp_tag])
-    user.set_rsa_public_key_fp_tag(_rsa_public_key_fp_tag)
+    user.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
+    user.set_rsa_public_key_fp_tag(gv._rsa_public_key_fp_tag)
 
-    user.set_rsa_public_key_2(kwargs[_rsa_public_key_2_tag])
-    user.set_rsa_public_key_2_tag(_rsa_public_key_2_tag)
+    user.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
+    user.set_rsa_public_key_2_tag(gv._rsa_public_key_2_tag)
 
-    user.set_rsa_public_key_2_fp(kwargs[_rsa_public_key_2_fp_tag])
-    user.set_rsa_public_key_2_fp_tag(_rsa_public_key_2_fp_tag)
+    user.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
+    user.set_rsa_public_key_2_fp_tag(gv._rsa_public_key_2_fp_tag)
 
-    user.set_type(kwargs[_type_tag])
-    user.set_type_tag(_type_tag)
+    user.set_type(kwargs[gv._type_tag])
+    user.set_type_tag(gv._type_tag)
 
-    user.set_comment(kwargs[_comment_tag])
-    user.set_comment_tag(_comment_tag)
+    user.set_comment(kwargs[gv._comment_tag])
+    user.set_comment_tag(gv._comment_tag)
 
-    user.set_enable_unredacted_query_syntax_error(kwargs[_enable_unredacted_query_syntax_error_tag])
-    user.set_enable_unredacted_query_syntax_error_tag(_enable_unredacted_query_syntax_error_tag)
+    user.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
+    user.set_enable_unredacted_query_syntax_error_tag(gv._enable_unredacted_query_syntax_error_tag)
 
     user.prepare_query()
 

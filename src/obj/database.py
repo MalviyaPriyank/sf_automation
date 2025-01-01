@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import Database as dbgv
+from global_vars import Database as gv
 from validatevalue import ValidateValue as vv
 
 class Name:
@@ -299,54 +299,22 @@ class Database:
     def set_comment_tag(self,comment_tag):
         self.attr.comment_tag = comment_tag
 
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.name != "NONE":
-            self.flag_dic[dbgv._name_tag] = 1
-        else:
-            self.flag_dic[dbgv._name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.data_retention_time_in_days != "NONE":
-            self.flag_dic[dbgv._data_retention_time_in_days_tag] = 1
-        else:
-            self.flag_dic[dbgv._data_retention_time_in_days_tag] = 0
+        set_flag(gv._name_tag,"_name")
+        set_flag(gv._data_retention_time_in_days_tag,"_data_retention_time_in_days")
+        set_flag(gv._max_data_extension_time_in_days_tag,"_max_data_extension_time_in_days")
+        set_flag(gv._external_volume_tag,"_external_volume")
+        set_flag(gv._catalog_tag,"_catalog")
+        set_flag(gv._replace_invalid_characters_tag,"_replace_invalid_characters")
+        set_flag(gv._default_ddl_collation_tag,"_default_ddl_collation")
+        set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
+        set_flag(gv._comment_tag,"_comment")
 
-        if self.attr.max_data_extension_time_in_days != "NONE":
-            self.flag_dic[dbgv._max_data_extension_time_in_days_tag] = 1
-        else:
-            self.flag_dic[dbgv._max_data_extension_time_in_days_tag] = 0
-
-        if self.attr.external_volume != "NONE":
-            self.flag_dic[dbgv._external_volume_tag] = 1
-        else:
-            self.flag_dic[dbgv._external_volume_tag] = 0
-
-        if self.attr.catalog != "NONE":
-            self.flag_dic[dbgv._catalog_tag] = 1
-        else:
-            self.flag_dic[dbgv._catalog_tag] = 0
-
-        if self.attr.replace_invalid_characters != "NONE":
-            self.flag_dic[dbgv._replace_invalid_characters_tag] = 1
-        else:
-            self.flag_dic[dbgv._replace_invalid_characters_tag] = 0
-
-        if self.attr.default_ddl_collation != "NONE":
-            self.flag_dic[dbgv._default_ddl_collation_tag] = 1
-        else:
-            self.flag_dic[dbgv._default_ddl_collation_tag] = 0
-
-        if self.attr.storage_serialization_policy != "NONE":
-            self.flag_dic[dbgv._storage_serialization_policy_tag] = 1
-        else:
-            self.flag_dic[dbgv._storage_serialization_policy_tag] = 0
-
-        if self.attr.comment != "NONE":
-            self.flag_dic[dbgv._comment_tag] = 1
-        else:
-            self.flag_dic[dbgv._comment_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -360,21 +328,21 @@ class Database:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == dbgv._data_retention_time_in_days_tag:
+                if prop == gv._data_retention_time_in_days_tag:
                     self.qry = f" {self.qry} {self.attr.data_retention_time_in_days_tag} = {self.attr.data_retention_time_in_days} "
-                if prop == dbgv._max_data_extension_time_in_days_tag:
+                if prop == gv._max_data_extension_time_in_days_tag:
                     self.qry = f" {self.qry} {self.attr.max_data_extension_time_in_days_tag} = {self.attr.max_data_extension_time_in_days} "
-                if prop == dbgv._external_volume_tag:
+                if prop == gv._external_volume_tag:
                     self.qry = f" {self.qry} {self.attr.external_volume_tag} = {self.attr.external_volume} "
-                if prop == dbgv._catalog_tag:
+                if prop == gv._catalog_tag:
                     self.qry = f" {self.qry} {self.attr.catalog_tag} = {self.attr.catalog} "
-                if prop == dbgv._replace_invalid_characters_tag:
+                if prop == gv._replace_invalid_characters_tag:
                     self.qry = f" {self.qry} {self.attr.replace_invalid_characters_tag} = {self.attr.replace_invalid_characters} "
-                if prop == dbgv._default_ddl_collation_tag:
+                if prop == gv._default_ddl_collation_tag:
                     self.qry = f" {self.qry} {self.attr.default_ddl_collation_tag} = {self.attr.default_ddl_collation} "
-                if prop == dbgv._storage_serialization_policy_tag:
+                if prop == gv._storage_serialization_policy_tag:
                     self.qry = f" {self.qry} {self.attr.storage_serialization_policy_tag} = {self.attr.storage_serialization_policy} "
-                if prop == dbgv._comment_tag:
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
@@ -387,32 +355,32 @@ class Database:
 def main(**kwargs):
     database = Database()
     
-    database.set_name(kwargs[dbgv._name_tag])
-    database.set_name_tag(dbgv._name_tag)
+    database.set_name(kwargs[gv._name_tag])
+    database.set_name_tag(gv._name_tag)
 
-    database.set_data_retention_time_in_days(kwargs[dbgv._data_retention_time_in_days_tag])
-    database.set_data_retention_time_in_days_tag(dbgv._data_retention_time_in_days_tag)
+    database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+    database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-    database.set_max_data_extension_time_in_days(kwargs[dbgv._max_data_extension_time_in_days_tag])
-    database.set_max_data_extension_time_in_days_tag(dbgv._max_data_extension_time_in_days_tag)
+    database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+    database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-    database.set_external_volume(kwargs[dbgv._external_volume_tag])
-    database.set_external_volume_tag(dbgv._external_volume_tag)
+    database.set_external_volume(kwargs[gv._external_volume_tag])
+    database.set_external_volume_tag(gv._external_volume_tag)
 
-    database.set_catalog(kwargs[dbgv._catalog_tag])
-    database.set_catalog_tag(dbgv._catalog_tag)
+    database.set_catalog(kwargs[gv._catalog_tag])
+    database.set_catalog_tag(gv._catalog_tag)
 
-    database.set_replace_invalid_characters(kwargs[dbgv._replace_invalid_characters_tag])
-    database.set_replace_invalid_characters_tag(dbgv._replace_invalid_characters_tag)
+    database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+    database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-    database.set_default_ddl_collation(kwargs[dbgv._default_ddl_collation_tag])
-    database.set_default_ddl_collation_tag(dbgv._default_ddl_collation_tag)
+    database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+    database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-    database.set_storage_serialization_policy(kwargs[dbgv._storage_serialization_policy_tag])
-    database.set_storage_serialization_policy_tag(dbgv._storage_serialization_policy_tag)
+    database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+    database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-    database.set_comment(kwargs[dbgv._comment_tag])
-    database.set_comment_tag(dbgv._comment_tag)
+    database.set_comment(kwargs[gv._comment_tag])
+    database.set_comment_tag(gv._comment_tag)
 
     database.prepare_query()
 
