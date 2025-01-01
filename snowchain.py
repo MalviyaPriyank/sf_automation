@@ -85,8 +85,8 @@ if prompt := st.chat_input("How can I assist you today?"):
         #            with st.chat_message(ss.ASSISTANT):
         #                st.markdown(content[ss.TEXT])
         
-        data_dict = readconf.main('fileformat')
+        data_dict = readconf.main('account')
         print(data_dict)
         print(type(data_dict))
-        qry = fileformat.main(**data_dict)
+        qry = account.main(**data_dict)
         print(qry)

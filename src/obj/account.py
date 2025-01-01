@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import Account as agv
+from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
 
 
@@ -93,7 +93,7 @@ class AdminUserType:
         return instance._admin_user_type
     
     def __set__(self,instance,value):
-        if value not in agv._allowed_values_admin_user_type:
+        if value not in gv._allowed_values_admin_user_type:
             raise ValueError
         else:
             instance._admin_user_type = value
@@ -180,7 +180,7 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value not in agv._allowed_values_must_change_password:
+        if value not in gv._allowed_values_must_change_password:
             raise ValueError
         else:
             instance._must_change_password = value
@@ -206,7 +206,7 @@ class Edition:
         if value == "NONE":
             raise KeyError
         else:
-            if value not in agv._allowed_values_edition: 
+            if value not in gv._allowed_values_edition: 
                 raise ValueError
             else:
                 instance._edition = value
@@ -290,7 +290,7 @@ class Polaris:
         return instance._polaris
     
     def __set__(self,instance,value):
-        if value not in agv._allowed_values_polaris:
+        if value not in gv._allowed_values_polaris:
             raise ValueError
         else:
             instance._polaris = value
@@ -424,74 +424,26 @@ class Admin:
     def set_polaris_tag(self,polaris_tag):
         self.attr.polaris_tag = polaris_tag
 
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.account_name != "NONE":
-            self.flag_dic[agv._account_name_tag] = 1
-        else:
-            self.flag_dic[agv._account_name_tag] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.admin_name != "NONE":
-            self.flag_dic[agv._admin_name_tag] = 1
-        else:
-            self.flag_dic[agv._admin_name_tag] = 0
+        set_flag(gv._account_name_tag,"_account_name")
+        set_flag(gv._admin_name_tag,"_admin_name")
+        set_flag(gv._admin_password_tag,"_admin_password")
+        set_flag(gv._admin_user_type_tag,"_admin_user_type")
+        set_flag(gv._first_name_tag,"_first_name")
+        set_flag(gv._last_name_tag,"_last_name")
+        set_flag(gv._email_tag,"_email")
+        set_flag(gv._must_change_password_tag,"_must_change_password")
+        set_flag(gv._edition_tag,"_edition")
+        set_flag(gv._region_group_tag,"_region_group")
+        set_flag(gv._region_tag,"_region")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._polaris_tag,"_polaris")
 
-        if self.attr.admin_password != "None":
-            self.flag_dic[agv._admin_password_tag] = 1
-        else:
-            self.flag_dic[agv._admin_password_tag] = 0
-
-        if self.attr.admin_user_type != "NONE":
-            self.flag_dic[agv._admin_user_type_tag] = 1
-        else:
-            self.flag_dic[agv._admin_user_type_tag] = 0
-
-        if self.attr.first_name != "NONE":
-            self.flag_dic[agv._first_name_tag] = 1
-        else:
-            self.flag_dic[agv._first_name_tag] = 0
-
-        if self.attr.last_name != "NONE":
-            self.flag_dic[agv._last_name_tag] = 1
-        else:
-            self.flag_dic[agv._last_name_tag] = 0
-
-        if self.attr.email != "NONE":
-            self.flag_dic[agv._email_tag] = 1
-        else:
-            self.flag_dic[agv._email_tag] = 0
-        
-        if self.attr.must_change_password != "NONE":
-            self.flag_dic[agv._must_change_password_tag] = 1
-        else:
-            self.flag_dic[agv._must_change_password_tag] = 0
-
-        if self.attr.edition != "NONE":
-            self.flag_dic[agv._edition_tag] = 1
-        else:
-            self.flag_dic[agv._edition_tag] = 0
-
-        if self.attr.region_group != "NONE":
-            self.flag_dic[agv._region_group_tag] = 1
-        else:
-            self.flag_dic[agv._region_group_tag] = 0
-
-        if self.attr.region != "NONE":
-            self.flag_dic[agv._region_tag] = 1
-        else:
-            self.flag_dic[agv._region_tag] = 0
-
-        if self.attr.comment != "NONE":
-            self.flag_dic[agv._comment_tag] = 1
-        else:
-            self.flag_dic[agv._comment_tag] = 0
-
-        if self.attr.polaris != "NONE":
-            self.flag_dic[agv._polaris_tag] = 1
-        else:
-            self.flag_dic[agv._polaris_tag] = 0
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -505,29 +457,29 @@ class Admin:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == agv._admin_name_tag:
+                if prop == gv._admin_name_tag:
                     self.qry = f" {self.qry} {self.attr.admin_name_tag} = {self.attr.admin_name} "
-                if prop == agv._admin_password_tag:
+                if prop == gv._admin_password_tag:
                     self.qry = f" {self.qry} {self.attr.admin_password_tag} = {self.attr.admin_password} "
-                if prop == agv._admin_user_type_tag:
+                if prop == gv._admin_user_type_tag:
                     self.qry = f" {self.qry} {self.attr.admin_user_type_tag} = {self.attr.admin_user_type} "
-                if prop == agv._first_name_tag:
+                if prop == gv._first_name_tag:
                     self.qry = f" {self.qry} {self.attr.first_name_tag} = {self.attr.first_name} "
-                if prop == agv._last_name_tag:
+                if prop == gv._last_name_tag:
                     self.qry = f" {self.qry} {self.attr.last_name_tag} = {self.attr.last_name} "
-                if prop == agv._email_tag:
+                if prop == gv._email_tag:
                     self.qry = f" {self.qry} {self.attr.email_tag} = {self.attr.email} "
-                if prop == agv._must_change_password_tag:
+                if prop == gv._must_change_password_tag:
                     self.qry = f" {self.qry} {self.attr.must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == agv._edition_tag:
+                if prop == gv._edition_tag:
                     self.qry = f" {self.qry} {self.attr.edition_tag} = {self.attr.edition} "
-                if prop == agv._region_group_tag:
+                if prop == gv._region_group_tag:
                     self.qry = f" {self.qry} {self.attr.region_group_tag} = {self.attr.region_group} "
-                if prop == agv._region_tag:
+                if prop == gv._region_tag:
                     self.qry = f" {self.qry} {self.attr.region_tag} = {self.attr.region} "
-                if prop == agv._comment_tag:
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == agv._polaris_tag:
+                if prop == gv._polaris_tag:
                     self.qry = f" {self.qry} {self.attr.polaris_tag} = {self.attr.polaris} "
 
 
@@ -541,45 +493,45 @@ class Admin:
 def main(**kwargs):
     adm = Admin()
 
-    adm.set_account_name(kwargs[agv._account_name_tag])
-    adm.set_account_name_tag(agv._account_name_tag)
+    adm.set_account_name(kwargs[gv._account_name_tag])
+    adm.set_account_name_tag(gv._account_name_tag)
 
-    adm.set_admin_name(kwargs[agv._admin_name_tag])
-    adm.set_admin_name_tag(agv._admin_name_tag)
+    adm.set_admin_name(kwargs[gv._admin_name_tag])
+    adm.set_admin_name_tag(gv._admin_name_tag)
 
-    adm.set_admin_password(kwargs[agv._admin_password_tag])
-    adm.set_admin_password_tag(agv._admin_password_tag)
+    adm.set_admin_password(kwargs[gv._admin_password_tag])
+    adm.set_admin_password_tag(gv._admin_password_tag)
 
-    adm.set_admin_user_type(kwargs[agv._admin_user_type_tag])
-    adm.set_admin_user_type_tag(agv._admin_user_type_tag)
+    adm.set_admin_user_type(kwargs[gv._admin_user_type_tag])
+    adm.set_admin_user_type_tag(gv._admin_user_type_tag)
 
-    adm.set_first_name(kwargs[agv._first_name_tag])
-    adm.set_first_name_tag(agv._first_name_tag)
+    adm.set_first_name(kwargs[gv._first_name_tag])
+    adm.set_first_name_tag(gv._first_name_tag)
 
-    adm.set_last_name(kwargs[agv._last_name_tag])
-    adm.set_last_name_tag(agv._last_name_tag)
+    adm.set_last_name(kwargs[gv._last_name_tag])
+    adm.set_last_name_tag(gv._last_name_tag)
 
-    adm.set_email(kwargs[agv._email_tag])
-    adm.set_email_tag(agv._email_tag)
+    adm.set_email(kwargs[gv._email_tag])
+    adm.set_email_tag(gv._email_tag)
 
-    adm.set_must_change_password(kwargs[agv._must_change_password_tag])
-    adm.set_must_change_password_tag(agv._must_change_password_tag)
+    adm.set_must_change_password(kwargs[gv._must_change_password_tag])
+    adm.set_must_change_password_tag(gv._must_change_password_tag)
 
-    adm.set_edition(kwargs[agv._edition_tag])
-    adm.set_edition_tag(agv._edition_tag)
+    adm.set_edition(kwargs[gv._edition_tag])
+    adm.set_edition_tag(gv._edition_tag)
 
-    adm.set_region_group(kwargs[agv._region_group_tag])
-    adm.set_region_group_tag(agv._region_group_tag)
+    adm.set_region_group(kwargs[gv._region_group_tag])
+    adm.set_region_group_tag(gv._region_group_tag)
 
-    adm.set_region(kwargs[agv._region_tag])
-    adm.set_region_tag(agv._region_tag)
+    adm.set_region(kwargs[gv._region_tag])
+    adm.set_region_tag(gv._region_tag)
 
-    adm.set_comment(kwargs[agv._comment_tag])
-    adm.set_comment_tag(agv._comment_tag)
+    adm.set_comment(kwargs[gv._comment_tag])
+    adm.set_comment_tag(gv._comment_tag)
 
 
-    adm.set_polaris(kwargs[agv._polaris_tag])
-    adm.set_polaris_tag(agv._polaris_tag)
+    adm.set_polaris(kwargs[gv._polaris_tag])
+    adm.set_polaris_tag(gv._polaris_tag)
 
     adm.prepare_query()
     print(adm.qry)
