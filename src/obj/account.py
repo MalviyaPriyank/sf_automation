@@ -345,84 +345,85 @@ class Admin:
         self.session = 'session'
         self.qry = ""
 
-    def set_account_name(self,account_name):
-        self.attr.account_name = account_name
+    def set_account_name(self, value):
+        self.attr.account_name = value
 
-    def set_account_name_tag(self,account_name_tag):
-        self.attr.account_name_tag = account_name_tag
+    def set_account_name_tag(self, value):
+        self.attr.account_name_tag = value
 
-    def set_admin_name(self,admin_name):
-        self.attr.admin_name = admin_name 
+    def set_admin_name(self, value):
+        self.attr.admin_name = value
 
-    def set_admin_name_tag(self,admin_name_tag):
-        self.attr.admin_name_tag = admin_name_tag 
+    def set_admin_name_tag(self, value):
+        self.attr.admin_name_tag = value
 
-    def set_admin_password(self,admin_password):
-        self.attr.admin_password = admin_password
+    def set_admin_password(self, value):
+        self.attr.admin_password = value
 
-    def set_admin_password_tag(self,admin_password_tag):
-        self.attr.admin_password_tag = admin_password_tag
+    def set_admin_password_tag(self, value):
+        self.attr.admin_password_tag = value
+
+    def set_admin_user_type(self, value):
+        self.attr.admin_user_type = value
+
+    def set_admin_user_type_tag(self, value):
+        self.attr.admin_user_type_tag = value
+
+    def set_first_name(self, value):
+        self.attr.first_name = value
+
+    def set_first_name_tag(self, value):
+        self.attr.first_name_tag = value
+
+    def set_last_name(self, value):
+        self.attr.last_name = value
+
+    def set_last_name_tag(self, value):
+        self.attr.last_name_tag = value
+
+    def set_email(self, value):
+        self.attr.email = value
+
+    def set_email_tag(self, value):
+        self.attr.email_tag = value
+
+    def set_must_change_password(self, value):
+        self.attr.must_change_password = value
+
+    def set_must_change_password_tag(self, value):
+        self.attr.must_change_password_tag = value
+
+    def set_edition(self, value):
+        self.attr.edition = value
+
+    def set_edition_tag(self, value):
+        self.attr.edition_tag = value
+
+    def set_region_group(self, value):
+        self.attr.region_group = value
+
+    def set_region_group_tag(self, value):
+        self.attr.region_group_tag = value
+
+    def set_region(self, value):
+        self.attr.region = value
+
+    def set_region_tag(self, value):
+        self.attr.region_tag = value
+
+    def set_comment(self, value):
+        self.attr.comment = value
+
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
+
+    def set_polaris(self, value):
+        self.attr.polaris = value
+
+    def set_polaris_tag(self, value):
+        self.attr.polaris_tag = value
 
 
-    def set_admin_user_type(self,admin_user_type):
-        self.attr.admin_user_type = admin_user_type
-
-    def set_admin_user_type_tag(self,admin_user_type_tag):
-        self.attr.admin_user_type_tag = admin_user_type_tag
-
-    def set_first_name(self,first_name):
-        self.attr.first_name = first_name
-
-    def set_first_name_tag(self,first_name_tag):
-        self.attr.first_name_tag = first_name_tag
-
-    def set_last_name(self,last_name):
-        self.attr.last_name = last_name
-
-    def set_last_name_tag(self,last_name_tag):
-        self.attr.last_name_tag = last_name_tag
-
-    def set_email(self,email):
-        self.attr.email = email
-
-    def set_email_tag(self,email_tag):
-        self.attr.email_tag = email_tag
-
-    def set_must_change_password(self,must_change_password):
-        self.attr.must_change_password = must_change_password
-
-    def set_must_change_password_tag(self,must_change_password_tag):
-        self.attr.must_change_password_tag = must_change_password_tag
-
-    def set_edition(self,edition):
-        self.attr.edition = edition
-
-    def set_edition_tag(self,edition_tag):
-        self.attr.edition_tag = edition_tag
-
-    def set_region_group(self,region_group):
-        self.attr.region_group = region_group
-
-    def set_region_group_tag(self,region_group_tag):
-        self.attr.region_group_tag = region_group_tag
-
-    def set_region(self,region):
-        self.attr.region = region
-
-    def set_region_tag(self,region_tag):
-        self.attr.region_tag = region_tag
-
-    def set_comment(self,comment):
-        self.attr.comment = comment
-
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
-
-    def set_polaris(self,polaris):
-        self.attr.polaris = polaris
-
-    def set_polaris_tag(self,polaris_tag):
-        self.attr.polaris_tag = polaris_tag
 
     def set_object_properties_flag(self):
         self.flag_dic = {}

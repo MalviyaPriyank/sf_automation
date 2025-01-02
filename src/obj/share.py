@@ -75,17 +75,17 @@ class Share:
         self.session = 'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name(self,val):
+        self.attr.name = val
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
+    def set_name_tag(self,val):
+        self.attr.name_tag = val
 
-    def set_comment(self,comment):
-        self.attr.comment = comment
+    def set_comment(self,val):
+        self.attr.comment = val
 
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
+    def set_comment_tag(self,val):
+        self.attr.comment_tag = val
 
     def set_object_properties_flag(self):
         self.flag_dic = {}

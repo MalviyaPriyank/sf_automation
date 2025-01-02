@@ -245,59 +245,60 @@ class Database:
         self.session = 'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name(self, value):
+        self.attr.name = value
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
+    def set_name_tag(self, value):
+        self.attr.name_tag = value
 
-    def set_data_retention_time_in_days(self,data_retention_time_in_days):
-        self.attr.data_retention_time_in_days = data_retention_time_in_days
+    def set_data_retention_time_in_days(self, value):
+        self.attr.data_retention_time_in_days = value
 
-    def set_data_retention_time_in_days_tag(self,data_retention_time_in_days_tag):
-        self.attr.data_retention_time_in_days_tag = data_retention_time_in_days_tag
+    def set_data_retention_time_in_days_tag(self, value):
+        self.attr.data_retention_time_in_days_tag = value
 
-    def set_max_data_extension_time_in_days(self,max_data_extension_time_in_days):
-        self.attr.max_data_extension_time_in_days = max_data_extension_time_in_days
+    def set_max_data_extension_time_in_days(self, value):
+        self.attr.max_data_extension_time_in_days = value
 
-    def set_max_data_extension_time_in_days_tag(self,max_data_extension_time_in_days_tag):
-        self.attr.max_data_extension_time_in_days_tag = max_data_extension_time_in_days_tag
+    def set_max_data_extension_time_in_days_tag(self, value):
+        self.attr.max_data_extension_time_in_days_tag = value
 
-    def set_external_volume(self,external_volume):
-        self.attr.external_volume = external_volume
+    def set_external_volume(self, value):
+        self.attr.external_volume = value
 
-    def set_external_volume_tag(self,external_volume_tag):
-        self.attr.external_volume_tag = external_volume_tag
+    def set_external_volume_tag(self, value):
+        self.attr.external_volume_tag = value
 
-    def set_catalog(self,catalog):
-        self.attr.catalog = catalog
+    def set_catalog(self, value):
+        self.attr.catalog = value
 
-    def set_catalog_tag(self,catalog_tag):
-        self.attr.catalog_tag = catalog_tag
+    def set_catalog_tag(self, value):
+        self.attr.catalog_tag = value
 
-    def set_replace_invalid_characters(self,replace_invalid_characters):
-        self.attr.replace_invalid_characters = replace_invalid_characters
+    def set_replace_invalid_characters(self, value):
+        self.attr.replace_invalid_characters = value
 
-    def set_replace_invalid_characters_tag(self,replace_invalid_characters_tag):
-        self.attr.replace_invalid_characters_tag = replace_invalid_characters_tag
+    def set_replace_invalid_characters_tag(self, value):
+        self.attr.replace_invalid_characters_tag = value
 
-    def set_default_ddl_collation(self,default_ddl_collation):
-        self.attr.default_ddl_collation = default_ddl_collation
+    def set_default_ddl_collation(self, value):
+        self.attr.default_ddl_collation = value
 
-    def set_default_ddl_collation_tag(self,default_ddl_collation_tag):
-        self.attr.default_ddl_collation_tag = default_ddl_collation_tag
+    def set_default_ddl_collation_tag(self, value):
+        self.attr.default_ddl_collation_tag = value
 
-    def set_storage_serialization_policy(self,storage_serialization_policy):
-        self.attr.storage_serialization_policy = storage_serialization_policy
+    def set_storage_serialization_policy(self, value):
+        self.attr.storage_serialization_policy = value
 
-    def set_storage_serialization_policy_tag(self,storage_serialization_policy_tag):
-        self.attr.storage_serialization_policy_tag = storage_serialization_policy_tag
+    def set_storage_serialization_policy_tag(self, value):
+        self.attr.storage_serialization_policy_tag = value
 
-    def set_comment(self,comment):
-        self.attr.comment = comment
+    def set_comment(self, value):
+        self.attr.comment = value
 
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
+
 
     def set_object_properties_flag(self):
         self.flag_dic = {}

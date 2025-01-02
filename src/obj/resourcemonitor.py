@@ -236,53 +236,54 @@ class ResourceMonitor:
         self.session = 'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name 
+    def set_name(self, value):
+        self.attr.name = value
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
+    def set_name_tag(self, value):
+        self.attr.name_tag = value
 
-    def set_credit_quota(self,credit_quota):
-        self.attr.credit_quota = credit_quota
+    def set_credit_quota(self, value):
+        self.attr.credit_quota = value
 
-    def set_credit_quota_tag(self,credit_quota_tag):
-        self.attr.credit_quota_tag = credit_quota_tag
+    def set_credit_quota_tag(self, value):
+        self.attr.credit_quota_tag = value
 
-    def set_frequency(self,frequency):
-        self.attr.frequency = frequency
+    def set_frequency(self, value):
+        self.attr.frequency = value
 
-    def set_frequency_tag(self,frequency_tag):
-        self.attr.frequency_tag = frequency_tag
+    def set_frequency_tag(self, value):
+        self.attr.frequency_tag = value
 
-    def set_start_timestmap(self,start_timestamp):
-        self.attr.start_timestamp = start_timestamp
+    def set_start_timestmap(self, value):
+        self.attr.start_timestamp = value
 
-    def set_start_timestamp_tag(self,start_timestamp_tag):
-        self.attr.start_timestamp_tag = start_timestamp_tag
+    def set_start_timestamp_tag(self, value):
+        self.attr.start_timestamp_tag = value
 
-    def set_end_timestamp(self,end_timestamp):
-        self.attr.end_timestamp = end_timestamp
+    def set_end_timestamp(self, value):
+        self.attr.end_timestamp = value
 
-    def set_end_timestamp_tag(self,end_timestamp_tag):
-        self.attr.end_timestamp_tag = end_timestamp_tag
+    def set_end_timestamp_tag(self, value):
+        self.attr.end_timestamp_tag = value
 
-    def set_notify_users(self,notify_users):
-        self.attr.notify_users = notify_users
+    def set_notify_users(self, value):
+        self.attr.notify_users = value
 
-    def set_notify_users_tag(self,notify_users_tag):
-        self.attr.notify_users_tag = notify_users_tag
-    
-    def set_triggers_on(self,triggers_on):
-        self.attr.triggers_on = triggers_on
-    
-    def set_triggers_on_tag(self,triggers_on_tag):
-        self.attr.triggers_on_tag = triggers_on_tag
+    def set_notify_users_tag(self, value):
+        self.attr.notify_users_tag = value
 
-    def set_do(self,do):
-        self.attr.do = do
-    
-    def set_do_tag(self,do_tag):
-        self.attr.do_tag = do_tag
+    def set_triggers_on(self, value):
+        self.attr.triggers_on = value
+
+    def set_triggers_on_tag(self, value):
+        self.attr.triggers_on_tag = value
+
+    def set_do(self, value):
+        self.attr.do = value
+
+    def set_do_tag(self, value):
+        self.attr.do_tag = value
+
 
     def set_object_properties_flag(self):
         self.flag_dic = {}

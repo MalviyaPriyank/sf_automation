@@ -370,90 +370,90 @@ class Schema:
         self.attr = SchemaAttrs()
         self.session = 'session'
         self.qry = ""
+    def set_name(self, value):
+        self.attr.name = value
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name_tag(self, value):
+        self.attr.name_tag = value
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
+    def set_with_managed_access(self, value):
+        self.attr.with_managed_access = value
 
-    def set_with_managed_access(self,with_managed_access):
-        self.attr.with_managed_access = with_managed_access
+    def set_with_managed_access_tag(self, value):
+        self.attr.with_managed_access_tag = value
 
-    def set_with_managed_access_tag(self,with_managed_access_tag):
-        self.attr.with_managed_access_tag = with_managed_access_tag
+    def set_data_retention_time_in_days(self, value):
+        self.attr.data_retention_time_in_days = value
 
-    def set_data_retention_time_in_days(self,data_retention_time_in_days):
-        self.attr.data_retention_time_in_days = data_retention_time_in_days
+    def set_data_retention_time_in_days_tag(self, value):
+        self.attr.data_retention_time_in_days_tag = value
 
-    def set_data_retention_time_in_days_tag(self,data_retention_time_in_days_tag):
-        self.attr.data_retention_time_in_days_tag = data_retention_time_in_days_tag
-     
-    def set_max_data_extension_time_in_days(self,max_data_extension_time_in_days):
-        self.attr.max_data_extension_time_in_days = max_data_extension_time_in_days
+    def set_max_data_extension_time_in_days(self, value):
+        self.attr.max_data_extension_time_in_days = value
 
-    def set_max_data_extension_time_in_days_tag(self,max_data_extension_time_in_days_tag):
-        self.attr.max_data_extension_time_in_days_tag = max_data_extension_time_in_days_tag
+    def set_max_data_extension_time_in_days_tag(self, value):
+        self.attr.max_data_extension_time_in_days_tag = value
 
-    def set_external_volume(self,external_volume):
-        self.attr.external_volume = external_volume
+    def set_external_volume(self, value):
+        self.attr.external_volume = value
 
-    def set_external_volume_tag(self,external_volume_tag):
-        self.attr.external_volume_tag = external_volume_tag
+    def set_external_volume_tag(self, value):
+        self.attr.external_volume_tag = value
 
-    def set_catalog(self,catalog):
-        self.attr.catalog = catalog
+    def set_catalog(self, value):
+        self.attr.catalog = value
 
-    def set_catalog_tag(self,catalog_tag):
-        self.attr.catalog_tag = catalog_tag
+    def set_catalog_tag(self, value):
+        self.attr.catalog_tag = value
 
-    def set_replace_invalid_characters(self,replace_invalid_characters):
-        self.attr.replace_invalid_characters = replace_invalid_characters
+    def set_replace_invalid_characters(self, value):
+        self.attr.replace_invalid_characters = value
 
-    def set_replace_invalid_characters_tag(self,replace_invalid_characters_tag):
-        self.attr.replace_invalid_characters_tag = replace_invalid_characters_tag
+    def set_replace_invalid_characters_tag(self, value):
+        self.attr.replace_invalid_characters_tag = value
 
-    def set_default_ddl_collation(self,default_ddl_collation):
-        self.attr.default_ddl_collation = default_ddl_collation
+    def set_default_ddl_collation(self, value):
+        self.attr.default_ddl_collation = value
 
-    def set_default_ddl_collation_tag(self,default_ddl_collation_tag):
-        self.attr.default_ddl_collation_tag = default_ddl_collation_tag
+    def set_default_ddl_collation_tag(self, value):
+        self.attr.default_ddl_collation_tag = value
 
-    def set_log_level(self,log_level):
-        self.attr.log_level = log_level
+    def set_log_level(self, value):
+        self.attr.log_level = value
 
-    def set_log_level_tag(self,log_level_tag):
-        self.attr.log_level_tag = log_level_tag
+    def set_log_level_tag(self, value):
+        self.attr.log_level_tag = value
 
-    def set_trace_level(self,trace_level):
-        self.attr.trace_level = trace_level
+    def set_trace_level(self, value):
+        self.attr.trace_level = value
 
-    def set_trace_level_tag(self,trace_level_tag):
-        self.attr.trace_level_tag = trace_level_tag
+    def set_trace_level_tag(self, value):
+        self.attr.trace_level_tag = value
 
-    def set_storage_serialization_policy(self,storage_serialization_policy):
-        self.attr.storage_serialization_policy = storage_serialization_policy
+    def set_storage_serialization_policy(self, value):
+        self.attr.storage_serialization_policy = value
 
-    def set_storage_serialization_policy_tag(self,storage_serialization_policy_tag):
-        self.attr.storage_serialization_policy_tag = storage_serialization_policy_tag
+    def set_storage_serialization_policy_tag(self, value):
+        self.attr.storage_serialization_policy_tag = value
 
-    def set_classification_profile(self,classification_profile):
-        self.attr.classification_profile = classification_profile
+    def set_classification_profile(self, value):
+        self.attr.classification_profile = value
 
-    def set_classification_profile_tag(self,classification_profile_tag):
-        self.attr.classification_profile_tag = classification_profile_tag
+    def set_classification_profile_tag(self, value):
+        self.attr.classification_profile_tag = value
 
-    def set_comment(self,comment):
-        self.attr.comment = comment
+    def set_comment(self, value):
+        self.attr.comment = value
 
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
 
-    def set_tag(self,tag):
-        self.attr.tag = tag
+    def set_tag(self, value):
+        self.attr.tag = value
 
-    def set_tag_tag(self,tag_tag):
-        self.attr.tag_tag = tag_tag
+    def set_tag_tag(self, value):
+        self.attr.tag_tag = value
+
 
     def set_object_properties_flag(self):
         self.flag_dic = {}

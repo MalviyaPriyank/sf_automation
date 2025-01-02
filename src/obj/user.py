@@ -596,138 +596,139 @@ class User:
         self.session = 'session'
         self.qry = ""
 
-    def set_name(self,name):
-        self.attr.name = name
+    def set_name(self, value):
+        self.attr.name = value
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
+    def set_name_tag(self, value):
+        self.attr.name_tag = value
 
-    def set_password(self,password):
-        self.attr.password = password 
+    def set_password(self, value):
+        self.attr.password = value
 
-    def set_password_tag(self,password_tag):
-        self.attr.password_tag = password_tag 
+    def set_password_tag(self, value):
+        self.attr.password_tag = value
 
-    def set_login_name(self,login_name):
-        self.attr.login_name = login_name
+    def set_login_name(self, value):
+        self.attr.login_name = value
 
-    def set_login_name_tag(self,login_name_tag):
-        self.attr.login_name_tag = login_name_tag
+    def set_login_name_tag(self, value):
+        self.attr.login_name_tag = value
+
+    def set_display_name(self, value):
+        self.attr.display_name = value
+
+    def set_display_name_tag(self, value):
+        self.attr.display_name_tag = value
+
+    def set_first_name(self, value):
+        self.attr.first_name = value
+
+    def set_first_name_tag(self, value):
+        self.attr.first_name_tag = value
+
+    def set_last_name(self, value):
+        self.attr.last_name = value
+
+    def set_last_name_tag(self, value):
+        self.attr.last_name_tag = value
+
+    def set_email(self, value):
+        self.attr.email = value
+
+    def set_email_tag(self, value):
+        self.attr.email_tag = value
+
+    def set_must_change_password(self, value):
+        self.attr.must_change_password = value
+
+    def set_must_change_password_tag(self, value):
+        self.attr.must_change_password_tag = value
+
+    def set_disabled(self, value):
+        self.attr.disabled = value
+
+    def set_disabled_tag(self, value):
+        self.attr.disabled_tag = value
+
+    def set_days_to_expiry(self, value):
+        self.attr.days_to_expiry = value
+
+    def set_days_to_expiry_tag(self, value):
+        self.attr.days_to_expiry_tag = value
+
+    def set_mins_to_unlock(self, value):
+        self.attr.mins_to_unlock = value
+
+    def set_mins_to_unlock_tag(self, value):
+        self.attr.mins_to_unlock_tag = value
+
+    def set_default_warehouse(self, value):
+        self.attr.default_warehouse = value
+
+    def set_default_warehouse_tag(self, value):
+        self.attr.default_warehouse_tag = value
+
+    def set_default_role(self, value):
+        self.attr.default_role = value
+
+    def set_default_role_tag(self, value):
+        self.attr.default_role_tag = value
+
+    def set_default_secondary_roles(self, value):
+        self.attr.default_secondary_roles = value
+
+    def set_default_secondary_roles_tag(self, value):
+        self.attr.default_secondary_roles_tag = value
+
+    def set_mins_to_by_pass_mfa(self, value):
+        self.attr.mins_to_by_pass_mfa = value
+
+    def set_mins_to_by_pass_mfa_tag(self, value):
+        self.attr.mins_to_by_pass_mfa_tag = value
+
+    def set_rsa_public_key(self, value):
+        self.attr.rsa_public_key = value
+
+    def set_rsa_public_key_tag(self, value):
+        self.attr.rsa_public_key_tag = value
+
+    def set_rsa_public_key_fp(self, value):
+        self.attr.rsa_public_key_fp = value
+
+    def set_rsa_public_key_fp_tag(self, value):
+        self.attr.rsa_public_key_fp_tag = value
+
+    def set_rsa_public_key_2(self, value):
+        self.attr.rsa_public_key_2 = value
+
+    def set_rsa_public_key_2_tag(self, value):
+        self.attr.rsa_public_key_2_tag = value
+
+    def set_rsa_public_key_2_fp(self, value):
+        self.attr.rsa_public_key_2_fp = value
+
+    def set_rsa_public_key_2_fp_tag(self, value):
+        self.attr.rsa_public_key_2_fp_tag = value
+
+    def set_type(self, value):
+        self.attr.type = value
+
+    def set_type_tag(self, value):
+        self.attr.type_tag = value
+
+    def set_comment(self, value):
+        self.attr.comment = value
+
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
+
+    def set_enable_unredacted_query_syntax_error(self, value):
+        self.attr.enable_unredacted_query_syntax_error = value
+
+    def set_enable_unredacted_query_syntax_error_tag(self, value):
+        self.attr.enable_unredacted_query_syntax_error_tag = value
 
 
-    def set_display_name(self,display_name):
-        self.attr.display_name = display_name
-
-    def set_display_name_tag(self,display_name_tag):
-        self.attr.display_name_tag = display_name_tag
-
-    def set_first_name(self,first_name):
-        self.attr.first_name = first_name
-
-    def set_first_name_tag(self,first_name_tag):
-        self.attr.first_name_tag = first_name_tag
-
-    def set_last_name(self,last_name):
-        self.attr.last_name = last_name
-
-    def set_last_name_tag(self,last_name_tag):
-        self.attr.last_name_tag = last_name_tag
-
-    def set_email(self,email):
-        self.attr.email = email
-
-    def set_email_tag(self,email_tag):
-        self.attr.email_tag = email_tag
-
-    def set_must_change_password(self,must_change_password):
-        self.attr.must_change_password = must_change_password
-
-    def set_must_change_password_tag(self,must_change_password_tag):
-        self.attr.must_change_password_tag = must_change_password_tag
-
-    def set_disabled(self,disabled):
-        self.attr.disabled = disabled
-
-    def set_disabled_tag(self,disabled_tag):
-        self.attr.disabled_tag = disabled_tag
-
-    def set_days_to_expiry(self,days_to_expiry):
-        self.attr.days_to_expiry = days_to_expiry
-
-    def set_days_to_expiry_tag(self,days_to_expiry_tag):
-        self.attr.days_to_expiry_tag = days_to_expiry_tag
-
-    def set_mins_to_unlock(self,mins_to_unlock):
-        self.attr.mins_to_unlock = mins_to_unlock
-
-    def set_mins_to_unlock_tag(self,mins_to_unlock_tag):
-        self.attr.mins_to_unlock_tag = mins_to_unlock_tag
-
-    def set_default_warehouse(self,default_warehouse):
-        self.attr.default_warehouse = default_warehouse
-
-    def set_default_warehouse_tag(self,default_warehouse_tag):
-        self.attr.default_warehouse_tag = default_warehouse_tag
-
-    def set_default_role(self,default_role):
-        self.attr.default_role = default_role
-
-    def set_default_role_tag(self,default_role_tag):
-        self.attr.default_role_tag = default_role_tag
-
-    def set_default_secondary_roles(self,default_secondary_roles):
-        self.attr.default_secondary_roles = default_secondary_roles
-
-    def set_default_secondary_roles_tag(self,default_secondary_roles_tag):
-        self.attr.default_secondary_roles_tag = default_secondary_roles_tag
-
-    def set_mins_to_by_pass_mfa(self,mins_to_by_pass_mfa):
-        self.attr.mins_to_by_pass_mfa = mins_to_by_pass_mfa
-
-    def set_mins_to_by_pass_mfa_tag(self,mins_to_by_pass_mfa_tag):
-        self.attr.mins_to_by_pass_mfa_tag = mins_to_by_pass_mfa_tag
-
-    def set_rsa_public_key(self,rsa_public_key):
-        self.attr.rsa_public_key = rsa_public_key
-
-    def set_rsa_public_key_tag(self,rsa_public_key_tag):
-        self.attr.rsa_public_key_tag = rsa_public_key_tag
-
-    def set_rsa_public_key_fp(self,rsa_public_key_fp):
-        self.attr.rsa_public_key_fp = rsa_public_key_fp
-
-    def set_rsa_public_key_fp_tag(self,rsa_public_key_fp_tag):
-        self.attr.rsa_public_key_fp_tag = rsa_public_key_fp_tag
-
-    def set_rsa_public_key_2(self,rsa_public_key_2):
-        self.attr.rsa_public_key_2 = rsa_public_key_2
-
-    def set_rsa_public_key_2_tag(self,rsa_public_key_2_tag):
-        self.attr.rsa_public_key_2_tag = rsa_public_key_2_tag
-
-    def set_rsa_public_key_2_fp(self,rsa_public_key_2_fp):
-        self.attr.rsa_public_key_2_fp = rsa_public_key_2_fp
-
-    def set_rsa_public_key_2_fp_tag(self,rsa_public_key_2_fp_tag):
-        self.attr.rsa_public_key_2_fp_tag = rsa_public_key_2_fp_tag
-
-    def set_type(self,type):
-        self.attr.type = type
-
-    def set_type_tag(self,type_tag):
-        self.attr.type_tag = type_tag
-
-    def set_comment(self,comment):
-        self.attr.comment = comment
-
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
-
-    def set_enable_unredacted_query_syntax_error(self,enable_unredacted_query_syntax_error):
-        self.attr.enable_unredacted_query_syntax_error = enable_unredacted_query_syntax_error
-
-    def set_enable_unredacted_query_syntax_error_tag(self,enable_unredacted_query_syntax_error_tag):
-        self.attr.enable_unredacted_query_syntax_error_tag = enable_unredacted_query_syntax_error_tag
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
