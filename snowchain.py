@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../model'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
 
 from src import math_tools
-from src.obj import schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse
+from src.obj import schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
 from conf import readconf
 #from model.tools import LLMTools
 from schema import streamlit_schema as ss
@@ -85,8 +85,9 @@ if prompt := st.chat_input("How can I assist you today?"):
         #            with st.chat_message(ss.ASSISTANT):
         #                st.markdown(content[ss.TEXT])
         
-        data_dict = readconf.main('warehouse')
+        #conn = session.main()
+        data_dict = readconf.main('schema')
         print(data_dict)
         print(type(data_dict))
-        qry = warehouse.main(**data_dict)
+        qry = schema.main(**data_dict)
         print(qry)

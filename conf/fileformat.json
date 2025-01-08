@@ -1,5 +1,5 @@
 {
-    "FILE_FORMAT" : "CSV",
+    "FILE_FORMAT" : "CSV_SNOWPIPE",
     "TYPE" : "CSV",
     "PARSE_HEADER" : "TRUE",
     "SKIP_HEADER":"'TRUE'",

@@ -3,10 +3,12 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
 from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
+from stringexception import MustStartWithAlphabet,MustNotHaveSpace,MustNotHaveSpecialCharacters,MustBeEnclosedInQuotes
 
 
 class AccountName:
@@ -17,11 +19,11 @@ class AccountName:
         if value == "NONE" :
             raise KeyError
         elif not vv.starts_with_alphabet(value):
-            raise ValueError
+            raise MustStartWithAlphabet(instance,'Account')
         elif vv.has_space(value):
-            raise ValueError
+            raise MustNotHaveSpace(instance,'Account')
         elif vv.has_special_characters_except_underscore(value):
-            raise ValueError
+            raise MustNotHaveSpecialCharacters(instance,'Account')
         else:
             instance._account_name = value
 
@@ -46,7 +48,7 @@ class AdminName:
         if value == "NONE":
             raise KeyError
         elif vv.has_special_characters_except_underscore(value):
-            raise ValueError
+            raise MustNotHaveSpecialCharacters(instance,'Account')
         else:
             instance._admin_name = value
 
@@ -71,7 +73,7 @@ class AdminPassword:
         if value == "NONE":
             raise KeyError
         elif not (vv.is_enclosed_in_single_quotes(value) or vv.is_enclosed_in_double_quotes(value)):
-            raise ValueError
+            raise MustBeEnclosedInQuotes(instance,'Account')
         else:
             instance._admin_password = value
 
