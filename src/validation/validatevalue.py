@@ -1,7 +1,11 @@
 
 import re
 import json
+import sys
+import os
 
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+from valueexception import MustStartWithAlphabet,MustNotHaveSpace,MustNotHaveSpecialCharacters,MustBeEnclosedInQuotes
 
 class ValidateValue:
 
@@ -13,16 +17,16 @@ class ValidateValue:
         pass
 
     @staticmethod
-    def starts_with_alphabet(value):
+    def starts_with_alphabet(value,attr_name,object_type):
         if value[0].isalpha():
             return True
         else:
-            return False
+            raise MustStartWithAlphabet(attr_name,object_type)
         
     @staticmethod
-    def has_space(value):
+    def has_space(value,attr_name,object_type):
         if ' ' in value:
-            return True
+            raise MustNotHaveSpace(attr_name,object_type)
         else:
             return False
 
@@ -34,9 +38,9 @@ class ValidateValue:
             return False
 
     @staticmethod
-    def has_special_characters_except_underscore(value):
+    def has_special_characters_except_underscore(value,attr_name,object_type):
         if re.search(r'[^a-zA-Z0-9_]',value):
-            return True
+            raise MustNotHaveSpecialCharacters(attr_name,object_type)
         else:
             return False
 

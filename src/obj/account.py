@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
-from stringexception import MustStartWithAlphabet,MustNotHaveSpace,MustNotHaveSpecialCharacters,MustBeEnclosedInQuotes
 
 
 class AccountName:
@@ -18,13 +17,10 @@ class AccountName:
     def __set__(self,instance,value):
         if value == "NONE" :
             raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise MustStartWithAlphabet(instance,'Account')
-        elif vv.has_space(value):
-            raise MustNotHaveSpace(instance,'Account')
-        elif vv.has_special_characters_except_underscore(value):
-            raise MustNotHaveSpecialCharacters(instance,'Account')
-        else:
+        elif ( vv.starts_with_alphabet(value,"AccountName","Account") 
+              and not vv.has_space(value,"AccountName","Account")
+              and not vv.has_special_characters_except_underscore(value,"AccountName","Account")
+              ):
             instance._account_name = value
 
     def __delete__(self,instance):
@@ -446,7 +442,6 @@ class Admin:
         set_flag(gv._region_tag,"_region")
         set_flag(gv._comment_tag,"_comment")
         set_flag(gv._polaris_tag,"_polaris")
-
 
     def check_properties_to_set(self): 
         self.property_lst = []

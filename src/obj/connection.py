@@ -1,12 +1,13 @@
 import os 
-import snowflake.connector
-from snowflake.core import Root
+#import snowflake.connector
+#from snowflake.core import Root
 
 class Account:
     def __get__(self,instance,owner):
         return instance._account
     
     def __set__(self,instance,value):
+        print(instance)
         instance._account = value
     
     def __delete__(self,instance):
@@ -84,8 +85,7 @@ class ConnectionAttrs:
     schema = Schema()
 
 class Connection:
-    def __init__(self,session):
-        self.session = session
+    def __init__(self):
         self.attr = ConnectionAttrs()
 
     def set_account(self,account):
@@ -109,6 +109,7 @@ class Connection:
     def set_schema(self,schema):
         self.attr.schema = schema
 
+    '''
     def get_connection(self):
         con = snowflake.connector.connect(
             user = self.attr.user,
@@ -122,5 +123,11 @@ class Connection:
 
     def get_root(self,connection):
         return Root(connection)
+    '''
+
+
+def main():
+    conn = Connection()
+    conn.set_account("ABCD")
 
 
