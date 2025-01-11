@@ -10,11 +10,24 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
 
 from src import math_tools
 from src.obj import connection,schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
-from src.exception.valueexception import AttributeValidationError,MustNotHaveSpecialCharacters
 from conf import readconf
 #from model.tools import LLMTools
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
+from valueexception import (
+    AttributeValidationError,
+    MustStartWithAlphabet,
+    MustNotHaveSpace,
+    MustNotHaveSpecialCharacters,
+    MustBeEnclosedInQuotes,
+    MustBeString,
+    MustBeJSON,
+    MustBeBool,
+    MustBePositiveNumber,
+    MustBeBetween,
+    MustBeValidNumber,
+    MustBeValidCRON,
+)
 
 
 
@@ -91,6 +104,11 @@ if prompt := st.chat_input("How can I assist you today?"):
         data_dict = readconf.main('account')
         try:
             qry = account.main(**data_dict)
-        except Exception as e:
+        except AttributeValidationError as e:
+            ## DO NOT REMOVE THIS
+            ## following prints for debugging the path
+            #print(f"Raised module: {type(e).__module__}")
+            #print(f"Caught module: {AttributeValidationError.__module__}")
             print(e)
+
         

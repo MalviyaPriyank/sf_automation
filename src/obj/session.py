@@ -9,5 +9,4 @@ def main():
         'QUERY_TAG': 'EndOfMonthFinancials',
     }
     )
-
     return con
