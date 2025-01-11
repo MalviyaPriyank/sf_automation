@@ -10,10 +10,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
 
 from src import math_tools
 from src.obj import connection,schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
+from src.exception.valueexception import AttributeValidationError,MustNotHaveSpecialCharacters
 from conf import readconf
 #from model.tools import LLMTools
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
+
 
 
 st.title('Snowchain - Test Env')
@@ -87,5 +89,8 @@ if prompt := st.chat_input("How can I assist you today?"):
         
         #conn = session.main()
         data_dict = readconf.main('account')
-        qry = account.main(**data_dict)
-        print(qry)
+        try:
+            qry = account.main(**data_dict)
+        except Exception as e:
+            print(e)
+        

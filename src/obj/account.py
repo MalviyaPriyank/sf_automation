@@ -69,7 +69,7 @@ class AdminPassword:
         if value == "NONE":
             raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         
-        elif (vv.is_enclosed_in_single_quotes(value) or vv.is_enclosed_in_double_quotes(value)):
+        elif (vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) or vv.is_enclosed_in_double_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__)):
             instance._admin_password = value
 
     def __delete__(self,instance):
