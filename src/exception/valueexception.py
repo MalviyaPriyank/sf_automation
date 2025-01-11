@@ -1,46 +1,64 @@
 class AttributeValidationError(Exception):
     """Base class for attribute validation exceptions."""
-    def __init__(self, attr_name, object_type, message):
-        self.attr_name = attr_name
+    def __init__(self, object_type, attr_name, message):
         self.object_type = object_type
+        self.attr_name = attr_name
         self.message = message
     
     def __str__(self):
         return f"Attribute {self.attr_name} of object type {self.object_type} {self.message}."
 
 class MustStartWithAlphabet(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "must start with an alphabet")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name,"must start with an alphabet.")
+
+class MustBeString(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must be a string.")
 
 class MustNotHaveSpace(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "cannot have spaces")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "cannot have spaces.")
 
 class MustNotHaveSpecialCharacters(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "must not contain special characters")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must not contain special characters.")
 
 class MustBeEnclosedInQuotes(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "must be enclosed in quotes")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must be enclosed in quotes.")
 
 class MustBeBool(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "must be either True or False.")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name,"must be either True or False.")
 
 class MustBePositiveNumber(AttributeValidationError):
-    def __init__(self, attr_name, object_type):
-        super().__init__(attr_name, object_type, "must be a positive number")
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must be a positive number.")
 
 class MustBeBetween(AttributeValidationError):
-    def __init__(self, attr_name, object_type , val1, val2):
-        super().__init__(attr_name, object_type, f"must be between {val1} and {val2}")
+    def __init__(self,object_type , attr_name,val1, val2):
+        super().__init__(object_type, attr_name,f"must be between {val1} and {val2}.")
 
-class MustBeBetween(AttributeValidationError):
-    def __init__(self, attr_name, object_type , val1, val2):
-        super().__init__(attr_name, object_type, f"must be between {val1} and {val2}")
+class IsARequiredAttribute(AttributeValidationError):
+    def __init__(self,object_type,attr_name):
+        super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL.")
 
-class IsARequiredAttribute(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+class MustBeJSON(AttributeValidationError):
+    def __init__(self, object_type, attr_name, message):
+        super().__init__(object_type, attr_name, f" must be a JSON.")
+
+class MustBeValidNumber(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must be a valid number.")
+
+class MustBeValidCRON(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        super().__init__(object_type, attr_name, "must be a valid CRON syntax.")
+
+class ValueNotAllowed(Exception):
+    def __init__(self, object_type, attr_name, allowed_values):
+        return f"Attribute {attr_name} of object type {object_type} can only have following values : {allowed_values} "
+
+
     

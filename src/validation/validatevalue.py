@@ -5,7 +5,19 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
-from valueexception import MustStartWithAlphabet,MustNotHaveSpace,MustNotHaveSpecialCharacters,MustBeEnclosedInQuotes
+from valueexception import ( 
+    MustStartWithAlphabet,
+    MustNotHaveSpace,
+    MustNotHaveSpecialCharacters,
+    MustBeEnclosedInQuotes,
+    MustBeString,
+    MustBeJSON,
+    MustBeBool,
+    MustBePositiveNumber,
+    MustBeBetween,
+    MustBeValidNumber,
+    MustBeValidCRON
+)
 
 class ValidateValue:
 
@@ -17,16 +29,16 @@ class ValidateValue:
         pass
 
     @staticmethod
-    def starts_with_alphabet(value,attr_name,object_type):
+    def starts_with_alphabet(value,object_type,attr_name):
         if value[0].isalpha():
             return True
         else:
-            raise MustStartWithAlphabet(attr_name,object_type)
+            raise MustStartWithAlphabet(object_type,attr_name)
         
     @staticmethod
-    def has_space(value,attr_name,object_type):
+    def has_space(value,object_type,attr_name):
         if ' ' in value:
-            raise MustNotHaveSpace(attr_name,object_type)
+            raise MustNotHaveSpace(object_type, attr_name)
         else:
             return False
 
@@ -38,79 +50,81 @@ class ValidateValue:
             return False
 
     @staticmethod
-    def has_special_characters_except_underscore(value,attr_name,object_type):
+    def has_special_characters_except_underscore(value,object_type,attr_name):
         if re.search(r'[^a-zA-Z0-9_]',value):
-            raise MustNotHaveSpecialCharacters(attr_name,object_type)
+            raise MustNotHaveSpecialCharacters(object_type,attr_name)
         else:
             return False
 
     @staticmethod
-    def is_enclosed_in_double_quotes(value):
+    def is_enclosed_in_double_quotes(value,object_type,attr_name):
         if value[0] == '"' and value[-1] == '"':
             return True
         else:
-            return False
+            raise MustBeEnclosedInQuotes(object_type,attr_name)
         
     @staticmethod
-    def is_enclosed_in_single_quotes(value):
+    def is_enclosed_in_single_quotes(value,object_type,attr_name):
         if value[0] == "'" and value[-1] == "'":
             return True
         else:
-            return False
+            raise MustBeEnclosedInQuotes(object_type,attr_name)
         
     @staticmethod
-    def is_string(value):
+    def is_string(value,object_type,attr_name):
         if isinstance(value,str):
             return True
+        else:
+            raise MustBeString(object_type,attr_name)
         
     @staticmethod
-    def is_json(value):
+    def is_json(value,object_type,attr_name):
         try:
             if json.loads(value):
                 return True
         except json.JSONDecodeError:
-            return False
+            raise MustBeJSON(object_type,attr_name)
         
     @staticmethod
-    def is_bool(value):
+    def is_bool(value,object_type,attr_name):
         if value not in ["TRUE","FALSE"]:
-            return False
+            raise MustBeBool(object_type,attr_name)
         else:
             return True
         
     @staticmethod
-    def is_positive_number(value):
+    def is_positive_number(value,object_type,attr_name):
         try:
             num = float(value)
             return True
         except ValueError:
-            return False
+            raise MustBePositiveNumber(object_type,attr_name)
         
     @staticmethod
-    def is_between(value,num1,num2):
+    def is_between(value,num1,num2,object_type,attr_name):
         try:
             num = float(value)
             if num1 <= num <= num2:
                 return True
             else:
-                return False
+                raise MustBeBetween(object_type,attr_name,num1,num2)
         except ValueError:
-            return False
+            raise MustBeValidNumber(object_type,attr_name)
 
     @staticmethod
-    def is_valid_cron(value):
+    def is_valid_cron(value,object_type,attr_name):
         if 'MINUTE' not in value:
             if len(value) != 5:
-                return False
+                raise MustBeValidCRON(object_type,attr_name)
             elif not 0 <= int(value[0]) <= 59:
-                return False
+                raise MustBeValidCRON(object_type,attr_name)
             elif not 0 <= int(value[1]) <= 23:
-                raise False
+                raise MustBeValidCRON(object_type,attr_name)
             elif not (0 <= int(value[2]) <= 31 or value[2] == 'L'):
-                raise False
+                raise MustBeValidCRON(object_type,attr_name)
             elif value[3] not in ValidateCron.allowed_values_for_month:
-                raise False
+                raise MustBeValidCRON(object_type,attr_name)
             elif value[4] not in ValidateCron.allowed_values_for_week:
-                raise False
+                raise MustBeValidCRON(object_type,attr_name)
 
 

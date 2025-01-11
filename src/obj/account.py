@@ -8,6 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute, ValueNotAllowed
+
 
 
 class AccountName:
@@ -16,10 +18,10 @@ class AccountName:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise KeyError
-        elif ( vv.starts_with_alphabet(value,"AccountName","Account") 
-              and not vv.has_space(value,"AccountName","Account")
-              and not vv.has_special_characters_except_underscore(value,"AccountName","Account")
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
             instance._account_name = value
 
@@ -42,10 +44,8 @@ class AdminName:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            raise KeyError
-        elif vv.has_special_characters_except_underscore(value):
-            raise MustNotHaveSpecialCharacters(instance,'Account')
-        else:
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._admin_name = value
 
     def __delete__(self,instance):
@@ -67,10 +67,9 @@ class AdminPassword:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            raise KeyError
-        elif not (vv.is_enclosed_in_single_quotes(value) or vv.is_enclosed_in_double_quotes(value)):
-            raise MustBeEnclosedInQuotes(instance,'Account')
-        else:
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        
+        elif (vv.is_enclosed_in_single_quotes(value) or vv.is_enclosed_in_double_quotes(value)):
             instance._admin_password = value
 
     def __delete__(self,instance):
@@ -156,7 +155,7 @@ class Email:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            raise KeyError
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         else:
             instance._email = value
     
@@ -202,7 +201,7 @@ class Edition:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            raise KeyError
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         else:
             if value not in gv._allowed_values_edition: 
                 raise ValueError
@@ -308,6 +307,8 @@ class PolarisTag:
 
 
 class AdminAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     account_name = AccountName()
     account_name_tag = AccountNameTag()
     admin_name = AdminName()
@@ -339,7 +340,7 @@ class AdminAttrs:
 
 class Admin:
     def __init__(self):
-        self.attr = AdminAttrs()
+        self.attr = AdminAttrs(self)
         self.session = 'session'
         self.qry = ""
 
