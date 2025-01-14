@@ -56,9 +56,16 @@ class MustBeValidCRON(AttributeValidationError):
     def __init__(self, object_type, attr_name):
         super().__init__(object_type, attr_name, "must be a valid CRON syntax")
 
-class ValueNotAllowed(Exception):
+class ValueNotAllowed(AttributeValidationError):
     def __init__(self, object_type, attr_name, allowed_values):
-        return f"Attribute {attr_name} of object type {object_type} can only have following values : {allowed_values} "
+        message = f" can only have following values : {allowed_values}"
+        super().__init__(object_type, attr_name, message)
+    
+class InvalidPassword(AttributeValidationError):
+    def __init__(self, min_len,other_requirements,object_type, attr_name):
+        message = f"must be at least {min_len} in length, and {other_requirements}"
+        super().__init__(object_type, attr_name, message)
+        
 
 
     

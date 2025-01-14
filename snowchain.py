@@ -15,7 +15,8 @@ from conf import readconf
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
 from valueexception import (
-    AttributeValidationError
+    AttributeValidationError,
+    InvalidPassword
 )
 
 
@@ -90,9 +91,10 @@ if prompt := st.chat_input("How can I assist you today?"):
         #                st.markdown(content[ss.TEXT])
         
         #conn = session.main()
-        data_dict = readconf.main('account')
+        data_dict = readconf.main('schema')
         try:
-            qry = account.main(**data_dict)
+            qry = schema.main(**data_dict)
+            print(qry)
         except AttributeValidationError as e:
             ## DO NOT REMOVE THIS
             ## following prints for debugging the path

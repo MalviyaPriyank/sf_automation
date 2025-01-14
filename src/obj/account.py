@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute, ValueNotAllowed
+from valueexception import IsARequiredAttribute
 
 
 
@@ -69,7 +69,11 @@ class AdminPassword:
         if value == "NONE":
             raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         
-        elif (vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) or vv.is_enclosed_in_double_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+        elif (
+            (vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+            or vv.is_enclosed_in_double_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__))
+            and
+            (vv.is_valid_password(value,instance.parent.__class__.__name__,self.__class__.__name__))):
             instance._admin_password = value
 
     def __delete__(self,instance):

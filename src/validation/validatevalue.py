@@ -16,14 +16,16 @@ from valueexception import (
     MustBePositiveNumber,
     MustBeBetween,
     MustBeValidNumber,
-    MustBeValidCRON
+    MustBeValidCRON,
+    InvalidPassword
 )
 
 class ValidateValue:
 
     allowed_values_for_month = ['1','2','3','4','5','6','7','8','9','10','11','12','JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
     allowed_values_for_week = ['0','1','2','3','4','5','6','SUN','MON','TUE','WED','THU','FRI','SAT','L']
-
+    min_len_password = 8
+    other_password_requirement = "must conatin at least 1 uppercase and 1 lower case letter, must conatin at least 1 digit"
 
     def __init__(self):
         pass
@@ -42,10 +44,23 @@ class ValidateValue:
         else:
             return False
 
+    @staticmethod
+    def is_valid_password(value,object_type,attr_name):
+        if len(value) < ValidateValue.min_len_password:
+            raise InvalidPassword(ValidateValue.min_len_password,ValidateValue.other_password_requirement,object_type,attr_name)
+        else:
+            has_upper = any(char.isupper() for char in value)
+            has_lower = any(char.islower() for char in value)
+            has_digit = any(char.isdigit() for char in value)
+            if has_upper and has_lower and has_digit:
+                return True
+            else:
+                raise InvalidPassword(ValidateValue.min_len_password,ValidateValue.other_password_requirement,object_type,attr_name)
+
     @staticmethod    
-    def has_special_characters(value):
+    def has_special_characters(value,object_type,attr_name):
         if re.search(r'[^a-zA-Z0-9]',value):
-            return True
+            raise MustNotHaveSpecialCharacters(object_type,attr_name)
         else:
             return False
 

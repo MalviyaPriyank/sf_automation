@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from global_vars import Database as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
@@ -14,16 +15,12 @@ class Name:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            ):
+            instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -43,10 +40,8 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90):
+        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._data_retention_time_in_days = value
-        else:
-            raise ValueError
     
     def __delete__(self,instance):
         del instance._data_retention_time_in_days
@@ -66,10 +61,8 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90):
+        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._max_data_extension_time_in_days = value
-        else:
-            raise ValueError
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -131,10 +124,8 @@ class ReplaceInvalidCharacters:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._replace_invalid_characters = value
-        elif vv.is_bool(value):
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._replace_invalid_characters = value
-        else:
-            raise ValueError
 
     def __delete__(self,instance):
         del instance._replace_invalid_characters
@@ -211,6 +202,9 @@ class CommentTag:
         del instance._comment_tag
 
 class DatabaseAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
     name = Name()
     name_tag = NameTag()
 
@@ -241,7 +235,7 @@ class DatabaseAttrs:
 
 class Database:
     def __init__(self):
-        self.attr = DatabaseAttrs()
+        self.attr = DatabaseAttrs(self)
         self.session = 'session'
         self.qry = ""
 
@@ -355,7 +349,7 @@ class Database:
 
 def main(**kwargs):
     database = Database()
-    
+
     database.set_name(kwargs[gv._name_tag])
     database.set_name_tag(gv._name_tag)
 

@@ -6,7 +6,7 @@ def main():
     password='mejzyg-pafpov-9noXmi',
     account='TQNXPFG.BG28519',
     session_parameters={
-        'QUERY_TAG': 'EndOfMonthFinancials',
+        'QUERY_TAG': 'BOTRUN',
     }
     )
     return con
