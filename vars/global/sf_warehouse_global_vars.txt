@@ -1,2 +1,0 @@
-name_label = 'NAME'
-type_label = 'TYPE'
