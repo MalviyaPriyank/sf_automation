@@ -16,14 +16,10 @@ class Name:
     def __set__(self,instance,value):
         if value == "NONE" :
             raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
+        elif vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            ):
                 instance._name = value
 
     def __delete__(self,instance):
@@ -64,10 +60,8 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90):
+        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._data_retention_time_in_days = value
-        else:
-            raise ValueError
     
     def __delete__(self,instance):
         del instance._data_retention_time_in_days
@@ -87,10 +81,8 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_positive_number(value):
+        if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._max_data_extension_time_in_days = value
-        else:
-            raise ValueError
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -152,10 +144,8 @@ class ReplaceInvalidCharacters:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._replace_invalid_characters = "FALSE"
-        elif vv.is_bool(value):
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._replace_invalid_characters = value
-        else:
-            raise ValueError
 
     def __delete__(self,instance):
         del instance._replace_invalid_characters
@@ -301,27 +291,12 @@ class CommentTag:
     def __delete__(self,instance):
         del instance._comment_tag
 
-class Tag:
-    def __get__(self,instance,owner):
-        return instance._tag
-    
-    def __set__(self,instance,value):
-        instance._tag = value
-    
-    def __delete__(self,instance):
-        del instance._tag
 
-class TagTag:
-    def __get__(self,instance,owner):
-        return instance._tag_tag
-    
-    def __set__(self,instance,value):
-        instance._tag_tag = value
-    
-    def __delete__(self,instance):
-        del instance._tag_tag
 
 class SchemaAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+        
     name = Name()
     name_tag = NameTag()
 
@@ -361,13 +336,11 @@ class SchemaAttrs:
     comment = Comment()
     comment_tag = CommentTag()
 
-    tag = Tag()
-    tag_tag = TagTag()
 
 
 class Schema:
     def __init__(self):
-        self.attr = SchemaAttrs()
+        self.attr = SchemaAttrs(self)
         self.session = 'session'
         self.qry = ""
     def set_name(self, value):
@@ -448,12 +421,6 @@ class Schema:
     def set_comment_tag(self, value):
         self.attr.comment_tag = value
 
-    def set_tag(self, value):
-        self.attr.tag = value
-
-    def set_tag_tag(self, value):
-        self.attr.tag_tag = value
-
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -474,7 +441,6 @@ class Schema:
         set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
         set_flag(gv._classification_profile_tag,"_classification_profile")
         set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._tag_tag,"_tag_tag")
 
 
     def check_properties_to_set(self): 
@@ -513,8 +479,6 @@ class Schema:
                     self.qry = f" {self.qry} {self.attr.classification_profile_tag} = {self.attr.classification_profile} "
                 if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == gv._tag_tag:
-                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
 
 
     def prepare_query(self):
@@ -566,8 +530,6 @@ def main(**kwargs):
     schema.set_comment(kwargs[gv._comment_tag])
     schema.set_comment_tag(gv._comment_tag)
 
-    schema.set_tag(kwargs[gv._tag_tag])
-    schema.set_tag_tag(gv._tag_tag)
 
     schema.prepare_query()
 

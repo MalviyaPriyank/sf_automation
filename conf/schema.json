@@ -11,6 +11,6 @@
     "TRACE_LEVEL" : "NONE",
     "STORAGE_SERIALIZATION_POLICY": "COMPATIBLE",
     "CLASSIFICATION_PROFILE" : "NONE",
-    "COMMENT": "my test schema",
-    "TAG" : "schema for testing"
+    "COMMENT": "'my test schema'",
+    "TAG" : "'schema for testing'"
 }
