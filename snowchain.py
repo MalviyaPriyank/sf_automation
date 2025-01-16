@@ -90,16 +90,19 @@ if prompt := st.chat_input("How can I assist you today?"):
         #            with st.chat_message(ss.ASSISTANT):
         #                st.markdown(content[ss.TEXT])
         
-        #conn = session.main()
+        sess = session.Session()
+        conn = sess.get_connection('rick','mejzyg-pafpov-9noXmi','TQNXPFG.BG28519')
+        cur = conn.cursor()
         data_dict = readconf.main('schema')
         try:
             qry = schema.main(**data_dict)
-            print(qry)
+            cur.execute(qry)
         except AttributeValidationError as e:
             ## DO NOT REMOVE THIS
             ## following prints for debugging the path
             #print(f"Raised module: {type(e).__module__}")
             #print(f"Caught module: {AttributeValidationError.__module__}")
             print(e)
+
 
         
