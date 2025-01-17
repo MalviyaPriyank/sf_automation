@@ -1,4 +1,11 @@
+NAME = 'name'
+JSON = 'json'
+INPUT = 'input'
+RESULT = 'result'
 CONTENT = 'content'
 TOOL_USE = 'toolUse'
 TOOL_USE_ID = 'toolUseId'
 TOOL_RESULT = 'toolResult'
+
+SYSTEM_PROMPT_USER = 'You are an assistant to help user build on snowflake platform. Only answer questions realted to snowflake'
+SYSTEM_PROMPT_ASST = 'How can I help?'
