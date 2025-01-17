@@ -119,15 +119,15 @@ class Role:
         self.add_properties_to_query()
 
 
-def main(**kwargs):
-    role = Role()
+    def get_create_qry(**kwargs):
+        role = Role()
 
-    role.set_name(kwargs[gv._name_tag])
-    role.set_name_tag(gv._name_tag)
+        role.set_name(kwargs[gv._name_tag])
+        role.set_name_tag(gv._name_tag)
 
-    role.set_comment(kwargs[gv._comment_tag])
-    role.set_comment_tag(gv._comment_tag)
+        role.set_comment(kwargs[gv._comment_tag])
+        role.set_comment_tag(gv._comment_tag)
 
-    role.prepare_query()
+        role.prepare_query()
 
-    return role.qry
+        return role.qry

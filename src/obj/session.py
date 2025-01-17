@@ -1,5 +1,5 @@
 
-import snowflake
+#import snowflake
 
 class User:
     def __get__(self,instance,owner):
