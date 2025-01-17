@@ -339,9 +339,9 @@ class SchemaAttrs:
 
 
 class Schema:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = SchemaAttrs(self)
-        self.session = 'session'
+        self.session = session
         self.qry = ""
     def set_name(self, value):
         self.attr.name = value
@@ -487,50 +487,51 @@ class Schema:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
+    def create_schema(self):
+        self.session.execute_qry(self.qry)
 
-def main(**kwargs):
-    schema = Schema()
+    def create_object(session,**kwargs):
+        schema = Schema(session)
 
-    schema.set_name(kwargs[gv._name_tag])
-    schema.set_name_tag(gv._name_tag)
+        schema.set_name(kwargs[gv._name_tag])
+        schema.set_name_tag(gv._name_tag)
 
-    schema.set_with_managed_access(kwargs[gv._with_managed_access_tag])
-    schema.set_with_managed_access_tag(gv._with_managed_access_tag)
+        schema.set_with_managed_access(kwargs[gv._with_managed_access_tag])
+        schema.set_with_managed_access_tag(gv._with_managed_access_tag)
 
-    schema.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-    schema.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        schema.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        schema.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-    schema.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-    schema.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        schema.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        schema.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-    schema.set_external_volume(kwargs[gv._external_volume_tag])
-    schema.set_external_volume_tag(gv._external_volume_tag)
+        schema.set_external_volume(kwargs[gv._external_volume_tag])
+        schema.set_external_volume_tag(gv._external_volume_tag)
 
-    schema.set_catalog(kwargs[gv._catalog_tag])
-    schema.set_catalog_tag(gv._catalog_tag)
+        schema.set_catalog(kwargs[gv._catalog_tag])
+        schema.set_catalog_tag(gv._catalog_tag)
 
-    schema.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-    schema.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        schema.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        schema.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-    schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-    schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-    schema.set_log_level(kwargs[gv._log_level_tag])
-    schema.set_log_level_tag(gv._log_level_tag)
+        schema.set_log_level(kwargs[gv._log_level_tag])
+        schema.set_log_level_tag(gv._log_level_tag)
 
-    schema.set_trace_level(kwargs[gv._trace_level_tag])
-    schema.set_trace_level_tag(gv._trace_level_tag)
+        schema.set_trace_level(kwargs[gv._trace_level_tag])
+        schema.set_trace_level_tag(gv._trace_level_tag)
 
-    schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-    schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-    schema.set_classification_profile(kwargs[gv._classification_profile_tag])
-    schema.set_classification_profile_tag(gv._classification_profile_tag)
+        schema.set_classification_profile(kwargs[gv._classification_profile_tag])
+        schema.set_classification_profile_tag(gv._classification_profile_tag)
 
-    schema.set_comment(kwargs[gv._comment_tag])
-    schema.set_comment_tag(gv._comment_tag)
+        schema.set_comment(kwargs[gv._comment_tag])
+        schema.set_comment_tag(gv._comment_tag)
 
 
-    schema.prepare_query()
-
-    return schema.qry
+        schema.prepare_query()
+        schema.create_schema()

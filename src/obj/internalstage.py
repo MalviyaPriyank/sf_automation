@@ -203,9 +203,9 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = InternalStageAttrs()
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self,val):
@@ -295,33 +295,36 @@ class InternalStage:
         self.set_create_qry()
         self.add_properties_to_query()
 
-def main(**kwargs):
-    internal_stage = InternalStage()
+    def create_internal_stage(self):
+        self.session.execute_qry(self.qry)
 
-    internal_stage.set_name(kwargs[gv._name_tag])
-    internal_stage.set_name_tag(gv._name_tag)
+    def create_object(session,**kwargs):
+        internal_stage = InternalStage(session)
 
-    internal_stage.set_file_format(kwargs[gv._file_format_tag])
-    internal_stage.set_file_format_tag(gv._file_format_tag)
+        internal_stage.set_name(kwargs[gv._name_tag])
+        internal_stage.set_name_tag(gv._name_tag)
 
-    internal_stage.set_comment(kwargs[gv._comment_tag])
-    internal_stage.set_comment_tag(gv._comment_tag)
+        internal_stage.set_file_format(kwargs[gv._file_format_tag])
+        internal_stage.set_file_format_tag(gv._file_format_tag)
 
-    internal_stage.set_tag(kwargs[gv._tag_tag])
-    internal_stage.set_tag_tag(gv._tag_tag)
+        internal_stage.set_comment(kwargs[gv._comment_tag])
+        internal_stage.set_comment_tag(gv._comment_tag)
 
-    internal_stage.set_encryption(kwargs[gv._encryption_tag])
-    internal_stage.set_encryption_tag(gv._encryption_tag)
+        internal_stage.set_tag(kwargs[gv._tag_tag])
+        internal_stage.set_tag_tag(gv._tag_tag)
 
-    internal_stage.set_directory(kwargs[gv._directory_tag])
-    internal_stage.set_directory_tag(gv._directory_tag)
+        internal_stage.set_encryption(kwargs[gv._encryption_tag])
+        internal_stage.set_encryption_tag(gv._encryption_tag)
 
-    internal_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
-    internal_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        internal_stage.set_directory(kwargs[gv._directory_tag])
+        internal_stage.set_directory_tag(gv._directory_tag)
 
-    internal_stage.prepare_query()
+        internal_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
+        internal_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
 
-    return internal_stage.qry
+        internal_stage.prepare_query()
+        internal_stage.create_internal_stage()
+
 
         
 

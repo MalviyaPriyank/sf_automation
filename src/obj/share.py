@@ -117,17 +117,18 @@ class Share:
         self.check_properties_to_set()
         self.set_create_account_qry()
         self.add_properties_to_query()
+    
+    def create_share(self):
+        self.session.execute_qry(self.qry)
 
+    def create_object(session,**kwargs):
+        share = Share(session)
 
-def main(**kwargs):
-    share = Share()
+        share.set_name(kwargs[gv._name_tag])
+        share.set_name_tag(gv._name_tag)
 
-    share.set_name(kwargs[gv._name_tag])
-    share.set_name_tag(gv._name_tag)
+        share.set_comment(kwargs[gv._comment_tag])
+        share.set_comment_tag(gv._comment_tag)
 
-    share.set_comment(kwargs[gv._comment_tag])
-    share.set_comment_tag(gv._comment_tag)
-
-    share.prepare_query()
-
-    return share.qry
+        share.prepare_query()
+        share.create_share()

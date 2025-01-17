@@ -481,9 +481,9 @@ class WarehouseAttrs:
 
 
 class Warehouse:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = WarehouseAttrs()
-        self.session =  'session'
+        self.session =  session
         self.qry = ""
 
     def set_name(self, value):
@@ -675,47 +675,47 @@ class Warehouse:
         self.check_properties_to_set()
         self.set_create_warehouse_qry()
         self.add_properties_to_query()
-        
-                 
+    
+    def create_warehouse(self):
+        self.session.sql(self.qry)                    
 
-def main(**kwargs):
-    wh = Warehouse()
-    wh.set_name(kwargs[gv._name_tag])
-    wh.set_name_tag(gv._name_tag)
-    wh.set_warehouse_type(kwargs[gv._warehouse_type_tag])
-    wh.set_warehouse_type_tag(gv._warehouse_type_tag)
-    wh.set_warehouse_size(kwargs[gv._warehouse_size_tag])
-    wh.set_warehouse_size_tag(gv._warehouse_size_tag)
-    wh.set_auto_resume(kwargs[gv._auto_resume_tag])
-    wh.set_auto_resume_tag(gv._auto_resume_tag)
-    wh.set_auto_suspend(kwargs[gv._auto_suspend_tag])
-    wh.set_auto_suspend_tag(gv._auto_suspend_tag)
-    wh.set_comment(kwargs[gv._comment_tag])
-    wh.set_comment_tag(gv._comment_tag)
-    wh.set_enable_query_acceleration(kwargs[gv._enable_query_acceleration_tag])
-    wh.set_enable_query_acceleration_tag(gv._enable_query_acceleration_tag)
-    wh.set_initially_suspended(kwargs[gv._initially_suspended_tag])
-    wh.set_initially_suspended_tag(gv._initially_suspended_tag)
-    wh.set_max_cluster_count(kwargs[gv._max_cluster_count_tag])
-    wh.set_max_cluster_count_tag(gv._max_cluster_count_tag)
-    wh.set_resource_constraint(kwargs[gv._resource_constraint_tag])
-    wh.set_resource_constraint_tag(gv._resource_constraint_tag)
-    wh.set_max_concurrency_level(kwargs[gv._max_concurrency_level_tag])
-    wh.set_max_concurrency_level_tag(gv._max_concurrency_level_tag)
-    wh.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
-    wh.set_min_cluster_count_tag(gv._min_cluster_count_tag)
-    wh.set_query_acceleration_max_scale_factor(gv._query_acceleration_max_scale_factor_tag)
-    wh.set_query_acceleration_max_scale_factor_tag(gv._query_acceleration_max_scale_factor_tag)
-    wh.set_resource_monitor(kwargs[gv._resource_monitor_tag])
-    wh.set_resource_monitor_tag(gv._resource_monitor_tag)
-    wh.set_scaling_policy(kwargs[gv._scaling_policy_tag])
-    wh.set_scaling_policy_tag(gv._scaling_policy_tag)
-    wh.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
-    wh.set_statement_timeout_in_seconds_tag(gv._statement_timeout_in_seconds_tag)
-    wh.set_statement_queued_timeout_in_seconds(gv._statement_queued_timeout_in_seconds_tag)
-    wh.set_statement_queued_timeout_in_seconds_tag(gv._statement_queued_timeout_in_seconds_tag)
-    wh.set_tag(gv._tag_tag)
-    wh.set_tag_tag(gv._tag_tag)
-    wh.prepare_create_query()     
-
-    return wh.qry
+    def create_object(session,**kwargs):
+        wh = Warehouse(session)
+        wh.set_name(kwargs[gv._name_tag])
+        wh.set_name_tag(gv._name_tag)
+        wh.set_warehouse_type(kwargs[gv._warehouse_type_tag])
+        wh.set_warehouse_type_tag(gv._warehouse_type_tag)
+        wh.set_warehouse_size(kwargs[gv._warehouse_size_tag])
+        wh.set_warehouse_size_tag(gv._warehouse_size_tag)
+        wh.set_auto_resume(kwargs[gv._auto_resume_tag])
+        wh.set_auto_resume_tag(gv._auto_resume_tag)
+        wh.set_auto_suspend(kwargs[gv._auto_suspend_tag])
+        wh.set_auto_suspend_tag(gv._auto_suspend_tag)
+        wh.set_comment(kwargs[gv._comment_tag])
+        wh.set_comment_tag(gv._comment_tag)
+        wh.set_enable_query_acceleration(kwargs[gv._enable_query_acceleration_tag])
+        wh.set_enable_query_acceleration_tag(gv._enable_query_acceleration_tag)
+        wh.set_initially_suspended(kwargs[gv._initially_suspended_tag])
+        wh.set_initially_suspended_tag(gv._initially_suspended_tag)
+        wh.set_max_cluster_count(kwargs[gv._max_cluster_count_tag])
+        wh.set_max_cluster_count_tag(gv._max_cluster_count_tag)
+        wh.set_resource_constraint(kwargs[gv._resource_constraint_tag])
+        wh.set_resource_constraint_tag(gv._resource_constraint_tag)
+        wh.set_max_concurrency_level(kwargs[gv._max_concurrency_level_tag])
+        wh.set_max_concurrency_level_tag(gv._max_concurrency_level_tag)
+        wh.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
+        wh.set_min_cluster_count_tag(gv._min_cluster_count_tag)
+        wh.set_query_acceleration_max_scale_factor(gv._query_acceleration_max_scale_factor_tag)
+        wh.set_query_acceleration_max_scale_factor_tag(gv._query_acceleration_max_scale_factor_tag)
+        wh.set_resource_monitor(kwargs[gv._resource_monitor_tag])
+        wh.set_resource_monitor_tag(gv._resource_monitor_tag)
+        wh.set_scaling_policy(kwargs[gv._scaling_policy_tag])
+        wh.set_scaling_policy_tag(gv._scaling_policy_tag)
+        wh.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
+        wh.set_statement_timeout_in_seconds_tag(gv._statement_timeout_in_seconds_tag)
+        wh.set_statement_queued_timeout_in_seconds(gv._statement_queued_timeout_in_seconds_tag)
+        wh.set_statement_queued_timeout_in_seconds_tag(gv._statement_queued_timeout_in_seconds_tag)
+        wh.set_tag(gv._tag_tag)
+        wh.set_tag_tag(gv._tag_tag)
+        wh.prepare_create_query()     
+        wh.create_warehouse()

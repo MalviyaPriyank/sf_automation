@@ -62,11 +62,11 @@ class Session:
     def set_account(self,value):
         self.attr.account = value
 
-    def get_connection(self,user,password,account):
+    def set_connection(self,user,password,account):
         self.set_user(user)
         self.set_password(password)
         self.set_account(account)
-        con = snowflake.connector.connect(
+        self.con = snowflake.connector.connect(
                 user=self.attr.user,
                 password=self.attr.password,
                 account= self.attr.account,
@@ -75,6 +75,13 @@ class Session:
                 }
                 )
         return con
+    
+    def set_cursor(self):
+        self.cursor = self.con.cursor()
+
+    def execute_qry(self,qry):
+        self.cursor.execute(qry)
+
     
 
 '''

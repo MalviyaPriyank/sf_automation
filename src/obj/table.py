@@ -181,30 +181,30 @@ class Table:
 
     def create_table(self):
         qry = self.get_create_table_query()
-        self.session.sql(qry)
+        self.session.execute_qry(qry)
 
 
 
-def main(session,**kwargs):
-    tbl = Table()
-    
-    tbl.set_database(kwargs['database'])
+    def create_object(session,**kwargs):
+        tbl = Table()
+        
+        tbl.set_database(kwargs['database'])
 
-    tbl.set_schema(kwargs['schema'])
+        tbl.set_schema(kwargs['schema'])
 
-    tbl.set_name(kwargs['name'])
+        tbl.set_name(kwargs['name'])
 
-    tbl.set_file_path(kwargs['file_path'])
+        tbl.set_file_path(kwargs['file_path'])
 
-    table_ddl_df = tbl.read_table_ddl_file()
-    tbl.set_table_ddl_df(table_ddl_df)
+        table_ddl_df = tbl.read_table_ddl_file()
+        tbl.set_table_ddl_df(table_ddl_df)
 
-    tbl.set_column_name_list()
+        tbl.set_column_name_list()
 
-    tbl.set_column_type_list()
+        tbl.set_column_type_list()
 
-    tbl.set_count_of_columns()
+        tbl.set_count_of_columns()
 
-    tbl.create_table()
+        tbl.create_table()
 
         

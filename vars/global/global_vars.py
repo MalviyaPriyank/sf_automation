@@ -39,6 +39,8 @@ class Role:
     def __init__(self):
         pass
 
+    _default_role = ["RL_OWNER_EVERY_OBJ","RL_ALL_EVERY_OBJ","RL_MONITOR_EVERY_OBJ","RL_USAGE_EVERY_OBJECT","RL_MODIFY_EVERY_OBJECT","RL_OPERATE_EVERY_OBJ"]
+
     _name_tag = "NAME"
     _comment_tag = "COMMENT"
 
@@ -229,9 +231,10 @@ class Warehouse:
     _statement_timeout_in_seconds_tag = "STATEMENT_TIMEOUT_IN_SECONDS"
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
-
+    _default_warehouse = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE"]
 
 class Privileges:
+    _default_privilege_set = ["OWNERSHIP","ALL","MONITOR","MODIFY","USAGE","OPERATE"]
     _allowed_object_type = ["USER","ROLE","VIRTUAL_WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK"]
     _user_privileges = ["MONITOR","OWNERSHIP","ALL"]
     _role_privileges = ["OWNERSHIP"]

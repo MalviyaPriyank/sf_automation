@@ -70,9 +70,9 @@ class RoleAttrs:
 
 
 class Role:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = RoleAttrs()
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self,val):
@@ -104,7 +104,7 @@ class Role:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE DATABASE ROLE {self.attr.name} "
+        self.qry = f"CREATE ROLE {self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -117,10 +117,12 @@ class Role:
         self.check_properties_to_set()
         self.set_create_account_qry()
         self.add_properties_to_query()
+        
+    def create_role(self):
+        self.session.execute_qry(self.qry)
 
-
-    def get_create_qry(**kwargs):
-        role = Role()
+    def create_object(session,**kwargs):
+        role = Role(session)
 
         role.set_name(kwargs[gv._name_tag])
         role.set_name_tag(gv._name_tag)
@@ -129,5 +131,4 @@ class Role:
         role.set_comment_tag(gv._comment_tag)
 
         role.prepare_query()
-
-        return role.qry
+        role.create_role()

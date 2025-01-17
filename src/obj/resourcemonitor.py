@@ -231,9 +231,9 @@ class ResourceMonitorAttrs:
 
 
 class ResourceMonitor:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = ResourceMonitorAttrs()
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self, value):
@@ -335,34 +335,36 @@ class ResourceMonitor:
         self.set_create_resource_monitor_qry()
         self.add_properties_to_query()
 
+    def create_resource_monitor(self):
+        self.session.execute_qry(self.qry)
 
-def main(**kwargs):
-    rm = ResourceMonitor()
 
-    rm.set_name(kwargs[gv._name_tag])
-    rm.set_name_tag(gv._name_tag)
+    def create_object(session,**kwargs):
+        rm = ResourceMonitor(session)
 
-    rm.set_credit_quota(kwargs[gv._credit_quota_tag])
-    rm.set_credit_quota_tag(gv._credit_quota_tag)
+        rm.set_name(kwargs[gv._name_tag])
+        rm.set_name_tag(gv._name_tag)
 
-    rm.set_frequency(kwargs[gv._frequency_tag])
-    rm.set_frequency_tag(gv._frequency_tag)
+        rm.set_credit_quota(kwargs[gv._credit_quota_tag])
+        rm.set_credit_quota_tag(gv._credit_quota_tag)
 
-    rm.set_start_timestmap(kwargs[gv._start_timestamp_tag])
-    rm.set_start_timestamp_tag(gv._start_timestamp_tag)
+        rm.set_frequency(kwargs[gv._frequency_tag])
+        rm.set_frequency_tag(gv._frequency_tag)
 
-    rm.set_end_timestamp(kwargs[gv._end_timestamp_tag])
-    rm.set_end_timestamp_tag(gv._end_timestamp_tag)
+        rm.set_start_timestmap(kwargs[gv._start_timestamp_tag])
+        rm.set_start_timestamp_tag(gv._start_timestamp_tag)
 
-    rm.set_notify_users(kwargs[gv._notify_users_tag])
-    rm.set_notify_users_tag(gv._notify_users_tag)
+        rm.set_end_timestamp(kwargs[gv._end_timestamp_tag])
+        rm.set_end_timestamp_tag(gv._end_timestamp_tag)
 
-    rm.set_triggers_on(kwargs[gv._triggers_on_tag])
-    rm.set_triggers_on_tag(gv._triggers_on_tag)
+        rm.set_notify_users(kwargs[gv._notify_users_tag])
+        rm.set_notify_users_tag(gv._notify_users_tag)
 
-    rm.set_do(kwargs[gv._do_tag])
-    rm.set_do_tag(gv._do_tag)
+        rm.set_triggers_on(kwargs[gv._triggers_on_tag])
+        rm.set_triggers_on_tag(gv._triggers_on_tag)
 
-    rm.prepare_query()
+        rm.set_do(kwargs[gv._do_tag])
+        rm.set_do_tag(gv._do_tag)
 
-    return rm.qry
+        rm.prepare_query()
+        rm.create_resource_monitor()

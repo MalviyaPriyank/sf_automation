@@ -683,66 +683,70 @@ class Task:
     def set_serverless_task_max_statement_size_tag(self,serverless_task_max_statement_size_tag):
         self.attr.serverless_task_max_statement_size_tag = serverless_task_max_statement_size_tag
 
+    def create_task(self):
+        self.session.execute_qry(self.qry)
 
-def main(session,**kwargs):
-    task = Task()
+    def create_object(session,**kwargs):
+        task = Task(session)
 
-    task.set_name(kwargs[_name_tag])
-    task.set_name_tag(_name_tag)
+        task.set_name(kwargs[_name_tag])
+        task.set_name_tag(_name_tag)
 
-    task.set_definition(kwargs[_definition_tag])
-    task.set_definition_tag(_definition_tag)
+        task.set_definition(kwargs[_definition_tag])
+        task.set_definition_tag(_definition_tag)
 
-    task.set_warehouse(kwargs[_warehouse_tag])
-    task.set_warehouse_tag(_warehouse_tag)
+        task.set_warehouse(kwargs[_warehouse_tag])
+        task.set_warehouse_tag(_warehouse_tag)
 
-    task.set_user_task_managed_initial_warehouse_size(kwargs[_user_task_managed_initial_warehouse_tag])
-    task.set_user_task_managed_initial_warehouse_size_tag(_user_task_managed_initial_warehouse_tag)
+        task.set_user_task_managed_initial_warehouse_size(kwargs[_user_task_managed_initial_warehouse_tag])
+        task.set_user_task_managed_initial_warehouse_size_tag(_user_task_managed_initial_warehouse_tag)
 
-    task.set_schedule(kwargs[_schedule_tag])
-    task.set_schedule_tag(_schedule_tag)
+        task.set_schedule(kwargs[_schedule_tag])
+        task.set_schedule_tag(_schedule_tag)
 
-    task.set_config(kwargs[_config])
-    task.set_config_tag(_config)
+        task.set_config(kwargs[_config])
+        task.set_config_tag(_config)
 
-    task.set_allow_overlapping_execution(kwargs[_allow_overlapping_execution_tag])
-    task.set_allow_overlapping_execution_tag(_allow_overlapping_execution_tag)
+        task.set_allow_overlapping_execution(kwargs[_allow_overlapping_execution_tag])
+        task.set_allow_overlapping_execution_tag(_allow_overlapping_execution_tag)
 
-    task.set_user_task_timeout_ms(kwargs[_user_task_timeout_ms_tag])
-    task.set_user_task_timeout_ms_tag(_user_task_timeout_ms_tag)
+        task.set_user_task_timeout_ms(kwargs[_user_task_timeout_ms_tag])
+        task.set_user_task_timeout_ms_tag(_user_task_timeout_ms_tag)
 
-    task.set_suspend_task_after_num_failures(kwargs[_suspend_task_after_num_failures_tag])
-    task.set_suspend_task_after_num_failures_tag(_suspend_task_after_num_failures_tag)
+        task.set_suspend_task_after_num_failures(kwargs[_suspend_task_after_num_failures_tag])
+        task.set_suspend_task_after_num_failures_tag(_suspend_task_after_num_failures_tag)
 
-    task.set_error_integration(kwargs[_error_integration_tag])
-    task.set_error_integration(_error_integration_tag)
+        task.set_error_integration(kwargs[_error_integration_tag])
+        task.set_error_integration(_error_integration_tag)
 
-    task.set_success_integration(kwargs[_success_integration_tag])
-    task.set_success_integration_tag(_success_integration_tag)
+        task.set_success_integration(kwargs[_success_integration_tag])
+        task.set_success_integration_tag(_success_integration_tag)
 
-    task.set_comment(kwargs[_comment_tag])
-    task.set_comment_tag(_comment_tag)
+        task.set_comment(kwargs[_comment_tag])
+        task.set_comment_tag(_comment_tag)
 
-    task.set_after(kwargs[_after_tag])
-    task.set_after_tag(_after_tag)
+        task.set_after(kwargs[_after_tag])
+        task.set_after_tag(_after_tag)
 
-    task.set_when(kwargs[_when_tag])
-    task.set_when_tag(_when_tag)
+        task.set_when(kwargs[_when_tag])
+        task.set_when_tag(_when_tag)
 
-    task.set_tag(kwargs[_tag_tag])
-    task.set_tag_tag(_tag_tag)
+        task.set_tag(kwargs[_tag_tag])
+        task.set_tag_tag(_tag_tag)
 
-    task.set_finalize(kwargs[_finalize_tag])
-    task.set_finalize_tag(_finalize_tag)
+        task.set_finalize(kwargs[_finalize_tag])
+        task.set_finalize_tag(_finalize_tag)
 
-    task.set_task_auto_retry_attempts(kwargs[_task_auto_retry_attempts_tag])
-    task.set_task_auto_retry_attempts_tag(_task_auto_retry_attempts_tag)
+        task.set_task_auto_retry_attempts(kwargs[_task_auto_retry_attempts_tag])
+        task.set_task_auto_retry_attempts_tag(_task_auto_retry_attempts_tag)
 
-    task.set_user_task_minimum_trigger_interval_in_seconds(kwargs[_user_task_minimum_trigger_interval_in_seconds_tag])
-    task.set_user_task_minimum_trigger_interval_in_seconds_tag(_user_task_minimum_trigger_interval_in_seconds_tag)
+        task.set_user_task_minimum_trigger_interval_in_seconds(kwargs[_user_task_minimum_trigger_interval_in_seconds_tag])
+        task.set_user_task_minimum_trigger_interval_in_seconds_tag(_user_task_minimum_trigger_interval_in_seconds_tag)
 
-    task.set_target_completion_interval(kwargs[_target_completion_interval_tag])
-    task.set_target_completion_interval_tag(_target_completion_interval_tag)
+        task.set_target_completion_interval(kwargs[_target_completion_interval_tag])
+        task.set_target_completion_interval_tag(_target_completion_interval_tag)
 
-    task.set_serverless_task_min_statement_size(kwargs[_serverless_task_min_statement_size_tag])
-    task.set_serverless_task_min_statement_size_tag(_serverless_task_min_statement_size_tag)
+        task.set_serverless_task_min_statement_size(kwargs[_serverless_task_min_statement_size_tag])
+        task.set_serverless_task_min_statement_size_tag(_serverless_task_min_statement_size_tag)
+
+        task.create_task()

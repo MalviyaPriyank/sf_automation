@@ -234,9 +234,9 @@ class DatabaseAttrs:
 
 
 class Database:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = DatabaseAttrs(self)
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self, value):
@@ -346,37 +346,39 @@ class Database:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
+    def create_database(self):
+        self.session.execute_qry(self.qry)
 
-def main(**kwargs):
-    database = Database()
+    def create_object(session,**kwargs):
+        database = Database(session)
 
-    database.set_name(kwargs[gv._name_tag])
-    database.set_name_tag(gv._name_tag)
+        database.set_name(kwargs[gv._name_tag])
+        database.set_name_tag(gv._name_tag)
 
-    database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-    database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-    database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-    database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-    database.set_external_volume(kwargs[gv._external_volume_tag])
-    database.set_external_volume_tag(gv._external_volume_tag)
+        database.set_external_volume(kwargs[gv._external_volume_tag])
+        database.set_external_volume_tag(gv._external_volume_tag)
 
-    database.set_catalog(kwargs[gv._catalog_tag])
-    database.set_catalog_tag(gv._catalog_tag)
+        database.set_catalog(kwargs[gv._catalog_tag])
+        database.set_catalog_tag(gv._catalog_tag)
 
-    database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-    database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-    database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-    database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-    database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-    database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-    database.set_comment(kwargs[gv._comment_tag])
-    database.set_comment_tag(gv._comment_tag)
+        database.set_comment(kwargs[gv._comment_tag])
+        database.set_comment_tag(gv._comment_tag)
 
-    database.prepare_query()
+        database.prepare_query()
+        database.create_database()
 
-    return database.qry

@@ -35,16 +35,16 @@ class PrivilegeAttr:
         
 
 class Privilege:
-    def __init__(self,obj_type,obj_name):
-        attr = PrivilegeAttr(obj)
+    def __init__(self,obj_type,privilege_type):
+        attr = PrivilegeAttr(obj_type)
         self.obj_type = obj_type
-        self.obj_name = obj_name
+        self.privilege_type = privilege_type
 
-    def grant_privilege(self,privlege_type):
-        if privlege_type == 'OWNERSHIP':
-            qry = f"GRANT {privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_OWNER"
-        elif privlege_type == 'ALL':
-            qry = f"GRANT {privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_ALL"
+    def grant_privilege(self):
+        if self.privlege_type == 'OWNERSHIP':
+            qry = f"GRANT {self.privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_OWNER"
+        elif self.privlege_type == 'ALL':
+            qry = f"GRANT {self.privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_ALL"
 
 
     

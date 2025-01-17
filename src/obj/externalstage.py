@@ -499,9 +499,9 @@ class ExternalStageAttrs:
     notification_integration_tag = NotificationIntegrationTag()
 
 class ExternalStage:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = ExternalStageAttrs()
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self,val):
@@ -709,72 +709,74 @@ class ExternalStage:
         self.set_create_qry()
         self.add_properties_to_query()
 
-def main(**kwargs):
-    external_stage = ExternalStage()
+    def create_external_stage(self):
+        self.session.execute_qry(self.qry)
 
-    external_stage.set_name(kwargs[gv._name_tag])
-    external_stage.set_name_tag(gv._name_tag)
+    def create_object(session,**kwargs):
+        external_stage = ExternalStage(session)
 
-    external_stage.set_file_format(kwargs[gv._file_format_tag])
-    external_stage.set_file_format_tag(gv._file_format_tag)
+        external_stage.set_name(kwargs[gv._name_tag])
+        external_stage.set_name_tag(gv._name_tag)
 
-    external_stage.set_comment(kwargs[gv._comment_tag])
-    external_stage.set_comment_tag(gv._comment_tag)
+        external_stage.set_file_format(kwargs[gv._file_format_tag])
+        external_stage.set_file_format_tag(gv._file_format_tag)
 
-    external_stage.set_tag(kwargs[gv._tag_tag])
-    external_stage.set_tag_tag(gv._tag_tag)
+        external_stage.set_comment(kwargs[gv._comment_tag])
+        external_stage.set_comment_tag(gv._comment_tag)
 
-    external_stage.set_url(kwargs[gv._url_tag])
-    external_stage.set_url_tag(gv._url_tag)
+        external_stage.set_tag(kwargs[gv._tag_tag])
+        external_stage.set_tag_tag(gv._tag_tag)
 
-    external_stage.set_storage_integration(kwargs[gv._storage_integration_tag])
-    external_stage.set_storage_integration_tag(gv._storage_integration_tag)
+        external_stage.set_url(kwargs[gv._url_tag])
+        external_stage.set_url_tag(gv._url_tag)
 
-    external_stage.set_aws_key_id(kwargs[gv._aws_key_id_tag])
-    external_stage.set_aws_key_id_tag(gv._aws_key_id_tag)
+        external_stage.set_storage_integration(kwargs[gv._storage_integration_tag])
+        external_stage.set_storage_integration_tag(gv._storage_integration_tag)
 
-    external_stage.set_aws_secret_key(kwargs[gv._aws_secret_key_tag])
-    external_stage.set_aws_secret_key_tag(gv._aws_secret_key_tag)
+        external_stage.set_aws_key_id(kwargs[gv._aws_key_id_tag])
+        external_stage.set_aws_key_id_tag(gv._aws_key_id_tag)
 
-    external_stage.set_aws_token(kwargs[gv._aws_token_tag])
-    external_stage.set_aws_token_tag(gv._aws_token_tag)
+        external_stage.set_aws_secret_key(kwargs[gv._aws_secret_key_tag])
+        external_stage.set_aws_secret_key_tag(gv._aws_secret_key_tag)
 
-    external_stage.set_azure_sas_token(kwargs[gv._azure_sas_token_tag])
-    external_stage.set_azure_sas_token_tag(gv._azure_sas_token_tag)
+        external_stage.set_aws_token(kwargs[gv._aws_token_tag])
+        external_stage.set_aws_token_tag(gv._aws_token_tag)
 
-    external_stage.set_aws_role(kwargs[gv._aws_role_tag])
-    external_stage.set_aws_role_tag(gv._aws_role_tag)
+        external_stage.set_azure_sas_token(kwargs[gv._azure_sas_token_tag])
+        external_stage.set_azure_sas_token_tag(gv._azure_sas_token_tag)
 
-    external_stage.set_encryption(kwargs[gv._encryption_tag])
-    external_stage.set_encryption_tag(gv._encryption_tag)
+        external_stage.set_aws_role(kwargs[gv._aws_role_tag])
+        external_stage.set_aws_role_tag(gv._aws_role_tag)
 
-    external_stage.set_encryption_type(kwargs[gv._encryption_type_tag])
-    external_stage.set_encryption_type_tag(gv._encryption_type_tag)
+        external_stage.set_encryption(kwargs[gv._encryption_tag])
+        external_stage.set_encryption_tag(gv._encryption_tag)
 
-    external_stage.set_encryption_master_key(kwargs[gv._encryption_master_key_tag])
-    external_stage.set_encryption_master_key_tag(gv._encryption_master_key_tag)
+        external_stage.set_encryption_type(kwargs[gv._encryption_type_tag])
+        external_stage.set_encryption_type_tag(gv._encryption_type_tag)
 
-    external_stage.set_encryption_kms_key_id(kwargs[gv._encryption_kms_key_id_tag])
-    external_stage.set_encryption_kms_key_id_tag(gv._encryption_kms_key_id_tag)
+        external_stage.set_encryption_master_key(kwargs[gv._encryption_master_key_tag])
+        external_stage.set_encryption_master_key_tag(gv._encryption_master_key_tag)
 
-    external_stage.set_use_privatelink_endpoint(kwargs[gv._use_privatelink_endpoint_tag])
-    external_stage.set_use_privatelink_endpoint_tag(gv._use_privatelink_endpoint_tag)
+        external_stage.set_encryption_kms_key_id(kwargs[gv._encryption_kms_key_id_tag])
+        external_stage.set_encryption_kms_key_id_tag(gv._encryption_kms_key_id_tag)
 
-    external_stage.set_directory(kwargs[gv._directory_tag])
-    external_stage.set_directory_tag(gv._directory_tag)
+        external_stage.set_use_privatelink_endpoint(kwargs[gv._use_privatelink_endpoint_tag])
+        external_stage.set_use_privatelink_endpoint_tag(gv._use_privatelink_endpoint_tag)
 
-    external_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
-    external_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        external_stage.set_directory(kwargs[gv._directory_tag])
+        external_stage.set_directory_tag(gv._directory_tag)
 
-    external_stage.set_auto_refresh(kwargs[gv._auto_refresh_tag])
-    external_stage.set_auto_refresh_tag(gv._auto_refresh_tag)
+        external_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
+        external_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
 
-    external_stage.set_notification_integration(kwargs[gv._notification_integration_tag])
-    external_stage.set_notification_integration_tag(gv._notification_integration_tag)
+        external_stage.set_auto_refresh(kwargs[gv._auto_refresh_tag])
+        external_stage.set_auto_refresh_tag(gv._auto_refresh_tag)
 
-    external_stage.prepare_query()
+        external_stage.set_notification_integration(kwargs[gv._notification_integration_tag])
+        external_stage.set_notification_integration_tag(gv._notification_integration_tag)
 
-    return external_stage.qry
+        external_stage.prepare_query()
+        external_stage.create_external_stage()
 
         
 

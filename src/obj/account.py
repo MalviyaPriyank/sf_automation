@@ -343,9 +343,9 @@ class AdminAttrs:
 
 
 class Admin:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = AdminAttrs(self)
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_account_name(self, value):
@@ -491,52 +491,52 @@ class Admin:
         self.check_properties_to_set()
         self.set_create_account_qry()
         self.add_properties_to_query()
-
     
-def main(**kwargs):
-    adm = Admin()
+    def create_account(self):
+        self.session.execute_qry(self.qry)
+    
+    def create_object(session,**kwargs):
+        adm = Admin(session)
 
-    adm.set_account_name(kwargs[gv._account_name_tag])
-    adm.set_account_name_tag(gv._account_name_tag)
+        adm.set_account_name(kwargs[gv._account_name_tag])
+        adm.set_account_name_tag(gv._account_name_tag)
 
-    adm.set_admin_name(kwargs[gv._admin_name_tag])
-    adm.set_admin_name_tag(gv._admin_name_tag)
+        adm.set_admin_name(kwargs[gv._admin_name_tag])
+        adm.set_admin_name_tag(gv._admin_name_tag)
 
-    adm.set_admin_password(kwargs[gv._admin_password_tag])
-    adm.set_admin_password_tag(gv._admin_password_tag)
+        adm.set_admin_password(kwargs[gv._admin_password_tag])
+        adm.set_admin_password_tag(gv._admin_password_tag)
 
-    adm.set_admin_user_type(kwargs[gv._admin_user_type_tag])
-    adm.set_admin_user_type_tag(gv._admin_user_type_tag)
+        adm.set_admin_user_type(kwargs[gv._admin_user_type_tag])
+        adm.set_admin_user_type_tag(gv._admin_user_type_tag)
 
-    adm.set_first_name(kwargs[gv._first_name_tag])
-    adm.set_first_name_tag(gv._first_name_tag)
+        adm.set_first_name(kwargs[gv._first_name_tag])
+        adm.set_first_name_tag(gv._first_name_tag)
 
-    adm.set_last_name(kwargs[gv._last_name_tag])
-    adm.set_last_name_tag(gv._last_name_tag)
+        adm.set_last_name(kwargs[gv._last_name_tag])
+        adm.set_last_name_tag(gv._last_name_tag)
 
-    adm.set_email(kwargs[gv._email_tag])
-    adm.set_email_tag(gv._email_tag)
+        adm.set_email(kwargs[gv._email_tag])
+        adm.set_email_tag(gv._email_tag)
 
-    adm.set_must_change_password(kwargs[gv._must_change_password_tag])
-    adm.set_must_change_password_tag(gv._must_change_password_tag)
+        adm.set_must_change_password(kwargs[gv._must_change_password_tag])
+        adm.set_must_change_password_tag(gv._must_change_password_tag)
 
-    adm.set_edition(kwargs[gv._edition_tag])
-    adm.set_edition_tag(gv._edition_tag)
+        adm.set_edition(kwargs[gv._edition_tag])
+        adm.set_edition_tag(gv._edition_tag)
 
-    adm.set_region_group(kwargs[gv._region_group_tag])
-    adm.set_region_group_tag(gv._region_group_tag)
+        adm.set_region_group(kwargs[gv._region_group_tag])
+        adm.set_region_group_tag(gv._region_group_tag)
 
-    adm.set_region(kwargs[gv._region_tag])
-    adm.set_region_tag(gv._region_tag)
+        adm.set_region(kwargs[gv._region_tag])
+        adm.set_region_tag(gv._region_tag)
 
-    adm.set_comment(kwargs[gv._comment_tag])
-    adm.set_comment_tag(gv._comment_tag)
+        adm.set_comment(kwargs[gv._comment_tag])
+        adm.set_comment_tag(gv._comment_tag)
 
 
-    adm.set_polaris(kwargs[gv._polaris_tag])
-    adm.set_polaris_tag(gv._polaris_tag)
+        adm.set_polaris(kwargs[gv._polaris_tag])
+        adm.set_polaris_tag(gv._polaris_tag)
 
-    adm.prepare_query()
-    print(adm.qry)
-
-    return adm.qry
+        adm.prepare_query()
+        adm.create_account()

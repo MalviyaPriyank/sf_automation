@@ -591,9 +591,9 @@ class UserAttrs:
     enable_unredacted_query_syntax_error_tag = EnableUnredactedQuerySyntaxErrorTag()
 
 class User:
-    def __init__(self):
+    def __init__(self,session):
         self.attr = UserAttrs()
-        self.session = 'session'
+        self.session = session
         self.qry = ""
 
     def set_name(self, value):
@@ -821,77 +821,79 @@ class User:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-
-def main(**kwargs):
-    user = User()
-
-    user.set_name(kwargs[gv._name_tag])
-    user.set_name_tag(gv._name_tag)
-
-    user.set_password(kwargs[gv._password_tag])
-    user.set_password_tag(gv._password_tag)
-
-    user.set_login_name(kwargs[gv._login_name_tag])
-    user.set_login_name_tag(gv._login_name_tag)
-
-    user.set_display_name(kwargs[gv._display_name_tag])
-    user.set_display_name_tag(gv._display_name_tag)
-
-    user.set_first_name(kwargs[gv._first_name_tag])
-    user.set_first_name_tag(gv._first_name_tag)
-
-    user.set_last_name(kwargs[gv._last_name_tag])
-    user.set_last_name_tag(gv._last_name_tag)
-
-    user.set_email(kwargs[gv._email_tag])
-    user.set_email_tag(gv._email_tag)
-
-    user.set_must_change_password(kwargs[gv._must_change_password_tag])
-    user.set_must_change_password_tag(gv._must_change_password_tag)
-
-    user.set_disabled(kwargs[gv._disabled_tag])
-    user.set_disabled_tag(gv._disabled_tag)
-
-    user.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
-    user.set_days_to_expiry_tag(gv._days_to_expiry_tag)
-
-    user.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
-    user.set_mins_to_unlock_tag(gv._mins_to_unlock_tag)
-
-    user.set_default_warehouse(kwargs[gv._default_warehouse_tag])
-    user.set_default_warehouse_tag(gv._default_warehouse_tag)
+    def create_user(self):
+        self.session.execute_qry(self.qry)
 
 
-    user.set_default_role(kwargs[gv._default_role_tag])
-    user.set_default_role_tag(gv._default_role_tag)
+    def create_object(session,**kwargs):
+        user = User(session)
 
-    user.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
-    user.set_default_secondary_roles_tag(gv._default_secondary_roles_tag)
+        user.set_name(kwargs[gv._name_tag])
+        user.set_name_tag(gv._name_tag)
 
-    user.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
-    user.set_mins_to_by_pass_mfa_tag(gv._mins_to_by_pass_mfa_tag)
+        user.set_password(kwargs[gv._password_tag])
+        user.set_password_tag(gv._password_tag)
 
-    user.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
-    user.set_rsa_public_key_tag(gv._rsa_public_key_tag)
+        user.set_login_name(kwargs[gv._login_name_tag])
+        user.set_login_name_tag(gv._login_name_tag)
 
-    user.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
-    user.set_rsa_public_key_fp_tag(gv._rsa_public_key_fp_tag)
+        user.set_display_name(kwargs[gv._display_name_tag])
+        user.set_display_name_tag(gv._display_name_tag)
 
-    user.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
-    user.set_rsa_public_key_2_tag(gv._rsa_public_key_2_tag)
+        user.set_first_name(kwargs[gv._first_name_tag])
+        user.set_first_name_tag(gv._first_name_tag)
 
-    user.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
-    user.set_rsa_public_key_2_fp_tag(gv._rsa_public_key_2_fp_tag)
+        user.set_last_name(kwargs[gv._last_name_tag])
+        user.set_last_name_tag(gv._last_name_tag)
 
-    user.set_type(kwargs[gv._type_tag])
-    user.set_type_tag(gv._type_tag)
+        user.set_email(kwargs[gv._email_tag])
+        user.set_email_tag(gv._email_tag)
 
-    user.set_comment(kwargs[gv._comment_tag])
-    user.set_comment_tag(gv._comment_tag)
+        user.set_must_change_password(kwargs[gv._must_change_password_tag])
+        user.set_must_change_password_tag(gv._must_change_password_tag)
 
-    user.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
-    user.set_enable_unredacted_query_syntax_error_tag(gv._enable_unredacted_query_syntax_error_tag)
+        user.set_disabled(kwargs[gv._disabled_tag])
+        user.set_disabled_tag(gv._disabled_tag)
 
-    user.prepare_query()
+        user.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
+        user.set_days_to_expiry_tag(gv._days_to_expiry_tag)
 
-    return user.qry
+        user.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
+        user.set_mins_to_unlock_tag(gv._mins_to_unlock_tag)
+
+        user.set_default_warehouse(kwargs[gv._default_warehouse_tag])
+        user.set_default_warehouse_tag(gv._default_warehouse_tag)
+
+
+        user.set_default_role(kwargs[gv._default_role_tag])
+        user.set_default_role_tag(gv._default_role_tag)
+
+        user.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
+        user.set_default_secondary_roles_tag(gv._default_secondary_roles_tag)
+
+        user.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
+        user.set_mins_to_by_pass_mfa_tag(gv._mins_to_by_pass_mfa_tag)
+
+        user.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
+        user.set_rsa_public_key_tag(gv._rsa_public_key_tag)
+
+        user.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
+        user.set_rsa_public_key_fp_tag(gv._rsa_public_key_fp_tag)
+
+        user.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
+        user.set_rsa_public_key_2_tag(gv._rsa_public_key_2_tag)
+
+        user.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
+        user.set_rsa_public_key_2_fp_tag(gv._rsa_public_key_2_fp_tag)
+
+        user.set_type(kwargs[gv._type_tag])
+        user.set_type_tag(gv._type_tag)
+
+        user.set_comment(kwargs[gv._comment_tag])
+        user.set_comment_tag(gv._comment_tag)
+
+        user.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
+        user.set_enable_unredacted_query_syntax_error_tag(gv._enable_unredacted_query_syntax_error_tag)
+
+        user.prepare_query()
+        user.create_user()
