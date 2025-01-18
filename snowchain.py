@@ -89,14 +89,14 @@ if prompt := st.chat_input("How can I assist you today?"):
         #            })
         #            with st.chat_message(ss.ASSISTANT):
         #                st.markdown(content[ss.TEXT])
-        
-        sess = session.Session()
-        conn = sess.get_connection('rick','mejzyg-pafpov-9noXmi','TQNXPFG.BG28519')
-        cur = conn.cursor()
+        session_inst = session.Session()
+        session_inst.set_user('rick')
+        session_inst.set_password('mejzyg-pafpov-9noXmi')
+        session_inst.set_account('TQNXPFG.BG28519')
+        sess = session_inst.get_session()
         data_dict = readconf.main('schema')
         try:
-            qry = schema.main(**data_dict)
-            cur.execute(qry)
+            qry = schema.create_object(sess,**data_dict)
         except AttributeValidationError as e:
             ## DO NOT REMOVE THIS
             ## following prints for debugging the path

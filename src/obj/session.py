@@ -1,5 +1,5 @@
 
-#import snowflake
+import snowflake.snowpark as snowpark
 
 class User:
     def __get__(self,instance,owner):
@@ -62,25 +62,12 @@ class Session:
     def set_account(self,value):
         self.attr.account = value
 
-    def set_connection(self,user,password,account):
-        self.set_user(user)
-        self.set_password(password)
-        self.set_account(account)
-        self.con = snowflake.connector.connect(
-                user=self.attr.user,
-                password=self.attr.password,
-                account= self.attr.account,
-                session_parameters={
-                    'QUERY_TAG': 'BOTRUN',
-                }
-                )
-        return con
-    
-    def set_cursor(self):
-        self.cursor = self.con.cursor()
-
-    def execute_qry(self,qry):
-        self.cursor.execute(qry)
+    def get_session(self):
+        self.set_user(self.attr.user)
+        self.set_password(self.attr.password)
+        self.set_account(self.attr.account)
+        session = (snowpark.Session.builder.config("account",self.attr.account).config("user",self.attr.user).config("password",self.attr.password).create())
+        return session
 
     
 
