@@ -33,7 +33,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_sf_object",
-                "description":"creates a snowflake object based on user request",
+                "description":"creates a snowflake object.",
                 "inputSchema": {
                     "json":{
                         "type":"object",

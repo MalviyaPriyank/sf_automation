@@ -48,47 +48,26 @@ if not st.session_state[ss.INITIALIZED]:
     session_inst.set_password('mejzyg-pafpov-9noXmi')
     session_inst.set_account('TQNXPFG-BG28519')
     st.session_state.session = session_inst.get_session()
-    #st.session_state.sess = session.Session()
-    #st.session_state.conn = st.session_state.sess.set_connection('rick','mejzyg-pafpov-9noXmi','TQNXPFG-BG28519')
-    #st.session_state.cur = conn.cursor()
     st.session_state[ss.TOOLS] = LLMTools(sf_session=st.session_state.session, logger=logger)
     st.session_state.bedrock_obj = Bedrock()
-    st.session_state[ss.CHAT_HISTORY].append({
-        ss.ROLE:ss.USER,
-        ss.CONTENT:[{
-            ss.TEXT: lcs.SYSTEM_PROMPT_USER
-        }]
-    })
-    st.session_state[ss.CHAT_HISTORY].append({
-        ss.ROLE:ss.ASSISTANT,
-        ss.CONTENT:[{
-            ss.TEXT: lcs.SYSTEM_PROMPT_USER
-        }]
-    })
+    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=lcs.SYSTEM_PROMPT_USER))
+    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.SYSTEM_PROMPT_ASST))
     st.session_state[ss.INITIALIZED] = True
 
 if st.session_state[ss.INITIALIZED]:
     
     logger.info('session started')
-    
-    
             
     if prompt := st.chat_input("What's on your mind?"):
         with st.chat_message(ss.USER):
             st.markdown(prompt)
-        st.session_state[ss.CHAT_HISTORY].append({
-            ss.ROLE:ss.USER,
-            ss.CONTENT:[{
-                ss.TEXT:prompt
-            }]
-        })
-        st.session_state[ss.MESSAGES].append({
-            ss.ROLE:ss.USER,
-            ss.CONTENT:prompt
-        })
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=prompt))
+        st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))                                         
+
         with st.chat_message(ss.ASSISTANT):
             response = st.write_stream(helper.response_generator([ss.SHOVELING]))
         response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
         logger.info('response')
         logger.info(response)
 
@@ -111,38 +90,15 @@ if st.session_state[ss.INITIALIZED]:
                 if lcs.TOOL_USE in content:
                     print(content)
                     tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                    tool_result_message = {
-                        ss.ROLE:ss.USER,
-                        ss.CONTENT:tool_result
-                    }
-                    st.session_state[ss.CHAT_HISTORY].append(tool_result_message)
-                response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                    
+                    response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                    for content in response:
+                        if ss.TEXT in content:
+                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                            
+                            with st.chat_message(ss.ASSISTANT):
+                                st.markdown(content[ss.TEXT])
 
-                for content in response:
-                    if ss.TEXT in content:
-                        st.session_state[ss.MESSAGES].append({
-                            ss.ROLE:ss.ASSISTANT,
-                            ss.CONTENT:content[ss.TEXT]
-                        })
-                        
-                        with st.chat_message(ss.ASSISTANT):
-                            st.markdown(content[ss.TEXT])
-        '''
-        session_inst = session.Session()
-        session_inst.set_user('rick')
-        session_inst.set_password('mejzyg-pafpov-9noXmi')
-        session_inst.set_account('TQNXPFG.BG28519')
-        sess = session_inst.get_session()
-        data_dict = readconf.main('schema')
-        try:
-            qry = schema.create_object(sess,**data_dict)
-        
-        except AttributeValidationError as e:
-            ## DO NOT REMOVE THIS
-            ## following prints for debugging the path
-            #print(f"Raised module: {type(e).__module__}")
-            #print(f"Caught module: {AttributeValidationError.__module__}")
-            print(e)
-        '''
-
-        
+            if done_tool_call: break
