@@ -13,7 +13,7 @@ class ObjectType:
     def __set__(self,instance,value):
         if value == None :
             raise KeyError
-        elif value not in ['account','connection','database','databaserole','fileformat','resourcemonitor','role','schema','share','stage','table','user','warehouse']:
+        elif value not in ['account','connection','database','databaserole','fileformat','resourcemonitor','role','schema','share','internalstage','externalstage','table','user','warehouse']:
             raise TypeError
         else:
             instance._object_type = value
@@ -47,7 +47,7 @@ class ReadConfig:
         self.attr.object_type = object_type
 
     def set_conf_file_to_read(self):
-        self.attr.conf_file_to_read = f"/Users/priyankmalviya/Desktop/SF/sf_automation/conf/{self.attr.object_type}.json"
+        self.attr.conf_file_to_read = f"conf/{self.attr.object_type}.json"
 
     def read_conf_file(self):
         with open(self.attr.conf_file_to_read,'r') as conf:

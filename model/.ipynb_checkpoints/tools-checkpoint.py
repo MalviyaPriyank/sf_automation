@@ -11,15 +11,21 @@ from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from src.obj import connection,schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
 
+from valueexception import (
+    AttributeValidationError,
+    InvalidPassword
+)
 
 class LLMTools:
     def __init__(self,
-                 cur,
+                 logger,
+                 sf_session,
                  region=llm_config.REGION,
                  temperature=llm_config.TEMPERATURE,
                  chat_model_id=llm_config.CHAT_MODEL_ID):
-        self.cur = cur
+        self.sf_session = sf_session
         self.region = region
+        self.logger = logger
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
                                     aws_access_key_id=llm_config.ACCESS_KEY,
@@ -33,8 +39,9 @@ class LLMTools:
     def create_sf_object(self, obj_name):
         data_dict = readconf.main(obj_name)
         try:
-            qry = schema.main(**data_dict)
-            self.cur.execute(qry)
+            qry = database.Database.create_object(self.sf_session, **data_dict)
+            self.logger.info(f'Object {obj_name} created successfully')
+            #self.sf_session.sql(qry)
         except AttributeValidationError as e:
             return(e)
         #sql_query = schema.main(**data_dict)

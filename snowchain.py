@@ -43,10 +43,15 @@ with st.chat_message(ss.ASSISTANT):
     st.write("How may I assist you today?")
 
 if not st.session_state[ss.INITIALIZED]:
+    session_inst = session.Session()
+    session_inst.set_user('rick')
+    session_inst.set_password('mejzyg-pafpov-9noXmi')
+    session_inst.set_account('TQNXPFG-BG28519')
+    st.session_state.session = session_inst.get_session()
     #st.session_state.sess = session.Session()
-    #st.session_state.conn = st.session_state.sess.set_connection('rick','mejzyg-pafpov-9noXmi','TQNXPFG.BG28519')
-    st.session_state.cur = None #conn.cursor()
-    st.session_state[ss.TOOLS] = LLMTools(cur=st.session_state.cur)
+    #st.session_state.conn = st.session_state.sess.set_connection('rick','mejzyg-pafpov-9noXmi','TQNXPFG-BG28519')
+    #st.session_state.cur = conn.cursor()
+    st.session_state[ss.TOOLS] = LLMTools(sf_session=st.session_state.session, logger=logger)
     st.session_state.bedrock_obj = Bedrock()
     st.session_state[ss.CHAT_HISTORY].append({
         ss.ROLE:ss.USER,
@@ -63,6 +68,11 @@ if not st.session_state[ss.INITIALIZED]:
     st.session_state[ss.INITIALIZED] = True
 
 if st.session_state[ss.INITIALIZED]:
+    
+    logger.info('session started')
+    
+    
+            
     if prompt := st.chat_input("What's on your mind?"):
         with st.chat_message(ss.USER):
             st.markdown(prompt)
@@ -108,15 +118,16 @@ if st.session_state[ss.INITIALIZED]:
                     st.session_state[ss.CHAT_HISTORY].append(tool_result_message)
                 response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
 
-        #        for content in output_message[ss.CONTENT]:
-        #            if ss.TEXT in content:
-        #            st.session_state[ss.MESSAGES].append({
-        #                ss.ROLE:ss.ASSISTANT,
-        #                ss.CONTENT:content[ss.TEXT]
-        #            })
-        #            with st.chat_message(ss.ASSISTANT):
-        #                st.markdown(content[ss.TEXT])
-        
+                for content in response:
+                    if ss.TEXT in content:
+                        st.session_state[ss.MESSAGES].append({
+                            ss.ROLE:ss.ASSISTANT,
+                            ss.CONTENT:content[ss.TEXT]
+                        })
+                        
+                        with st.chat_message(ss.ASSISTANT):
+                            st.markdown(content[ss.TEXT])
+        '''
         session_inst = session.Session()
         session_inst.set_user('rick')
         session_inst.set_password('mejzyg-pafpov-9noXmi')
@@ -132,6 +143,6 @@ if st.session_state[ss.INITIALIZED]:
             #print(f"Raised module: {type(e).__module__}")
             #print(f"Caught module: {AttributeValidationError.__module__}")
             print(e)
-    
+        '''
 
         

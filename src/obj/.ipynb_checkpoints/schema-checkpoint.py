@@ -1,3 +1,4 @@
+
 import sys
 import os 
 
@@ -5,9 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import Database as gv
+from global_vars import Schema as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
@@ -15,12 +15,12 @@ class Name:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            raise KeyError
+        elif vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
-            instance._name = value
+                instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -34,6 +34,26 @@ class NameTag:
     
     def __delete__(self,instance):
         del instance._name_tag
+
+class WithManagedAccess:
+    def __get__(self,instance,owner):
+        return instance._with_managed_access
+    
+    def __set__(self,instance,value):
+        instance._with_managed_access = value
+    
+    def __delete__(self,instance):
+        del instance._with_managed_access
+
+class WithManagedAccessTag:
+    def __get__(self,instance,owner):
+        return instance._with_managed_access_tag
+    
+    def __set__(self,instance,value):
+        instance._with_managed_access_tag = value
+    
+    def __delete__(self,instance):
+        del instance._with_managed_access_tag
 
 class DataRetentionTimeInDays:
     def __get__(self,instance,owner):
@@ -61,7 +81,7 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -123,7 +143,7 @@ class ReplaceInvalidCharacters:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            instance._replace_invalid_characters = value
+            instance._replace_invalid_characters = "FALSE"
         elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._replace_invalid_characters = value
 
@@ -161,6 +181,56 @@ class DefaultDdlCollationTag:
     def __delete__(self,instance):
         del instance._default_ddl_collation_tag
 
+class LogLevel:
+    def __get__(self,instance,owner):
+        return instance._log_level
+    
+    def __set__(self,instance,value):
+        if value == "NONE":
+            instance._log_level = "OFF"
+        elif value not in gv._allowed_values_log_level:
+            raise ValueError
+        else:
+            instance._log_level = value
+
+    def __delete__(self,instance):
+        del instance._log_level
+
+class LogLevelTag:
+    def __get__(self,instance,owner):
+        return instance._log_level_tag
+    
+    def __set__(self,instance,value):
+        instance._log_level_tag = value
+
+    def __delete__(self,instance):
+        del instance._log_level_tag
+
+class TraceLevel:
+    def __get__(self,instance,owner):
+        return instance._trace_level
+    
+    def __set__(self,instance,value):
+        if value == "NONE":
+            instance._trace_level = "OFF"
+        elif value not in gv._allowed_values_trace_level:
+            raise ValueError
+        else:
+            instance._trace_level = value
+
+    def __delete__(self,instance):
+        del instance._trace_level
+
+class TraceLevelTag:
+    def __get__(self,instance,owner):
+        return instance._trace_level_tag
+    
+    def __set__(self,instance,value):
+        instance._trace_level_tag = value
+
+    def __delete__(self,instance):
+        del instance._trace_level_tag
+
 class StorageSerializationPolicy:
     def __get__(self,instance,owner):
         return instance._storage_serialization_policy
@@ -180,6 +250,26 @@ class StorageSerializationPolicyTag:
 
     def __delete__(self,instance):
         del instance._storage_serialization_policy_tag
+
+class ClassificationProfile:
+    def __get__(self,instance,owner):
+        return instance._classification_profile
+    
+    def __set__(self,instance,value):
+        instance._classification_profile = value
+
+    def __delete__(self,instance):
+        del instance._classification_profile
+
+class ClassificationProfileTag:
+    def __get__(self,instance,owner):
+        return instance._classification_profile_tag
+    
+    def __set__(self,instance,value):
+        instance._classification_profile_tag = value
+
+    def __delete__(self,instance):
+        del instance._classification_profile_tag
 
 class Comment:
     def __get__(self,instance,owner):
@@ -201,12 +291,17 @@ class CommentTag:
     def __delete__(self,instance):
         del instance._comment_tag
 
-class DatabaseAttrs:
+
+
+class SchemaAttrs:
     def __init__(self,parent):
         self.parent = parent
-
+        
     name = Name()
     name_tag = NameTag()
+
+    with_managed_access = WithManagedAccess()
+    with_managed_access_tag = WithManagedAccessTag()
 
     data_retention_time_in_days = DataRetentionTimeInDays()
     data_retention_time_in_days_tag = DataRetentionTimeInDaysTag()
@@ -226,24 +321,39 @@ class DatabaseAttrs:
     default_ddl_collation = DefaultDdlCollation()
     default_ddl_collation_tag = DefaultDdlCollationTag()
 
+    log_level = LogLevel()
+    log_level_tag = LogLevelTag()
+
+    trace_level = TraceLevel()
+    trace_level_tag = TraceLevelTag()
+
     storage_serialization_policy = StorageSerializationPolicy()
     storage_serialization_policy_tag = StorageSerializationPolicyTag()
+
+    classification_profile = ClassificationProfile()
+    classification_profile_tag = ClassificationProfileTag()
 
     comment = Comment()
     comment_tag = CommentTag()
 
 
-class Database:
+
+class Schema:
     def __init__(self,session):
-        self.attr = DatabaseAttrs(self)
+        self.attr = SchemaAttrs(self)
         self.session = session
         self.qry = ""
-
     def set_name(self, value):
         self.attr.name = value
 
     def set_name_tag(self, value):
         self.attr.name_tag = value
+
+    def set_with_managed_access(self, value):
+        self.attr.with_managed_access = value
+
+    def set_with_managed_access_tag(self, value):
+        self.attr.with_managed_access_tag = value
 
     def set_data_retention_time_in_days(self, value):
         self.attr.data_retention_time_in_days = value
@@ -281,11 +391,29 @@ class Database:
     def set_default_ddl_collation_tag(self, value):
         self.attr.default_ddl_collation_tag = value
 
+    def set_log_level(self, value):
+        self.attr.log_level = value
+
+    def set_log_level_tag(self, value):
+        self.attr.log_level_tag = value
+
+    def set_trace_level(self, value):
+        self.attr.trace_level = value
+
+    def set_trace_level_tag(self, value):
+        self.attr.trace_level_tag = value
+
     def set_storage_serialization_policy(self, value):
         self.attr.storage_serialization_policy = value
 
     def set_storage_serialization_policy_tag(self, value):
         self.attr.storage_serialization_policy_tag = value
+
+    def set_classification_profile(self, value):
+        self.attr.classification_profile = value
+
+    def set_classification_profile_tag(self, value):
+        self.attr.classification_profile_tag = value
 
     def set_comment(self, value):
         self.attr.comment = value
@@ -301,13 +429,17 @@ class Database:
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
         set_flag(gv._name_tag,"_name")
+        set_flag(gv._with_managed_access_tag,"_with_managed_access")
         set_flag(gv._data_retention_time_in_days_tag,"_data_retention_time_in_days")
         set_flag(gv._max_data_extension_time_in_days_tag,"_max_data_extension_time_in_days")
         set_flag(gv._external_volume_tag,"_external_volume")
         set_flag(gv._catalog_tag,"_catalog")
         set_flag(gv._replace_invalid_characters_tag,"_replace_invalid_characters")
         set_flag(gv._default_ddl_collation_tag,"_default_ddl_collation")
+        set_flag(gv._log_level_tag,"_log_level")
+        set_flag(gv._trace_level_tag,"_trace_level")
         set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
+        set_flag(gv._classification_profile_tag,"_classification_profile")
         set_flag(gv._comment_tag,"_comment")
 
 
@@ -318,11 +450,13 @@ class Database:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE DATABASE  {self.attr.name} "
+        self.qry = f"CREATE SCHEMA  {self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
+                if prop == gv._with_managed_access_tag:
+                    self.qry = f" {self.qry} {self.attr.with_managed_access_tag} = {self.attr.with_managed_access} "
                 if prop == gv._data_retention_time_in_days_tag:
                     self.qry = f" {self.qry} {self.attr.data_retention_time_in_days_tag} = {self.attr.data_retention_time_in_days} "
                 if prop == gv._max_data_extension_time_in_days_tag:
@@ -335,10 +469,17 @@ class Database:
                     self.qry = f" {self.qry} {self.attr.replace_invalid_characters_tag} = {self.attr.replace_invalid_characters} "
                 if prop == gv._default_ddl_collation_tag:
                     self.qry = f" {self.qry} {self.attr.default_ddl_collation_tag} = {self.attr.default_ddl_collation} "
+                if prop == gv._log_level_tag:
+                    self.qry = f" {self.qry} {self.attr.log_level_tag} = {self.attr.log_level} "
+                if prop == gv._trace_level_tag:
+                    self.qry = f" {self.qry} {self.attr.trace_level_tag} = {self.attr.trace_level} "
                 if prop == gv._storage_serialization_policy_tag:
                     self.qry = f" {self.qry} {self.attr.storage_serialization_policy_tag} = {self.attr.storage_serialization_policy} "
+                if prop == gv._classification_profile_tag:
+                    self.qry = f" {self.qry} {self.attr.classification_profile_tag} = {self.attr.classification_profile} "
                 if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
+
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -346,39 +487,51 @@ class Database:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-    def create_database(self):
+    def create_schema(self):
         self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
-        database = Database(session)
+        schema = Schema(session)
 
-        database.set_name(kwargs[gv._name_tag])
-        database.set_name_tag(gv._name_tag)
+        schema.set_name(kwargs[gv._name_tag])
+        schema.set_name_tag(gv._name_tag)
 
-        database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        schema.set_with_managed_access(kwargs[gv._with_managed_access_tag])
+        schema.set_with_managed_access_tag(gv._with_managed_access_tag)
 
-        database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        schema.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        schema.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-        database.set_external_volume(kwargs[gv._external_volume_tag])
-        database.set_external_volume_tag(gv._external_volume_tag)
+        schema.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        schema.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-        database.set_catalog(kwargs[gv._catalog_tag])
-        database.set_catalog_tag(gv._catalog_tag)
+        schema.set_external_volume(kwargs[gv._external_volume_tag])
+        schema.set_external_volume_tag(gv._external_volume_tag)
 
-        database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        schema.set_catalog(kwargs[gv._catalog_tag])
+        schema.set_catalog_tag(gv._catalog_tag)
 
-        database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        schema.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        schema.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-        database.set_comment(kwargs[gv._comment_tag])
-        database.set_comment_tag(gv._comment_tag)
+        schema.set_log_level(kwargs[gv._log_level_tag])
+        schema.set_log_level_tag(gv._log_level_tag)
 
-        database.prepare_query()
-        database.create_database()
+        schema.set_trace_level(kwargs[gv._trace_level_tag])
+        schema.set_trace_level_tag(gv._trace_level_tag)
 
+        schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+
+        schema.set_classification_profile(kwargs[gv._classification_profile_tag])
+        schema.set_classification_profile_tag(gv._classification_profile_tag)
+
+        schema.set_comment(kwargs[gv._comment_tag])
+        schema.set_comment_tag(gv._comment_tag)
+
+
+        schema.prepare_query()
+        schema.create_schema()

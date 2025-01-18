@@ -1,0 +1,16 @@
+{
+    "NAME": "NewTest",
+    "WITH MANAGED ACCESS" : "NONE",
+    "DATA_RETENTION_TIME_IN_DAYS": "1",
+    "MAX_DATA_EXTENSION_TIME_IN_DAYS": "10",
+    "EXTERNAL_VOLUME": "NONE",
+    "CATALOG": "NONE",
+    "REPLACE_INVALID_CHARACTERS" : "TRUE",
+    "DEFAULT_DDL_COLLATION": "NONE",
+    "LOG_LEVEL" : "NONE",
+    "TRACE_LEVEL" : "NONE",
+    "STORAGE_SERIALIZATION_POLICY": "COMPATIBLE",
+    "CLASSIFICATION_PROFILE" : "NONE",
+    "COMMENT": "'my test schema'",
+    "TAG" : "'schema for testing'"
+}
