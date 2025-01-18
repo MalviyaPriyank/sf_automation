@@ -1,14 +1,13 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../obj/global'))
-
+sys.path.append(os.path.join(os.path.dirname(__file__),'../obj'))
 
 from role import Role
  
 def create_role_for_privileges(session,role_name,comment):
-    role = Role()
-    qry = role.get_create_qry({"NAME":role_name,"COMMENT":comment})
+    role = Role(session)
+    qry = role.create_object({"NAME":role_name,"COMMENT":comment})
     session.sql(qry)
 
 

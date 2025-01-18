@@ -40,6 +40,7 @@ class LLMTools:
         data_dict = readconf.main(obj_name)
         try:
             qry = database.Database.create_object(self.sf_session, **data_dict)
+            self.logger.info(f"query returned {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
             #self.sf_session.sql(qry)
         except AttributeValidationError as e:

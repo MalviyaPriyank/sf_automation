@@ -347,7 +347,7 @@ class Database:
         self.add_properties_to_query()
 
     def create_database(self):
-        self.session.sql(self.qry)
+        self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         database = Database(session)
@@ -381,4 +381,5 @@ class Database:
 
         database.prepare_query()
         database.create_database()
+        return database.qry
 
