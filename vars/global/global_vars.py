@@ -251,3 +251,4 @@ class Privileges:
     _file_format_privileges = ["USAGE","OWNERSHIP","ALL"]
     _pipe_privileges = ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
     _task_privileges = ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
+
