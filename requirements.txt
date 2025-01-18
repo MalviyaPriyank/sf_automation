@@ -1,5 +1,8 @@
 numpy
 pandas
+faiss-cpu
 streamlit
+snowflake
 langchain_aws
-snowflake-snowpark-python
+langchain_community
+snowflake-connector-python

@@ -1,8 +1,10 @@
 APP_TITLE = 'Snowchain'
+SHOVELING = 'shoveling ...'
 
 ROLE = 'role'
 USER = 'user'
 TEXT = 'text'
+TOOLS = 'tools'
 OUTPUT = 'output'
 CONTENT = 'content'
 MESSAGE = 'message'

@@ -7,6 +7,7 @@ def get_global_var_path():
 
 def get_validation_func_path():
     return path_validation_func
+
 def response_generator(responses):
     response = responses[-1]
     for word in response.split():
