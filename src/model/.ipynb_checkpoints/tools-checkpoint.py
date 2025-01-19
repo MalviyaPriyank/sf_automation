@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse
-
+from src.setup.initial import InitialSetup
 
 from valueexception import (
     AttributeValidationError,
@@ -59,7 +59,12 @@ class LLMTools:
             self.logger.info(f'Object {obj_name} created successfully')
         except AttributeValidationError as e:
             return(e)
-        return(f'Object {obj_name} created successfully')
+        return f'Object {obj_name} created successfully'
+
+
+    def initial_sf_setup(self, query):
+        InitialSetup(session=self.sf_session)
+        return 'Set up for role, warehouse, database, schema, and more'
 
 
     def tool_call(self, content, tool_result):

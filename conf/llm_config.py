@@ -56,6 +56,26 @@ tools = {
                     }
                 }
             }
+        },
+        {
+            "toolSpec": {
+                "name":"initial_sf_setup",
+                "description":"performs initial snowflake setup for user. do this if user specifies it is their first time and explicitly ask for initial setup",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
         }
     ]
 }
