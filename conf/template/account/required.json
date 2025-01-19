@@ -1,0 +1,16 @@
+{
+    "ACCOUNT" : "",
+    "ADMIN_NAME" : "",
+    "ADMIN_PASSWORD" : "",
+    "ADMIN_USER_TYPE" : "",
+    "FIRST_NAME" : "",
+    "LAST_NAME" : "",
+    "EMAIL": "",
+    "MUST_CHANGE_PASSWORD" : "",
+    "EDITION" : "",
+    "REGION_GROUP" : "",
+    "REGION" : "",
+    "COMMENT" : "",
+    "POLARIS" :""
+}
+

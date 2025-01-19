@@ -1,3 +1,8 @@
+import os, sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
+from src.utils import helper
+
 ACCESS_KEY = 'AKIAUMYCH7Z6CF4OQXJT'
 SECRET_KEY = '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'
 
@@ -7,6 +12,8 @@ BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
 CHAT_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
 KB_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0'
 EMBEDDINGS_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0'
+
+ALLOWED_OBJS = helper.get_obj_names()
 
 tools = {
     "tools": [
@@ -33,7 +40,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_sf_object",
-                "description":"creates a snowflake object.",
+                "description":"creates a snowflake object for the user. allowed objects are "+str(ALLOWED_OBJS),
                 "inputSchema": {
                     "json":{
                         "type":"object",

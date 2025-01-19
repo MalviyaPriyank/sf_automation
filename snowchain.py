@@ -1,21 +1,20 @@
 import os
 import sys
+import json
 import time
 import logging
 import streamlit as st
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'../utils'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'../model'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
+from src.obj import session
 
-
-from src.obj import connection,schema,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
+#from src.obj import connection,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
 from conf import readconf
-from utils import helper
-from model.tools import LLMTools
-from model.bedrock import Bedrock
+from src.utils import helper
+from src.model.tools import LLMTools
+from src.model.bedrock import Bedrock
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
 from valueexception import (
@@ -68,8 +67,7 @@ if st.session_state[ss.INITIALIZED]:
             response = st.write_stream(helper.response_generator([ss.SHOVELING]))
         response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
         st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-        logger.info('response')
-        logger.info(response)
+        logger.info(f'response: {response}')
 
         for content in response:
             if ss.TEXT in content:
@@ -88,17 +86,49 @@ if st.session_state[ss.INITIALIZED]:
                     done_tool_call = True
                     break
                 if lcs.TOOL_USE in content:
-                    print(content)
-                    tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                    
-                    response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
-                    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-                    for content in response:
-                        if ss.TEXT in content:
-                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                    if content[lcs.TOOL_USE][lcs.NAME] == lcs.CREATE_SF_OBJ:
+                        obj_name = content[lcs.TOOL_USE][lcs.INPUT][lcs.OBJ_NAME]
+                        json_template = helper.obj_json_template(f'conf/template/{obj_name}/required.json')
+                        json_string = json.dumps(json_template, indent=4)
+                        if json_template:
+                            st.download_button(
+                                label="Download JSON template",
+                                data=json_string,
+                                file_name=f"{obj_name}_template.json",
+                                mime="application/json",
+                                key=f'{obj_name}_json_template'
+                            )
+                            json_upload = st.file_uploader(
+                                lcs.JSON_UPLOAD_GREETING,
+                                accept_multiple_files=False,
+                                type=lcs.JSON
+                            )
+                        if json_upload is not None:
+                            with open(f'conf/template/{content[lcs.TOOL_USE][lcs.OBJ_NAME]}/user_upload.json', 'w') as f:
+                                json.dump(json.load(json_upload), f)
+
+                            tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
+                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
                             
-                            with st.chat_message(ss.ASSISTANT):
-                                st.markdown(content[ss.TEXT])
+                            response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                            for content in response:
+                                if ss.TEXT in content:
+                                    st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                                    
+                                    with st.chat_message(ss.ASSISTANT):
+                                        st.markdown(content[ss.TEXT])
+                    else:
+                        tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                        
+                        response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                        for content in response:
+                            if ss.TEXT in content:
+                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                                
+                                with st.chat_message(ss.ASSISTANT):
+                                    st.markdown(content[ss.TEXT])
 
             if done_tool_call: break
