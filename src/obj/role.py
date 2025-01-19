@@ -119,7 +119,7 @@ class Role:
         self.add_properties_to_query()
         
     def create_role(self):
-        self.session.execute_qry(self.qry)
+        self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
         role = Role(session)

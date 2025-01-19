@@ -710,7 +710,7 @@ class ExternalStage:
         self.add_properties_to_query()
 
     def create_external_stage(self):
-        self.session.execute_qry(self.qry)
+        self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
         external_stage = ExternalStage(session)

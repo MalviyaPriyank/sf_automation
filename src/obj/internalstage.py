@@ -296,7 +296,7 @@ class InternalStage:
         self.add_properties_to_query()
 
     def create_internal_stage(self):
-        self.session.execute_qry(self.qry)
+        self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
         internal_stage = InternalStage(session)

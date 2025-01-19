@@ -684,7 +684,7 @@ class Task:
         self.attr.serverless_task_max_statement_size_tag = serverless_task_max_statement_size_tag
 
     def create_task(self):
-        self.session.execute_qry(self.qry)
+        self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
         task = Task(session)
