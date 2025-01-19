@@ -255,8 +255,9 @@ class Config:
     def __init__(self):
         pass
     _config_database = "DB_CONFIG"
-    _config_schema = "CONFIG"
-    _config_internal_stage = "STAGE_INT_CONFIG"
+    _config_schema = "SCH_CONFIG"
+    _config_stage = "STG_INT_CONFIG"
+    _deployment_stage = "STG_INT_DEPLOY"
     _default_privilege_set = ["OWNERSHIP","ALL","MONITOR","MODIFY","USAGE","OPERATE"]
     _default_warehouse = {
         "WH_XSMALL" : "XSMALL",
@@ -274,5 +275,6 @@ class Config:
         "RL_MODIFY_EVERY_OBJECT" : "Default role to have modify privileges on objects that allow modify",
         "RL_OPERATE_EVERY_OBJ" : "Default role to have operate privileges on objects that allow operate privileges"
     }
+
         
 

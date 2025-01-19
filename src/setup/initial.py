@@ -29,7 +29,10 @@ def create_config_schema(session):
     Schema.create_object(session,{"NAME":cfg._config_schema})
 
 def create_config_stage(session):
-    InternalStage.create_object(session,{"NAME":cfg._config_internal_stage})
+    InternalStage.create_object(session,{"NAME":cfg._config_stage})
+
+def create_deployment_stage(session):
+    InternalStage.create_object(session,{"NAME":cfg._deployment_stage})
 
 
 def main(session):
@@ -38,6 +41,7 @@ def main(session):
     create_config_database(session)
     create_config_schema(session)
     create_config_stage(session)
+    create_deployment_stage(session)
 
     
     
