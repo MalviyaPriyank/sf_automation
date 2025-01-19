@@ -39,8 +39,14 @@ class Role:
     def __init__(self):
         pass
 
-    _default_role = ["RL_OWNER_EVERY_OBJ","RL_ALL_EVERY_OBJ","RL_MONITOR_EVERY_OBJ","RL_USAGE_EVERY_OBJECT","RL_MODIFY_EVERY_OBJECT","RL_OPERATE_EVERY_OBJ"]
-
+    _default_role = {
+        "RL_OWNER_EVERY_OBJ" : "Default role to be the owner of all the objects within account",
+        "RL_ALL_EVERY_OBJ" : "Default role to have all allowed privileges on all objects except ownership",
+        "RL_MONITOR_EVERY_OBJ" : "Default role to have mointor privileges on objects that allow monitor",
+        "RL_USAGE_EVERY_OBJECT" : "Default role to have usage privileges on objects that allow usage",
+        "RL_MODIFY_EVERY_OBJECT" : "Default role to have modify privileges on objects that allow modify",
+        "RL_OPERATE_EVERY_OBJ" : "Default role to have operate privileges on objects that allow operate privileges"
+    }
     _name_tag = "NAME"
     _comment_tag = "COMMENT"
 
@@ -231,7 +237,15 @@ class Warehouse:
     _statement_timeout_in_seconds_tag = "STATEMENT_TIMEOUT_IN_SECONDS"
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
-    _default_warehouse = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE"]
+    _default_warehouse = {
+        "WH_XSMALL" : "XSMALL",
+        "WH_SMALL" : "SMALL",
+        "WH_MEDIUM" : "MEDIUM",
+        "WH_LARGE" : "LARGE",
+        "WH_XLARGE" : "XLARGE",
+        "WH_XXLARGE" : "XXLARGE"
+    }
+
 
 class Privileges:
     _default_privilege_set = ["OWNERSHIP","ALL","MONITOR","MODIFY","USAGE","OPERATE"]
