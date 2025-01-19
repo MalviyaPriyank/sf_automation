@@ -1,5 +1,8 @@
 
 import snowflake.snowpark as snowpark
+from snowflake.core import Root
+
+
 
 class User:
     def __get__(self,instance,owner):
@@ -41,6 +44,16 @@ class Account:
     def __delete__(self,instance):
         del instance._account
 
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+
+    def __delete__(self,instance):
+        del instance._session
+
 class SessionAttr:
     def __init__(self,parent):
         self.parent = parent
@@ -48,6 +61,7 @@ class SessionAttr:
     user = User()
     password = Password()
     account = Account()
+    session = Session()
 
 class Session:
     def __init__(self):
@@ -66,8 +80,15 @@ class Session:
         self.set_user(self.attr.user)
         self.set_password(self.attr.password)
         self.set_account(self.attr.account)
-        session = (snowpark.Session.builder.config("account",self.attr.account).config("user",self.attr.user).config("password",self.attr.password).create())
-        return session
+        self.attr.session = (snowpark.Session.builder.config("account",self.attr.account).config("user",self.attr.user).config("password",self.attr.password).create())
+        return self.attr.session
+    
+    def get_root_object(self):
+        root = Root(self.attr.session)
+        return root
+
+
+
 
     
 
