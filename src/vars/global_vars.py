@@ -232,7 +232,7 @@ class Warehouse:
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
 
 
-class Privileges:
+class Privilege:
     _allowed_object_type = ["USER","ROLE","VIRTUAL_WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK"]
     _user_privileges = ["MONITOR","OWNERSHIP","ALL"]
     _role_privileges = ["OWNERSHIP"]
