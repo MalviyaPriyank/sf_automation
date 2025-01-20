@@ -62,6 +62,9 @@ class CommentTag:
         del instance._comment_tag
 
 class ShareAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
     name = Name()
     name_tag = NameTag()
 
@@ -71,7 +74,7 @@ class ShareAttrs:
 
 class Share:
     def __init__(self):
-        self.attr = ShareAttrs()
+        self.attr = ShareAttrs(self)
         self.session = 'session'
         self.qry = ""
 

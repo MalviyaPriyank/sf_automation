@@ -179,6 +179,8 @@ class RefreshOnCreateTag:
 
 
 class InternalStageAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     name = Name()
     name_tag = NameTag()
 
@@ -204,7 +206,7 @@ class InternalStageAttrs:
 
 class InternalStage:
     def __init__(self,session):
-        self.attr = InternalStageAttrs()
+        self.attr = InternalStageAttrs(self)
         self.session = session
         self.qry = ""
 

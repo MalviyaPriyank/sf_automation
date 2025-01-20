@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from global_vars import ExternalStage as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
@@ -14,16 +15,12 @@ class Name:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._name = value
 
     def __del__(self,instance):
         del instance._name
@@ -438,6 +435,9 @@ class NotificationIntegrationTag:
         del instance._notification_integration_tag
 
 class ExternalStageAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
     name = Name()
     name_tag = NameTag()
 
@@ -500,7 +500,7 @@ class ExternalStageAttrs:
 
 class ExternalStage:
     def __init__(self,session):
-        self.attr = ExternalStageAttrs()
+        self.attr = ExternalStageAttrs(self)
         self.session = session
         self.qry = ""
 

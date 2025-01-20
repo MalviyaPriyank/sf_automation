@@ -441,6 +441,8 @@ class StatementTimeoutInSecondsLabel:
 
 
 class WarehouseAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     name = Name()
     name_tag = NameLabel()
     warehouse_size = WarehouseSize()
@@ -482,7 +484,7 @@ class WarehouseAttrs:
 
 class Warehouse:
     def __init__(self,session):
-        self.attr = WarehouseAttrs()
+        self.attr = WarehouseAttrs(self)
         self.session =  session
         self.qry = ""
 

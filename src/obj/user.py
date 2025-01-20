@@ -521,6 +521,9 @@ class EnableUnredactedQuerySyntaxErrorTag:
         del instance._enable_unredacted_query_syntax_error_tag
 
 class UserAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
     name = Name()
     name_tag = NameTag()
 
@@ -592,7 +595,7 @@ class UserAttrs:
 
 class User:
     def __init__(self,session):
-        self.attr = UserAttrs()
+        self.attr = UserAttrs(self)
         self.session = session
         self.qry = ""
 

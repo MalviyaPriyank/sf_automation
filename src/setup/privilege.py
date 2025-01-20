@@ -5,6 +5,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
 from global_vars import Priveleges as gv
 
 
+
+class Object:
+    def __set__():
+
+
 class PrivilegeAttr:
     def __setattr__(self, name, value):
         if name in gv._allowed_object_type:
@@ -35,16 +40,24 @@ class PrivilegeAttr:
         
 
 class Privilege:
-    def __init__(self,obj_type,privilege_type):
+    def __init__(self,session,obj_type,privilege_type,role):
         attr = PrivilegeAttr(obj_type)
         self.obj_type = obj_type
         self.privilege_type = privilege_type
+        self.role = role
+
+    def grant_role_to_role(self,role1,role2):
+        qry = f"GRANT ROLE {role1} to ROLE {role2}"
+        return qry
+    
+    def validate_privilege_type(self):
+        if self.privilege_type not in self.attr._privileges_list:
+            raise ValueError
+
 
     def grant_privilege(self):
-        if self.privlege_type == 'OWNERSHIP':
-            qry = f"GRANT {self.privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_OWNER"
-        elif self.privlege_type == 'ALL':
-            qry = f"GRANT {self.privlege_type} ON {self.obj_type} {self.obj_name} TO ROLE RL_PRIV_ALL"
+        qry = f"GRANT {self.privilege_type} ON {self.obj_type} TO ROLE"
+        
 
 
     

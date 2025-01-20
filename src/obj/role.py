@@ -1,31 +1,26 @@
 
 import sys
 import os 
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger('snowchain_logs').setLevel(logging.INFO)
+logger = logging.getLogger('snowchain_logs')
 
-
-from global_vars import InternalStage as gv
+from global_vars import Role as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
-    
+
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
-        else:
+        if value == "NONE":
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._name = value
 
     def __delete__(self,instance):
@@ -62,6 +57,8 @@ class CommentTag:
         del instance._comment_tag
 
 class RoleAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     name = Name()
     name_tag = NameTag()
 
@@ -71,7 +68,7 @@ class RoleAttrs:
 
 class Role:
     def __init__(self,session):
-        self.attr = RoleAttrs()
+        self.attr = RoleAttrs(self)
         self.session = session
         self.qry = ""
 
@@ -119,10 +116,11 @@ class Role:
         self.add_properties_to_query()
         
     def create_role(self):
-        self.session.sql(self.qry)
+        self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         role = Role(session)
+        logger.info(f"values passed {kwargs}")
 
         role.set_name(kwargs[gv._name_tag])
         role.set_name_tag(gv._name_tag)

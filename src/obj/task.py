@@ -477,6 +477,8 @@ class ServerlessTaskMaxStatementSizeTag:
         del instance._serverless_task_max_statement_size_tag
 
 class TaskAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     name = Name()
     name_tag = NameTag()
 
@@ -547,7 +549,7 @@ class TaskAttrs:
 
 class Task:
     def __init__(self,session):
-        self.attr = TaskAttrs()
+        self.attr = TaskAttrs(self)
         self.session = session
 
     def set_name(self,name):

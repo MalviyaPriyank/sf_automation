@@ -974,6 +974,8 @@ class DisableAutoConvertTag:
     
 
 class FileFormatAttrs:
+    def __init__(self,parent):
+        self.parent
     type = Type()
     type_tag = TypeTag()
     name = Name()
@@ -1050,7 +1052,7 @@ class FileFormatAttrs:
 
 class FileFormat:
     def __init__(self,session):
-        self.attr = FileFormatAttrs()
+        self.attr = FileFormatAttrs(self)
         self.session = session
         self.qry = ""
 

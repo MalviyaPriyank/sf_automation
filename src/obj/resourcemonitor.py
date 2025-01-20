@@ -212,6 +212,9 @@ class DoTag:
 
 
 class ResourceMonitorAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+        
     name = Name()
     name_tag = NameTag()
     credit_quota = CreditQuota()
@@ -232,7 +235,7 @@ class ResourceMonitorAttrs:
 
 class ResourceMonitor:
     def __init__(self,session):
-        self.attr = ResourceMonitorAttrs()
+        self.attr = ResourceMonitorAttrs(self)
         self.session = session
         self.qry = ""
 

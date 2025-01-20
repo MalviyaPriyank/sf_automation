@@ -63,7 +63,9 @@ class LLMTools:
 
 
     def initial_sf_setup(self, query):
-        InitialSetup(session=self.sf_session)
+        init_setup = InitialSetup(session=self.sf_session)
+        init_setup.perform_initial_setup()
+
         return 'Set up for role, warehouse, database, schema, and more'
 
 
