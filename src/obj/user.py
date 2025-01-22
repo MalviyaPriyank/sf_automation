@@ -5,23 +5,25 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
-from global_vars import User as gv
+from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._name = value
-
-    def __delete__(self,instance):
-        del instance._name
+        if value == "NONE" :
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._account_name = value
 
 class NameTag:
     def __get__(self,instance,owner):
@@ -38,10 +40,9 @@ class Password:
         return instance._password
     
     def __set__(self,instance,value):
-        if len(value) < 2:
-            raise ValueError
-        if (value[0] != "'" and value[-1] != "'" ) and (value[0] != "\"" and value[-1] != "\"" ):
-            raise ValueError
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+            instance._password = value
         else:
             instance._password = value
 
@@ -63,7 +64,9 @@ class LoginName:
         return instance._login_name
     
     def __set__(self,instance,value):
-        instance._login_name = value
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+            instance._login_name = value
 
     def __delete__(self,instance):
         del instance._login_name
@@ -83,9 +86,8 @@ class DisplayName:
         return instance._display_name
     
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_display_name: # ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
-            raise ValueError
-        else:
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
             instance._display_name = value
 
     def __delete__(self,instance):
@@ -106,7 +108,9 @@ class FirstName:
         return instance._first_name
     
     def __set__(self,instance,value):
-        instance._first_name = value
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+            instance._first_name = value
 
     def __delete__(self,instance):
         del instance._first_name
@@ -126,7 +130,9 @@ class MiddleName:
         return instance._middle_name
     
     def __set__(self,instance,value):
-        instance._middle_name = value
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+            instance._middle_name = value
 
     def __delete__(self,instance):
         del instance._middle_name
@@ -147,7 +153,9 @@ class LastName:
         return instance._last_name
     
     def __set__(self,instance,value):
-        instance._last_name = value
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
+            instance._last_name = value
 
     def __delete__(self,instance):
         del instance._last_name
@@ -167,9 +175,8 @@ class Email:
         return instance._email
     
     def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
+        if ( vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) and 
+            vv.is_string(value,instance.parent.__class__.__name__,self.__class__.__name__)):
             instance._email = value
     
     def __delete__(self,instance):
@@ -190,10 +197,10 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._must_change_password = value
-        else:
-            raise ValueError       
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._must_change_password = value    
     
     def __delete__(self,instance):
         del instance._must_change_password
@@ -213,10 +220,10 @@ class Disabled:
         return instance._disabled
     
     def __set__(self,instance,value):
-        if vv.is_bool(value): # ['TRUE','FALSE']
+        if value == "NONE":
             instance._disabled = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._disabled = value 
     
     def __delete__(self,instance):
         del instance._disabled
@@ -236,7 +243,7 @@ class DaysToExpiry:
         return instance._days_to_expiry
     
     def __set__(self,instance,value):
-        if vv.is_positive_number(value):
+        if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._days_to_expiry = value
         else:
             raise ValueError
