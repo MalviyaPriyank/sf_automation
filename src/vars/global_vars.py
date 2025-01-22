@@ -36,6 +36,7 @@ class Database:
     _default_ddl_collation_tag = "DEFAULT_DDL_COLLATION"
     _storage_serialization_policy_tag = "STORAGE_SERIALIZATION_POLICY"
     _comment_tag = "COMMENT"
+    _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
 
 class Role:
     def __init__(self):
@@ -61,6 +62,7 @@ class ResourceMonitor:
 class Schema:
     def __init__(self):
         pass
+    _database_tag = "DATABASE"
     _name_tag = "NAME"
     _with_managed_access_tag = "WITH MANAGED ACCESS"
     _data_retention_time_in_days_tag = "DATA_RETENTION_TIME_IN_DAYS"
@@ -104,6 +106,9 @@ class Share:
 class InternalStage:
     def __init__(self):
         pass
+
+    _database_tag = "DATABASE"
+    _schema_tag = "SCHEMA"
     _name_tag = "NAME"
     _file_format_tag = "FILE_FORMAT"
     _comment_tag = "COMMENT"
@@ -211,8 +216,8 @@ class Warehouse:
     def __init__(self):
         pass
     _name_tag = "NAME"
-    _warehouse_size_tag = "SIZE"
-    _warehouse_type_tag = "TYPE"
+    _warehouse_size_tag = "WAREHOUSE_SIZE"
+    _warehouse_type_tag = "WAREHOUSE_TYPE"
     _resource_constraint_tag = "RESOURCE_CONSTRAINT"
     _max_cluster_count_tag = "MAX_CLUSTER_COUNT"
     _min_cluster_count_tag = "MIN_CLUSTER_COUNT"
@@ -226,29 +231,33 @@ class Warehouse:
     _enable_query_acceleration_tag = "ENABLE_QUERY_ACCELERATION"
     _query_acceleration_max_scale_factor_tag = "QUERY_ACCELERATION_MAX_SCALE_FACTOR"
     _max_concurrency_level_tag = "MAX_CONCURRENCY_LEVEL"
-    _statement_queued_timeout_in_seconds_tag = "STATEMET_QUEUED_TIMEOUT_IN_SECONDS"
+    _statement_queued_timeout_in_seconds_tag = "STATEMENT_QUEUED_TIMEOUT_IN_SECONDS"
     _statement_timeout_in_seconds_tag = "STATEMENT_TIMEOUT_IN_SECONDS"
+    _allowed_values_scaling_policy = ["STANDARD","ECONOMY"]
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
 
 
 class Privilege:
-    _allowed_object_type = ["USER","ROLE","VIRTUAL_WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK"]
-    _user_privileges = ["MONITOR","OWNERSHIP","ALL"]
-    _role_privileges = ["OWNERSHIP"]
-    _virtual_warehouse_privileges = ["APPLYBUDGET","MODIFY","MONITOR","OPERATE","USAGE","OWNERSHIP","ALL"]
-    _database_privileges = ["APPLYBUDGET","MODIFY","MONITOR","USAGE","REFERENCE_USAGE","CREATE DATABASE ROLE","CREATE SCHEMA","IMPORTED PRIVILEGES","OWNERSHIP","ALL"]
-    _schema_privileges = ["APPLYBUDGET","MODIFY","MONITOR","USAGE","CREATE AUTHENTICATION POLICY","CREATE DATA METRIC FUNCTION","CREATE TABLE","CREATE DYNAMIC TABLE","CREATE EVENT TABLE",
+    _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK","STAGE"]
+    _allowed_privileges = {
+        "USER": ["MONITOR","OWNERSHIP","ALL"],
+        "ROLE": ["OWNERSHIP"],
+        "STAGE":["READ","WRITE"],
+        "WAREHOUSE": ["APPLYBUDGET","MODIFY","MONITOR","OPERATE","USAGE","OWNERSHIP","ALL"],
+        "DATABASE": ["APPLYBUDGET","MODIFY","MONITOR","USAGE","REFERENCE_USAGE","CREATE DATABASE ROLE","CREATE SCHEMA","IMPORTED PRIVILEGES","OWNERSHIP","ALL"],
+        "SCHEMA": ["APPLYBUDGET","MODIFY","MONITOR","USAGE","CREATE AUTHENTICATION POLICY","CREATE DATA METRIC FUNCTION","CREATE TABLE","CREATE DYNAMIC TABLE","CREATE EVENT TABLE",
                           "CREATE EXTERNAL TABLE","CREATE GIT REPOSITORY","CREATE ICEBERG TABLE","CREATE VIEW","CREATE MASKING POLICY","CREATE MATERIALIZED VIEW","CREATE NETWORK RULE",
                           "CREATE NOTEBOOK","CREATE ROW ACCESS POLICY","CREATE SECRET","CREATE SESSION POLICY","CREATE STAGE","CREATE STREAMLIT","CREATE FILE FORMAT",
                           "CREATE SEQUENCE","CREATE FUNCTION","CREATE PACKAGES POLICY","CREATE PASSWORD POLICY","CREATE PIPE","CREATE STREAM","CREATE TAG","CREATE TASK","CREATE PROCEDURE",
                           "CREATE ALERT","CREATE CORTEX SEARCH SERVICE","CREATE SNOWFLAKE.CORE.BUDGET","CREATE SNOWFLAKE.DATA_PRIVACY.CLASSIFICATION_PROFILE","CREATE SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER",
                           "CREATE SNOWFLAKE.ML.ANOMALY_DETECTION","CREATE SNOWFLAKE.ML.CLASSIFICATION","CREATE SNOWFLAKE.ML.FORECAST","CREATE SNOWFLAKE.ML.TOP_INSIGHTS","CREATE SNOWFLAKE.ML.DOCUMENT_INTELLIGENCE",
-                          "CREATE MODEL","CREATE MODEL MONITOR","CREATE IMAGE REPOSITORY","CREATE SERVICE","CREATE SNAPSHOT","ADD SEARCH OPTIMIZATION","OWNERSHIP","ALL"]
-    _table_privileges = ["SELECT","INSERT","UPDATE","TRUNCATE","DELETE","EVOLVE SCHEMA","REFERENCES","APPLYBUDGET","OWNERSHIP","ALL"]
-    _file_format_privileges = ["USAGE","OWNERSHIP","ALL"]
-    _pipe_privileges = ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
-    _task_privileges = ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
+                          "CREATE MODEL","CREATE MODEL MONITOR","CREATE IMAGE REPOSITORY","CREATE SERVICE","CREATE SNAPSHOT","ADD SEARCH OPTIMIZATION","OWNERSHIP","ALL"],
+        "TABLE": ["SELECT","INSERT","UPDATE","TRUNCATE","DELETE","EVOLVE SCHEMA","REFERENCES","APPLYBUDGET","OWNERSHIP","ALL"],
+        "FILE_FORMAT": ["USAGE","OWNERSHIP","ALL"],
+        "PIPE": ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"],
+        "TASK": ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
+    }
 
 
 class Config:
@@ -274,6 +283,15 @@ class Config:
         "RL_USAGE_EVERY_OBJECT" : "'Default role to have usage privileges on objects that allow usage'",
         "RL_MODIFY_EVERY_OBJECT" : "'Default role to have modify privileges on objects that allow modify'",
         "RL_OPERATE_EVERY_OBJ" : "'Default role to have operate privileges on objects that allow operate privileges'"
+    }
+
+    _default_role_privilege_set = {
+        "RL_OWNER_EVERY_OBJ": "OWNERSHIP",
+        "RL_ALL_EVERY_OBJ": "ALL",
+        "RL_MONITOR_EVERY_OBJ": "MONITOR",
+        "RL_USAGE_EVERY_OBJECT": "USAGE",
+        "RL_MODIFY_EVERY_OBJECT": "MODIFY",
+        "RL_OPERATE_EVERY_OBJ": "OPERATE"
     }
 
         

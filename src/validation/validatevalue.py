@@ -17,6 +17,7 @@ from valueexception import (
     MustBeBetween,
     MustBeValidNumber,
     MustBeValidCRON,
+    ValueNotAllowed,
     InvalidPassword
 )
 
@@ -36,6 +37,13 @@ class ValidateValue:
             return True
         else:
             raise MustStartWithAlphabet(object_type,attr_name)
+        
+    @staticmethod
+    def is_valid_value(value,allowed_list,object_type,attr_name):
+        if value not in allowed_list:
+            raise ValueNotAllowed(object_type,attr_name,allowed_list)
+        else:
+            return True
         
     @staticmethod
     def has_space(value,object_type,attr_name):

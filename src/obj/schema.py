@@ -1,13 +1,34 @@
-
 import sys
 import os 
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
 from global_vars import Schema as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute,ValueNotAllowed
+
+class DatabaseName:
+    def __get__(self,instance,owner):
+        return instance._database_name
+    
+    def __set__(self,instance,value):
+        instance._database_name = value
+    
+    def __delete__(self,instance):
+        del instance._database_name
+
+class DatabaseTag:
+    def __get__(self,instance,owner):
+        return instance._database_tag
+    
+    def __set__(self,instance,value):
+        instance._database_tag = value
+    
+    def __delete__(self,instance):
+        del instance._database_tag
 
 class Name:
     def __get__(self,instance,owner):
@@ -15,7 +36,7 @@ class Name:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise KeyError
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         elif vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
             if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -60,7 +81,9 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
+            instance._data_retention_time_in_days = value
+        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._data_retention_time_in_days = value
     
     def __delete__(self,instance):
@@ -81,7 +104,9 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
+            instance._max_data_extension_time_in_days = value
+        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -189,7 +214,7 @@ class LogLevel:
         if value == "NONE":
             instance._log_level = "OFF"
         elif value not in gv._allowed_values_log_level:
-            raise ValueError
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_log_level)
         else:
             instance._log_level = value
 
@@ -214,7 +239,7 @@ class TraceLevel:
         if value == "NONE":
             instance._trace_level = "OFF"
         elif value not in gv._allowed_values_trace_level:
-            raise ValueError
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_trace_level)
         else:
             instance._trace_level = value
 
@@ -236,7 +261,12 @@ class StorageSerializationPolicy:
         return instance._storage_serialization_policy
     
     def __set__(self,instance,value):
-        instance._storage_serialization_policy = value
+        if value == "NONE":
+            instance._storage_serialization_policy = value
+        elif value not in gv._allowed_values_storage_serialization_policy:
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_storage_serialization_policy)
+        else:
+            instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
         del instance._storage_serialization_policy
@@ -296,6 +326,9 @@ class CommentTag:
 class SchemaAttrs:
     def __init__(self,parent):
         self.parent = parent
+
+    database_name = DatabaseName()
+    database_tag = DatabaseTag()
         
     name = Name()
     name_tag = NameTag()
@@ -343,6 +376,13 @@ class Schema:
         self.attr = SchemaAttrs(self)
         self.session = session
         self.qry = ""
+
+    def set_database_name(self, value):
+        self.attr.database_name = value
+
+    def set_database_tag(self, value):
+        self.attr.database_tag = value  
+
     def set_name(self, value):
         self.attr.name = value
 
@@ -488,10 +528,14 @@ class Schema:
         self.add_properties_to_query()
 
     def create_schema(self):
-        self.session.sql(self.qry)
+        self.session.sql(f"USE {self.attr.database_tag} {self.attr.database_name}").collect()
+        self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         schema = Schema(session)
+
+        schema.set_database_name(kwargs[gv._database_tag])
+        schema.set_database_tag(gv._database_tag)
 
         schema.set_name(kwargs[gv._name_tag])
         schema.set_name_tag(gv._name_tag)

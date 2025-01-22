@@ -65,6 +65,11 @@ class InvalidPassword(AttributeValidationError):
     def __init__(self, min_len,other_requirements,object_type, attr_name):
         message = f"must be at least {min_len} in length, and {other_requirements}"
         super().__init__(object_type, attr_name, message)
+
+class InvalidParamForObject(AttributeValidationError):
+    def __init__(self, object_type,attr_name,allowed_type):
+        message = f"{attr_name} can only be set for {allowed_type} {object_type}"
+        super().__init__(object_type, attr_name, message)    
         
 
 

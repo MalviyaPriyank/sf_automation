@@ -3,12 +3,16 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
 
 
 from global_vars import Warehouse as gv_wh
 from global_vars import Config as cfg
+from global_vars import Privilege as gv_priv
 from obj import role,warehouse,database,schema,internalstage
 from setup import privilege 
+from conf import readconf
+
 
 class InitialSetup:
     def __init__(self,
@@ -22,30 +26,70 @@ class InitialSetup:
             priv_inst.grant_role_to_role(rl,"ACCOUNTADMIN")
             priv_inst.grant_role_to_role(rl,"SECURITYADMIN")
 
-
-            
-    
     def create_default_warehouse(self):
+        data_dict = readconf.main("warehouse")
         for warehouse_name,warehouse_size in cfg._default_warehouse.items():
-            warehouse.Warehouse.create_object(self.session,**{"NAME":warehouse_name,"TYPE":"STANDARD","SIZE": warehouse_size})
-            
+            data_dict["NAME"] = warehouse_name
+            data_dict["WAREHOUSE_SIZE"] = warehouse_size
+
+            warehouse.Warehouse.create_object(self.session,**data_dict)
+            priv_inst = privilege.Privilege(self.session)
+            for role,privileges in cfg._default_role_privilege_set.items():
+                if privileges in gv_priv._allowed_privileges["WAREHOUSE"]:
+                    priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "WAREHOUSE",object_identifier=warehouse_name,role = role)
+
     
     def create_config_database(self):
-        database.Database.create_object(self.session,**{"NAME":cfg._config_database})
+        data_dict = readconf.main("database")
+        data_dict["NAME"] = cfg._config_database
+        database.Database.create_object(self.session,**data_dict)
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["DATABASE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "DATABASE",object_identifier=cfg._config_database,role = role)
+    
+
     
     def create_config_schema(self):
-        schema.Schema.create_object(self.session,**{"NAME":cfg._config_schema})
+        data_dict = readconf.main("schema")
+        data_dict["DATABASE"] = cfg._config_database
+        data_dict["NAME"] = cfg._config_schema
+        schema.Schema.create_object(self.session,**data_dict)
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["SCHEMA"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "SCHEMA",object_identifier=cfg._config_schema,role = role)
+
+
     
     def create_config_stage(self):
-        internalstage.InternalStage.create_object(self.session,**{"NAME":cfg._config_stage})
+        data_dict = readconf.main("internalstage")
+        data_dict["DATABASE"] = cfg._config_database
+        data_dict["SCHEMA"] = cfg._config_schema
+        data_dict["NAME"] = cfg._config_stage
+        internalstage.InternalStage.create_object(self.session,**data_dict)
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["STAGE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
+
     
     def create_deployment_stage(self):
-        internalstage.InternalStage.create_object(self.session,**{"NAME":cfg._deployment_stage})
+        data_dict = readconf.main("internalstage")
+        data_dict["DATABASE"] = cfg._config_database
+        data_dict["SCHEMA"] = cfg._config_schema
+        data_dict["NAME"] = cfg._deployment_stage
+        internalstage.InternalStage.create_object(self.session,**data_dict)
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["STAGE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
+
     
     def perform_initial_setup(self):
-        self.create_default_role()
-        self.create_default_warehouse()
-        self.create_config_database()
-        self.create_config_schema()
+        #self.create_default_role()
+        #self.create_default_warehouse()
+        #self.create_config_database()
+        #self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_stage()

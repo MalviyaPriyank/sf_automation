@@ -4,19 +4,29 @@
 import sys
 import os 
 
+
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+
 
 
 from global_vars import Warehouse as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute,ValueNotAllowed,InvalidParamForObject
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
 
     def __set__(self,instance,value):
-        instance._name = value
+        if value == "NONE" :
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -38,7 +48,7 @@ class WarehouseType:
     def __set__(self,instance,value):
         
         if value not in gv._allowed_values_warehouse_type:
-            raise ValueError
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_warehouse_type)
         else:
             instance._warehouse_type = value
 
@@ -61,7 +71,7 @@ class WarehouseSize:
 
     def __set__(self,instance,value):
         if value not in gv._allowed_values_warehouse_size:
-            raise ValueError
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_warehouse_size)
         else:
             instance._warehouse_size = value
 
@@ -88,9 +98,9 @@ class ResourceConstraint:
         if instance._warehouse_type == 'SNOWPARK-OPTIMIZED': 
             instance._resource_constraint = value
         elif value == "NONE":
-            instance._resource_constraint = None
+            instance._resource_constraint = "NONE"
         else:
-            raise ValueError
+            raise InvalidParamForObject(instance.parent.__class__.__name__,self.__class__.__name__,"SNOWPARK-OPTIMIZED")
 
     def __delete__(self,instance):
         del instance._resource_constraint
@@ -110,8 +120,9 @@ class MaxClusterCount:
         return instance._max_cluster_count
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._max_cluster_count = None
+        if value != "NONE":
+            if vv.is_between(value,1,10,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._max_cluster_count = value
         else:
             instance._max_cluster_count = value
 
@@ -134,12 +145,11 @@ class MinClusterCount:
         return instance._min_cluster_count
 
     def __set__(self,instance,value):
-        if value == "NONE":
-            instance._min_cluster_count = "NONE"
-        elif int(value) >= 1:
-            instance._min_cluster_count = value   
+        if value != "NONE":
+            if vv.is_between(value,1,10,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._min_cluster_count = value   
         else:
-            raise ValueError
+            instance._min_cluster_count = value
 
     def __delete__(self,instance):
         del instance._min_cluster_count
@@ -160,12 +170,12 @@ class ScalingPolicy:
         return instance._scaling_policy
 
     def __set__(self,instance,value):
-        if value == "NONE":
-            instance._scaling_policy = "NONE"
-        elif instance._scaling_policy > 1:
-            instance._scaling_policy = value       
+        if value != "NONE":
+            if vv.is_valid_value(value,gv._allowed_values_scaling_policy,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._scaling_policy = value   
         else:
-            raise ValueError
+            instance._scaling_policy = value
+
 
     def __delete__(self,instance):
         del instance._scaling_policy
@@ -187,8 +197,9 @@ class AutoSuspend:
         return instance._auto_suspend
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._auto_suspend = None
+        if value != "NONE":
+            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._auto_suspend = value
         else:
             instance._auto_suspend = value
 
@@ -210,11 +221,11 @@ class AutoResume:
         return instance._auto_resume
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._auto_resume = None
+        if value != "NONE":
+            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._auto_resume = value
         else:
             instance._auto_resume = value
-
     def __delete__(self,instance):
         del instance._auto_resume
 
@@ -234,11 +245,11 @@ class InitiallySuspended:
         return instance._initially_suspended
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._initially_suspended = None
+        if value != "NONE":
+            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._initially_suspended = value
         else:
             instance._initially_suspended = value
-
     def __delete__(self,instance):
         del instance._initially_suspended
 
@@ -258,10 +269,7 @@ class ResourceMonitor:
         return instance._resource_monitor
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._resource_monitor = None
-        else:
-            instance._resource_monitor = value
+        instance._resource_monitor = value
 
     def __delete__(self,instance):
         del instance._resource_monitor
@@ -328,10 +336,11 @@ class EnableQueryAcceleration:
         return instance._enable_query_acceleration
 
     def __set__(self,instance,value):
-        if vv.is_bool(value):
-            instance._enable_query_acceleration = value
+        if value != "NONE":
+            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._enable_query_acceleration = value
         else:
-            raise ValueError
+            instance._enable_query_acceleration = value
 
     def __delete__(self,instance):
         del instance._enable_query_acceleration
@@ -352,8 +361,9 @@ class QueryAccelerationMaxScaleFactor:
         return instance._query_acceleration_max_scale_factor
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._query_acceleration_max_scale_factor = None
+        if value != "NONE":
+            if vv.is_between(value,0,100,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._query_acceleration_max_scale_factor = value
         else:
             instance._query_acceleration_max_scale_factor = value
 
@@ -367,6 +377,7 @@ class QueryAccelerationMaxScaleFactorLabel:
     def __set__(self,instance,value):
         instance._query_acceleration_max_scale_factor_tag = value
 
+
     def __delete__(self,instance):
         del instance._query_acceleration_max_scale_factor_tag
 
@@ -375,8 +386,9 @@ class MaxConcurrencyLevel:
         return instance._max_concurrency_level
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._max_concurrency_level = None
+        if value != "NONE":
+            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._max_concurrency_level = value
         else:
             instance._max_concurrency_level = value
 
@@ -398,8 +410,9 @@ class StatementQueuedTimeoutInSeconds:
         return instance._statement_queued_timeout_in_seconds
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._statement_queued_timeout_in_seconds = None
+        if value != "NONE":
+            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._statement_queued_timeout_in_seconds = value
         else:
             instance._statement_queued_timeout_in_seconds = value
 
@@ -421,8 +434,9 @@ class StatementTimeoutInSeconds:
         return instance._statement_timeout_in_seconds
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._statement_timeout_in_seconds = None
+        if value != "NONE":
+            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._statement_timeout_in_seconds = value
         else:
             instance._statement_timeout_in_seconds = value
 
@@ -628,47 +642,47 @@ class Warehouse:
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
+
     def set_create_warehouse_qry(self):
         self.qry = f"CREATE WAREHOUSE IF NOT EXISTS {self.attr.name} "
 
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
-            self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
-                if prop == 'warehouse_type':
+                if prop == gv._warehouse_type_tag:
                     self.qry = f" {self.qry} {self.attr.warehouse_type_tag}  = {self.attr.warehouse_type} "
-                if prop == 'warehouse_size':
+                if prop == gv._warehouse_size_tag:
                     self.qry = f" {self.qry} {self.attr.warehouse_size_tag} = {self.attr.warehouse_size} "
-                if prop == 'resource_constraint':
+                if prop == gv._resource_constraint_tag:
                     self.qry = f" {self.qry} {self.attr.resource_constraint_tag} = {self.attr.resource_constraint} "
-                if prop == 'max_cluster_count':
+                if prop == gv._max_cluster_count_tag:
                     self.qry = f" {self.qry} {self.attr.max_cluster_count_tag} = {self.attr.max_cluster_count} "
-                if prop == 'min_cluster_count':
+                if prop == gv._min_cluster_count_tag:
                     self.qry = f" {self.qry} {self.attr.min_cluster_count_tag} = {self.attr.min_cluster_count} "
-                if prop == 'scaling_policy':
+                if prop == gv._scaling_policy_tag:
                     self.qry = f" {self.qry} {self.attr.scaling_policy_tag} = {self.attr.scaling_policy} "
-                if prop == 'auto_suspend':
+                if prop == gv._auto_suspend_tag:
                     self.qry = f" {self.qry} {self.attr.auto_suspend_tag} = {self.attr.auto_suspend} "
-                if prop == 'auto_resume':
+                if prop == gv._auto_resume_tag:
                     self.qry = f" {self.qry} {self.attr.auto_resume_tag} = {self.attr.auto_resume} "
-                if prop == 'initially_suspended':
+                if prop == gv._initially_suspended_tag:
                     self.qry = f" {self.qry} {self.attr.initially_suspended_tag} = {self.attr.initially_suspended} "
-                if prop == 'resource_monitor':
+                if prop == gv._resource_monitor_tag:
                     self.qry = f" {self.qry} {self.attr.resource_monitor_tag} = {self.attr.resource_monitor} "
-                if prop == 'comment':
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == 'tag':
+                if prop == gv._tag_tag:
                     self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
-                if prop == 'enable_query_acceleration':
+                if prop == gv._enable_query_acceleration_tag:
                     self.qry = f" {self.qry} {self.attr.enable_query_acceleration_tag} = {self.attr.enable_query_acceleration} "
-                if prop == 'query_acceleration_max_scale_factor':
+                if prop == gv._query_acceleration_max_scale_factor_tag:
                     self.qry = f" {self.qry} {self.attr.query_acceleration_max_scale_factor_tag} = {self.attr.query_acceleration_max_scale_factor} "
-                if prop == 'max_concurrency_level':
+                if prop == gv._max_concurrency_level_tag:
                     self.qry = f" {self.qry} {self.attr.max_concurrency_level_tag} = {self.attr.max_concurrency_level} "
-                if prop == 'statement_queued_timeout_in_seconds':
+                if prop == gv._statement_queued_timeout_in_seconds_tag:
                     self.qry = f" {self.qry} {self.attr.statement_queued_timeout_in_seconds_tag} = {self.attr.statement_queued_timeout_in_seconds} "
-                if prop == 'statement_timeout_in_seconds':
+                if prop == gv._statement_timeout_in_seconds_tag:
                     self.qry = f" {self.qry} {self.attr.statement_timeout_in_seconds_tag} = {self.attr.statement_timeout_in_seconds} "
 
 
@@ -679,7 +693,7 @@ class Warehouse:
         self.add_properties_to_query()
     
     def create_warehouse(self):
-        self.session.sql(self.qry)                    
+        self.session.sql(self.qry).collect()                  
 
     def create_object(session,**kwargs):
         wh = Warehouse(session)
@@ -707,7 +721,7 @@ class Warehouse:
         wh.set_max_concurrency_level_tag(gv._max_concurrency_level_tag)
         wh.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
         wh.set_min_cluster_count_tag(gv._min_cluster_count_tag)
-        wh.set_query_acceleration_max_scale_factor(gv._query_acceleration_max_scale_factor_tag)
+        wh.set_query_acceleration_max_scale_factor(kwargs[gv._query_acceleration_max_scale_factor_tag])
         wh.set_query_acceleration_max_scale_factor_tag(gv._query_acceleration_max_scale_factor_tag)
         wh.set_resource_monitor(kwargs[gv._resource_monitor_tag])
         wh.set_resource_monitor_tag(gv._resource_monitor_tag)
@@ -715,9 +729,9 @@ class Warehouse:
         wh.set_scaling_policy_tag(gv._scaling_policy_tag)
         wh.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
         wh.set_statement_timeout_in_seconds_tag(gv._statement_timeout_in_seconds_tag)
-        wh.set_statement_queued_timeout_in_seconds(gv._statement_queued_timeout_in_seconds_tag)
+        wh.set_statement_queued_timeout_in_seconds(kwargs[gv._statement_queued_timeout_in_seconds_tag])
         wh.set_statement_queued_timeout_in_seconds_tag(gv._statement_queued_timeout_in_seconds_tag)
-        wh.set_tag(gv._tag_tag)
+        wh.set_tag(kwargs[gv._tag_tag])
         wh.set_tag_tag(gv._tag_tag)
         wh.prepare_create_query()     
         wh.create_warehouse()

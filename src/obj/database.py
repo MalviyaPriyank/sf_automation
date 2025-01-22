@@ -1,13 +1,16 @@
 import sys
 import os 
 
+
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+
 
 
 from global_vars import Database as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
+from valueexception import IsARequiredAttribute,ValueNotAllowed,InvalidParamForObject
 
 class Name:
     def __get__(self,instance,owner):
@@ -18,7 +21,7 @@ class Name:
             raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
         elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
             instance._name = value
 
@@ -40,8 +43,11 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
             instance._data_retention_time_in_days = value
+        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._data_retention_time_in_days = value
+
     
     def __delete__(self,instance):
         del instance._data_retention_time_in_days
@@ -61,8 +67,10 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
             instance._max_data_extension_time_in_days = value
+        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -166,7 +174,12 @@ class StorageSerializationPolicy:
         return instance._storage_serialization_policy
     
     def __set__(self,instance,value):
-        instance._storage_serialization_policy = value
+        if value == "NONE":
+            instance._storage_serialization_policy = value
+        elif value not in gv._allowed_values_storage_serialization_policy:
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_storage_serialization_policy)
+        else:
+            instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
         del instance._storage_serialization_policy

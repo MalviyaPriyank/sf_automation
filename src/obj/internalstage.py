@@ -3,10 +3,52 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
 from global_vars import InternalStage as gv
 from validatevalue import ValidateValue as vv
+from valueexception import IsARequiredAttribute,ValueNotAllowed
+
+class DatabaseName:
+    def __get__(self,instance,owner):
+        return instance._database_name
+    
+    def __set__(self,instance,value):
+        instance._database_name = value
+    
+    def __delete__(self,instance):
+        del instance._database_name
+
+class DatabaseTag:
+    def __get__(self,instance,owner):
+        return instance._database_tag
+    
+    def __set__(self,instance,value):
+        instance._database_tag = value
+    
+    def __delete__(self,instance):
+        del instance._database_tag
+
+class SchemaName:
+    def __get__(self,instance,owner):
+        return instance._schema_name
+    
+    def __set__(self,instance,value):
+        instance._schema_name = value
+    
+    def __delete__(self,instance):
+        del instance._schema_name
+
+class SchemaTag:
+    def __get__(self,instance,owner):
+        return instance._schema_tag
+    
+    def __set__(self,instance,value):
+        instance._schema_tag = value
+    
+    def __delete__(self,instance):
+        del instance._schema_tag
 
 class Name:
     def __get__(self,instance,owner):
@@ -14,16 +56,13 @@ class Name:
     
     def __set__(self,instance,value):
         if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
+            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._name = value
+            
 
     def __del__(self,instance):
         del instance._name
@@ -108,8 +147,10 @@ class Encryption:
         return instance._encryption
     
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_encryption:
-            raise ValueError
+        if value == "NONE":
+            instance._encryption = value
+        elif value not in gv._allowed_values_encryption:
+            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_storage_serialization_policy)
         else:
             instance._encryption = value
 
@@ -131,10 +172,10 @@ class Directory:
         return instance._directory
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._directory = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._directory = value
 
     def __del__(self,instance):
         del instance._directory
@@ -155,10 +196,10 @@ class RefreshOnCreate:
         return instance._refresh_on_create
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._refresh_on_create = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._refresh_on_create = value
 
 
     def __del__(self,instance):
@@ -181,6 +222,13 @@ class RefreshOnCreateTag:
 class InternalStageAttrs:
     def __init__(self,parent):
         self.parent = parent
+    
+    database_name = DatabaseName()
+    database_tag = DatabaseTag()
+
+    schema_name = SchemaName()
+    schema_tag = SchemaTag()
+
     name = Name()
     name_tag = NameTag()
 
@@ -209,6 +257,18 @@ class InternalStage:
         self.attr = InternalStageAttrs(self)
         self.session = session
         self.qry = ""
+
+    def set_database_name(self,val):
+        self.attr.database_name = val
+    
+    def set_database_tag(self,val):
+        self.attr.database_tag = val
+
+    def set_schema_name(self,val):
+        self.attr.schema_name = val
+    
+    def set_schema_tag(self,val):
+        self.attr.schema_tag = val
 
     def set_name(self,val):
         self.attr.name = val
@@ -298,10 +358,18 @@ class InternalStage:
         self.add_properties_to_query()
 
     def create_internal_stage(self):
-        self.session.sql(self.qry)
+        self.session.sql(f" USE {self.attr.database_tag} {self.attr.database_name}").collect()
+        self.session.sql(f"USE {self.attr.schema_tag} {self.attr.schema_name}").collect()
+        self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         internal_stage = InternalStage(session)
+
+        internal_stage.set_database_name(kwargs[gv._database_tag])
+        internal_stage.set_database_tag(gv._database_tag)
+
+        internal_stage.set_schema_name(kwargs[gv._schema_tag])
+        internal_stage.set_schema_tag(gv._schema_tag)
 
         internal_stage.set_name(kwargs[gv._name_tag])
         internal_stage.set_name_tag(gv._name_tag)

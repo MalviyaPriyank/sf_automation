@@ -47,7 +47,7 @@ class ReadConfig:
         self.attr.object_type = object_type
 
     def set_conf_file_to_read(self):
-        self.attr.conf_file_to_read = f"conf/template/{self.attr.object_type}/user_upload.json"
+        self.attr.conf_file_to_read = f"conf/{self.attr.object_type}.json"
 
     def read_conf_file(self):
         with open(self.attr.conf_file_to_read,'r') as conf:

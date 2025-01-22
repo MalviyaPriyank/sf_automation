@@ -1,10 +1,12 @@
 {
+    "DATABASE": "MYDB",
+    "SCHEMA": "MYSCH",
     "NAME" : "MySTAGE",
-    "FILE_FORMAT" : "MyFF",
-    "COMMENT" : "DEFAULT",
-    "TAG" : "DEF",
-    "ENCRYPTION" : "SNOWFLAKE_FULL",
-    "DIRECTORY" : "TRUE",
-    "REFRESH_ON_CREATE" : "TRUE"
+    "FILE_FORMAT" : "NONE",
+    "COMMENT" : "NONE",
+    "TAG" : "NONE",
+    "ENCRYPTION" : "NONE",
+    "DIRECTORY" : "NONE",
+    "REFRESH_ON_CREATE" : "NONE"
 }
 
