@@ -237,6 +237,19 @@ class Warehouse:
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
 
+class CopyInto:
+    _on_error_tag = "ON_ERROR"
+    _size_limit_tag = "SIZE_LIMIT"
+    _purge_tag = "PURGE"
+    _return_failed_only_tag = "RETURN_FAILED_ONLY"
+    _match_by_column_name_tag = "MATCH_BY_COLUMN_NAME"
+    _include_metadata_tag = "INCLUDE_METADATA"
+    _enforce_length_tag = "ENFORCE_LENGTH"
+    _truncatecolumns_tag = "TRUNCATECOLUMNS"
+    _force_tag = "FORCE"
+    _load_uncertain_files_tag = "LOAD_UNCERTAIN_FILES"
+    _file_processor_tag = "FILE_PROCESSOR"
+    _load_mode_tag = "LOAD_MODE"
 
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK","STAGE"]

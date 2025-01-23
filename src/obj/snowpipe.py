@@ -60,6 +60,8 @@ class FileType:
     def __delete__(self,instance):
         del instance._file_type
 
+
+
 class SnowpipeAttrs:
     auto_ingest = AutoIngest()
     error_integration = ErrorIntegration()
@@ -90,6 +92,11 @@ class Snowpipe:
     def set_file_type(self,file_type):
         self.attr.file_type = file_type
 
+
+    def set_match_by_column_name(self,value):
+        self.attr.match_by_column_name = value
+
+
     def get_create_snowpipe_qry(self,ingest_inst):
-        qry = f"CREATE OR REPLACE PIPE CONFIG_SCHEMA.pipe_{ingest_inst.attr.schema}_{ingest_inst.attr.table} AS COPY INTO {ingest_inst.attr.database}.{ingest_inst.attr.schema}.{ingest_inst.attr.table} from {ingest_inst.attr.external_stage} file_format = ff_{self.attr.file_type}"
+        qry = f"CREATE OR REPLACE PIPE CONFIG_SCHEMA.pipe_{ingest_inst.attr.schema}_{ingest_inst.attr.table} AS COPY INTO {ingest_inst.attr.database}.{ingest_inst.attr.schema}.{ingest_inst.attr.table} from @{ingest_inst.attr.external_stage} file_format = ff_{self.attr.file_type}"
 
