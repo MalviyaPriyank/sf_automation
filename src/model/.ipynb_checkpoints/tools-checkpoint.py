@@ -21,9 +21,11 @@ class LLMTools:
     def __init__(self,
                  logger,
                  sf_session,
+                 retrieval_workflow,
                  region=llm_config.REGION,
                  temperature=llm_config.TEMPERATURE,
                  chat_model_id=llm_config.CHAT_MODEL_ID):
+        self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
         self.region = region
         self.logger = logger
@@ -47,9 +49,6 @@ class LLMTools:
                                   'user': user.User
                                   }
 
-    def addition(self, num1, num2):
-        return int(num1) + int(num2)
-
 
     def create_sf_object(self, obj_name):
         data_dict = readconf.main(obj_name)
@@ -63,8 +62,15 @@ class LLMTools:
 
 
     def initial_sf_setup(self, query):
-        InitialSetup(session=self.sf_session)
-        return 'Set up for role, warehouse, database, schema, and more'
+        init_setup = InitialSetup(session=self.sf_session)
+        init_setup.perform_initial_setup()
+
+        return 'Completed setup for role, warehouse, database, schema, and more'
+
+
+    def get_workflow_docs(self, query):
+        try: return self.retrieval_workflow.run(query)
+        except ClientError as e: return 'Bedrock service unavailable'
 
 
     def tool_call(self, content, tool_result):
