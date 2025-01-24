@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import inspect
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
 
@@ -9,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
+from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse
 from src.setup.initial import InitialSetup
 
@@ -50,8 +52,7 @@ class LLMTools:
                                   }
 
 
-    def create_sf_object(self, obj_name):
-        data_dict = readconf.main(obj_name)
+    def create_sf_object(self, obj_name, data_dict):
         try:
             qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, **data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
@@ -59,6 +60,240 @@ class LLMTools:
         except AttributeValidationError as e:
             return(e)
         return f'Object {obj_name} created successfully'
+
+
+    def create_database_object(self, 
+                               NAME, 
+                               CATALOG="NONE", 
+                               COMMENT="NONE",  
+                               EXTERNAL_VOLUME="NONE", 
+                               DEFAULT_DDL_COLLATION="NONE", 
+                               REPLACE_INVALID_CHARACTERS="NONE",
+                               DATA_RETENTION_TIME_IN_DAYS="NONE",
+                               STORAGE_SERIALIZATION_POLICY="NONE",
+                               MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.DATABASE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.DATABASE_OBJ, data_dict)
+
+
+    def create_account_object(self,
+                              ACCOUNT,
+                              ADMIN_NAME,
+                              ADMIN_PASSWORD,
+                              ADMIN_USER_TYPE="PERSON",
+                              FIRST_NAME="Priyank",
+                              LAST_NAME="Malviya",
+                              EMAIL="priyankmalviya0@gmail.com",
+                              MUST_CHANGE_PASSWORD="TRUE",
+                              EDITION="STANDARD",
+                              REGION_GROUP="NONE",
+                              REGION="NONE",
+                              COMMENT="NONE",
+                              POLARIS="TRUE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.ACCOUNT_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.ACCOUNT_OBJ, data_dict)
+
+
+    def create_externalstage_object(self,
+                                    NAME,
+                                    FILE_FORMAT,
+                                    COMMENT="DEFAULT",
+                                    TAG="DEF",
+                                    URL="'DEF'",
+                                    STORAGE_INTEGRATION="DEF",
+                                    AWS_KEY_ID="DEF",
+                                    AWS_SECRET_KEY="DEF",
+                                    AWS_TOKEN="DEF",
+                                    AZURE_SAS_TOKEN="DEF",
+                                    AWS_ROLE="DEF",
+                                    ENCRYPTION="SNOWFLAKE_FULL",
+                                    ENCRYPTION_TYPE="DEF",
+                                    ENCRYPTION_MASTER_KEY="DEF",
+                                    ENCRYPTION_KMS_KEY_ID="DEF",
+                                    USE_PRIVATELINK_ENDPOINT="DEF",
+                                    DIRECTORY="TRUE",
+                                    REFRESH_ON_CREATE="TRUE",
+                                    AUTO_REFRESH="DEF",
+                                    NOTIFICATION_INTEGRATION="DEF"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.EXTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.EXTERNAL_STAGE_OBJ, data_dict)
+
+
+    def create_fileformat_object(self,
+                                FILE_FORMAT,
+                                TYPE="CSV",
+                                PARSE_HEADER="TRUE",
+                                SKIP_HEADER="'TRUE'",
+                                SKIP_BLANK_LINES="TRUE",
+                                DATE_FORMAT="TRUE",
+                                TIME_FORMAT="TRUE",
+                                TIMESTAMP_FORMAT="TRUE",
+                                BINARY_FORMAT="BASE64",
+                                ESCAPE="'",
+                                ESCAPE_UNENCLOSED_FIELD="SNOWFLAKE_FULL",
+                                TRIM_SPACE="TRUE",
+                                FIELD_OPTIONALLY_ENCLOSED_BY="TRUE",
+                                NULL_IF="TRUE",
+                                ERROR_ON_COLUMN_COUNT_MISMATCH="TRUE",
+                                REPLACE_INVALID_CHARACTERS="TRUE",
+                                EMPTY_FIELD_AS_NULL="TRUE",
+                                SKIP_BYTE_ORDER_MARK="TRUE",
+                                ENCODING="TRUE",
+                                ENABLE_OCTAL="TRUEAULT",
+                                ALLOW_DUPLICATE="TRUEAULT",
+                                STRIP_OUTER_ARRAY="TRUEAULT",
+                                STRIP_NULL_VALUES="TRUEAULT",
+                                IGNORE_UTF8_ERRORS="TRUEAULT",
+                                SNAPPY_COMPRESSION="TRUEAULT",
+                                BINARY_AS_TEXT="TRUEAULT",
+                                USE_LOGICAL_TYPE="TRUEAULT",
+                                USE_VECTORIZED_SCANNER="TRUEAULT",
+                                PRESERVE_SPACE="TRUEAULT",
+                                STRIP_OUTER_ELEMENT="TRUEAULT",
+                                DISABLE_SNOWFLAKE_DATA="TRUEAULT",
+                                DISABLE_AUTO_CONVERT="TRUEAULT"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.FILE_FORMAT_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.FILE_FORMAT_OBJ, data_dict)
+
+
+    def create_internalstage_object(self,
+                                    DATABASE,
+                                    SCHEMA="MYSCH",
+                                    NAME="MySTAGE",
+                                    FILE_FORMAT="NONE",
+                                    COMMENT="NONE",
+                                    TAG="NONE",
+                                    ENCRYPTION="NONE",
+                                    DIRECTORY="NONE",
+                                    REFRESH_ON_CREATE="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.INTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.INTERNAL_STAGE_OBJ, data_dict)
+
+
+    def create_resourcemonitor_object(self,
+                                    NAME,
+                                    CREDIT_QUOTA="75",
+                                    FREQUENCY="DAILY",
+                                    START_TIMESTAMP="NONE",
+                                    END_TIMESTAMP="NONE",
+                                    NOTIFY_USERS="ADMIN",
+                                    TRIGGERS_ON="75",
+                                    DO="SUSPEND"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.RESOURCE_MONITOR_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
+
+
+    def create_role_object(self, NAME, COMMENT="DEFAULT"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.ROLE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.ROLE_OBJ, data_dict)
+
+
+    def create_schema_object(self,
+                            DATABASE,
+                            NAME,
+                            WITH_MANAGED_ACCESS="NONE",
+                            DATA_RETENTION_TIME_IN_DAYS="1",
+                            MAX_DATA_EXTENSION_TIME_IN_DAYS="10",
+                            EXTERNAL_VOLUME="NONE",
+                            CATALOG="NONE",
+                            REPLACE_INVALID_CHARACTERS="NONE",
+                            DEFAULT_DDL_COLLATION="NONE",
+                            LOG_LEVEL="NONE",
+                            TRACE_LEVEL="NONE",
+                            STORAGE_SERIALIZATION_POLICY="NONE",
+                            CLASSIFICATION_PROFILE="NONE",
+                            COMMENT="NONE",
+                            TAG="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.SCHEMA_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.SCHEMA_OBJ, data_dict)
+
+
+    def create_share_object(self, NAME, COMMENT="DEFAULT"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.SHARE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.SHARE_OBJ, data_dict)
+
+
+    def create_user_object(self,
+                            NAME,
+                            PASSWORD,
+                            LOGIN_NAME="DEFAULT",
+                            DISPLAY_NAME="PERSON",
+                            FIRST_NAME="DEFAULT",
+                            LAST_NAME="DEFAULT",
+                            EMAIL="DEFAULT",
+                            MUST_CHANGE_PASSWORD="TRUE",
+                            DISABLED="FALSE",
+                            DAYS_TO_EXPIRY="20",
+                            MINS_TO_UNLOCK="20",
+                            DEFAULT_WAREHOUSE="DEFAULT",
+                            DEFAULT_ROLE="DEFAULT",
+                            DEFAULT_SECONDARY_ROLES="ALL",
+                            MINS_TO_BY_PASS_MFA="20",
+                            RSA_PUBLIC_KEY="DEFAULT",
+                            RSA_PUBLIC_KEY_FP="DEFAULT",
+                            RSA_PUBLIC_KEY_2="KEY2",
+                            RSA_PUBLIC_KEY_2_FP="DEFAULT",
+                            TYPE="PERSON",
+                            COMMENT="DEFAULT",
+                            ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="TRUE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.USER_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.USER_OBJ, data_dict)
+
+
+    def create_warehouse_object(self,
+                                NAME,
+                                WAREHOUSE_SIZE="SMALL",
+                                WAREHOUSE_TYPE="STANDARD",
+                                RESOURCE_CONSTRAINT="NONE",
+                                MAX_CLUSTER_COUNT="NONE",
+                                MIN_CLUSTER_COUNT="NONE",
+                                SCALING_POLICY="NONE",
+                                AUTO_SUSPEND="NONE",
+                                AUTO_RESUME="NONE",
+                                INITIALLY_SUSPENDED="NONE",
+                                RESOURCE_MONITOR="NONE",
+                                COMMENT="NONE",
+                                TAG="NONE",
+                                ENABLE_QUERY_ACCELERATION="NONE",
+                                QUERY_ACCELERATION_MAX_SCALE_FACTOR="NONE",
+                                MAX_CONCURRENCY_LEVEL="NONE",
+                                STATEMENT_QUEUED_TIMEOUT_IN_SECONDS="NONE",
+                                STATEMENT_TIMEOUT_IN_SECONDS="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args}
+        self.logger.info(f'creating {ss.WAREHOUSE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
 
     def sf_setup(self, query):

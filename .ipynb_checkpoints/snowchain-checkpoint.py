@@ -105,9 +105,9 @@ if not st.session_state[ss.INITIALIZED]:
                                           logger=logger)
     st.session_state.bedrock_obj = Bedrock()
     st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=lcs.SYSTEM_PROMPT_USER))
-    for key in lcs.OBJ_PROMPTS:
-        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.OBJ_PROMPTS[key]))
-        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=key))
+    #for key in lcs.OBJ_PROMPTS:
+    #    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.OBJ_PROMPTS[key]))
+    #    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=key))
     st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.SYSTEM_PROMPT_ASST))
     st.session_state[ss.INITIALIZED] = True
 

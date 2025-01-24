@@ -7,10 +7,11 @@ TOOL_USE = 'toolUse'
 OBJ_NAME = 'obj_name'
 TOOL_USE_ID = 'toolUseId'
 TOOL_RESULT = 'toolResult'
+RETRIEVAL_WORKFLOW = 'retrieval_workflow'
 
 CREATE_SF_OBJ = 'create_sf_object'
 
-SYSTEM_PROMPT_USER = 'You are an assistant to help user build on snowflake platform. Only answer questions realted to snowflake'
+SYSTEM_PROMPT_USER = 'You are an assistant named Frosty to help user build on snowflake platform. Only answer questions related to snowflake. Start by retrieving the workflow provided as tool. Always provide a link to snowflake documentation if you pull information from the web. When asked to create snowflake objects, take values from user for required attributes.'
 SYSTEM_PROMPT_ASST = 'How can I help?'
 
 JSON_UPLOAD_GREETING = 'Please upload the json with required attributes'
