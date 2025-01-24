@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import InternalStage as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute,ValueNotAllowed
 
 class DatabaseName:
     def __get__(self,instance,owner):
@@ -150,9 +149,8 @@ class Encryption:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._encryption = value
-        elif value not in gv._allowed_values_encryption:
-            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_storage_serialization_policy)
         else:
+            vv.allowed_value_check(value,gv._allowed_values_encryption,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._encryption = value
 
     def __del__(self,instance):

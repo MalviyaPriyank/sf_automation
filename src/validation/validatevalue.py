@@ -20,7 +20,8 @@ from valueexception import (
     ValueNotAllowed,
     DependentParameterNotSet,
     InvalidPassword,
-    IsARequiredAttribute
+    IsARequiredAttribute,
+    ValueNotAllowed
 )
 
 class ValidateValue:
@@ -87,6 +88,12 @@ class ValidateValue:
             return True
         else:
             raise MustBeEnclosedInQuotes(object_type,attr_name)
+        
+    @staticmethod
+    def is_allowed_value(value,allowed_list,object_type,attr_name):
+        if value not in allowed_list:
+            raise ValueNotAllowed(object_type,attr_name,allowed_list)
+
         
     @staticmethod
     def required_attribute_check(value,object_type,attr_name):

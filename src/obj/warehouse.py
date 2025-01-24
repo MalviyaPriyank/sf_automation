@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Warehouse as gv
 from validatevalue import ValidateValue as vv
-from valueexception import ValueNotAllowed,InvalidParamForObject
+from valueexception import InvalidParamForObject
 
 class Name:
     def __get__(self,instance,owner):
@@ -45,11 +45,8 @@ class WarehouseType:
         return instance._warehouse_type
 
     def __set__(self,instance,value):
-        
-        if value not in gv._allowed_values_warehouse_type:
-            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_warehouse_type)
-        else:
-            instance._warehouse_type = value
+        vv.allowed_value_check(value,gv._allowed_values_warehouse_type,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._warehouse_type = value
 
     def __delete__(self,instance):
         del instance._warehouse_type
@@ -69,10 +66,8 @@ class WarehouseSize:
         return instance._warehouse_size
 
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_warehouse_size:
-            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_warehouse_size)
-        else:
-            instance._warehouse_size = value
+        vv.allowed_value_check(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._warehouse_size = value
 
     def __delete__(self,instance):
         del instance._warehouse_size

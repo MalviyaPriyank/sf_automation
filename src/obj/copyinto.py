@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import CopyInto as gv
 from validatevalue import ValidateValue as vv
-from valueexception import ValueNotAllowed
 
 class Database:
     def __get__(self,instance,owner):
@@ -127,10 +126,9 @@ class MatchByColumnName:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._match_by_column_name = value
-        elif value in gv._allowed_values_match_by_column_name:
+        else:
+            vv.allowed_value_check(value,gv._allowed_values_match_by_column_name,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._match_by_column_name = value
-        elif value not in gv._allowed_values_match_by_column_name:
-            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_match_by_column_name)
 
     def __delete__(self,instance):
         del instance._match_by_column_name  
@@ -219,9 +217,8 @@ class LoadMode:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._load_mode = value
-        elif value not in gv._allowed_values_load_mode:
-            raise ValueNotAllowed(instance.parent.__class__.__name__,self.__class__.__name__,gv._allowed_values_load_mode)
         else:
+            vv.allowed_value_check(value,gv._allowed_values_load_mode,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._load_mode = value
 
     def __delete__(self,instance):

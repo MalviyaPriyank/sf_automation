@@ -243,8 +243,6 @@ class DaysToExpiry:
     def __set__(self,instance,value):
         if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._days_to_expiry = value
-        else:
-            raise ValueError
             
     
     def __delete__(self,instance):

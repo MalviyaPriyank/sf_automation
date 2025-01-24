@@ -11,7 +11,6 @@ logger = logging.getLogger('snowchain_logs')
 
 from global_vars import Role as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
 
 class Name:
     def __get__(self,instance,owner):
