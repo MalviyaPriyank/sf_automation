@@ -8,7 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Account as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
 
 
 
@@ -17,9 +16,8 @@ class AccountName:
         return instance._account_name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
@@ -43,9 +41,8 @@ class AdminName:
         return instance._admin_name
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._admin_name = value
 
     def __delete__(self,instance):
@@ -66,10 +63,8 @@ class AdminPassword:
         return instance._admin_password
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        
-        elif (
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)   
+        if (
             (vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) 
             or vv.is_enclosed_in_double_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__))
             and
@@ -158,10 +153,8 @@ class Email:
         return instance._email
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        else:
-            instance._email = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._email = value
     
     def __delete__(self,instance):
         del instance._email
@@ -204,13 +197,11 @@ class Edition:
         return instance._edition
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if value not in gv._allowed_values_edition: 
+            raise ValueError
         else:
-            if value not in gv._allowed_values_edition: 
-                raise ValueError
-            else:
-                instance._edition = value
+            instance._edition = value
     
     def __delete__(self,instance):
         del instance._edition

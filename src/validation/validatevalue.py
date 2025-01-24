@@ -19,7 +19,8 @@ from valueexception import (
     MustBeValidCRON,
     ValueNotAllowed,
     DependentParameterNotSet,
-    InvalidPassword
+    InvalidPassword,
+    IsARequiredAttribute
 )
 
 class ValidateValue:
@@ -86,6 +87,11 @@ class ValidateValue:
             return True
         else:
             raise MustBeEnclosedInQuotes(object_type,attr_name)
+        
+    @staticmethod
+    def required_attribute_check(value,object_type,attr_name):
+        if value == "NONE":
+            raise IsARequiredAttribute(object_type,attr_name)
         
     @staticmethod
     def is_enclosed_in_single_quotes(value,object_type,attr_name):
