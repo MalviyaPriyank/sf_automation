@@ -238,6 +238,11 @@ class Warehouse:
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
 
 class CopyInto:
+    _table_tag = "TABLE"
+    _schema_tag = "SCHEMA"
+    _database_tag = "DATABASE"
+    _stage_tag = "STAGE"
+    _file_format_tag = "FILE_FORMAT"
     _on_error_tag = "ON_ERROR"
     _size_limit_tag = "SIZE_LIMIT"
     _purge_tag = "PURGE"
@@ -250,6 +255,9 @@ class CopyInto:
     _load_uncertain_files_tag = "LOAD_UNCERTAIN_FILES"
     _file_processor_tag = "FILE_PROCESSOR"
     _load_mode_tag = "LOAD_MODE"
+    _allowed_values_on_error = ["CONTINUE","SKIP_FILE"]
+    _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
+    _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
 
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK","STAGE"]

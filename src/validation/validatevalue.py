@@ -18,6 +18,7 @@ from valueexception import (
     MustBeValidNumber,
     MustBeValidCRON,
     ValueNotAllowed,
+    DependentParameterNotSet,
     InvalidPassword
 )
 
@@ -92,6 +93,13 @@ class ValidateValue:
             return True
         else:
             raise MustBeEnclosedInQuotes(object_type,attr_name)
+        
+    @staticmethod
+    def is_dependent_param_null(value,object_type,child_attr_name,parent_attr_name):
+        if value == "NONE":
+            raise DependentParameterNotSet(object_type,child_attr_name,parent_attr_name)
+        else:
+            return False
         
     @staticmethod
     def is_string(value,object_type,attr_name):

@@ -6,7 +6,7 @@ class AttributeValidationError(Exception):
         self.message = message
     
     def __str__(self):
-        return f"ERROR : Attribute {self.attr_name}  {self.message}"
+        return f"ERROR : Attribute {self.attr_name} of {self.object_type} object {self.message}"
 
 class MustStartWithAlphabet(AttributeValidationError):
     def __init__(self, object_type, attr_name):
@@ -69,7 +69,12 @@ class InvalidPassword(AttributeValidationError):
 class InvalidParamForObject(AttributeValidationError):
     def __init__(self, object_type,attr_name,allowed_type):
         message = f"{attr_name} can only be set for {allowed_type} {object_type}"
-        super().__init__(object_type, attr_name, message)    
+        super().__init__(object_type, attr_name, message)
+
+class DependentParameterNotSet(AttributeValidationError):
+    def __init__(self, object_type, child_attr_name, parent_attr_name):
+        message = f" can only be set if {parent_attr_name} is set"
+        super().__init__(object_type, child_attr_name, message)    
         
 
 
