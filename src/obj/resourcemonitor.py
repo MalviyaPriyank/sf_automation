@@ -13,9 +13,8 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if not vv.starts_with_alphabet(value):
             raise ValueError
         elif not vv.is_enclosed_in_double_quotes(value):
             if vv.has_space(value):

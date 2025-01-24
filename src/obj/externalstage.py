@@ -14,9 +14,8 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):

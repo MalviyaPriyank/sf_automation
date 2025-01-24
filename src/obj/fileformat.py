@@ -14,6 +14,7 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._name = value
 
     def __del__(self,instance):

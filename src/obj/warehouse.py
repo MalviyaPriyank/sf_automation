@@ -13,16 +13,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from global_vars import Warehouse as gv
 from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute,ValueNotAllowed,InvalidParamForObject
+from valueexception import ValueNotAllowed,InvalidParamForObject
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
 
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
