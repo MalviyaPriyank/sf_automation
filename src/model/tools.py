@@ -164,8 +164,8 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args}
-        self.logger.info(f'creating {ss.FILE_FORMAT_OBJ} object with parameters: {data_dict}')
-        return self.create_sf_object(ss.FILE_FORMAT_OBJ, data_dict)
+        self.logger.info(f'creating {ss.FILEFORMAT_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.FILEFORMAT_OBJ, data_dict)
 
 
     def create_internalstage_object(self,
