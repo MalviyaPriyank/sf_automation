@@ -1,11 +1,16 @@
-import pandas as pd
-
 import sys
 import os 
+import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
-from table_global_vars import *
+
+from global_vars import Table as gv
+from validatevalue import ValidateValue as vv
+from session import Session
+
 
 class Database:
     def __get__(self,instance,owner):
@@ -98,18 +103,6 @@ class ColumnTypeList:
     def __delete__(self,instance):
         del instance._column_type_list
 
-class CountOfColumns:
-    def __get__(self,instance,owner):
-        return instance._count_of_columns
-    
-    def __set__(self,instance,value):
-        if type(value) != int :
-            raise TypeError
-        else:
-            instance._count_of_columns = value
-
-    def __delete__(self,instance):
-        del instance._count_of_columns
 
 
 class TableAttrs:
@@ -127,8 +120,6 @@ class TableAttrs:
     column_name_list = ColumnNameList()
 
     column_type_list = ColumnTypeList()
-
-    count_of_columns = CountOfColumns()
 
 class Table:
 
@@ -157,16 +148,10 @@ class Table:
     def set_column_type_list(self):
         self.attr.column_type_list = self.get_column_in_a_list('COLUMN_TYPE')
 
-    def set_count_of_columns(self):
-        self.attr.count_of_columns = self.get_count_of_columns() 
-
 
     def read_table_ddl_file(self):
         table_ddl_df = pd.read_csv(self.attr.file_path)
         return table_ddl_df
-
-    def get_count_of_columns(self):
-        return len(self.attr.column_name_list)
         
     def get_column_in_a_list(self,column_name):
         return self.attr.table_ddl_df[column_name]
@@ -174,7 +159,7 @@ class Table:
     def get_create_table_query(self):
         qry = f"CREATE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
 
-        for i in range(0,self.attr.count_of_columns):
+        for i in range(0,len(self.attr.column_name_list)):
             qry = qry + f" {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} "
 
         qry = qry + " ) "
@@ -187,6 +172,8 @@ class Table:
 
     def create_object(session,**kwargs):
         tbl = Table()
+        
+        session.get_root_object()
         
         tbl.set_database(kwargs['database'])
 
@@ -202,8 +189,6 @@ class Table:
         tbl.set_column_name_list()
 
         tbl.set_column_type_list()
-
-        tbl.set_count_of_columns()
 
         tbl.create_table()
 

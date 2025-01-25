@@ -1,4 +1,19 @@
 
+class Name:
+    def __get__(self,instance,owner):
+        return instance._name
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._name = value
+
+    def __delete__(self,instance):
+        del instance._name
+
 class AutoIngest:
     def __get__(self,instance,owner):
         return instance._auto_ingest
@@ -63,6 +78,7 @@ class FileType:
 
 
 class SnowpipeAttrs:
+    name = Name()
     auto_ingest = AutoIngest()
     error_integration = ErrorIntegration()
     aws_sns_topic = AwsSnsTopic()
@@ -71,8 +87,11 @@ class SnowpipeAttrs:
     file_type = FileType()
 
 class Snowpipe:
-    def __init__(self):
+    def __init__(self,copy_into_qry,stage,file_format):
         self.attr = SnowpipeAttrs()
+        self.copy_into_qry = copy_into_qry
+        self.stage = stage
+        self.file_format = file_format
 
     def set_auto_ingest(self,auto_ingest):
         self.attr.auto_ingest = auto_ingest
@@ -93,10 +112,6 @@ class Snowpipe:
         self.attr.file_type = file_type
 
 
-    def set_match_by_column_name(self,value):
-        self.attr.match_by_column_name = value
-
-
     def get_create_snowpipe_qry(self,ingest_inst):
-        qry = f"CREATE OR REPLACE PIPE CONFIG_SCHEMA.pipe_{ingest_inst.attr.schema}_{ingest_inst.attr.table} AS COPY INTO {ingest_inst.attr.database}.{ingest_inst.attr.schema}.{ingest_inst.attr.table} from @{ingest_inst.attr.external_stage} file_format = ff_{self.attr.file_type}"
+        qry = f"CREATE OR REPLACE PIPE CONFIG_SCHEMA.{self.attr.name} AS {self.copy_into_qry} from @{self.stage} file_format = {self.file_format}"
 
