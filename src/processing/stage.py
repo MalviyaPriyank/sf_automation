@@ -1,0 +1,37 @@
+class Stage:
+    def __init__(self,root,database,schema):
+        self.root = root
+        self.database = database
+        self.schema = schema
+
+    def set_stage(self,value):
+        self.stage = value
+
+    def set_stage_reference(self,value):
+        self.stage_reference = self.root.databases[self.database].schema[self.schema].stages[self.stage]
+
+    def get_list_of_stages_in_schema(self):
+        lst_stage = []
+        for stage in self.root.databases[self.database].schemas[self.schema].stages.name:
+            lst_stage.append(stage)
+        return lst_stage
+
+    def get_list_of_files_from_stage(self):
+        lst_stage_files = []
+        stage_files = self.stage_reference.list_files()
+        for file in stage_files:
+            lst_stage_files.append(file)
+
+        return lst_stage_files
+    
+    def download_file_from_stage(self,file_name,path):
+        self.stage_reference.get(file_name,path)
+
+    def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):
+        self.stage_reference.put(file_name,upload_path,auto_compress = auto_compress, overwrite = overwrite)
+
+
+
+
+
+
