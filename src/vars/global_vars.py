@@ -259,6 +259,7 @@ class CopyInto:
     _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
 
+
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK","STAGE"]
     _allowed_privileges = {
