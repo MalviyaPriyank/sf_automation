@@ -7,25 +7,31 @@ class Stage:
     def set_stage(self,value):
         self.stage = value
 
-    def set_stage_reference(self,value):
-        self.stage_reference = self.root.databases[self.database].schema[self.schema].stages[self.stage]
+    def set_stage_reference(self):
+        self.stage_reference = self.root.databases[self.database].schemas[self.schema].stages[self.stage]
 
     def get_list_of_stages_in_schema(self):
         lst_stage = []
-        for stage in self.root.databases[self.database].schemas[self.schema].stages.name:
-            lst_stage.append(stage)
+        stg_collection = self.root.databases[self.database].schemas[self.schema].stages
+        for stage in stg_collection.iter():
+            lst_stage.append(stage.name)
         return lst_stage
 
     def get_list_of_files_from_stage(self):
         lst_stage_files = []
         stage_files = self.stage_reference.list_files()
         for file in stage_files:
-            lst_stage_files.append(file)
+            lst_stage_files.append(file.name)
 
         return lst_stage_files
     
-    def download_file_from_stage(self,file_name,path):
-        self.stage_reference.get(file_name,path)
+    def remove_stage_name_from_file_path(self,file_path):
+        file_path = "/".join(file_path.split("/")[1:])
+        return file_path
+
+    
+    def download_file_from_stage(self,file_path,destination_path):
+        self.stage_reference.get(file_path,"./")
 
     def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):
         self.stage_reference.put(file_name,upload_path,auto_compress = auto_compress, overwrite = overwrite)

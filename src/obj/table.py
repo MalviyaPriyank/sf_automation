@@ -5,11 +5,12 @@ import pandas as pd
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
-
-from global_vars import Table as gv
+#from global_vars import Table as gv
 from validatevalue import ValidateValue as vv
 from session import Session
+from stage import Stage
 
 
 class Database:
@@ -50,6 +51,20 @@ class Name:
 
     def __delete__(self,instance):
         del instance._name
+
+class TableType:
+    def __get__(self,instance,owner):
+        return instance._name
+    
+    def __set__(self,instance,value):
+        if value == None :
+            raise KeyError
+        else:
+            instance._name = value
+
+    def __delete__(self,instance):
+        del instance._name
+
 
 class FilePath:
     def __get__(self,instance,owner):
@@ -113,6 +128,8 @@ class TableAttrs:
 
     name = Name()
 
+    table_type = TableType()
+
     file_path = FilePath()
 
     table_ddl_df = TableDf()
@@ -169,10 +186,25 @@ class Table:
         self.session.execute_qry(qry)
 
 
+    def create_table_using_files_from_stage(root,database,schema):
+        tbl = Table()
+        tbl.set_database(database)
+        tbl.set_schema(schema)
+        stg = Stage(root,"DB_CONFIG","SCH_CONFIG")
+        stg.set_stage('STG_INT_CONFIG')
+        stg.set_stage_reference()
+        file_lst = stg.get_list_of_files_from_stage()
+        for files in file_lst:
+            files = stg.remove_stage_name_from_file_path(files)
+            stg.download_file_from_stage(files,"./DDL/")
+        
+        for files in file_lst:
+            tbl_file = pd.read_csv(f"./DDL/{files}")
+
 
     def create_object(session,**kwargs):
         tbl = Table()
-        
+    
         session.get_root_object()
         
         tbl.set_database(kwargs['database'])
