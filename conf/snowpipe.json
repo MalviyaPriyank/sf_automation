@@ -1,0 +1,9 @@
+{
+    "NAME":"NONE",
+    "AUTO_INGEST":"NONE",
+    "ERROR_INTEGRATION":"NONE",
+    "AWS_SNS_TOPIC":"NONE",
+    "INTEGRATION":"NONE",
+    "COMMENT":"NONE",
+    "FILE_TYPE":"NONE"
+}
