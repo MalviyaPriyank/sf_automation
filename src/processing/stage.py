@@ -31,7 +31,7 @@ class Stage:
 
     
     def download_file_from_stage(self,file_path,destination_path):
-        self.stage_reference.get(file_path,"./")
+        self.stage_reference.get(file_path,destination_path)
 
     def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):
         self.stage_reference.put(file_name,upload_path,auto_compress = auto_compress, overwrite = overwrite)

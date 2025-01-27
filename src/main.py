@@ -18,9 +18,10 @@ if __name__ == '__main__':
     session_inst.set_password('mejzyg-pafpov-9noXmi')
     session_inst.set_account('TQNXPFG-BG28519')
     session = session_inst.get_session()
+    ####### PATCH FOR CREATE TABLE ################
     root = session_inst.get_root_object()
     tbl = Table(session,root)
-    tbl.create_table_using_files_from_stage("DEV_SNOWCHAIN","CUSTOMER")
+    tbl.create_table_using_files_from_stage("Hospital","Snowchain")
     print("DONE")
-    os.remove("./Snowchain_test_table.csv")
+    ###### PATCH FOR CREATE TABLE ################
     

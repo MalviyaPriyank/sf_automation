@@ -127,9 +127,9 @@ class Table:
 
         for i in range(0,len(self.attr.column_name_list)):
             if i != len(self.attr.column_name_list) -1:
-                qry = qry + f" {self.attr.column_name_list[i]} {self.attr.column_type_list[i]}, "
+                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]}, '
             else: 
-                qry = qry + f" {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} "
+                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]} '
 
         qry = qry + " ) "
         return qry
@@ -137,7 +137,6 @@ class Table:
     def create_table(self):
         qry = self.get_create_table_query()
         print(qry)
-        input()
         self.session.sql(qry).collect()
 
 

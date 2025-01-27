@@ -364,7 +364,7 @@ class CopyInto:
         self.set_copy_into_qry()
         self.add_properties_to_query()
 
-    def create_object(session,**kwargs):
+    def create_query(session,**kwargs):
         cpy_into = CopyInto(session)
 
         cpy_into.set_table(kwargs[gv._table_tag])
