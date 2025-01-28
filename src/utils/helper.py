@@ -44,3 +44,17 @@ def obj_json_template(filepath):
     with open(filepath, "r") as file:
         data = json.load(file)
     return data
+
+def get_create_table_query(database : str, schema : str, tbl : str,column_names : list ,column_types :list):
+    if len(column_names) != len(column_types):
+        raise TypeError
+    else:
+        qry = f"CREATE TABLE {database}.{schema}.{tbl} ("
+        for i in range(0,len(column_names)):
+            if i != len(column_names) - 1:
+                qry = qry + column_names[i] + column_types[i] + ", "
+            elif i == len(column_names) - 1:
+                qry = qry + column_names[i] + column_types[i] + ")"
+        
+    
+        return qry
