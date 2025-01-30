@@ -3,53 +3,36 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import InternalStage as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import InternalStage as gv, Config as cfg
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
 
-class DatabaseName:
+class Database:
     def __get__(self,instance,owner):
-        return instance._database_name
+        return instance._database
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._database_name = value
+        instance._database = value
     
     def __delete__(self,instance):
         del instance._database_name
 
-class DatabaseTag:
-    def __get__(self,instance,owner):
-        return instance._database_tag
-    
-    def __set__(self,instance,value):
-        instance._database_tag = value
-    
-    def __delete__(self,instance):
-        del instance._database_tag
 
-class SchemaName:
+class Schema:
     def __get__(self,instance,owner):
-        return instance._schema_name
+        return instance._schema
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._schema_name = value
+        instance._schema = value
     
     def __delete__(self,instance):
-        del instance._schema_name
+        del instance._schema
 
-class SchemaTag:
-    def __get__(self,instance,owner):
-        return instance._schema_tag
-    
-    def __set__(self,instance,value):
-        instance._schema_tag = value
-    
-    def __delete__(self,instance):
-        del instance._schema_tag
 
 class Name:
     def __get__(self,instance,owner):
@@ -222,11 +205,9 @@ class InternalStageAttrs:
     def __init__(self,parent):
         self.parent = parent
     
-    database_name = DatabaseName()
-    database_tag = DatabaseTag()
+    database = Database()
 
-    schema_name = SchemaName()
-    schema_tag = SchemaTag()
+    schema = Schema()
 
     name = Name()
     name_tag = NameTag()
@@ -252,22 +233,17 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = InternalStageAttrs(self)
         self.session = session
+        self.user_id = user_id
         self.qry = ""
 
-    def set_database_name(self,val):
-        self.attr.database_name = val
-    
-    def set_database_tag(self,val):
-        self.attr.database_tag = val
+    def set_database(self,val):
+        self.attr.database = val
 
-    def set_schema_name(self,val):
-        self.attr.schema_name = val
-    
-    def set_schema_tag(self,val):
-        self.attr.schema_tag = val
+    def set_schema(self,val):
+        self.attr.schema = val
 
     def set_name(self,val):
         self.attr.name = val
@@ -332,7 +308,7 @@ class InternalStage:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE STAGE  {self.attr.name} "
+        self.qry = f"CREATE STAGE  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -357,18 +333,14 @@ class InternalStage:
         self.add_properties_to_query()
 
     def create_internal_stage(self):
-        self.session.sql(f" USE {self.attr.database_tag} {self.attr.database_name}").collect()
-        self.session.sql(f"USE {self.attr.schema_tag} {self.attr.schema_name}").collect()
         self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         internal_stage = InternalStage(session)
 
-        internal_stage.set_database_name(kwargs[gv._database_tag])
-        internal_stage.set_database_tag(gv._database_tag)
+        internal_stage.set_database(kwargs[gv._database_tag])
 
-        internal_stage.set_schema_name(kwargs[gv._schema_tag])
-        internal_stage.set_schema_tag(gv._schema_tag)
+        internal_stage.set_schema(kwargs[gv._schema_tag])
 
         internal_stage.set_name(kwargs[gv._name_tag])
         internal_stage.set_name_tag(gv._name_tag)
@@ -393,6 +365,17 @@ class InternalStage:
 
         internal_stage.prepare_query()
         internal_stage.create_internal_stage()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
 
         

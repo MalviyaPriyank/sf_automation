@@ -3,10 +3,33 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import FileFormat as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import FileFormat as gv
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
+
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        instance._database = value
+
+    def __del__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
 
 
 class Name:   
@@ -977,6 +1000,9 @@ class DisableAutoConvertTag:
 class FileFormatAttrs:
     def __init__(self,parent):
         self.parent
+
+    database = Database()
+    schema = Schema()
     type = Type()
     type_tag = TypeTag()
     name = Name()
@@ -1052,14 +1078,21 @@ class FileFormatAttrs:
 
 
 class FileFormat:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = FileFormatAttrs(self)
         self.session = session
+        self.user_id = user_id
         self.qry = ""
 
     def set_name(self,val):
         self.attr.name = val
     
+    def set_database(self,val):
+        self.attr.database = val
+    
+    def set_schema(self,val):
+        self.attr.schema = val
+
     def set_name_tag(self,val):
         self.attr.name_tag = val
 
@@ -1279,7 +1312,6 @@ class FileFormat:
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
         set_flag(gv._type_tag,"_type")
         set_flag(gv._parse_header_tag, "_parse_header")
         set_flag(gv._skip_header_tag, "_skip_header")
@@ -1319,7 +1351,7 @@ class FileFormat:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE FILE FORMAT  {self.attr.name} "
+        self.qry = f"CREATE FILE FORMAT  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -1399,6 +1431,9 @@ class FileFormat:
     def create_object(session,**kwargs):
         
         file_format = FileFormat(session)
+
+        file_format.set_database(kwargs[gv._database_tag])
+        file_format.set_schema(kwargs[gv._schema_tag])
 
         file_format.set_name(kwargs[gv._name_tag])
         file_format.set_name_tag(gv._name_tag)
@@ -1497,6 +1532,17 @@ class FileFormat:
         file_format.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
         file_format.prepare_query()
         file_format.create_file_format()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
 
 

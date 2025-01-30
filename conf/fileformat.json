@@ -1,4 +1,6 @@
 {
+    "DATABASE":"DB_CONFIG",
+    "SCHEMA":"SCH_CONFIG",
     "FILE_FORMAT" : "CSV_SNOWPIPE",
     "TYPE" : "CSV",
     "PARSE_HEADER" : "TRUE",

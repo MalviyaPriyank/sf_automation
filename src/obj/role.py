@@ -5,12 +5,12 @@ import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logging.getLogger('snowchain_logs').setLevel(logging.INFO)
-logger = logging.getLogger('snowchain_logs')
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from global_vars import Role as gv
-from validatevalue import ValidateValue as vv
+
+from vars.global_vars import Role as gv
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
 
 class Name:
     def __get__(self,instance,owner):
@@ -65,9 +65,10 @@ class RoleAttrs:
 
 
 class Role:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = RoleAttrs(self)
         self.session = session
+        self.user_id = user_id
         self.qry = ""
 
     def set_name(self,val):
@@ -118,7 +119,6 @@ class Role:
 
     def create_object(session,**kwargs):
         role = Role(session)
-        logger.info(f"values passed {kwargs}")
 
         role.set_name(kwargs[gv._name_tag])
         role.set_name_tag(gv._name_tag)
@@ -128,3 +128,14 @@ class Role:
 
         role.prepare_query()
         role.create_role()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()

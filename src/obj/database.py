@@ -5,11 +5,13 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
 
-from global_vars import Database as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import Database as gv, Config as cfg 
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
 
 class Name:
     def __get__(self,instance,owner):
@@ -244,9 +246,10 @@ class DatabaseAttrs:
 
 
 class Database:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = DatabaseAttrs(self)
         self.session = session
+        self.user_id = user_id
         self.qry = ""
 
     def set_name(self, value):
@@ -355,6 +358,17 @@ class Database:
         self.check_properties_to_set()
         self.set_create_account_qry()
         self.add_properties_to_query()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database('NA')
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
     def create_database(self):
         self.session.sql(self.qry).collect()

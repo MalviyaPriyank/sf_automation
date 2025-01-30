@@ -4,14 +4,13 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
+#sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-
-from global_vars import Warehouse as gv_wh
-from global_vars import Config as cfg
-from global_vars import Privilege as gv_priv
 from obj import role,warehouse,database,schema,internalstage
 from setup import privilege 
 from conf import readconf
+from deploy.deploy import Deploy
+from vars.global_vars import Config as cfg, Warehouse as gv_wh, Privilege as gv_priv
 
 
 class InitialSetup:
@@ -85,7 +84,28 @@ class InitialSetup:
             if privileges in gv_priv._allowed_privileges["STAGE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
 
-    
+
+    def create_deployment_tables(self):
+        deploy_inst = Deploy(self.session)
+        priv_inst = privilege.Privilege(self.session)
+        
+        deploy_inst.create_deploy_control_table()
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["TABLE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_control_table}",role = role)
+       
+        deploy_inst.create_deploy_history_table()
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["TABLE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_history_table}",role = role)
+        
+        deploy_inst.create_deploy_log_table()
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["TABLE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_log_table}",role = role)
+
+
+
     def perform_initial_setup(self):
         self.create_default_role()
         self.create_default_warehouse()
@@ -93,3 +113,5 @@ class InitialSetup:
         self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_stage()
+        self.create_deployment_tables()
+

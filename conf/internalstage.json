@@ -1,6 +1,6 @@
 {
-    "DATABASE": "MYDB",
-    "SCHEMA": "MYSCH",
+    "DATABASE": "DB_CONFIG",
+    "SCHEMA": "SCH_CONFIG",
     "NAME" : "MySTAGE",
     "FILE_FORMAT" : "NONE",
     "COMMENT" : "NONE",

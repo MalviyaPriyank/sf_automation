@@ -146,6 +146,8 @@ class ExternalStage:
 class FileFormat:
     def __init__(self):
         pass
+    _database_tag = "DATABASE"
+    _schema_tag = "SCHEMA"
     _name_tag = "FILE_FORMAT"
     _type_tag = "TYPE"
     _parse_header_tag = "PARSE_HEADER"
@@ -289,6 +291,9 @@ class Config:
     _config_schema = "SCH_CONFIG"
     _config_stage = "STG_INT_CONFIG"
     _deployment_stage = "STG_INT_DEPLOY"
+    _deployment_control_table = "DEPLOYMENT_CONTROL"
+    _deployment_log_table = "DEPLOYMENT_LOG"
+    _deployment_history_table = "DEPLOYMENT_HISTORY"
     _default_privilege_set = ["OWNERSHIP","ALL","MONITOR","MODIFY","USAGE","OPERATE"]
     _default_warehouse = {
         "WH_XSMALL" : "XSMALL",
@@ -315,6 +320,34 @@ class Config:
         "RL_MODIFY_EVERY_OBJECT": "MODIFY",
         "RL_OPERATE_EVERY_OBJ": "OPERATE"
     }
-
+    _deployment_control_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
+    _deployment_control_table_column_data_type_dict = {
+        "OBJECT_TYPE" : "VARCHAR(50)",
+        "OBJECT_DATABASE" : "VARCHAR(50)",
+        "OBJECT_SCHEMA" : "VARCHAR(50)",
+        "OBJECT_NAME" : "VARCHAR(100)",
+        "MODIFIED_BY" : "VARCHAR(50)",
+        "DEPLOYMENT_STATUS" : "VARCHAR(100)",
+        "DEPLOYMENT_ID" : "VARCHAR(50)"
+    }
+    _deployment_log_table_column_list = ["DEPLOYMENT_ID","DEPLOYMENT_TIMESTAMP","DEPLOYMENT_STATUS"]
+    _deployment_log_table_column_data_type_dict = {
+        "DEPLOYMENT_ID" : "VARCHAR(50)",
+        "DEPLOYMENT_TIMESTAMP" : "TIMESTAMP",
+        "DEPLOYMENT_STATUS" : "VARCHAR(50)"
+    }
+    _deployment_history_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
+    _deployment_history_table_column_data_type_dict = {
+        "OBJECT_TYPE" : "VARCHAR(50)",
+        "OBJECT_DATABASE" : "VARCHAR(50)",
+        "OBJECT_SCHEMA" : "VARCHAR(50)",
+        "OBJECT_NAME" : "VARCHAR(100)",
+        "MODIFIED_BY" : "VARCHAR(50)",
+        "DEPLOYMENT_STATUS" : "VARCHAR(100)",
+        "DEPLOYMENT_ID" : "VARCHAR(50)"
+    }    
+    _deployment_status_in_development = "IN DEVELOPMENT"
+    _deployment_status_in_test = "DEPLOYED IN TEST"
+    _deployment_status_in_prod = "DEPLOYED IN PROD"
         
 
