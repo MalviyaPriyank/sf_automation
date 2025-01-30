@@ -54,7 +54,8 @@ class LLMTools:
 
     def create_sf_object(self, obj_name, data_dict):
         try:
-            qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, **data_dict)
+            user_id = session.sql("select current_user()").collect()[0][0]
+            qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, self.user_id, **data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
         except AttributeValidationError as e:
@@ -302,12 +303,16 @@ class LLMTools:
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
         self.obj_class_mapping['table'].create_table_using_files_from_stage(self,database,schema)
         return f'{ss.TABLE_OBJ} created successfully'
+
+
+    def create_copyinto_object(self):
+        self.logger.info('Creating copyinto query')
+        return self.obj_class_mapping['copyinto'].create_query(self.sf_session)
         
 
     def sf_setup(self, query):
         init_setup = InitialSetup(session=self.sf_session)
         init_setup.perform_initial_setup()
-
         return 'Completed setup for role, warehouse, database, schema, and more'
 
 

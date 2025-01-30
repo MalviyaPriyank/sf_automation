@@ -54,7 +54,8 @@ class LLMTools:
 
     def create_sf_object(self, obj_name, data_dict):
         try:
-            qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, **data_dict)
+            user_id = session.sql("select current_user()").collect()[0][0]
+            qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, self.user_id, **data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
         except AttributeValidationError as e:
