@@ -8,6 +8,25 @@ import taskglobalvars as tgv
 import validatevalue as vv
 
 
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        instance._database = value
+
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        instance._schema = value
+
+    def __delete__(self,instance):
+        del instance._schema
 
 class Name:
     def __get__(self,instance,owner):
@@ -478,14 +497,16 @@ class ServerlessTaskMaxStatementSizeTag:
 class TaskAttrs:
     def __init__(self,parent):
         self.parent = parent
+
+    database = Database()
+
+    schema = Schema()
+
     name = Name()
     name_tag = NameTag()
 
     definition = Definition()
     definition_tag = DefinitionTag()
-
-    database = Database()
-    database_tag = DatabaseTag()
 
     warehouse = Warehouse()
     warehouse_tag = WarehouseTag()
@@ -550,6 +571,12 @@ class Task:
     def __init__(self,session):
         self.attr = TaskAttrs(self)
         self.session = session
+
+    def set_database(self,value):
+        self.attr.database = value
+
+    def set_schema(self,value):
+        self.attr.schema = value
 
     def set_name(self,name):
         self.attr.name = name
@@ -685,7 +712,7 @@ class Task:
         self.attr.serverless_task_max_statement_size_tag = serverless_task_max_statement_size_tag
 
     def create_task(self):
-        self.session.sql(self.qry)
+        self.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         task = Task(session)

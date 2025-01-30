@@ -1428,110 +1428,109 @@ class FileFormat:
     def create_file_format(self):
         self.session.sql(self.qry)
 
-    def create_object(session,**kwargs):
-        
-        file_format = FileFormat(session)
+    def create_object(self,**kwargs):
 
-        file_format.set_database(kwargs[gv._database_tag])
-        file_format.set_schema(kwargs[gv._schema_tag])
+        self.set_database(kwargs[gv._database_tag])
+        self.set_schema(kwargs[gv._schema_tag])
 
-        file_format.set_name(kwargs[gv._name_tag])
-        file_format.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        file_format.set_type(kwargs[gv._type_tag])
-        file_format.set_type_tag(gv._type_tag)
+        self.set_type(kwargs[gv._type_tag])
+        self.set_type_tag(gv._type_tag)
 
-        file_format.set_parse_header(kwargs[gv._parse_header_tag])
-        file_format.set_parse_header_tag(gv._parse_header_tag)
+        self.set_parse_header(kwargs[gv._parse_header_tag])
+        self.set_parse_header_tag(gv._parse_header_tag)
 
-        file_format.set_skip_header(kwargs[gv._skip_header_tag])
-        file_format.set_skip_header_tag(gv._skip_header_tag)
+        self.set_skip_header(kwargs[gv._skip_header_tag])
+        self.set_skip_header_tag(gv._skip_header_tag)
 
-        file_format.set_skip_blank_lines(kwargs[gv._skip_blank_lines_tag])
-        file_format.set_skip_blank_lines_tag(gv._skip_blank_lines_tag)
+        self.set_skip_blank_lines(kwargs[gv._skip_blank_lines_tag])
+        self.set_skip_blank_lines_tag(gv._skip_blank_lines_tag)
 
-        file_format.set_date_format(kwargs[gv._date_format_tag])
-        file_format.set_date_format_tag(gv._date_format_tag)
+        self.set_date_format(kwargs[gv._date_format_tag])
+        self.set_date_format_tag(gv._date_format_tag)
 
-        file_format.set_time_format(kwargs[gv._time_format_tag])
-        file_format.set_time_format_tag(gv._time_format_tag)
+        self.set_time_format(kwargs[gv._time_format_tag])
+        self.set_time_format_tag(gv._time_format_tag)
 
-        file_format.set_timestamp_format(kwargs[gv._timestamp_format_tag])
-        file_format.set_timestamp_format_tag(gv._timestamp_format_tag)
+        self.set_timestamp_format(kwargs[gv._timestamp_format_tag])
+        self.set_timestamp_format_tag(gv._timestamp_format_tag)
 
-        file_format.set_binary_format(kwargs[gv._binary_format_tag])
-        file_format.set_binary_format_tag(gv._binary_format_tag)
+        self.set_binary_format(kwargs[gv._binary_format_tag])
+        self.set_binary_format_tag(gv._binary_format_tag)
 
-        file_format.set_escape(kwargs[gv._escape_tag])
-        file_format.set_escape_tag(gv._escape_tag)
+        self.set_escape(kwargs[gv._escape_tag])
+        self.set_escape_tag(gv._escape_tag)
 
-        file_format.set_escape_unenclosed_field(kwargs[gv._escape_unenclosed_field_tag])
-        file_format.set_escape_unenclosed_field_tag(gv._escape_unenclosed_field_tag)
+        self.set_escape_unenclosed_field(kwargs[gv._escape_unenclosed_field_tag])
+        self.set_escape_unenclosed_field_tag(gv._escape_unenclosed_field_tag)
 
-        file_format.set_trim_space(kwargs[gv._trim_space_tag])
-        file_format.set_trim_space_tag(gv._trim_space_tag)
+        self.set_trim_space(kwargs[gv._trim_space_tag])
+        self.set_trim_space_tag(gv._trim_space_tag)
 
-        file_format.set_field_optionally_enclosed_by(kwargs[gv._field_optionally_enclosed_by_tag])
-        file_format.set_field_optionally_enclosed_by_tag(gv._field_optionally_enclosed_by_tag)
+        self.set_field_optionally_enclosed_by(kwargs[gv._field_optionally_enclosed_by_tag])
+        self.set_field_optionally_enclosed_by_tag(gv._field_optionally_enclosed_by_tag)
 
-        file_format.set_null_if(kwargs[gv._null_if_tag])
-        file_format.set_null_if_tag(gv._null_if_tag)
+        self.set_null_if(kwargs[gv._null_if_tag])
+        self.set_null_if_tag(gv._null_if_tag)
 
-        file_format.set_error_on_column_count_mismatch(kwargs[gv._error_on_column_count_mismatch_tag])
-        file_format.set_error_on_column_count_mismatch_tag(gv._error_on_column_count_mismatch_tag)
+        self.set_error_on_column_count_mismatch(kwargs[gv._error_on_column_count_mismatch_tag])
+        self.set_error_on_column_count_mismatch_tag(gv._error_on_column_count_mismatch_tag)
 
-        file_format.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        file_format.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        file_format.set_empty_field_as_null(kwargs[gv._empty_field_as_null_tag])
-        file_format.set_empty_field_as_null_tag(gv._empty_field_as_null_tag)
+        self.set_empty_field_as_null(kwargs[gv._empty_field_as_null_tag])
+        self.set_empty_field_as_null_tag(gv._empty_field_as_null_tag)
 
-        file_format.set_skip_byte_order_mark(kwargs[gv._skip_byte_order_mark_tag])
-        file_format.set_skip_byte_order_mark_tag(gv._skip_byte_order_mark_tag)
+        self.set_skip_byte_order_mark(kwargs[gv._skip_byte_order_mark_tag])
+        self.set_skip_byte_order_mark_tag(gv._skip_byte_order_mark_tag)
 
-        file_format.set_encoding(kwargs[gv._encoding_tag])
-        file_format.set_encoding_tag(gv._encoding_tag)
+        self.set_encoding(kwargs[gv._encoding_tag])
+        self.set_encoding_tag(gv._encoding_tag)
 
-        file_format.set_enable_octal(kwargs[gv._enable_octal_tag])
-        file_format.set_enable_octal_tag(gv._enable_octal_tag)
+        self.set_enable_octal(kwargs[gv._enable_octal_tag])
+        self.set_enable_octal_tag(gv._enable_octal_tag)
 
-        file_format.set_allow_duplicate(kwargs[gv._allow_duplicate_tag])
-        file_format.set_allow_duplicate_tag(gv._allow_duplicate_tag)
+        self.set_allow_duplicate(kwargs[gv._allow_duplicate_tag])
+        self.set_allow_duplicate_tag(gv._allow_duplicate_tag)
 
-        file_format.set_strip_outer_array(kwargs[gv._strip_outer_array_tag])
-        file_format.set_strip_outer_array_tag(gv._strip_outer_array_tag)
+        self.set_strip_outer_array(kwargs[gv._strip_outer_array_tag])
+        self.set_strip_outer_array_tag(gv._strip_outer_array_tag)
 
-        file_format.set_strip_null_values(kwargs[gv._strip_null_values_tag])
-        file_format.set_strip_null_values_tag(gv._strip_null_values_tag)
+        self.set_strip_null_values(kwargs[gv._strip_null_values_tag])
+        self.set_strip_null_values_tag(gv._strip_null_values_tag)
 
-        file_format.set_ignore_utf8_errors(kwargs[gv._ignore_utf8_errors_tag])
-        file_format.set_ignore_utf8_errors_tag(gv._ignore_utf8_errors_tag)
+        self.set_ignore_utf8_errors(kwargs[gv._ignore_utf8_errors_tag])
+        self.set_ignore_utf8_errors_tag(gv._ignore_utf8_errors_tag)
 
-        file_format.set_snappy_compression(kwargs[gv._snappy_compression_tag])
-        file_format.set_snappy_compression_tag(gv._snappy_compression_tag)
+        self.set_snappy_compression(kwargs[gv._snappy_compression_tag])
+        self.set_snappy_compression_tag(gv._snappy_compression_tag)
 
-        file_format.set_binary_as_text(kwargs[gv._binary_as_text_tag])
-        file_format.set_binary_as_text_tag(gv._binary_as_text_tag)
+        self.set_binary_as_text(kwargs[gv._binary_as_text_tag])
+        self.set_binary_as_text_tag(gv._binary_as_text_tag)
 
-        file_format.set_use_logical_type(kwargs[gv._use_logical_type_tag])
-        file_format.set_use_logical_type_tag(gv._use_logical_type_tag)
+        self.set_use_logical_type(kwargs[gv._use_logical_type_tag])
+        self.set_use_logical_type_tag(gv._use_logical_type_tag)
 
-        file_format.set_use_vectorized_scanner(kwargs[gv._use_vectorized_scanner_tag])
-        file_format.set_use_vectorized_scanner_tag(gv._use_vectorized_scanner_tag)
+        self.set_use_vectorized_scanner(kwargs[gv._use_vectorized_scanner_tag])
+        self.set_use_vectorized_scanner_tag(gv._use_vectorized_scanner_tag)
 
-        file_format.set_preserve_space(kwargs[gv._preserve_space_tag])
-        file_format.set_preserve_space_tag(gv._preserve_space_tag)
+        self.set_preserve_space(kwargs[gv._preserve_space_tag])
+        self.set_preserve_space_tag(gv._preserve_space_tag)
 
-        file_format.set_strip_outer_element(kwargs[gv._strip_outer_element_tag])
-        file_format.set_strip_outer_element_tag(gv._strip_outer_element_tag)
+        self.set_strip_outer_element(kwargs[gv._strip_outer_element_tag])
+        self.set_strip_outer_element_tag(gv._strip_outer_element_tag)
 
-        file_format.set_disable_snowflake_data(kwargs[gv._disable_snowflake_data_tag])
-        file_format.set_disable_snowflake_data_tag(gv._disable_snowflake_data_tag)
+        self.set_disable_snowflake_data(kwargs[gv._disable_snowflake_data_tag])
+        self.set_disable_snowflake_data_tag(gv._disable_snowflake_data_tag)
 
-        file_format.set_disable_auto_convert(kwargs[gv._disable_auto_convert_tag])
-        file_format.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
-        file_format.prepare_query()
-        file_format.create_file_format()
+        self.set_disable_auto_convert(kwargs[gv._disable_auto_convert_tag])
+        self.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
+        self.prepare_query()
+        self.create_file_format()
+        self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

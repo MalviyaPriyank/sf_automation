@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.global_vars import Role as gv
+from vars.global_vars import Role as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from deploy.deploy import Deploy
 
@@ -117,23 +117,23 @@ class Role:
     def create_role(self):
         self.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        role = Role(session)
+    def create_object(self,**kwargs):
 
-        role.set_name(kwargs[gv._name_tag])
-        role.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        role.set_comment(kwargs[gv._comment_tag])
-        role.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        role.prepare_query()
-        role.create_role()
+        self.prepare_query()
+        self.create_role()
+        self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
         deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_database('NA')
+        deploy_inst.set_object_schema('NA')
         deploy_inst.set_object_name(self.attr.name)
         deploy_inst.set_modified_by(self.user_id)
         deploy_inst.set_deployment_status(cfg._deployment_status_in_development)

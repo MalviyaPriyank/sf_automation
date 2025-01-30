@@ -5,11 +5,12 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import Account as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import User as gv,Config as cfg
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
 
 class Name:
     def __get__(self,instance,owner):
@@ -597,10 +598,11 @@ class UserAttrs:
     enable_unredacted_query_syntax_error_tag = EnableUnredactedQuerySyntaxErrorTag()
 
 class User:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = UserAttrs(self)
         self.session = session
         self.qry = ""
+        self.user_id = user_id
 
     def set_name(self, value):
         self.attr.name = value
@@ -831,75 +833,86 @@ class User:
         self.session.sql(self.qry)
 
 
-    def create_object(session,**kwargs):
-        user = User(session)
+    def create_object(self,**kwargs):
 
-        user.set_name(kwargs[gv._name_tag])
-        user.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        user.set_password(kwargs[gv._password_tag])
-        user.set_password_tag(gv._password_tag)
+        self.set_password(kwargs[gv._password_tag])
+        self.set_password_tag(gv._password_tag)
 
-        user.set_login_name(kwargs[gv._login_name_tag])
-        user.set_login_name_tag(gv._login_name_tag)
+        self.set_login_name(kwargs[gv._login_name_tag])
+        self.set_login_name_tag(gv._login_name_tag)
 
-        user.set_display_name(kwargs[gv._display_name_tag])
-        user.set_display_name_tag(gv._display_name_tag)
+        self.set_display_name(kwargs[gv._display_name_tag])
+        self.set_display_name_tag(gv._display_name_tag)
 
-        user.set_first_name(kwargs[gv._first_name_tag])
-        user.set_first_name_tag(gv._first_name_tag)
+        self.set_first_name(kwargs[gv._first_name_tag])
+        self.set_first_name_tag(gv._first_name_tag)
 
-        user.set_last_name(kwargs[gv._last_name_tag])
-        user.set_last_name_tag(gv._last_name_tag)
+        self.set_last_name(kwargs[gv._last_name_tag])
+        self.set_last_name_tag(gv._last_name_tag)
 
-        user.set_email(kwargs[gv._email_tag])
-        user.set_email_tag(gv._email_tag)
+        self.set_email(kwargs[gv._email_tag])
+        self.set_email_tag(gv._email_tag)
 
-        user.set_must_change_password(kwargs[gv._must_change_password_tag])
-        user.set_must_change_password_tag(gv._must_change_password_tag)
+        self.set_must_change_password(kwargs[gv._must_change_password_tag])
+        self.set_must_change_password_tag(gv._must_change_password_tag)
 
-        user.set_disabled(kwargs[gv._disabled_tag])
-        user.set_disabled_tag(gv._disabled_tag)
+        self.set_disabled(kwargs[gv._disabled_tag])
+        self.set_disabled_tag(gv._disabled_tag)
 
-        user.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
-        user.set_days_to_expiry_tag(gv._days_to_expiry_tag)
+        self.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
+        self.set_days_to_expiry_tag(gv._days_to_expiry_tag)
 
-        user.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
-        user.set_mins_to_unlock_tag(gv._mins_to_unlock_tag)
+        self.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
+        self.set_mins_to_unlock_tag(gv._mins_to_unlock_tag)
 
-        user.set_default_warehouse(kwargs[gv._default_warehouse_tag])
-        user.set_default_warehouse_tag(gv._default_warehouse_tag)
+        self.set_default_warehouse(kwargs[gv._default_warehouse_tag])
+        self.set_default_warehouse_tag(gv._default_warehouse_tag)
 
 
-        user.set_default_role(kwargs[gv._default_role_tag])
-        user.set_default_role_tag(gv._default_role_tag)
+        self.set_default_role(kwargs[gv._default_role_tag])
+        self.set_default_role_tag(gv._default_role_tag)
 
-        user.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
-        user.set_default_secondary_roles_tag(gv._default_secondary_roles_tag)
+        self.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
+        self.set_default_secondary_roles_tag(gv._default_secondary_roles_tag)
 
-        user.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
-        user.set_mins_to_by_pass_mfa_tag(gv._mins_to_by_pass_mfa_tag)
+        self.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
+        self.set_mins_to_by_pass_mfa_tag(gv._mins_to_by_pass_mfa_tag)
 
-        user.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
-        user.set_rsa_public_key_tag(gv._rsa_public_key_tag)
+        self.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
+        self.set_rsa_public_key_tag(gv._rsa_public_key_tag)
 
-        user.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
-        user.set_rsa_public_key_fp_tag(gv._rsa_public_key_fp_tag)
+        self.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
+        self.set_rsa_public_key_fp_tag(gv._rsa_public_key_fp_tag)
 
-        user.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
-        user.set_rsa_public_key_2_tag(gv._rsa_public_key_2_tag)
+        self.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
+        self.set_rsa_public_key_2_tag(gv._rsa_public_key_2_tag)
 
-        user.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
-        user.set_rsa_public_key_2_fp_tag(gv._rsa_public_key_2_fp_tag)
+        self.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
+        self.set_rsa_public_key_2_fp_tag(gv._rsa_public_key_2_fp_tag)
 
-        user.set_type(kwargs[gv._type_tag])
-        user.set_type_tag(gv._type_tag)
+        self.set_type(kwargs[gv._type_tag])
+        self.set_type_tag(gv._type_tag)
 
-        user.set_comment(kwargs[gv._comment_tag])
-        user.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        user.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
-        user.set_enable_unredacted_query_syntax_error_tag(gv._enable_unredacted_query_syntax_error_tag)
+        self.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
+        self.set_enable_unredacted_query_syntax_error_tag(gv._enable_unredacted_query_syntax_error_tag)
 
-        user.prepare_query()
-        user.create_user()
+        self.prepare_query()
+        self.create_user()
+        self.create_deployment_entry()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database('NA')
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()

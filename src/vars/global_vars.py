@@ -183,6 +183,20 @@ class FileFormat:
     _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
     _allowed_values_binary_format = ["HEX","BASE64","UTF8"]    
 
+class Snowpipe:
+    def __init__(self):
+        pass
+    _database_tag = "DATABASE"
+    _schema_tag = "SCHEMA"
+    _name_tag = "NAME"
+    _auto_ingest_tag = "AUTO_INGEST"
+    _error_integration_tag = "ERROR_INTEGRATION"
+    _aws_sns_topic_tag = "AWS_SNS_TOPIC"
+    _integration_tag =  "INTEGRATION"
+    _comment_tag = "COMMENT"
+    _file_type_tag = "FILE_TYPE"
+
+
 
 class User:
     def __init__(self):

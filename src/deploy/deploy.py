@@ -140,7 +140,7 @@ class Deploy:
                 qry = qry + cfg._deployment_log_table_column_list[i] + " " + cfg._deployment_log_table_column_data_type_dict[cfg._deployment_log_table_column_list[i]] + ","
             elif i == len(cfg._deployment_log_table_column_list) - 1:
                 qry = qry + cfg._deployment_log_table_column_list[i] + " " + cfg._deployment_log_table_column_data_type_dict[cfg._deployment_log_table_column_list[i]] + ")"
-        self.session.sql(qry).collect() 
+        self.session.sql(qry).collect()     
 
     def insert_into_deploy_control_table(self):
         qry = f"""
@@ -157,8 +157,5 @@ class Deploy:
              )
         """     
         self.session.sql(qry).collect()        
-
-
-    def create 
 
         

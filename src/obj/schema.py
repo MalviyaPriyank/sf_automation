@@ -3,32 +3,23 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
-sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import Schema as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import Schema as gv,Config as cfg
+from validation.validatevalue import ValidateValue as vv
+from deploy.deploy import Deploy
 
-class DatabaseName:
+class Database:
     def __get__(self,instance,owner):
-        return instance._database_name
+        return instance._database
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._database_name = value
+        instance._database = value
     
     def __delete__(self,instance):
-        del instance._database_name
-
-class DatabaseTag:
-    def __get__(self,instance,owner):
-        return instance._database_tag
-    
-    def __set__(self,instance,value):
-        instance._database_tag = value
-    
-    def __delete__(self,instance):
-        del instance._database_tag
+        del instance._database
 
 class Name:
     def __get__(self,instance,owner):
@@ -323,8 +314,7 @@ class SchemaAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database_name = DatabaseName()
-    database_tag = DatabaseTag()
+    database = Database()
         
     name = Name()
     name_tag = NameTag()
@@ -368,13 +358,14 @@ class SchemaAttrs:
 
 
 class Schema:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
         self.attr = SchemaAttrs(self)
         self.session = session
+        self.user_id = user_id
         self.qry = ""
 
-    def set_database_name(self, value):
-        self.attr.database_name = value
+    def set_database(self, value):
+        self.attr.database = value
 
     def set_database_tag(self, value):
         self.attr.database_tag = value  
@@ -486,7 +477,7 @@ class Schema:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE SCHEMA  {self.attr.name} "
+        self.qry = f"CREATE SCHEMA {self.attr.database}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -524,54 +515,63 @@ class Schema:
         self.add_properties_to_query()
 
     def create_schema(self):
-        self.session.sql(f"USE {self.attr.database_tag} {self.attr.database_name}").collect()
         self.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        schema = Schema(session)
+    def create_object(self,**kwargs):
 
-        schema.set_database_name(kwargs[gv._database_tag])
-        schema.set_database_tag(gv._database_tag)
+        self.set_database(kwargs[gv._database_tag])
 
-        schema.set_name(kwargs[gv._name_tag])
-        schema.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        schema.set_with_managed_access(kwargs[gv._with_managed_access_tag])
-        schema.set_with_managed_access_tag(gv._with_managed_access_tag)
+        self.set_with_managed_access(kwargs[gv._with_managed_access_tag])
+        self.set_with_managed_access_tag(gv._with_managed_access_tag)
 
-        schema.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        schema.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-        schema.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        schema.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-        schema.set_external_volume(kwargs[gv._external_volume_tag])
-        schema.set_external_volume_tag(gv._external_volume_tag)
+        self.set_external_volume(kwargs[gv._external_volume_tag])
+        self.set_external_volume_tag(gv._external_volume_tag)
 
-        schema.set_catalog(kwargs[gv._catalog_tag])
-        schema.set_catalog_tag(gv._catalog_tag)
+        self.set_catalog(kwargs[gv._catalog_tag])
+        self.set_catalog_tag(gv._catalog_tag)
 
-        schema.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        schema.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-        schema.set_log_level(kwargs[gv._log_level_tag])
-        schema.set_log_level_tag(gv._log_level_tag)
+        self.set_log_level(kwargs[gv._log_level_tag])
+        self.set_log_level_tag(gv._log_level_tag)
 
-        schema.set_trace_level(kwargs[gv._trace_level_tag])
-        schema.set_trace_level_tag(gv._trace_level_tag)
+        self.set_trace_level(kwargs[gv._trace_level_tag])
+        self.set_trace_level_tag(gv._trace_level_tag)
 
-        schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-        schema.set_classification_profile(kwargs[gv._classification_profile_tag])
-        schema.set_classification_profile_tag(gv._classification_profile_tag)
+        self.set_classification_profile(kwargs[gv._classification_profile_tag])
+        self.set_classification_profile_tag(gv._classification_profile_tag)
 
-        schema.set_comment(kwargs[gv._comment_tag])
-        schema.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
 
-        schema.prepare_query()
-        schema.create_schema()
+        self.prepare_query()
+        self.create_schema()
+        self.create_deployment_entry()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()

@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse
+from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -46,7 +46,7 @@ class LLMTools:
                                   'warehouse': warehouse.Warehouse,
                                   #'schema': schema.Schema,
                                   'share': share.Share,
-                                  #'table': table.Table,
+                                  'table': table.Table,
                                   #'task': task.Task,
                                   'user': user.User
                                   }
@@ -296,10 +296,22 @@ class LLMTools:
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
 
+    def create_table_object(self,
+                            database,
+                            schema):
+        self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
+        self.obj_class_mapping['table'].create_table_using_files_from_stage(self,database,schema)
+        return f'{ss.TABLE_OBJ} created successfully'
+
+
+    def create_copyinto_object(self):
+        self.logger.info('Creating copyinto query')
+        return self.obj_class_mapping['copyinto'].create_query(self.sf_session)
+        
+
     def sf_setup(self, query):
         init_setup = InitialSetup(session=self.sf_session)
         init_setup.perform_initial_setup()
-
         return 'Completed setup for role, warehouse, database, schema, and more'
 
 

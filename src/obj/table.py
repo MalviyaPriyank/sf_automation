@@ -6,11 +6,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from global_vars import Config as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import Config as gv
+from validation.validatevalue import ValidateValue as vv
 from session import Session
-from stage import Stage
+from processing.stage import Stage
+from deploy.deploy import Deploy
 
 
 class Database:
@@ -94,10 +96,11 @@ class TableAttrs:
 
 class Table:
 
-    def __init__(self,session,root):
+    def __init__(self,session,root,user_id):
         self.attr = TableAttrs()
         self.session = session 
         self.root = root
+        self.user_id = user_id
 
     def set_database(self,database):
         self.attr.database = database
@@ -159,3 +162,15 @@ class Table:
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
             self.create_table()
+            self.create_deployment_entry()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(gv._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()

@@ -373,37 +373,36 @@ class Database:
     def create_database(self):
         self.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        database = Database(session)
+    def create_object(self,**kwargs):
 
-        database.set_name(kwargs[gv._name_tag])
-        database.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-        database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-        database.set_external_volume(kwargs[gv._external_volume_tag])
-        database.set_external_volume_tag(gv._external_volume_tag)
+        self.set_external_volume(kwargs[gv._external_volume_tag])
+        self.set_external_volume_tag(gv._external_volume_tag)
 
-        database.set_catalog(kwargs[gv._catalog_tag])
-        database.set_catalog_tag(gv._catalog_tag)
+        self.set_catalog(kwargs[gv._catalog_tag])
+        self.set_catalog_tag(gv._catalog_tag)
 
-        database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-        database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-        database.set_comment(kwargs[gv._comment_tag])
-        database.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        database.prepare_query()
-        database.create_database()
-        return database.qry
+        self.prepare_query()
+        self.create_database()
+        self.create_deployment_entry()
 

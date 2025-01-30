@@ -335,36 +335,36 @@ class InternalStage:
     def create_internal_stage(self):
         self.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        internal_stage = InternalStage(session)
+    def create_object(self,**kwargs):
 
-        internal_stage.set_database(kwargs[gv._database_tag])
+        self.set_database(kwargs[gv._database_tag])
 
-        internal_stage.set_schema(kwargs[gv._schema_tag])
+        self.set_schema(kwargs[gv._schema_tag])
 
-        internal_stage.set_name(kwargs[gv._name_tag])
-        internal_stage.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        internal_stage.set_file_format(kwargs[gv._file_format_tag])
-        internal_stage.set_file_format_tag(gv._file_format_tag)
+        self.set_file_format(kwargs[gv._file_format_tag])
+        self.set_file_format_tag(gv._file_format_tag)
 
-        internal_stage.set_comment(kwargs[gv._comment_tag])
-        internal_stage.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        internal_stage.set_tag(kwargs[gv._tag_tag])
-        internal_stage.set_tag_tag(gv._tag_tag)
+        self.set_tag(kwargs[gv._tag_tag])
+        self.set_tag_tag(gv._tag_tag)
 
-        internal_stage.set_encryption(kwargs[gv._encryption_tag])
-        internal_stage.set_encryption_tag(gv._encryption_tag)
+        self.set_encryption(kwargs[gv._encryption_tag])
+        self.set_encryption_tag(gv._encryption_tag)
 
-        internal_stage.set_directory(kwargs[gv._directory_tag])
-        internal_stage.set_directory_tag(gv._directory_tag)
+        self.set_directory(kwargs[gv._directory_tag])
+        self.set_directory_tag(gv._directory_tag)
 
-        internal_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
-        internal_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
+        self.set_refresh_on_create_tag(gv._refresh_on_create_tag)
 
-        internal_stage.prepare_query()
-        internal_stage.create_internal_stage()
+        self.prepare_query()
+        self.create_internal_stage()
+        self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

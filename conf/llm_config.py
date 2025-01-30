@@ -830,6 +830,50 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_table_object",
+                "description":"creates a snowflake table object for the user. DATABASE and SCHEMA are required inputs",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"database object name"
+                            },
+                        "SCHEMA": {
+                                "type":"string",
+                                "description":"schema object name"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_copyinto_object",
+                "description":"creates a snowflake copyinto object for the user.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user request"
+                            },
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"get_workflow",
                 "description":"retrieves the workflow setup instructions",
                 "inputSchema": {

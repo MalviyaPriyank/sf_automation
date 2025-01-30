@@ -1,4 +1,6 @@
 {
+    "DATABASE":"DB_CONFIG",
+    "SCHEMA": "SCH_CONFIG",
     "NAME":"NONE",
     "AUTO_INGEST":"NONE",
     "ERROR_INTEGRATION":"NONE",
