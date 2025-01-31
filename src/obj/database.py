@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 from vars.global_vars import Database as gv, Config as cfg 
 from validation.validatevalue import ValidateValue as vv
-from deploy.deploy import Deploy
+from dep import deploy
 
 class Name:
     def __get__(self,instance,owner):
@@ -360,7 +360,7 @@ class Database:
         self.add_properties_to_query()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = deploy.Deploy(self.session)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

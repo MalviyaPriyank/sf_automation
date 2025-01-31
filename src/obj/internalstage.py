@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 from vars.global_vars import InternalStage as gv, Config as cfg
 from validation.validatevalue import ValidateValue as vv
-from deploy.deploy import Deploy
+from dep.deploy import Deploy
 
 class Database:
     def __get__(self,instance,owner):

@@ -364,28 +364,26 @@ class CopyInto:
         self.set_copy_into_qry()
         self.add_properties_to_query()
 
-    def create_query(session,**kwargs):
-        cpy_into = CopyInto(session)
-
-        cpy_into.set_table(kwargs[gv._table_tag])
-        cpy_into.set_schema(kwargs[gv._schema_tag])
-        cpy_into.set_database(kwargs[gv._database_tag])
-        cpy_into.set_stage(kwargs[gv._stage_tag])
-        cpy_into.set_file_format(kwargs[gv._file_format_tag])
-        cpy_into.set_on_error(kwargs[gv._on_error_tag])
-        cpy_into.set_size_limit(kwargs[gv._size_limit_tag])
-        cpy_into.set_purge(kwargs[gv._purge_tag])
-        cpy_into.set_return_failed_only(kwargs[gv._return_failed_only_tag])
-        cpy_into.set_match_by_column_name(kwargs[gv._match_by_column_name_tag])
-        cpy_into.set_include_metadata(kwargs[gv._include_metadata_tag])
-        cpy_into.set_enforce_length(kwargs[gv._enforce_length_tag])
-        cpy_into.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
-        cpy_into.set_force(kwargs[gv._force_tag])
-        cpy_into.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
-        cpy_into.set_file_processor(kwargs[gv._file_processor_tag])
-        cpy_into.set_load_mode(kwargs[gv._load_mode_tag])
-        cpy_into.prepare_query()
-        return cpy_into.qry
+    def create_query(self,**kwargs):
+        self.set_table(kwargs[gv._table_tag])
+        self.set_schema(kwargs[gv._schema_tag])
+        self.set_database(kwargs[gv._database_tag])
+        self.set_stage(kwargs[gv._stage_tag])
+        self.set_file_format(kwargs[gv._file_format_tag])
+        self.set_on_error(kwargs[gv._on_error_tag])
+        self.set_size_limit(kwargs[gv._size_limit_tag])
+        self.set_purge(kwargs[gv._purge_tag])
+        self.set_return_failed_only(kwargs[gv._return_failed_only_tag])
+        self.set_match_by_column_name(kwargs[gv._match_by_column_name_tag])
+        self.set_include_metadata(kwargs[gv._include_metadata_tag])
+        self.set_enforce_length(kwargs[gv._enforce_length_tag])
+        self.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
+        self.set_force(kwargs[gv._force_tag])
+        self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
+        self.set_file_processor(kwargs[gv._file_processor_tag])
+        self.set_load_mode(kwargs[gv._load_mode_tag])
+        self.prepare_query()
+        return self.qry
 
     
 

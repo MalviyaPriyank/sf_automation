@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
 from obj import role,warehouse,database,schema,internalstage
 from setup import privilege 
 from conf import readconf
-from deploy.deploy import Deploy
+from dep.deploy import Deploy
 from vars.global_vars import Config as cfg, Warehouse as gv_wh, Privilege as gv_priv
 
 

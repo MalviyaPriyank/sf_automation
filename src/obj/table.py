@@ -10,9 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 from vars.global_vars import Config as gv
 from validation.validatevalue import ValidateValue as vv
-from session import Session
 from processing.stage import Stage
-from deploy.deploy import Deploy
+from dep.deploy import Deploy
 
 
 class Database:
