@@ -156,9 +156,7 @@ class Deploy:
              '{self.attr.deployment_id}'
              )
         """     
-        self.session.sql(qry).collect() 
-
-    def move_records_to_deployment_history_table(self,env):
+        self.session.sql(qry).collect()
 
 
 
