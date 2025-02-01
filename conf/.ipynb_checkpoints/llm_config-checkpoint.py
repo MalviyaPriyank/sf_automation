@@ -9,8 +9,8 @@ SECRET_KEY = 'ys7JM4BClYXWTpjzOv1C2aGZbIMltlHu9UJsq/oY'
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
-KB_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0'
+CHAT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -264,11 +264,19 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_fileformat_object",
-                "description":"creates a snowflake fileformat object for the user. FILE_FORMAT is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake fileformat object for the user. DATABASE, SCHEMA, FILE_FORMAT is a required input to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
+                			"DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for DATABASE for database object"
+                            },
+                			"SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for database object"
+                            },
                             "FILE_FORMAT": {
                                 "type":"string",
                                 "description":"user provided value for FILE_FORMAT for database object"
@@ -400,7 +408,7 @@ tools = {
                             
                         },
                         "required":[
-                            "FILE_FORMAT"
+                            "FILE_FORMAT","DATABASE","SCHEMA"
                         ]
                     }
                 }
@@ -860,13 +868,77 @@ tools = {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "query": {
+                            "DATABASE": {
                                 "type":"string",
-                                "description":"user request"
+                                "description":"user provided value for DATABASE for copying object"
+                            },
+			"SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for copying object"
+                            },
+			"TABLE": {
+                                "type":"string",
+                                "description":"user provided list for TABLE nameS for copying object"
+                            },
+			"STAGE": {
+                                "type":"string",
+                                "description":"user provided value for STAGE name for copying object"
+                            },
+			"FILE_FORMAT": {
+                                "type":"string",
+                                "description":"user provided value for FILE_FORMAT for copying object"
+                            },
+			"ON_ERROR": {
+                                "type":"string",
+                                "description":"user provided value for ON_ERROR for copying object"
+                            },
+			"SIZE_LIMIT": {
+                                "type":"string",
+                                "description":"user provided value for SIZE_LIMIT for copying object"
+                            },
+			"PURGE": {
+                                "type":"string",
+                                "description":"user provided value for PURGE for copying object"
+                            },
+			"RETURN_FAILED_ONLY": {
+                                "type":"string",
+                                "description":"user provided value for RETURN_FAILED_ONLY for copying object"
+                            },
+			"MATCH_BY_COLUMN_NAME": {
+                                "type":"string",
+                                "description":"user provided value for MATCH_BY_COLUMN_NAME for copying object"
+                            },
+			"INCLUDE_METADATA": {
+                                "type":"string",
+                                "description":"user provided value for INCLUDE_METADATA for copying object"
+                            },
+			"ENFORCE_LENGTH": {
+                                "type":"string",
+                                "description":"user provided value for ENFORCE_LENGTH for copying object"
+                            },
+			"TRUNCATECOLUMNS": {
+                                "type":"string",
+                                "description":"user provided value for TRUNCATECOLUMNS for copying object"
+                            },
+			"FORCE": {
+                                "type":"string",
+                                "description":"user provided value for FORCE for copying object"
+                            },
+			"LOAD_UNCERTAIN_FILES": {
+                                "type":"string",
+                                "description":"user provided value for LOAD_UNCERTAIN_FILES for copying object"
+                            },
+			"FILE_PROCESSOR": {
+                                "type":"string",
+                                "description":"user provided value for FILE_PROCESSOR for copying object"
+                            },
+			"LOAD_MODE": {
+                                "type":"string",
+                                "description":"user provided value for LOAD_MODE for copying object"
                             },
                         },
                         "required":[
-                            "query"
+                            "DATABASE","SCHEMA","TABLE","FILE_FORMAT","STAGE"
                         ]
                     }
                 }

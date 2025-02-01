@@ -154,8 +154,8 @@ class Table:
             files = stg.remove_stage_name_from_file_path(files)
             stg.download_file_from_stage(files,"./")
 
+        tbl_lst = []
         for files in file_lst:
-            tbl_lst = []
             files = files.split("/")[-1]
             tbl_lst.append(files.split('.')[0])
             self.set_name(files.split('.')[0])
@@ -164,7 +164,7 @@ class Table:
             self.set_column_type_list(tbl_ddl_data)
             self.create_table()
             self.create_deployment_entry()
-            return tbl_lst
+        return tbl_lst
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

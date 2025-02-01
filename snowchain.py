@@ -26,20 +26,23 @@ logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(le
 logging.getLogger('snowchain_logs').setLevel(logging.INFO)
 logger = logging.getLogger('snowchain_logs')
 
-st.title('Snowchain - Test Env')
+st.title('Snowchain')
 #tools = LLMTools()
 
 if ss.MESSAGES not in st.session_state:
     st.session_state[ss.MESSAGES] = []
+    with st.chat_message(ss.ASSISTANT):
+        st.write("Hi this is Frosty, your AI Assistant. How may I assist you today?")
+else:
+    for message in st.session_state[ss.MESSAGES]:
+        with st.chat_message(message[ss.ROLE]):
+            st.markdown(message[ss.CONTENT])
 
 if ss.CHAT_HISTORY not in st.session_state:
     st.session_state[ss.CHAT_HISTORY] = []
 
 if ss.INITIALIZED not in st.session_state:
     st.session_state[ss.INITIALIZED] = False
-
-with st.chat_message(ss.ASSISTANT):
-    st.write("How may I assist you today?")
 
 if not st.session_state[ss.INITIALIZED]:
     session_inst = session.Session()

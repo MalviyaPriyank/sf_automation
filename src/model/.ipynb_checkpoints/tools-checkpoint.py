@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table
+from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -20,15 +20,20 @@ from valueexception import (
 )
 
 class LLMTools:
-    def __init__(self,
-                 logger,
-                 sf_session,
-                 retrieval_workflow,
-                 region=llm_config.REGION,
-                 temperature=llm_config.TEMPERATURE,
-                 chat_model_id=llm_config.CHAT_MODEL_ID):
+    def __init__(
+                    self,
+                    logger,
+                    sf_session,
+                    root,
+                    retrieval_workflow,
+                    region=llm_config.REGION,
+                    temperature=llm_config.TEMPERATURE,
+                    chat_model_id=llm_config.CHAT_MODEL_ID
+                 ):
         self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
+        self.root = root
+        self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
         self.logger = logger
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
@@ -36,26 +41,26 @@ class LLMTools:
                                     aws_access_key_id=llm_config.ACCESS_KEY,
                                     aws_secret_access_key=llm_config.SECRET_KEY,
                                     region_name=self.region)
-        self.obj_class_mapping = {'account': account.Admin,
-                                  'database': database.Database,
-                                  'externalstage': externalstage.ExternalStage,
-                                  'role': role.Role,
-                                  'internalstage': internalstage.InternalStage,
-                                  'fileformat': fileformat.FileFormat,
-                                  'resourcemonitor': resourcemonitor.ResourceMonitor,
-                                  'warehouse': warehouse.Warehouse,
-                                  #'schema': schema.Schema,
-                                  'share': share.Share,
-                                  'table': table.Table,
+        self.obj_class_mapping = {'account': account.Admin(self.sf_session),
+                                  'database': database.Database(self.sf_session,self.user_id),
+                                  #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id),
+                                  'role': role.Role(self.sf_session,self.user_id),
+                                  'copyinto':copyinto.CopyInto(),
+                                  'internalstage': internalstage.InternalStage(self.sf_session,self.user_id),
+                                  'fileformat': fileformat.FileFormat(self.sf_session,self.user_id),
+                                  #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id),
+                                  'warehouse': warehouse.Warehouse(self.sf_session,self.user_id),
+                                  'schema': schema.Schema(self.sf_session,self.user_id),
+                                  #'share': share.Share(self.sf_session,self.user_id),
+                                  'table': table.Table(session = self.sf_session,root = self.root,user_id=self.user_id),
                                   #'task': task.Task,
-                                  'user': user.User
+                                  #'user': user.User(self.sf_session,self.user_id)
                                   }
 
 
     def create_sf_object(self, obj_name, data_dict):
         try:
-            user_id = session.sql("select current_user()").collect()[0][0]
-            qry = self.obj_class_mapping[obj_name].create_object(self.sf_session, self.user_id, **data_dict)
+            qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
         except AttributeValidationError as e:
@@ -75,7 +80,7 @@ class LLMTools:
                                MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.DATABASE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.DATABASE_OBJ, data_dict)
 
@@ -96,7 +101,7 @@ class LLMTools:
                               POLARIS="TRUE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.ACCOUNT_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.ACCOUNT_OBJ, data_dict)
 
@@ -124,13 +129,15 @@ class LLMTools:
                                     NOTIFICATION_INTEGRATION="DEF"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.EXTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.EXTERNAL_STAGE_OBJ, data_dict)
 
 
     def create_fileformat_object(self,
                                 FILE_FORMAT,
+                                DATABASE,
+                                SCHEMA,
                                 TYPE="CSV",
                                 PARSE_HEADER="TRUE",
                                 SKIP_HEADER="'TRUE'",
@@ -164,7 +171,7 @@ class LLMTools:
                                 DISABLE_AUTO_CONVERT="TRUEAULT"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.FILEFORMAT_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.FILEFORMAT_OBJ, data_dict)
 
@@ -181,7 +188,7 @@ class LLMTools:
                                     REFRESH_ON_CREATE="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.INTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.INTERNAL_STAGE_OBJ, data_dict)
 
@@ -197,7 +204,7 @@ class LLMTools:
                                     DO="SUSPEND"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.RESOURCE_MONITOR_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
 
@@ -205,7 +212,7 @@ class LLMTools:
     def create_role_object(self, NAME, COMMENT="DEFAULT"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.ROLE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.ROLE_OBJ, data_dict)
 
@@ -228,7 +235,13 @@ class LLMTools:
                             TAG="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {}
+        for arg in args[1:]:
+            value = values[arg]
+            if arg == 'WITH_MANAGED_ACCESS':
+                arg = 'WITH MANAGED ACCESS'
+            data_dict[arg] = value
+        #data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.SCHEMA_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.SCHEMA_OBJ, data_dict)
 
@@ -236,7 +249,7 @@ class LLMTools:
     def create_share_object(self, NAME, COMMENT="DEFAULT"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.SHARE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.SHARE_OBJ, data_dict)
 
@@ -266,7 +279,7 @@ class LLMTools:
                             ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="TRUE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.USER_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.USER_OBJ, data_dict)
 
@@ -292,7 +305,7 @@ class LLMTools:
                                 STATEMENT_TIMEOUT_IN_SECONDS="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args}
+        data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.WAREHOUSE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
@@ -301,13 +314,54 @@ class LLMTools:
                             database,
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
-        self.obj_class_mapping['table'].create_table_using_files_from_stage(self,database,schema)
-        return f'{ss.TABLE_OBJ} created successfully'
+        table_list = self.obj_class_mapping['table'].create_table_using_files_from_stage(database,schema)
+        return f'{ss.TABLE_OBJ} created successfully for tables {table_list}'
 
 
-    def create_copyinto_object(self):
-        self.logger.info('Creating copyinto query')
-        return self.obj_class_mapping['copyinto'].create_query(self.sf_session)
+    def create_copyinto_object(self,
+                                DATABASE="NONE",
+                                SCHEMA="NONE",
+                                TABLE="NONE",
+                                STAGE="NONE",
+                                FILE_FORMAT="NONE",
+                                ON_ERROR="NONE",
+                                SIZE_LIMIT="NONE",
+                                PURGE="NONE",
+                                RETURN_FAILED_ONLY="NONE",
+                                MATCH_BY_COLUMN_NAME="NONE",
+                                INCLUDE_METADATA="NONE",
+                                ENFORCE_LENGTH="NONE",
+                                TRUNCATECOLUMNS="NONE",
+                                FORCE="NONE",
+                                LOAD_UNCERTAIN_FILES="NONE",
+                                FILE_PROCESSOR="NONE",
+                                LOAD_MODE="NONE"
+                              ):
+        
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[2:]}
+        for value in values['TABLE']:
+            self.logger.info(f'Creating copyinto query for table {value}')
+            data_dict['TABLE'] = value
+            copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
+            snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
+                                             copy_into_qry=copyinto_query, 
+                                             stage=STAGE, 
+                                             file_format=FILE_FORMAT, 
+                                             user_id=self.user_id)
+            snowpipe_data_dict = {"DATABASE":DATABASE,
+                                    "SCHEMA": SCHEMA,
+                                    "NAME":f'PIPE_{TABLE}',
+                                    "AUTO_INGEST":"NONE",
+                                    "ERROR_INTEGRATION":"NONE",
+                                    "AWS_SNS_TOPIC":"NONE",
+                                    "INTEGRATION":"NONE",
+                                    "COMMENT":"NONE",
+                                    "FILE_TYPE":"NONE"}
+            snowpipe_obj.create_object(**snowpipe_data_dict)
+            
+        return f'COPYINTO queries and snowpipe objects created successfully'
         
 
     def sf_setup(self, query):

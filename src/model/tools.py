@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto
+from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -50,7 +50,7 @@ class LLMTools:
                                   'fileformat': fileformat.FileFormat(self.sf_session,self.user_id),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id),
                                   'warehouse': warehouse.Warehouse(self.sf_session,self.user_id),
-                                  #'schema': schema.Schema,
+                                  'schema': schema.Schema(self.sf_session,self.user_id),
                                   #'share': share.Share(self.sf_session,self.user_id),
                                   'table': table.Table(session = self.sf_session,root = self.root,user_id=self.user_id),
                                   #'task': task.Task,
@@ -136,6 +136,8 @@ class LLMTools:
 
     def create_fileformat_object(self,
                                 FILE_FORMAT,
+                                DATABASE,
+                                SCHEMA,
                                 TYPE="CSV",
                                 PARSE_HEADER="TRUE",
                                 SKIP_HEADER="'TRUE'",
@@ -233,7 +235,13 @@ class LLMTools:
                             TAG="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {}
+        for arg in args[1:]:
+            value = values[arg]
+            if arg == 'WITH_MANAGED_ACCESS':
+                arg = 'WITH MANAGED ACCESS'
+            data_dict[arg] = value
+        #data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.SCHEMA_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.SCHEMA_OBJ, data_dict)
 
@@ -306,13 +314,54 @@ class LLMTools:
                             database,
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
-        self.obj_class_mapping['table'].create_table_using_files_from_stage(self,database,schema)
-        return f'{ss.TABLE_OBJ} created successfully'
+        table_list = self.obj_class_mapping['table'].create_table_using_files_from_stage(database,schema)
+        return f'{ss.TABLE_OBJ} created successfully for tables {table_list}'
 
 
-    def create_copyinto_object(self):
-        self.logger.info('Creating copyinto query')
-        return self.obj_class_mapping['copyinto'].create_query()
+    def create_copyinto_object(self,
+                                DATABASE="NONE",
+                                SCHEMA="NONE",
+                                TABLE="NONE",
+                                STAGE="NONE",
+                                FILE_FORMAT="NONE",
+                                ON_ERROR="NONE",
+                                SIZE_LIMIT="NONE",
+                                PURGE="NONE",
+                                RETURN_FAILED_ONLY="NONE",
+                                MATCH_BY_COLUMN_NAME="NONE",
+                                INCLUDE_METADATA="NONE",
+                                ENFORCE_LENGTH="NONE",
+                                TRUNCATECOLUMNS="NONE",
+                                FORCE="NONE",
+                                LOAD_UNCERTAIN_FILES="NONE",
+                                FILE_PROCESSOR="NONE",
+                                LOAD_MODE="NONE"
+                              ):
+        
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[2:]}
+        for value in values['TABLE']:
+            self.logger.info(f'Creating copyinto query for table {value}')
+            data_dict['TABLE'] = value
+            copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
+            snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
+                                             copy_into_qry=copyinto_query, 
+                                             stage=STAGE, 
+                                             file_format=FILE_FORMAT, 
+                                             user_id=self.user_id)
+            snowpipe_data_dict = {"DATABASE":DATABASE,
+                                    "SCHEMA": SCHEMA,
+                                    "NAME":f'PIPE_{TABLE}',
+                                    "AUTO_INGEST":"NONE",
+                                    "ERROR_INTEGRATION":"NONE",
+                                    "AWS_SNS_TOPIC":"NONE",
+                                    "INTEGRATION":"NONE",
+                                    "COMMENT":"NONE",
+                                    "FILE_TYPE":"NONE"}
+            snowpipe_obj.create_object(**snowpipe_data_dict)
+            
+        return f'COPYINTO queries and snowpipe objects created successfully'
         
 
     def sf_setup(self, query):

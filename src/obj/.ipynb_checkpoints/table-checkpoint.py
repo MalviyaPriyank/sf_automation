@@ -1,11 +1,18 @@
-import pandas as pd
-
 import sys
 import os 
+import pandas as pd
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from table_global_vars import *
+from vars.global_vars import Config as gv
+from validation.validatevalue import ValidateValue as vv
+from processing.stage import Stage
+from dep.deploy import Deploy
+
 
 class Database:
     def __get__(self,instance,owner):
@@ -46,32 +53,6 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class FilePath:
-    def __get__(self,instance,owner):
-        return instance._file_path
-    
-    def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._file_path = value
-
-    def __delete__(self,instance):
-        del instance._file_path
-
-class TableDf:
-    def __get__(self,instance,owner):
-        return instance._table_ddl_df
-    
-    def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._table_ddl_df = value
-
-    def __delete__(self,instance):
-        del instance._table_ddl_df
-
 class ColumnNameList:
     def __get__(self,instance,owner):
         return instance._column_name_list
@@ -98,18 +79,6 @@ class ColumnTypeList:
     def __delete__(self,instance):
         del instance._column_type_list
 
-class CountOfColumns:
-    def __get__(self,instance,owner):
-        return instance._count_of_columns
-    
-    def __set__(self,instance,value):
-        if type(value) != int :
-            raise TypeError
-        else:
-            instance._count_of_columns = value
-
-    def __delete__(self,instance):
-        del instance._count_of_columns
 
 
 class TableAttrs:
@@ -120,21 +89,17 @@ class TableAttrs:
 
     name = Name()
 
-    file_path = FilePath()
-
-    table_ddl_df = TableDf()
-
     column_name_list = ColumnNameList()
 
     column_type_list = ColumnTypeList()
 
-    count_of_columns = CountOfColumns()
-
 class Table:
 
-    def __init__(self,session):
+    def __init__(self,session,root,user_id):
         self.attr = TableAttrs()
         self.session = session 
+        self.root = root
+        self.user_id = user_id
 
     def set_database(self,database):
         self.attr.database = database
@@ -145,28 +110,16 @@ class Table:
     def set_name(self,name):
         self.attr.name = name
 
-    def set_file_path(self,file_path):
-        self.attr.file_path = file_path
+    def set_column_name_list(self,ddl_df):
+        self.attr.column_name_list = ddl_df["Column_Name"].to_list()
 
-    def set_table_ddl_df(self,table_ddl_df):
-        self.attr.table_ddl_df = table_ddl_df
-
-    def set_column_name_list(self):
-        self.attr.column_name_list = self.get_column_in_a_list('COLUMN_NAME')
-
-    def set_column_type_list(self):
-        self.attr.column_type_list = self.get_column_in_a_list('COLUMN_TYPE')
-
-    def set_count_of_columns(self):
-        self.attr.count_of_columns = self.get_count_of_columns() 
+    def set_column_type_list(self,ddl_df):
+        self.attr.column_type_list = ddl_df["Column_Type"].to_list()
 
 
     def read_table_ddl_file(self):
         table_ddl_df = pd.read_csv(self.attr.file_path)
         return table_ddl_df
-
-    def get_count_of_columns(self):
-        return len(self.attr.column_name_list)
         
     def get_column_in_a_list(self,column_name):
         return self.attr.table_ddl_df[column_name]
@@ -174,37 +127,52 @@ class Table:
     def get_create_table_query(self):
         qry = f"CREATE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
 
-        for i in range(0,self.attr.count_of_columns):
-            qry = qry + f" {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} "
+        for i in range(0,len(self.attr.column_name_list)):
+            if i != len(self.attr.column_name_list) -1:
+                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]}, '
+            else: 
+                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]} '
 
         qry = qry + " ) "
+        return qry
 
     def create_table(self):
         qry = self.get_create_table_query()
-        self.session.execute_qry(qry)
+        print(qry)
+        self.session.sql(qry).collect()
 
 
+    def create_table_using_files_from_stage(self,database,schema):
+        self.set_database(database)
+        self.set_schema(schema)
+        stg = Stage(self.root,gv._config_database,gv._config_schema)
+        stg.set_stage(gv._config_stage)
+        stg.set_stage_reference()
+        file_lst = stg.get_list_of_files_from_stage()
+        file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
+        for files in file_lst:
+            files = stg.remove_stage_name_from_file_path(files)
+            stg.download_file_from_stage(files,"./")
 
-    def create_object(session,**kwargs):
-        tbl = Table()
-        
-        tbl.set_database(kwargs['database'])
+        tbl_lst = []
+        for files in file_lst:
+            files = files.split("/")[-1]
+            tbl_lst.append(files.split('.')[0])
+            self.set_name(files.split('.')[0])
+            tbl_ddl_data = pd.read_csv(f"{files}")
+            self.set_column_name_list(tbl_ddl_data)
+            self.set_column_type_list(tbl_ddl_data)
+            self.create_table()
+            self.create_deployment_entry()
+        return tbl_lst
 
-        tbl.set_schema(kwargs['schema'])
-
-        tbl.set_name(kwargs['name'])
-
-        tbl.set_file_path(kwargs['file_path'])
-
-        table_ddl_df = tbl.read_table_ddl_file()
-        tbl.set_table_ddl_df(table_ddl_df)
-
-        tbl.set_column_name_list()
-
-        tbl.set_column_type_list()
-
-        tbl.set_count_of_columns()
-
-        tbl.create_table()
-
-        
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(gv._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
