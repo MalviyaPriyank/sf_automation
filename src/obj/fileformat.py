@@ -215,11 +215,13 @@ class ParseHeader:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._parse_header = value
             else:
-                raise ValueError
-                
+                if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                    instance._parse_header = value
+                else:
+                    raise ValueError                
         else:
             raise ValueError
 
@@ -268,12 +270,10 @@ class SkipBlankLines:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._skip_blank_lines = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._skip_blank_lines = value   
-            else:
-                raise KeyError
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_blank_lines
@@ -346,28 +346,28 @@ class TimeFormatTag:
 
 class TimestampFormat:
     def __get__(self,instance,owner):
-        return instance._time_stamp_format
+        return instance._timestamp_format
     
     def __set__(self,instance,value):
-        if instance._type == "DEFAULT":
-            instance._timestamp_format = "DEFAULT"
+        if instance._type == "NONE":
+            instance._timestamp_format = "NONE"
         elif instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
-            instance._time_stamp_format = value
+            instance._timestamp_format = value
         else:
             raise ValueError
 
     def __del__(self,instance):
-        del instance._time_stamp_format
+        del instance._timestamp_format
 
 class TimestampFormatTag:
     def __get__(self,instance,owner):
-        return instance._time_stamp_format_tag
+        return instance._timestamp_format_tag
     
     def __set__(self,instance,value):
-        instance._time_stamp_format_tag = value
+        instance._timestamp_format_tag = value
 
     def __del__(self,instance):
-        del instance._time_stamp_format_tag
+        del instance._timestamp_format_tag
    
 class BinaryFormat:
     def __get__(self,instance,owner):
@@ -452,12 +452,10 @@ class TrimSpace:
             instance._type == gv._allowed_values_type[2] or
             instance._type == gv._allowed_values_type[3] or
             instance._type == gv._allowed_values_type[4] ):
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._trim_space = value
-            else:
-                raise ValueError
-        else:
-            raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._trim_space = value
 
     def __del__(self,instance):
         del instance._trim_space
@@ -530,10 +528,10 @@ class ErrorOnColumnCountMismatch:
         return instance._error_on_column_count_mismatch
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._error_on_column_count_mismatch = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._error_on_column_count_mismatch = value
             
 
     def __del__(self,instance):
@@ -557,10 +555,10 @@ class ReplaceInvalidCharacters:
         return instance._replace_invalid_characters
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._replace_invalid_characters = value
-        else:
-            raise KeyError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._replace_invalid_characters = value
             
     def __del__(self,instance):
         del instance._replace_invalid_characters
@@ -581,10 +579,10 @@ class EmptyFieldAsNull:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._type = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._empty_field_as_null = value
-            else:
-                raise KeyError
 
     def __del__(self,instance):
         del instance._empty_field_as_null
@@ -607,12 +605,10 @@ class SkipByteOrderMark:
         if (instance._type == gv._allowed_values_type[0] or
             instance._type == gv._allowed_values_type[1] or 
             instance._type == gv._allowed_values_type[5] ):
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._skip_byte_order_mark = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._skip_byte_order_mark = value    
-            else:
-                raise KeyError
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_byte_order_mark
@@ -657,13 +653,10 @@ class EnableOctal:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[1]:
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._enable_octal = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._enable_octal = value
 
     def __del__(self,instance):
         del instance._enable_octal    
@@ -684,13 +677,10 @@ class AllowDuplicate:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[1]:
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._allow_duplicate = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._allow_duplicate = value
 
     def __del__(self,instance):
         del instance._allow_duplicate
@@ -711,13 +701,10 @@ class StripOuterArray:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[1]: #JSON
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._strip_outer_array = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_outer_array = value
         
     def __del__(self,instance):
         del instance._strip_outer_array
@@ -738,13 +725,10 @@ class StripNullValues:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[1]: #JSON
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._strip_null_values = value
-            else:
-                raise ValueError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_null_values = value
         
     def __del__(self,instance):
         del instance._strip_null_values
@@ -766,7 +750,7 @@ class IgnoreUTF8Errors:
     def __set__(self,instance,value):
         if (instance._type == gv._allowed_values_type[1] or
             instance._type == gv._allowed_values_type[5]) : #JSON and XML
-            if vv.is_bool(value):
+            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._ignore_utf8_errors = value
             else:
                 raise TypeError
@@ -793,12 +777,10 @@ class SnappyCompression:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._snappy_compression = value
-            else:
-                raise TypeError
-        else:
-            instance._snappy_compression = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._snappy_compression = value
 
     def __del__(self,instance):
         del instance._snappy_compression
@@ -819,12 +801,10 @@ class BinaryAsText:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._binary_as_text = value
-            else:
-                raise TypeError
-        else:
-            instance._binary_as_text = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._binary_as_text = value
 
     def __del__(self,instance):
         del instance._binary_as_text
@@ -845,12 +825,10 @@ class UseLogicalType:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._use_logical_type = value
-            else:
-                raise TypeError
-        else:
-            instance._use_logical_type = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._use_logical_type = value
 
     def __del__(self,instance):
         del instance._use_logical_type
@@ -871,12 +849,10 @@ class UseVectorizedScanner:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._use_vectorized_scanner = value
-            else:
-                raise TypeError
-        else:
-            instance._use_vectorized_scanner = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._use_vectorized_scanner = value
 
     def __del__(self,instance):
         del instance._use_vectorized_scanner
@@ -897,12 +873,10 @@ class PreserveSpace:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._preserve_space = value
-            else:
-                raise TypeError
-        else:
-            instance._preserve_space = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._preserve_space = value
 
     def __del__(self,instance):
         del instance._preserve_space
@@ -923,12 +897,10 @@ class StripOuterElement:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._strip_outer_element = value
-            else:
-                raise TypeError
-        else:
-            instance._strip_outer_element = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_outer_element = value
 
     def __del__(self,instance):
         del instance._strip_outer_element
@@ -949,12 +921,10 @@ class DisableSnowflakeData:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._disable_snowflake_data = value
-            else:
-                raise TypeError
-        else:
-            instance._disable_snowflake_data = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._disable_snowflake_data = value
 
     def __del__(self,instance):
         del instance._disable_snowflake_data
@@ -975,12 +945,10 @@ class DisableAutoConvert:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._disable_auto_convert = value
-            else:
-                raise TypeError
-        else:
-            instance._disable_auto_convert = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._disable_auto_convert = value
 
     def __del__(self,instance):
         del instance._disable_auto_convert
