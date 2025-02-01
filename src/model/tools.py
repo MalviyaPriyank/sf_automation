@@ -140,7 +140,7 @@ class LLMTools:
                                 SCHEMA,
                                 TYPE="CSV",
                                 PARSE_HEADER="NONE",
-                                SKIP_HEADER="'NONE'",
+                                SKIP_HEADER="NONE",
                                 SKIP_BLANK_LINES="NONE",
                                 DATE_FORMAT="NONE",
                                 TIME_FORMAT="NONE",

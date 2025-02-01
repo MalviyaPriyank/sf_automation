@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.global_vars import FileFormat as gv
+from vars.global_vars import FileFormat as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 
@@ -243,12 +243,12 @@ class SkipHeader:
         return instance._skip_header
     
     def __set__(self,instance,value):
-        if instance._type == "DEFAULT":
-            instance._skip_header = "TRUE"
+        if value == "NONE":
+            instance._skip_header = value  
+        elif instance._type == "DEFAULT":
+            instance._skip_header = "NONE"
         elif instance._type == gv._allowed_values_type[0]:
             instance._skip_header = value
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_header
@@ -374,13 +374,13 @@ class BinaryFormat:
         return instance._binary_format
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
+        if value == "NONE":
+            instance._binary_format = value
+        elif instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
             if value not in gv._allowed_values_binary_format:
                 raise KeyError
             else:
                 instance._binary_format = value
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._binary_format
@@ -400,10 +400,11 @@ class Escape:
         return instance._escape
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]: #CSV
+        if value == "NONE":
             instance._escape = value
-        else:
-            raise ValueError
+        elif instance._type == gv._allowed_values_type[0]: #CSV
+            instance._escape = value
+
 
     def __del__(self,instance):
         del instance._escape
@@ -424,10 +425,10 @@ class EscapeUnenclosedField:
         return instance._escape_unenclosed_field
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]: #CSV
+        if value == "NONE":
             instance._escape_unenclosed_field = value
-        else:
-            raise ValueError
+        elif instance._type == gv._allowed_values_type[0]: #CSV
+            instance._escape_unenclosed_field = value
         
     def __del__(self,instance):
         del instance._escape_unenclosed_field
@@ -503,12 +504,10 @@ class NullIf:
             instance._type == gv._allowed_values_type[2] or
             instance._type == gv._allowed_values_type[3] or
             instance._type == gv._allowed_values_type[4]):
-            if type(value) != str:
-                raise KeyError
-            else:
+            if value == "NONE":
                 instance._null_if = value
-        else:
-            raise ValueError
+            elif type(value) != str:
+                raise KeyError
 
     def __del__(self,instance):
         del instance._null_if
@@ -578,7 +577,9 @@ class EmptyFieldAsNull:
         return instance._empty_field_as_null
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]:
+        if value == "NONE":
+            instance._empty_field_as_null = value
+        elif instance._type == gv._allowed_values_type[0]:
             if value == "NONE":
                 instance._type = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -602,7 +603,9 @@ class SkipByteOrderMark:
         return instance._skip_byte_order_mark
     
     def __set__(self,instance,value):
-        if (instance._type == gv._allowed_values_type[0] or
+        if value == "NONE":
+            instance._skip_byte_order_mark = value
+        elif (instance._type == gv._allowed_values_type[0] or
             instance._type == gv._allowed_values_type[1] or 
             instance._type == gv._allowed_values_type[5] ):
             if value == "NONE":
@@ -628,11 +631,13 @@ class Encoding:
         return instance._encoding
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]:
-            if type(value) != str:
-                raise TypeError
-            else:
+        if value == "NONE":
+            instance._encoding = value
+        elif instance._type == gv._allowed_values_type[0]:
+            if value == "NONE":
                 instance._encoding = value
+            elif type(value) != str:
+                raise TypeError
 
     def __del__(self,instance):
         del instance._encoding
@@ -652,7 +657,9 @@ class EnableOctal:
         return instance._enable_octal
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]:
+        if value == "NONE":
+            instance._enable_octal = value
+        elif instance._type == gv._allowed_values_type[1]:
             if value == "NONE":
                 instance._enable_octal = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -676,7 +683,9 @@ class AllowDuplicate:
         return instance._allow_duplicate
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]:
+        if value == "NONE":
+            instance._allow_duplicate = value
+        elif instance._type == gv._allowed_values_type[1]:
             if value == "NONE":
                 instance._allow_duplicate = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -700,7 +709,9 @@ class StripOuterArray:
         return instance._strip_outer_array
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]: #JSON
+        if value == "NONE":
+            instance._strip_outer_array = value
+        elif instance._type == gv._allowed_values_type[1]: #JSON
             if value == "NONE":
                 instance._strip_outer_array = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -724,6 +735,8 @@ class StripNullValues:
         return instance._strip_null_values
     
     def __set__(self,instance,value):
+        if value == "NONE":
+            instance._strip_null_values = value
         if instance._type == gv._allowed_values_type[1]: #JSON
             if value == "NONE":
                 instance._strip_null_values = value
@@ -748,8 +761,12 @@ class IgnoreUTF8Errors:
         return instance._ignore_utf8_errors
     
     def __set__(self,instance,value):
-        if (instance._type == gv._allowed_values_type[1] or
+        if value == "NONE":
+            instance._ignore_utf8_errors = value
+        elif (instance._type == gv._allowed_values_type[1] or
             instance._type == gv._allowed_values_type[5]) : #JSON and XML
+            if value == "NONE":
+                instance._ignore_utf8_errors = value
             if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._ignore_utf8_errors = value
             else:
@@ -776,7 +793,9 @@ class SnappyCompression:
         return instance._snappy_compression
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
+        if value == "NONE":
+            instance._snappy_compression = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
             if value == "NONE":
                 instance._snappy_compression = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -800,7 +819,9 @@ class BinaryAsText:
         return instance._binary_as_text
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
+        if value == "NONE":
+            instance._binary_as_text = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
             if value == "NONE":
                 instance._binary_as_text = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -824,7 +845,9 @@ class UseLogicalType:
         return instance._use_logical_type
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
+        if value == "NONE":
+            instance._use_logical_type = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
             if value == "NONE":
                 instance._use_logical_type = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -848,7 +871,9 @@ class UseVectorizedScanner:
         return instance._use_vectorized_scanner
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
+        if value == "NONE":
+            instance._use_vectorized_scanner = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
             if value == "NONE":
                 instance._use_vectorized_scanner = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -872,7 +897,9 @@ class PreserveSpace:
         return instance._preserve_space
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
+        if value == "NONE":
+            instance._preserve_space = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
             if value == "NONE":
                 instance._preserve_space = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -896,7 +923,9 @@ class StripOuterElement:
         return instance._strip_outer_element
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
+        if value == "NONE":
+            instance._strip_outer_element = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
             if value == "NONE":
                 instance._strip_outer_element = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -920,7 +949,9 @@ class DisableSnowflakeData:
         return instance._disable_snowflake_data
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
+        if value == "NONE":
+            instance._disable_snowflake_data = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
             if value == "NONE":
                 instance._disable_snowflake_data = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -944,7 +975,9 @@ class DisableAutoConvert:
         return instance._disable_auto_convert
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
+        if value == "NONE":
+            instance._disable_auto_convert = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
             if value == "NONE":
                 instance._disable_auto_convert = value
             elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -1394,7 +1427,7 @@ class FileFormat:
         self.add_properties_to_query()
 
     def create_file_format(self):
-        self.session.sql(self.qry)
+        self.session.sql(self.qry).collect()
 
     def create_object(self,**kwargs):
 
