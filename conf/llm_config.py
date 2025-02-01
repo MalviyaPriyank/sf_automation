@@ -461,7 +461,9 @@ tools = {
                             
                         },
                         "required":[
-                            "DATABASE"
+                            "NAME",
+                            "DATABASE",
+                            "SCHEMA"
                         ]
                     }
                 }
