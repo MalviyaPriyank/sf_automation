@@ -155,13 +155,16 @@ class Table:
             stg.download_file_from_stage(files,"./")
 
         for files in file_lst:
+            tbl_lst = []
             files = files.split("/")[-1]
+            tbl_lst.append(files.split('.')[0])
             self.set_name(files.split('.')[0])
             tbl_ddl_data = pd.read_csv(f"{files}")
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
             self.create_table()
             self.create_deployment_entry()
+            return tbl_lst
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
