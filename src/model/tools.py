@@ -12,6 +12,7 @@ from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
+from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -53,6 +54,7 @@ class LLMTools:
                                   'schema': schema.Schema(self.sf_session,self.user_id),
                                   #'share': share.Share(self.sf_session,self.user_id),
                                   'table': table.Table(session = self.sf_session,root = self.root,user_id=self.user_id),
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session = self.sf_session, user_id= self.user_id)
                                   #'task': task.Task,
                                   #'user': user.User(self.sf_session,self.user_id)
                                   }
@@ -362,6 +364,21 @@ class LLMTools:
             snowpipe_obj.create_object(**snowpipe_data_dict)
             
         return f'COPYINTO queries and snowpipe objects created successfully'
+    
+    def create_maskingpolicy_object(self,
+                                    ROLE,
+                                    NAME,
+                                    SIGNATURE,
+                                    RETURNS,
+                                    BODY,
+                                    COMMENT="NONE",
+                                    EXEMPT_OTHER_POLICIES="NONE"
+                                    ):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.RESOURCE_MONITOR_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
         
 
     def sf_setup(self, query):
