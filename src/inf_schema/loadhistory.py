@@ -7,14 +7,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from validation.validateobject import ValidateObject
 
-class Schema:
-
-class View:
-    
-
-class LoadHistoryAttr:
-
-
 
 class LoadHistory:
     def __init__(self,session):
@@ -27,8 +19,6 @@ class LoadHistory:
             res = df.collect()
             return res[0][0]
         
-    def get_rows_loaded(self,database_name,schema_name,table_name):
-        if ValidateObject.schema_exist(database_name=database_name,schema_name=schema_name):
 
     
 
