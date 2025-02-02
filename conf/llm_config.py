@@ -840,23 +840,23 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"create_table_object",
-                "description":"creates a snowflake table object for the user. DATABASE and SCHEMA are required inputs",
+                "name":"create_multiple_table_object",
+                "description":"creates multiple snowflake table objects in bulk for the user. DATABASE and SCHEMA are required inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "DATABASE": {
+                            "database": {
                                 "type":"string",
                                 "description":"database object name"
                             },
-                        "SCHEMA": {
+                        "schema": {
                                 "type":"string",
                                 "description":"schema object name"
                             },
                         },
                         "required":[
-                            "DATABASE","SCHEMA"
+                            "database","schema"
                         ]
                     }
                 }

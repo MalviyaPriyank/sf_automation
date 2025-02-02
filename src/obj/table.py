@@ -125,7 +125,7 @@ class Table:
         return self.attr.table_ddl_df[column_name]
     
     def get_create_table_query(self):
-        qry = f"CREATE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
+        qry = f"CREATE OR REPLACE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
 
         for i in range(0,len(self.attr.column_name_list)):
             if i != len(self.attr.column_name_list) -1:

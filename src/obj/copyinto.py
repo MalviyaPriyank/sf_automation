@@ -6,8 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
-from global_vars import CopyInto as gv
-from validatevalue import ValidateValue as vv
+from vars.global_vars import CopyInto as gv
+from validation.validatevalue import ValidateValue as vv
 
 class Database:
     def __get__(self,instance,owner):

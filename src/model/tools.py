@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -310,7 +310,7 @@ class LLMTools:
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
 
-    def create_table_object(self,
+    def create_multiple_table_object(self,
                             database,
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
@@ -341,7 +341,7 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[2:]}
-        for value in values['TABLE']:
+        for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)

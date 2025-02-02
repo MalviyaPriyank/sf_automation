@@ -20,7 +20,7 @@ class InitialSetup:
         
     def create_default_role(self):
         for rl,description in cfg._default_role.items():
-            role.Role.create_object(self.session,**{"NAME":rl,"COMMENT":description})
+            role.Role.create_object(**{"NAME":rl,"COMMENT":description})
             priv_inst = privilege.Privilege(self.session)
             priv_inst.grant_role_to_role(rl,"ACCOUNTADMIN")
             priv_inst.grant_role_to_role(rl,"SECURITYADMIN")
