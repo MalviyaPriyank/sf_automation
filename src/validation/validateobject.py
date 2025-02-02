@@ -20,14 +20,15 @@ class ValidateObject:
 
 
     @classmethod
-    def object_exist(self,**kwargs):
-        if kwargs['OBJECT_TYPE'] == self.database_tag:
-            if Databases.db_exist(db_name= kwargs[self.database_tag]):
-                return True
-            else:
-                raise ObjectDoesNotExist(self.database_tag,kwargs[self.database_tag])
-        elif kwargs['OBJECT_TYPE'] == self.schema_tag:
-            if Schema.schema_exist(db_name= kwargs[self.database_tag], schema_name= kwargs[self.schema_tag]):
-                return True
-            else:
-                raise ObjectDoesNotExist(self.schema_tag,kwargs[self.schema_tag])
+    def database_exist(self,database_name):
+        if Databases.db_exist(db_name= database_name):
+            return True
+        else:
+            raise ObjectDoesNotExist(self.database_tag,database_name)
+        
+    @classmethod 
+    def schema_exist(self,database_name,schema_name):
+        if Schema.schema_exist(database_name,schema_name):
+            return True
+        else:
+            raise ObjectDoesNotExist(self.schema_tag, schema_name)
