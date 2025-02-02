@@ -841,7 +841,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_multiple_table_object",
-                "description":"creates multiple snowflake table objects in bulk for the user. DATABASE and SCHEMA are required inputs",
+                "description":"creates multiple snowflake table objects in bulk for the user. DATABASE and SCHEMA are required inputs from user. this function already has the table names, so user does not have to provide it.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
