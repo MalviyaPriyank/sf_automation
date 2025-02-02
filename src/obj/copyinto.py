@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from vars.global_vars import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
 
+
 class Database:
     def __get__(self,instance,owner):
         return instance._database
@@ -364,10 +365,15 @@ class CopyInto:
         self.set_copy_into_qry()
         self.add_properties_to_query()
 
-    def create_query(self,**kwargs):
+    def create_query(self,logger,**kwargs):
+        logger.info("setting tblae")
         self.set_table(kwargs[gv._table_tag])
         self.set_schema(kwargs[gv._schema_tag])
+        logger.info("setting db")
+        logger.info(kwargs[gv._database_tag])
         self.set_database(kwargs[gv._database_tag])
+        logger.info("setting stage")
+        logger.info(kwargs[gv._stage_tag])
         self.set_stage(kwargs[gv._stage_tag])
         self.set_file_format(kwargs[gv._file_format_tag])
         self.set_on_error(kwargs[gv._on_error_tag])

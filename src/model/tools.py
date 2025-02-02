@@ -346,7 +346,8 @@ class LLMTools:
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
-            copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
+            self.logger.info(data_dict)
+            copyinto_query = self.obj_class_mapping['copyinto'].create_query(self.logger,**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
                                              stage=STAGE, 
