@@ -377,8 +377,8 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
-        self.logger.info(f'creating {ss.RESOURCE_MONITOR_OBJ} object with parameters: {data_dict}')
-        return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
+        self.logger.info(f'creating {ss.MASKINGPOLICY_OBJ} object with parameters: {data_dict}')
+        return self.create_masking_policy(ss.MASKINGPOLICY_OBJ, data_dict)
         
 
     def sf_setup(self, query):
