@@ -256,7 +256,7 @@ class Warehouse:
 class CopyInto:
     _table_tag = "TABLE"
     _schema_tag = "SCHEMA"
-    _stage_tag_database_tag = "DATABASE"
+    _db_tag = "DATABASE"
     _stage_tag = "STAGE"
     _file_format_tag = "FILE_FORMAT"
     _on_error_tag = "ON_ERROR"

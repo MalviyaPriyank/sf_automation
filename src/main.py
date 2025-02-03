@@ -1,6 +1,6 @@
 import sys
 import os 
-import pandas as pd
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'./obj'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
@@ -10,13 +10,18 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
 
 
 
-from obj.session import Session 
-from obj.table import Table
-from processing.stage import Stage
-from setup.initial import InitialSetup
+#from obj.session import Session 
+from obj.snowpipe import Snowpipe
+#from obj.table import Table
+#from processing.stage import Stage
+#from setup.initial import InitialSetup
 
 if __name__ == '__main__':
-    session_inst = Session()
+    #session_inst = Session()
+    snowpipe_inst = Snowpipe('abc','abc','abc','abc','abc')
+    snowpipe_inst.set_name('PIPE_CRM_ACCOUNTS')
+    print('DONE')
+    input()
     session_inst.set_user('rick')
     session_inst.set_password('mejzyg-pafpov-9noXmi')
     session_inst.set_account('TQNXPFG-BG28519')

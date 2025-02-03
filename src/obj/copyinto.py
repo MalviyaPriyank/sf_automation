@@ -1,5 +1,6 @@
 import sys
 import os 
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
@@ -9,13 +10,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from vars.global_vars import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
 
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger('snowchain_logs').setLevel(logging.INFO)
+logger = logging.getLogger('snowchain_logs')
+
 
 class Database:
     def __get__(self,instance,owner):
         return instance._database
 
     def __set__(self,instance,value):
+        logger.info("before check")
+        logger.info(value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        logger.info("Done required check")
         instance._database = value
 
     def __delete__(self,instance):
@@ -50,8 +58,12 @@ class Stage:
         return instance._stage
 
     def __set__(self,instance,value):
+        logger.info("inside to set stage for copy into")
+        logger.info(value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._stage = value
+        logger.info("after setting")
+        logger.info(instance._stage)
 
     def __delete__(self,instance):
         del instance._stage
@@ -59,14 +71,14 @@ class Stage:
 
 class FileFormat:
     def __get__(self,instance,owner):
-        return instance._stage
+        return instance._file_format
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._stage = value
+        instance._file_format = value
 
     def __delete__(self,instance):
-        del instance._stage
+        del instance._file_format
     
 class OnError:
     def __get__(self,instance,owner):
@@ -329,7 +341,7 @@ class CopyInto:
                 self.property_lst.append(prop)
 
     def set_copy_into_qry(self):
-        self.qry = "COPY INTO {self.attr.database}.{self.attr.schema}.{self.attr.table} FROM @{self.attr.stage} FILE_FORMAT = {self.attr.file_format} "
+        self.qry = f"COPY INTO {self.attr.database}.{self.attr.schema}.{self.attr.table} FROM @{self.attr.database}.{self.attr.schema}.{self.attr.stage}/{self.attr.table} FILE_FORMAT = {self.attr.file_format} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -365,13 +377,13 @@ class CopyInto:
         self.set_copy_into_qry()
         self.add_properties_to_query()
 
-    def create_query(self,logger,**kwargs):
+    def create_query(self,**kwargs):
         logger.info("setting tblae")
         self.set_table(kwargs[gv._table_tag])
         self.set_schema(kwargs[gv._schema_tag])
         logger.info("setting db")
-        logger.info(kwargs[gv._database_tag])
-        self.set_database(kwargs[gv._database_tag])
+        logger.info(kwargs['DATABASE'])
+        self.set_database(kwargs[gv._db_tag])
         logger.info("setting stage")
         logger.info(kwargs[gv._stage_tag])
         self.set_stage(kwargs[gv._stage_tag])
@@ -385,12 +397,4 @@ class CopyInto:
         self.set_enforce_length(kwargs[gv._enforce_length_tag])
         self.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
         self.set_force(kwargs[gv._force_tag])
-        self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
-        self.set_file_processor(kwargs[gv._file_processor_tag])
-        self.set_load_mode(kwargs[gv._load_mode_tag])
-        self.prepare_query()
-        return self.qry
-
-    
-
-        
+        self.set_load_uncertain_f

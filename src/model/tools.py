@@ -342,20 +342,20 @@ class LLMTools:
         
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[2:]}
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
             self.logger.info(data_dict)
-            copyinto_query = self.obj_class_mapping['copyinto'].create_query(self.logger,**data_dict)
+            copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
-                                             stage=STAGE, 
-                                             file_format=FILE_FORMAT, 
                                              user_id=self.user_id)
+            self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
                                     "SCHEMA": SCHEMA,
-                                    "NAME":f'PIPE_{TABLE}',
+                                    "NAME":f'PIPE_{value}',
                                     "AUTO_INGEST":"NONE",
                                     "ERROR_INTEGRATION":"NONE",
                                     "AWS_SNS_TOPIC":"NONE",

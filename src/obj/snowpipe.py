@@ -1,5 +1,6 @@
 import sys
-import os 
+import os
+import logging 
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
@@ -9,6 +10,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from vars.global_vars import Snowpipe as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
+
+
+
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger('snowchain_logs').setLevel(logging.INFO)
+logger = logging.getLogger('snowchain_logs')
 
 
 
@@ -37,6 +44,7 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
+        logger.info("setting name")
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -111,6 +119,8 @@ class FileType:
 
 
 class SnowpipeAttrs:
+    def __init__(self,parent):
+        self.parent = parent
     database = Database()
     schema = Schema()
     name = Name()
@@ -122,11 +132,9 @@ class SnowpipeAttrs:
     file_type = FileType()
 
 class Snowpipe:
-    def __init__(self,session,copy_into_qry,stage,file_format,user_id):
-        self.attr = SnowpipeAttrs()
+    def __init__(self,session,copy_into_qry,user_id):
+        self.attr = SnowpipeAttrs(self)
         self.copy_into_qry = copy_into_qry
-        self.stage = stage
-        self.file_format = file_format
         self.user_id = user_id
         self.session = session
 
@@ -177,7 +185,7 @@ class Snowpipe:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} AS {self.copy_into_qry} from @{self.stage} file_format = {self.file_format} "
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AUTO_INGEST = TRUE AS {self.copy_into_qry} '
 
 
     def add_properties_to_query(self):
@@ -203,6 +211,8 @@ class Snowpipe:
         self.add_properties_to_query()
 
     def create_snowpipe(self):
+        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
+        self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
         self.session.sql(self.qry).collect()
 
 
