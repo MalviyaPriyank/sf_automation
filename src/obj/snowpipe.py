@@ -185,7 +185,7 @@ class Snowpipe:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AUTO_INGEST = TRUE AS {self.copy_into_qry} '
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AS {self.copy_into_qry} '
 
 
     def add_properties_to_query(self):

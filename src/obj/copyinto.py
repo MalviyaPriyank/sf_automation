@@ -397,4 +397,14 @@ class CopyInto:
         self.set_enforce_length(kwargs[gv._enforce_length_tag])
         self.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
         self.set_force(kwargs[gv._force_tag])
-        self.set_load_uncertain_f
+        self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
+        self.set_file_processor(kwargs[gv._file_processor_tag])
+        self.set_load_mode(kwargs[gv._load_mode_tag])
+        self.prepare_query()
+        logger.info("qry")
+        logger.info(self.qry)
+        return self.qry
+
+    
+
+        
