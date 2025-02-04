@@ -142,6 +142,15 @@ class Deploy:
                 qry = qry + cfg._deployment_log_table_column_list[i] + " " + cfg._deployment_log_table_column_data_type_dict[cfg._deployment_log_table_column_list[i]] + ")"
         self.session.sql(qry).collect()  
 
+    def create_deploy_reference_table(self):
+        qry = f"CREATE TABLE {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_reference_table} ("
+        for i in range(0,len(cfg._deployment_reference_table_column_list)):
+            if i != len(cfg._deployment_reference_table_column_list) - 1:
+                qry = qry + cfg._deployment_reference_table_column_list[i] + " " + cfg._deployment_reference_table_column_data_type_dict[cfg._deployment_reference_table_column_list[i]] + ","
+            elif i == len(cfg._deployment_reference_table_column_list) - 1:
+                qry = qry + cfg._deployment_reference_table_column_list[i] + " " + cfg._deployment_reference_table_column_data_type_dict[cfg._deployment_reference_table_column_list[i]] + ")"
+        self.session.sql(qry).collect()  
+
     def insert_into_deploy_control_table(self):
         qry = f"""
             INSERT INTO {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_control_table} 
@@ -157,6 +166,20 @@ class Deploy:
              )
         """     
         self.session.sql(qry).collect()
+
+    def get_db_name_of_environment(self,environment_name):
+        get_database_name_qry = f"""
+                                SELECT DATABASE_NAME 
+                                FROM 
+                                {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_reference_table}
+                                WHERE 
+                                ENVIRONMENT_NAME = {environment_name}
+                                """
+        db_name = self.session.sql(get_database_name_qry).collect()[0][0]
+        return db_name
+    
+
+
 
 
 

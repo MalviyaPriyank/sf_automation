@@ -27,3 +27,9 @@ class Databases:
         df = self.session.table(self.view).filter(col("database_name") == '{db_name}').select(col("retention_time"))
         res = df.collect()
         return res[0][0]
+
+    
+    def get_retention_time_of_db(self,db_name):
+        df = self.session.table(self.view).filter(col("database_name") == '{db_name}').select(col("retention_time"))
+        res = df.collect()
+        return res[0][0]

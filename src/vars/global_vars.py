@@ -307,6 +307,7 @@ class Config:
     _deployment_stage = "STG_INT_DEPLOY"
     _deployment_control_table = "DEPLOYMENT_CONTROL"
     _deployment_log_table = "DEPLOYMENT_LOG"
+    _deployment_reference_table = "DEPLOYMENT_REFERENCE"
     _deployment_history_table = "DEPLOYMENT_HISTORY"
     _default_privilege_set = ["OWNERSHIP","ALL","MONITOR","MODIFY","USAGE","OPERATE"]
     _default_warehouse = {
@@ -360,6 +361,11 @@ class Config:
         "DEPLOYMENT_STATUS" : "VARCHAR(100)",
         "DEPLOYMENT_ID" : "VARCHAR(50)"
     }    
+    _deployment_reference_table_column_list = ["ENVIRONMENT_NAME","DATABASE_NAME"] 
+    _deployment_reference_table_column_data_type_dict = {
+        "ENVIRONMENT_NAME" : "VARCHAR(50)",
+        "DATABASE_NAME" : "VARCHAR(50)"
+    }
     _deployment_status_in_development = "IN DEVELOPMENT"
     _deployment_status_in_test = "DEPLOYED IN TEST"
     _deployment_status_in_prod = "DEPLOYED IN PROD"

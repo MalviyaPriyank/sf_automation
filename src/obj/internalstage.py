@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from vars.global_vars import InternalStage as gv, Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
+from validation.validateobject import ValidateObject as vo
 
 class Database:
     def __get__(self,instance,owner):
@@ -16,7 +17,8 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._database = value
+        if vo.database_exist(value):
+            instance._database = value
     
     def __delete__(self,instance):
         del instance._database_name
@@ -28,7 +30,8 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._schema = value
+        if vo.schema_exist(instance._database,value):
+            instance._schema = value
     
     def __delete__(self,instance):
         del instance._schema

@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 from vars.global_vars import Config as gv
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 from processing.stage import Stage
 from dep.deploy import Deploy
 
@@ -19,10 +20,9 @@ class Database:
         return instance._database
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._database = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.database_exist(value):
+            instance._database  = value
 
     def __delete__(self,instance):
         del instance._database
@@ -32,9 +32,8 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.schema_exist(instance._database,value):
             instance._schema = value
 
     def __delete__(self,instance):
@@ -45,10 +44,8 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._name = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)        
+        instance._name = value
 
     def __delete__(self,instance):
         del instance._name

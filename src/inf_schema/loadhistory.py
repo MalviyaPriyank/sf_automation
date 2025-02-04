@@ -5,7 +5,33 @@ import os
 from snowflake.snowpark.functions import col
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from validation.validateobject import ValidateObject
+from validation.validateobject import ValidateObject as vo
+from validation.validatevalue import ValidateValue as vv
+
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.database_exist(database_name=value)
+        instance._database = value
+
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.schema_exist(database_name=instance._database,schema_name=value):
+            instance._schema = value
+
+    def __delete__(self,instance):
+        del instance._schema
 
 
 class LoadHistory:

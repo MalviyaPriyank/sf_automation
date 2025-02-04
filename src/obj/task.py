@@ -3,9 +3,13 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-import taskglobalvars as tgv
-import validatevalue as vv
+
+from vars.global_vars import Snowpipe as gv,Config as cfg
+from validation.validatevalue import ValidateValue as vv
+from dep.deploy import Deploy
+from validation.validateobject import ValidateObject as vo
 
 
 class Database:
@@ -13,7 +17,9 @@ class Database:
         return instance._database
     
     def __set__(self,instance,value):
-        instance._database = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.database_exist(value):
+            instance._database = value
 
     def __delete__(self,instance):
         del instance._database
@@ -23,7 +29,9 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
-        instance._schema = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vo.schema_exist(instance._database,value):
+            instance._schema = value
 
     def __delete__(self,instance):
         del instance._schema
@@ -778,3 +786,14 @@ class Task:
         task.set_serverless_task_min_statement_size_tag(_serverless_task_min_statement_size_tag)
 
         task.create_task()
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
