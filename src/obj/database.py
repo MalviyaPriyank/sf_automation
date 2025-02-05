@@ -9,9 +9,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
 
-from vars.global_vars import Database as gv, Config as cfg 
+from vars.global_vars import Database as gv, Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep import deploy
+from setup import privilege 
 
 class Name:
     def __get__(self,instance,owner):
@@ -370,6 +371,13 @@ class Database:
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()
 
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
+
+
     def create_database(self):
         self.session.sql(self.qry).collect()
 
@@ -404,5 +412,6 @@ class Database:
 
         self.prepare_query()
         self.create_database()
+        self.grant_default_privileges()
         self.create_deployment_entry()
 

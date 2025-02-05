@@ -7,10 +7,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.global_vars import Snowpipe as gv,Config as cfg
+from vars.global_vars import Snowpipe as gv,Config as cfg, Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
+from setup import privilege
 
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -169,6 +170,9 @@ class Snowpipe:
     def set_file_type(self,file_type):
         self.attr.file_type = file_type
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -219,20 +223,11 @@ class Snowpipe:
         self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
         self.session.sql(self.qry).collect()
 
-
-    def create_object(self,**kwargs):
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
-        self.set_error_integration(kwargs[gv._error_integration_tag])
-        self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])
-        self.set_integration(kwargs[gv._integration_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_file_type(kwargs[gv._file_type_tag])
-        self.prepare_query()
-        self.create_snowpipe()
-        self.create_deployment_entry()
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
@@ -244,3 +239,21 @@ class Snowpipe:
         deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()
+
+
+    def create_object(self,**kwargs):
+        self.set_database(kwargs[gv._database_tag])
+        self.set_schema(kwargs[gv._schema_tag])
+        self.set_name(kwargs[gv._name_tag])
+        self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
+        self.set_error_integration(kwargs[gv._error_integration_tag])
+        self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])
+        self.set_integration(kwargs[gv._integration_tag])
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_file_type(kwargs[gv._file_type_tag])
+        self.set_qualified_name()
+        self.prepare_query()
+        self.create_snowpipe()
+        self.grant_default_privileges()
+        self.create_deployment_entry()
+

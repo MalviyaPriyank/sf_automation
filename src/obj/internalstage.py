@@ -6,10 +6,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.global_vars import InternalStage as gv, Config as cfg
+from vars.global_vars import InternalStage as gv, Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
+from setup import privilege
+
 
 class Database:
     def __get__(self,instance,owner):
@@ -240,6 +242,7 @@ class InternalStage:
         self.attr = InternalStageAttrs(self)
         self.session = session
         self.user_id = user_id
+        self.sf_object_tag = "STAGE"
         self.qry = ""
 
     def set_database(self,val):
@@ -290,6 +293,9 @@ class InternalStage:
     def set_refresh_on_create_tag(self,val):
         self.attr.refresh_on_create_tag = val
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -338,6 +344,23 @@ class InternalStage:
     def create_internal_stage(self):
         self.session.sql(self.qry).collect()
 
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.sf_object_tag]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.sf_object_tag,object_identifier=self.qualified_name,role = role)
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
+
     def create_object(self,**kwargs):
 
         self.set_database(kwargs[gv._database_tag])
@@ -364,21 +387,14 @@ class InternalStage:
 
         self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
         self.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        
+        self.set_qualified_name()
 
         self.prepare_query()
         self.create_internal_stage()
+        self.grant_default_privileges()
         self.create_deployment_entry()
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
 
 
         

@@ -6,10 +6,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.global_vars import FileFormat as gv,Config as cfg
+from vars.global_vars import FileFormat as gv,Config as cfg, Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
+from setup import privilege
 
 
 class Database:
@@ -1001,7 +1002,6 @@ class DisableAutoConvertTag:
 
     def __del__(self,instance):
         del instance._disable_auto_convert_tag
-    
 
 class FileFormatAttrs:
     def __init__(self,parent):
@@ -1312,6 +1312,9 @@ class FileFormat:
     def set_disable_auto_convert_tag(self, val):
         self.attr.disable_auto_convert_tag = val
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -1434,6 +1437,13 @@ class FileFormat:
     def create_file_format(self):
         self.session.sql(self.qry).collect()
 
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
+
+
     def create_object(self,**kwargs):
 
         self.set_database(kwargs[gv._database_tag])
@@ -1534,9 +1544,13 @@ class FileFormat:
 
         self.set_disable_auto_convert(kwargs[gv._disable_auto_convert_tag])
         self.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
+        self.set_qualified_name()
         self.prepare_query()
         self.create_file_format()
+        self.grant_default_privileges()
         self.create_deployment_entry()
+
+
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

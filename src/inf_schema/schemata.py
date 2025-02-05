@@ -1,6 +1,3 @@
-import sys
-import os
-
 from snowflake.snowpark.functions import col
 
 class Schema:

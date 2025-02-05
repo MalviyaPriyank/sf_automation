@@ -14,15 +14,15 @@ from exception.objectexception import (
 
 class ValidateObject:
     @staticmethod
-    def database_exist(self,database_name):
-        if Databases.db_exist(db_name= database_name):
+    def database_exist(session,database_name):
+        if Databases.db_exist(session,db_name= database_name):
             return True
         else:
             raise ObjectDoesNotExist('DATABASE',database_name)
         
     @staticmethod 
-    def schema_exist(self,database_name,schema_name):
-        if Schema.schema_exist(database_name,schema_name):
+    def schema_exist(session,database_name,schema_name):
+        if Schema.schema_exist(session,database_name,schema_name):
             return True
         else:
-            raise ObjectDoesNotExist('SCHEMA', schema_name)
+            raise ObjectDoes
