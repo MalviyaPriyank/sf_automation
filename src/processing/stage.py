@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Stage:
     def __init__(self,root,database,schema):
         self.root = root
@@ -32,6 +34,14 @@ class Stage:
     
     def download_file_from_stage(self,file_path,destination_path):
         self.stage_reference.get(file_path,destination_path)
+
+    def upload_sql_to_a_file_in_stage(self,qry,file_name,upload_path):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name = file_name + timestamp + ".txt"
+        with open(file_name,"w") as file:
+            file.write(qry)
+            self.stage_reference.put(file_name,upload_path)
+
 
     def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):
         self.stage_reference.put(file_name,upload_path,auto_compress = auto_compress, overwrite = overwrite)

@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
 
@@ -13,6 +14,7 @@ from vars.global_vars import Database as gv, Config as cfg , Privilege as gv_pri
 from validation.validatevalue import ValidateValue as vv
 from dep import deploy
 from setup import privilege 
+from processing.stage import Stage
 
 class Name:
     def __get__(self,instance,owner):
@@ -380,6 +382,10 @@ class Database:
 
     def create_database(self):
         self.session.sql(self.qry).collect()
+        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
+        stg.set_stage(cfg._deployment_stage)
+        stg.set_stage_reference()
+        stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
 
     def create_object(self,**kwargs):
 

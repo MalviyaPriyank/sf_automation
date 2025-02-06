@@ -5,24 +5,25 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../inf_schema'))
 
 
-from inf_schema.databases import Databases
-from inf_schema.schemata import Schema
+from inf_schema.objectexist import ObjectExist
 from exception.objectexception import ( 
     ObjectDoesNotExist
 )
 
-
 class ValidateObject:
     @staticmethod
     def database_exist(session,database_name):
-        if Databases.db_exist(session,db_name= database_name):
+        if ObjectExist.db_exist(session,db_name= database_name):
             return True
         else:
             raise ObjectDoesNotExist('DATABASE',database_name)
         
     @staticmethod 
     def schema_exist(session,database_name,schema_name):
-        if Schema.schema_exist(session,database_name,schema_name):
+        if ObjectExist.schema_exist(session,database_name,schema_name):
             return True
         else:
-            raise ObjectDoes
+            raise ObjectDoesNotExist('SCHEMA', schema_name)
+    
+    @staticmethod
+    de
