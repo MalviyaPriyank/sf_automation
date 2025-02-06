@@ -10,6 +10,7 @@ from exception.objectexception import (
     ObjectDoesNotExist
 )
 
+
 class ValidateObject:
     @staticmethod
     def database_exist(session,database_name):
@@ -26,4 +27,8 @@ class ValidateObject:
             raise ObjectDoesNotExist('SCHEMA', schema_name)
     
     @staticmethod
-    de
+    def table_exist(session,database_name,schema_name,table_name):
+        if ObjectExist.table_exist(session,database_name,schema_name,table_name):
+            return True
+        else:
+            raise ObjectDoesNotExist('TABLE',table_name)
