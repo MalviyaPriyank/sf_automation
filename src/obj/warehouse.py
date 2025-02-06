@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
 
-from vars.global_vars import Warehouse as gv,Config as cfg
+from vars.gvobject import Warehouse as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from exception.valueexception import InvalidParamForObject
 from dep.deploy import Deploy

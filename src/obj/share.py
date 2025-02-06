@@ -6,9 +6,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-
-from global_vars import Share as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import Share as gv
+from validation.validatevalue import ValidateValue as vv
 
 
 class Name:

@@ -4,9 +4,9 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
+from vars.gvobject import ResourceMonitor as gv
+from validation.validatevalue import ValidateValue as vv
 
-from global_vars import ResourceMonitor as gv
-from validatevalue import ValidateValue as vv
 
 class Name:
     def __get__(self,instance,owner):

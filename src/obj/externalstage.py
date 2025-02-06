@@ -5,9 +5,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from global_vars import ExternalStage as gv
-from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
+from vars.gvobject import ExternalStage as gv
+from validation.validatevalue import ValidateValue as vv
+
 
 class Name:
     def __get__(self,instance,owner):

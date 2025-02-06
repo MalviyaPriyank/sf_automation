@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
 
-from vars.global_vars import Database as gv, Config as cfg , Privilege as gv_priv
+from vars.gvobject import Database as gv, Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep import deploy
 from setup import privilege 

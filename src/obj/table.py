@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from vars.global_vars import Config as gv,Privilege as gv_priv
+from vars.gvobject import Config as gv,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from processing.stage import Stage
