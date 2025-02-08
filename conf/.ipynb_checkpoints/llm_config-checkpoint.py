@@ -988,6 +988,26 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"deploy_all_dev_to_test",
+                "description":"deploys all objects from dev environment to test environment.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"sf_setup",
                 "description":"performs snowflake setup for user. do this if user specifies it is their first time and explicitly ask for the setup. Does not have to tell user how to do it, instead this function does it all for the user.",
                 "inputSchema": {

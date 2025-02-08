@@ -14,6 +14,7 @@ from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
+from src.dep import deploy
 
 from valueexception import (
     AttributeValidationError,
@@ -43,30 +44,30 @@ class LLMTools:
                                     aws_secret_access_key=llm_config.SECRET_KEY,
                                     region_name=self.region)
         self.obj_class_mapping = {'account': account.Admin(self.sf_session),
-                                  'database': database.Database(self.sf_session,self.user_id),
+                                  'database': database.Database(session=self.sf_session, user_id=self.user_id),
                                   #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id),
                                   'role': role.Role(self.sf_session,self.user_id),
                                   'copyinto':copyinto.CopyInto(),
-                                  'internalstage': internalstage.InternalStage(self.sf_session,self.user_id),
-                                  'fileformat': fileformat.FileFormat(self.sf_session,self.user_id),
+                                  'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id),
+                                  'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id),
                                   'warehouse': warehouse.Warehouse(self.sf_session,self.user_id),
-                                  'schema': schema.Schema(self.sf_session,self.user_id),
+                                  'schema': schema.Schema(session=self.sf_session, user_id=self.user_id),
                                   #'share': share.Share(self.sf_session,self.user_id),
-                                  'table': table.Table(session = self.sf_session,root = self.root,user_id=self.user_id),
-                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session = self.sf_session, user_id= self.user_id)
+                                  'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id),
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id)
                                   #'task': task.Task,
                                   #'user': user.User(self.sf_session,self.user_id)
                                   }
 
 
     def create_sf_object(self, obj_name, data_dict):
-        try:
-            qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
-            self.logger.info(f"For {obj_name}, query returned: {qry}")
-            self.logger.info(f'Object {obj_name} created successfully')
-        except AttributeValidationError as e:
-            return(e)
+        #try:
+        qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
+        self.logger.info(f"For {obj_name}, query returned: {qry}")
+        self.logger.info(f'Object {obj_name} created successfully')
+        #except AttributeValidationError as e:
+        #    raise (e)
         return f'Object {obj_name} created successfully'
 
 
@@ -356,6 +357,7 @@ class LLMTools:
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
+                                             root= self.root,
                                              user_id=self.user_id)
             self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
@@ -370,6 +372,30 @@ class LLMTools:
             snowpipe_obj.create_object(**snowpipe_data_dict)
             
         return f'COPYINTO queries and snowpipe objects created successfully'
+
+
+    def create_snowpipe_object(self,
+                               COPYINTO_QUERY,
+                               DATABASE,
+                               SCHEMA,
+                               TABLE):
+        snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
+                                             copy_into_qry=COPYINTO_QUERY, 
+                                             root= self.root,
+                                             user_id=self.user_id)
+        self.logger.info(f'Creating snowpipe object for table {TABLE}')
+        snowpipe_data_dict = {"DATABASE":DATABASE,
+                                "SCHEMA": SCHEMA,
+                                "NAME":f'PIPE_{TABLE}',
+                                "AUTO_INGEST":"NONE",
+                                "ERROR_INTEGRATION":"NONE",
+                                "AWS_SNS_TOPIC":"NONE",
+                                "INTEGRATION":"NONE",
+                                "COMMENT":"NONE",
+                                "FILE_TYPE":"NONE"}
+        snowpipe_obj.create_object(**snowpipe_data_dict)
+        return f'SNOWPIPE object created for COPYINTO query: {COPYINTO_QUERY}'
+        
     
     def create_maskingpolicy_object(self,
                                     ROLE,
@@ -396,6 +422,11 @@ class LLMTools:
     def get_workflow(self, query):
         try: return self.retrieval_workflow.run(query)
         except ClientError as e: return 'Bedrock service unavailable'
+
+
+    def deploy_all_dev_to_test(self):
+        deploy.deploy_from_dev_to_test(self)
+        return 'All objects from dev are deployed to test successfully'
 
 
     def tool_call(self, content, tool_result):

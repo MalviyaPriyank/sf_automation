@@ -14,6 +14,7 @@ from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
+from src.dep import deploy
 
 from valueexception import (
     AttributeValidationError,
@@ -371,6 +372,30 @@ class LLMTools:
             snowpipe_obj.create_object(**snowpipe_data_dict)
             
         return f'COPYINTO queries and snowpipe objects created successfully'
+
+
+    def create_snowpipe_object(self,
+                               COPYINTO_QUERY,
+                               DATABASE,
+                               SCHEMA,
+                               TABLE):
+        snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
+                                             copy_into_qry=COPYINTO_QUERY, 
+                                             root= self.root,
+                                             user_id=self.user_id)
+        self.logger.info(f'Creating snowpipe object for table {TABLE}')
+        snowpipe_data_dict = {"DATABASE":DATABASE,
+                                "SCHEMA": SCHEMA,
+                                "NAME":f'PIPE_{TABLE}',
+                                "AUTO_INGEST":"NONE",
+                                "ERROR_INTEGRATION":"NONE",
+                                "AWS_SNS_TOPIC":"NONE",
+                                "INTEGRATION":"NONE",
+                                "COMMENT":"NONE",
+                                "FILE_TYPE":"NONE"}
+        snowpipe_obj.create_object(**snowpipe_data_dict)
+        return f'SNOWPIPE object created for COPYINTO query: {COPYINTO_QUERY}'
+        
     
     def create_maskingpolicy_object(self,
                                     ROLE,
@@ -397,6 +422,11 @@ class LLMTools:
     def get_workflow(self, query):
         try: return self.retrieval_workflow.run(query)
         except ClientError as e: return 'Bedrock service unavailable'
+
+
+    def deploy_all_dev_to_test(self):
+        deploy.deploy_from_dev_to_test(self)
+        return 'All objects from dev are deployed to test successfully'
 
 
     def tool_call(self, content, tool_result):
