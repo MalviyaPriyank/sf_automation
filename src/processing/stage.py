@@ -40,7 +40,7 @@ class Stage:
         file_name = file_name + timestamp + ".txt"
         with open(file_name,"w") as file:
             file.write(qry)
-            self.stage_reference.put(file_name,upload_path)
+        self.stage_reference.put(file_name,upload_path, auto_compress=False)
 
 
     def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):

@@ -54,7 +54,7 @@ class LLMTools:
                                   'schema': schema.Schema(session=self.sf_session, root=self.root, user_id=self.user_id),
                                   #'share': share.Share(self.sf_session,self.user_id),
                                   'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id),
-                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, root=self.root, user_id=self.user_id)
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id)
                                   #'task': task.Task,
                                   #'user': user.User(self.sf_session,self.user_id)
                                   }
