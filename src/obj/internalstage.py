@@ -20,8 +20,8 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.database_exist(value):
-            instance._database = value
+        #if vo.database_exist(value):
+        instance._database = value
     
     def __delete__(self,instance):
         del instance._database_name
@@ -33,8 +33,8 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.schema_exist(instance._database,value):
-            instance._schema = value
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
     
     def __delete__(self,instance):
         del instance._schema
