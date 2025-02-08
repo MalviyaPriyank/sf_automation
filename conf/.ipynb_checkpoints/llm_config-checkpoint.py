@@ -892,75 +892,107 @@ tools = {
                         "properties": {
                             "DATABASE": {
                                 "type":"string",
-                                "description":"user provided value for DATABASE for copying object"
+                                "description":"user provided value for DATABASE for copyinto object"
                             },
 			"SCHEMA": {
                                 "type":"string",
-                                "description":"user provided value for SCHEMA for copying object"
+                                "description":"user provided value for SCHEMA for copyinto object"
                             },
 			"TABLE": {
                                 "type":"string",
-                                "description":"user provided list for TABLE nameS for copying object"
+                                "description":"user provided list for TABLE names for copyinto object"
                             },
 			"STAGE": {
                                 "type":"string",
-                                "description":"user provided value for STAGE name for copying object"
+                                "description":"user provided value for STAGE name for copyinto object"
                             },
 			"FILE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for copying object"
+                                "description":"user provided value for FILE_FORMAT for copyinto object"
                             },
 			"ON_ERROR": {
                                 "type":"string",
-                                "description":"user provided value for ON_ERROR for copying object"
+                                "description":"user provided value for ON_ERROR for copyinto object"
                             },
 			"SIZE_LIMIT": {
                                 "type":"string",
-                                "description":"user provided value for SIZE_LIMIT for copying object"
+                                "description":"user provided value for SIZE_LIMIT for copyinto object"
                             },
 			"PURGE": {
                                 "type":"string",
-                                "description":"user provided value for PURGE for copying object"
+                                "description":"user provided value for PURGE for copyinto object"
                             },
 			"RETURN_FAILED_ONLY": {
                                 "type":"string",
-                                "description":"user provided value for RETURN_FAILED_ONLY for copying object"
+                                "description":"user provided value for RETURN_FAILED_ONLY for copyinto object"
                             },
 			"MATCH_BY_COLUMN_NAME": {
                                 "type":"string",
-                                "description":"user provided value for MATCH_BY_COLUMN_NAME for copying object"
+                                "description":"user provided value for MATCH_BY_COLUMN_NAME for copyinto object"
                             },
 			"INCLUDE_METADATA": {
                                 "type":"string",
-                                "description":"user provided value for INCLUDE_METADATA for copying object"
+                                "description":"user provided value for INCLUDE_METADATA for copyinto object"
                             },
 			"ENFORCE_LENGTH": {
                                 "type":"string",
-                                "description":"user provided value for ENFORCE_LENGTH for copying object"
+                                "description":"user provided value for ENFORCE_LENGTH for copyinto object"
                             },
 			"TRUNCATECOLUMNS": {
                                 "type":"string",
-                                "description":"user provided value for TRUNCATECOLUMNS for copying object"
+                                "description":"user provided value for TRUNCATECOLUMNS for copyinto object"
                             },
 			"FORCE": {
                                 "type":"string",
-                                "description":"user provided value for FORCE for copying object"
+                                "description":"user provided value for FORCE for copyinto object"
                             },
 			"LOAD_UNCERTAIN_FILES": {
                                 "type":"string",
-                                "description":"user provided value for LOAD_UNCERTAIN_FILES for copying object"
+                                "description":"user provided value for LOAD_UNCERTAIN_FILES for copyinto object"
                             },
 			"FILE_PROCESSOR": {
                                 "type":"string",
-                                "description":"user provided value for FILE_PROCESSOR for copying object"
+                                "description":"user provided value for FILE_PROCESSOR for copyinto object"
                             },
 			"LOAD_MODE": {
                                 "type":"string",
-                                "description":"user provided value for LOAD_MODE for copying object"
+                                "description":"user provided value for LOAD_MODE for copyinto object"
                             },
                         },
                         "required":[
                             "DATABASE","SCHEMA","TABLE","FILE_FORMAT","STAGE"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_snowpipe_object",
+                "description":"creates a snowflake snowpipe object for the user. DATABASE, SCHEMA, TABLE, and COPYINTO_QUERY are required inputs.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for DATABASE for snowpipe object"
+                            },
+			"SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for snowpipe object"
+                            },
+			"TABLE": {
+                                "type":"string",
+                                "description":"user provided list for TABLE name for snowpipe object"
+                            },
+			"COPYINTO_QUERY": {
+                                "type":"string",
+                                "description":"user provided value for copyinto query for snowpipe object"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA","TABLE","COPYINTO_QUERY"
                         ]
                     }
                 }
