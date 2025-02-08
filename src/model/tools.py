@@ -425,7 +425,7 @@ class LLMTools:
 
 
     def deploy_all_dev_to_test(self):
-        deploy.deploy_from_dev_to_test(self)
+        deploy.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
 
