@@ -215,7 +215,11 @@ class Deploy:
         dev_db = self.get_db_name_of_environment(_dev_env)
         test_db = self.get_db_name_of_environment(_test_env)
         sql_lst = self.get_scripts_to_deploy()
-
+        for qry in sql_lst:
+            qry = qry.replace(dev_db,test_db)
+            self.session.sql(qry).collect()
+        
+        
     
 
 
