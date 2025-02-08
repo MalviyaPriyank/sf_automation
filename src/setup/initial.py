@@ -103,13 +103,22 @@ class InitialSetup:
             if privileges in gv_priv._allowed_privileges["TABLE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_log_table}",role = role)
 
+        deploy_inst.create_deploy_reference_table()
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["TABLE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_reference_table}",role = role)
+
+        deploy_inst.create_deploy_scripts_table()
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["TABLE"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "TABLE",object_identifier=f"{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}",role = role)
 
 
     def perform_initial_setup(self):
         #self.create_default_role()
         #self.create_default_warehouse()
-        #self.create_config_database()
-        #self.create_config_schema()
+        self.create_config_database()
+        self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_tables()
 

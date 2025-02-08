@@ -338,6 +338,11 @@ class Config:
         "RL_OWNER_EVERY_OBJ": "OWNERSHIP",
         "RL_ALL_EVERY_OBJ": "ALL"
     }
+    _deployment_scripts_table_column_list = ["SQL_TEXT","USER_ID"]
+    _deployment_scripts_table_column_data_type_dict ={
+        "SQL_TEXT" : "VARCHAR",
+        "USER_ID" : "VARCHAR(50)"
+    }
     _deployment_control_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
     _deployment_control_table_column_data_type_dict = {
         "OBJECT_TYPE" : "VARCHAR(50)",

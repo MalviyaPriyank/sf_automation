@@ -239,10 +239,9 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self,session,root,user_id):
+    def __init__(self,session,user_id):
         self.attr = InternalStageAttrs(self)
         self.session = session
-        self.root = root
         self.user_id = user_id
         self.sf_object_tag = "STAGE"
         self.qry = ""

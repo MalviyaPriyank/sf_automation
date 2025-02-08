@@ -151,6 +151,15 @@ class Deploy:
                 qry = qry + cfg._deployment_reference_table_column_list[i] + " " + cfg._deployment_reference_table_column_data_type_dict[cfg._deployment_reference_table_column_list[i]] + ")"
         self.session.sql(qry).collect()  
 
+    def create_deploy_scripts_table(self):
+        qry = f"CREATE TABLE {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table} ("
+        for i in range(0,len(cfg._deployment_scripts_table_column_list)):
+            if i != len(cfg._deployment_scripts_table_column_list) - 1:
+                qry = qry + cfg._deployment_scripts_table_column_list[i] + " " + cfg._deployment_scripts_table_column_data_type_dict[cfg._deployment_scripts_table_column_list[i]] + ","
+            elif i == len(cfg._deployment_scripts_table_column_list) - 1:
+                qry = qry + cfg._deployment_scripts_table_column_list[i] + " " + cfg._deployment_scripts_table_column_data_type_dict[cfg._deployment_scripts_table_column_list[i]] + ")"
+        self.session.sql(qry).collect() 
+
     def insert_into_deploy_control_table(self):
         qry = f"""
             INSERT INTO 
@@ -168,13 +177,14 @@ class Deploy:
         """     
         self.session.sql(qry).collect()
     
-    def insert_into_deployment_script_table(self,qry):
+    def insert_into_deployment_script_table(self,qry,user_id):
         qry = f"""
             INSERT INTO 
             {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
             VALUES
             (
-                '{qry}'
+                '{qry}',
+                '{user_id}'
             )
             """
         self.session.sql(qry).collect()
