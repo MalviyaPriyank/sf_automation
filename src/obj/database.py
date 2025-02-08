@@ -364,7 +364,7 @@ class Database:
 
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session)
-        deploy_inst.insert_into_deployment_script_table(self.qry)
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

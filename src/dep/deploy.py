@@ -8,6 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from vars.gvobject import Config as cfg
 
+_dev_env = 'DEV'
+_test_env = 'TEST'
 
 class ObjectType:
     def __get__(self,instance,owner):
@@ -191,14 +193,29 @@ class Deploy:
 
     def get_db_name_of_environment(self,environment_name):
         get_database_name_qry = f"""
-                                SELECT DATABASE_NAME 
+                                SELECT {cfg._deployment_reference_table_column_list[0]} 
                                 FROM 
                                 {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_reference_table}
                                 WHERE 
-                                ENVIRONMENT_NAME = {environment_name}
+                                {cfg._deployment_reference_table_column_list[1]} = {environment_name}
                                 """
         db_name = self.session.sql(get_database_name_qry).collect()[0][0]
         return db_name
+    
+    def get_scripts_to_deploy(self):
+        qry = f"""
+        SELECT 
+            {cfg._deployment_scripts_table_column_list[0]} 
+        FROM 
+            {cfg._deployment_scripts_table}
+        """
+        self.session.sql(qry).collect()[0]
+    
+    def deploy_from_dev_to_test(self):
+        dev_db = self.get_db_name_of_environment(_dev_env)
+        test_db = self.get_db_name_of_environment(_test_env)
+        sql_lst = self.get_scripts_to_deploy()
+
     
 
 
