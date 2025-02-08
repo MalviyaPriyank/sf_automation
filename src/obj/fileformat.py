@@ -1437,7 +1437,7 @@ class FileFormat:
 
     def create_file_format(self):
         self.session.sql(self.qry).collect()
-        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
+        stg = Stage(self.root,cfg._config_database,cfg._config_schema)
         stg.set_stage(cfg._deployment_stage)
         stg.set_stage_reference()
         stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.attr.database + "/" + self.attr.schema + "/" + self.__class__.__name__ )
