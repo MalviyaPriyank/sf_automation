@@ -547,7 +547,7 @@ class Schema:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
 
-    def create_object(self,**kwargs):
+    def create_object(self,*largs,**kwargs):
 
         self.set_database(kwargs[gv._database_tag])
 
@@ -595,4 +595,5 @@ class Schema:
         self.prepare_query()
         self.create_schema()
         self.grant_default_privileges()
-        self.create_deployment_entry()
+        if len(largs) == 0:
+            self.create_deployment_entry()

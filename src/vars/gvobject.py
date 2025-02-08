@@ -331,19 +331,11 @@ class Config:
     _default_role = {
         "RL_OWNER_EVERY_OBJ" : "'Default role to be the owner of all the objects within account'",
         "RL_ALL_EVERY_OBJ" : "'Default role to have all allowed privileges on all objects except ownership'",
-        "RL_MONITOR_EVERY_OBJ" : "'Default role to have mointor privileges on objects that allow monitor'",
-        "RL_USAGE_EVERY_OBJECT" : "'Default role to have usage privileges on objects that allow usage'",
-        "RL_MODIFY_EVERY_OBJECT" : "'Default role to have modify privileges on objects that allow modify'",
-        "RL_OPERATE_EVERY_OBJ" : "'Default role to have operate privileges on objects that allow operate privileges'"
     }
 
     _default_role_privilege_set = {
         "RL_OWNER_EVERY_OBJ": "OWNERSHIP",
-        "RL_ALL_EVERY_OBJ": "ALL",
-        "RL_MONITOR_EVERY_OBJ": "MONITOR",
-        "RL_USAGE_EVERY_OBJECT": "USAGE",
-        "RL_MODIFY_EVERY_OBJECT": "MODIFY",
-        "RL_OPERATE_EVERY_OBJ": "OPERATE"
+        "RL_ALL_EVERY_OBJ": "ALL"
     }
     _deployment_control_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
     _deployment_control_table_column_data_type_dict = {

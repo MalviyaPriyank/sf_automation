@@ -15,12 +15,15 @@ from vars.gvobject import Config as cfg, Warehouse as gv_wh, Privilege as gv_pri
 
 class InitialSetup:
     def __init__(self,
-                 session):
+                 session,
+                 user_id):
         self.session = session
+        self.user_id = user_id
         
     def create_default_role(self):
         for rl,description in cfg._default_role.items():
-            role.Role.create_object(**{"NAME":rl,"COMMENT":description})
+            role_inst = role.Role(session= self.session,user_id=self.user_id)
+            role_inst.create_object(*['initial'],**{"NAME":rl,"COMMENT":description})
             priv_inst = privilege.Privilege(self.session)
             priv_inst.grant_role_to_role(rl,"ACCOUNTADMIN")
             priv_inst.grant_role_to_role(rl,"SECURITYADMIN")
@@ -30,8 +33,8 @@ class InitialSetup:
         for warehouse_name,warehouse_size in cfg._default_warehouse.items():
             data_dict["NAME"] = warehouse_name
             data_dict["WAREHOUSE_SIZE"] = warehouse_size
-
-            warehouse.Warehouse.create_object(self.session,**data_dict)
+            wh_inst = warehouse.Warehouse(session=self.session, user_id= self.user_id)
+            wh_inst.create_object(*['initial'],**data_dict)
             priv_inst = privilege.Privilege(self.session)
             for role,privileges in cfg._default_role_privilege_set.items():
                 if privileges in gv_priv._allowed_privileges["WAREHOUSE"]:
@@ -41,7 +44,8 @@ class InitialSetup:
     def create_config_database(self):
         data_dict = readconf.main("database")
         data_dict["NAME"] = cfg._config_database
-        database.Database.create_object(self.session,**data_dict)
+        db_inst = database.Database(session= self.session, user_id= self.user_id)
+        db_inst.create_object(*['initial'],**data_dict)
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["DATABASE"]:
@@ -53,7 +57,8 @@ class InitialSetup:
         data_dict = readconf.main("schema")
         data_dict["DATABASE"] = cfg._config_database
         data_dict["NAME"] = cfg._config_schema
-        schema.Schema.create_object(self.session,**data_dict)
+        sch_inst = schema.Schema(session= self.session, user_id=self.user_id)
+        sch_inst.create_object(*['initial'],**data_dict)
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["SCHEMA"]:
@@ -66,24 +71,18 @@ class InitialSetup:
         data_dict["DATABASE"] = cfg._config_database
         data_dict["SCHEMA"] = cfg._config_schema
         data_dict["NAME"] = cfg._config_stage
-        internalstage.InternalStage.create_object(self.session,**data_dict)
+        stg_inst = internalstage.InternalStage(session=self.session, user_id=self.user_id)
+        stg_inst.create_object(*['initial'],**data_dict)
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["STAGE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
 
-    
-    def create_deployment_stage(self):
-        data_dict = readconf.main("internalstage")
-        data_dict["DATABASE"] = cfg._config_database
-        data_dict["SCHEMA"] = cfg._config_schema
         data_dict["NAME"] = cfg._deployment_stage
-        internalstage.InternalStage.create_object(self.session,**data_dict)
-        priv_inst = privilege.Privilege(self.session)
+        stg_inst.create_object(*['initial'],**data_dict)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["STAGE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
-
 
     def create_deployment_tables(self):
         deploy_inst = Deploy(self.session)
@@ -107,11 +106,10 @@ class InitialSetup:
 
 
     def perform_initial_setup(self):
-        self.create_default_role()
+        #self.create_default_role()
         self.create_default_warehouse()
         self.create_config_database()
         self.create_config_schema()
         self.create_config_stage()
-        self.create_deployment_stage()
         self.create_deployment_tables()
 

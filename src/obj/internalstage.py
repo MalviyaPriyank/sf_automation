@@ -344,6 +344,11 @@ class InternalStage:
 
     def create_internal_stage(self):
         self.session.sql(self.qry).collect()
+        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
+        stg.set_stage(cfg._deployment_stage)
+        stg.set_stage_reference()
+        stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.attr.database + "/" + self.attr.schema + "/" + self.__class__.__name__ )
+
 
     def grant_default_privileges(self):
         priv_inst = privilege.Privilege(self.session)
@@ -362,7 +367,7 @@ class InternalStage:
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()
 
-    def create_object(self,**kwargs):
+    def create_object(self,*largs,**kwargs):
 
         self.set_database(kwargs[gv._database_tag])
 
@@ -394,7 +399,8 @@ class InternalStage:
         self.prepare_query()
         self.create_internal_stage()
         self.grant_default_privileges()
-        self.create_deployment_entry()
+        if len(largs) == 0:
+            self.create_deployment_entry()
 
 
 

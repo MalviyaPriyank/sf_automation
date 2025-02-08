@@ -117,8 +117,7 @@ class Role:
     def create_role(self):
         self.session.sql(self.qry).collect()
 
-    def create_object(self,**kwargs):
-
+    def create_object(self,*pargs,**kwargs): 
         self.set_name(kwargs[gv._name_tag])
         self.set_name_tag(gv._name_tag)
 
@@ -127,7 +126,8 @@ class Role:
 
         self.prepare_query()
         self.create_role()
-        self.create_deployment_entry()
+        if len(pargs) == 0:
+            self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

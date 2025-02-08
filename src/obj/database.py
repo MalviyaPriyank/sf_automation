@@ -387,7 +387,7 @@ class Database:
         stg.set_stage_reference()
         stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
 
-    def create_object(self,**kwargs):
+    def create_object(self,*largs,**kwargs):
 
         self.set_name(kwargs[gv._name_tag])
         self.set_name_tag(gv._name_tag)
@@ -419,5 +419,6 @@ class Database:
         self.prepare_query()
         self.create_database()
         self.grant_default_privileges()
-        self.create_deployment_entry()
+        if len(largs) == 0:
+            self.create_deployment_entry()
 

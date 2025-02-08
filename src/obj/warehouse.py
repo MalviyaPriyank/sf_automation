@@ -48,7 +48,7 @@ class WarehouseType:
         return instance._warehouse_type
 
     def __set__(self,instance,value):
-        vv.allowed_value_check(value,gv._allowed_values_warehouse_type,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_allowed_value(value,gv._allowed_values_warehouse_type,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._warehouse_type = value
 
     def __delete__(self,instance):
@@ -69,7 +69,7 @@ class WarehouseSize:
         return instance._warehouse_size
 
     def __set__(self,instance,value):
-        vv.allowed_value_check(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_allowed_value(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._warehouse_size = value
 
     def __delete__(self,instance):
@@ -698,7 +698,7 @@ class Warehouse:
         stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
                
 
-    def create_object(self,**kwargs):
+    def create_object(self,*largs,**kwargs):
         self.set_name(kwargs[gv._name_tag])
         self.set_name_tag(gv._name_tag)
         self.set_warehouse_type(kwargs[gv._warehouse_type_tag])
@@ -737,7 +737,8 @@ class Warehouse:
         self.set_tag_tag(gv._tag_tag)
         self.prepare_create_query()     
         self.create_warehouse()
-        self.create_deployment_entry()
+        if len(largs) == 0:
+            self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
