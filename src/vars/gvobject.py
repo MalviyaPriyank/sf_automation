@@ -316,6 +316,7 @@ class Config:
     _config_stage = "STG_INT_CONFIG"
     _deployment_stage = "STG_INT_DEPLOY"
     _deployment_control_table = "DEPLOYMENT_CONTROL"
+    _deployment_scripts_table = "DEPLOYMENT_SCRIPTS"
     _deployment_log_table = "DEPLOYMENT_LOG"
     _deployment_reference_table = "DEPLOYMENT_REFERENCE"
     _deployment_history_table = "DEPLOYMENT_HISTORY"

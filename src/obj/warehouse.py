@@ -691,13 +691,7 @@ class Warehouse:
         self.add_properties_to_query()
     
     def create_warehouse(self,*largs):
-        self.session.sql(self.qry).collect()  
-        if len(largs) == 0: 
-            stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
-            stg.set_stage(cfg._deployment_stage)
-            stg.set_stage_reference()
-            stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
-               
+        self.session.sql(self.qry).collect()          
 
     def create_object(self,*largs,**kwargs):
         self.set_name(kwargs[gv._name_tag])
@@ -737,12 +731,13 @@ class Warehouse:
         self.set_tag(kwargs[gv._tag_tag])
         self.set_tag_tag(gv._tag_tag)
         self.prepare_create_query()     
-        self.create_warehouse(*largs)
+        self.create_warehouse()
         if len(largs) == 0:
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
+        deploy_inst.insert_into_deployment_script_table(self.qry)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

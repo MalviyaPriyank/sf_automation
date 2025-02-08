@@ -297,7 +297,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        instance._comment = f'"{value}"'
     
     def __delete__(self,instance):
         del instance._comment
@@ -522,17 +522,12 @@ class Schema:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-    def create_schema(self,*largs):
+    def create_schema(self):
         self.session.sql(self.qry).collect()
-
-        if len(largs) == 0:
-            stg = Stage(self.root,cfg._config_database,cfg._config_schema)
-            stg.set_stage(cfg._deployment_stage)
-            stg.set_stage_reference()
-            stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.attr.database + "/" + self.__class__.__name__)
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
+        deploy_inst.insert_into_deployment_script_table(self.qry)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema('NA')
@@ -595,7 +590,7 @@ class Schema:
 
 
         self.prepare_query()
-        self.create_schema(*largs)
+        self.create_schema()
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

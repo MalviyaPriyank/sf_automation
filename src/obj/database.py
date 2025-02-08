@@ -365,6 +365,7 @@ class Database:
 
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session)
+        deploy_inst.insert_into_deployment_script_table(self.qry)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')
@@ -381,13 +382,8 @@ class Database:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
 
 
-    def create_database(self,*largs):
+    def create_database(self):
         self.session.sql(self.qry).collect()
-        if len(largs) == 0:
-            stg = Stage(self.root,cfg._config_database,cfg._config_schema)
-            stg.set_stage(cfg._deployment_stage)
-            stg.set_stage_reference()
-            stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
 
     def create_object(self,*largs,**kwargs):
 
@@ -419,7 +415,7 @@ class Database:
         self.set_comment_tag(gv._comment_tag)
 
         self.prepare_query()
-        self.create_database(*largs)
+        self.create_database()
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

@@ -37,10 +37,8 @@ class Stage:
 
     def upload_sql_to_a_file_in_stage(self,qry,file_name,upload_path):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = file_name + timestamp + ".txt"
-        with open(file_name,"w") as file:
-            file.write(qry)
-        self.stage_reference.put(file_name,upload_path, auto_compress=False)
+        file_name = "./" + file_name + "_" + timestamp + ".txt"        
+        #self.stage_reference.put("/sf_automation/" + file_name,'DB', auto_compress=True)
 
 
     def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):

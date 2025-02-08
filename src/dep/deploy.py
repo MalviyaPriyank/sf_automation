@@ -153,7 +153,8 @@ class Deploy:
 
     def insert_into_deploy_control_table(self):
         qry = f"""
-            INSERT INTO {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_control_table} 
+            INSERT INTO 
+            {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_control_table} 
              VALUES 
              (
              '{self.attr.object_type}',
@@ -165,6 +166,17 @@ class Deploy:
              '{self.attr.deployment_id}'
              )
         """     
+        self.session.sql(qry).collect()
+    
+    def insert_into_deployment_script_table(self,qry):
+        qry = f"""
+            INSERT INTO 
+            {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
+            VALUES
+            (
+                '{qry}'
+            )
+            """
         self.session.sql(qry).collect()
 
     def get_db_name_of_environment(self,environment_name):
