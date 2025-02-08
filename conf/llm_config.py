@@ -864,6 +864,26 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_single_table_object",
+                "description":"create one snowflake table object for the user. name is a required input from user.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "name": {
+                                "type":"string",
+                                "description":"user provided name for table object"
+                            }
+                        },
+                        "required":[
+                            "name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"create_copyinto_object",
                 "description":"creates a snowflake copyinto object for the user.",
                 "inputSchema": {

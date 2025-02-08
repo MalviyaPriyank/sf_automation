@@ -11,7 +11,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
+from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 
 from valueexception import (
@@ -53,6 +54,7 @@ class LLMTools:
                                   'schema': schema.Schema(self.sf_session,self.user_id),
                                   #'share': share.Share(self.sf_session,self.user_id),
                                   'table': table.Table(session = self.sf_session,root = self.root,user_id=self.user_id),
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session = self.sf_session, user_id= self.user_id)
                                   #'task': task.Task,
                                   #'user': user.User(self.sf_session,self.user_id)
                                   }
@@ -139,36 +141,36 @@ class LLMTools:
                                 DATABASE,
                                 SCHEMA,
                                 TYPE="CSV",
-                                PARSE_HEADER="TRUE",
-                                SKIP_HEADER="'TRUE'",
-                                SKIP_BLANK_LINES="TRUE",
-                                DATE_FORMAT="TRUE",
-                                TIME_FORMAT="TRUE",
-                                TIMESTAMP_FORMAT="TRUE",
-                                BINARY_FORMAT="BASE64",
-                                ESCAPE="'",
-                                ESCAPE_UNENCLOSED_FIELD="SNOWFLAKE_FULL",
-                                TRIM_SPACE="TRUE",
-                                FIELD_OPTIONALLY_ENCLOSED_BY="TRUE",
-                                NULL_IF="TRUE",
-                                ERROR_ON_COLUMN_COUNT_MISMATCH="TRUE",
-                                REPLACE_INVALID_CHARACTERS="TRUE",
-                                EMPTY_FIELD_AS_NULL="TRUE",
-                                SKIP_BYTE_ORDER_MARK="TRUE",
-                                ENCODING="TRUE",
-                                ENABLE_OCTAL="TRUEAULT",
-                                ALLOW_DUPLICATE="TRUEAULT",
-                                STRIP_OUTER_ARRAY="TRUEAULT",
-                                STRIP_NULL_VALUES="TRUEAULT",
-                                IGNORE_UTF8_ERRORS="TRUEAULT",
-                                SNAPPY_COMPRESSION="TRUEAULT",
-                                BINARY_AS_TEXT="TRUEAULT",
-                                USE_LOGICAL_TYPE="TRUEAULT",
-                                USE_VECTORIZED_SCANNER="TRUEAULT",
-                                PRESERVE_SPACE="TRUEAULT",
-                                STRIP_OUTER_ELEMENT="TRUEAULT",
-                                DISABLE_SNOWFLAKE_DATA="TRUEAULT",
-                                DISABLE_AUTO_CONVERT="TRUEAULT"):
+                                PARSE_HEADER="NONE",
+                                SKIP_HEADER="NONE",
+                                SKIP_BLANK_LINES="NONE",
+                                DATE_FORMAT="NONE",
+                                TIME_FORMAT="NONE",
+                                TIMESTAMP_FORMAT="NONE",
+                                BINARY_FORMAT="NONE",
+                                ESCAPE="NONE",
+                                ESCAPE_UNENCLOSED_FIELD="NONE",
+                                TRIM_SPACE="NONE",
+                                FIELD_OPTIONALLY_ENCLOSED_BY="NONE",
+                                NULL_IF="NONE",
+                                ERROR_ON_COLUMN_COUNT_MISMATCH="NONE",
+                                REPLACE_INVALID_CHARACTERS="NONE",
+                                EMPTY_FIELD_AS_NULL="NONE",
+                                SKIP_BYTE_ORDER_MARK="NONE",
+                                ENCODING="NONE",
+                                ENABLE_OCTAL="NONE",
+                                ALLOW_DUPLICATE="NONE",
+                                STRIP_OUTER_ARRAY="NONE",
+                                STRIP_NULL_VALUES="NONE",
+                                IGNORE_UTF8_ERRORS="NONE",
+                                SNAPPY_COMPRESSION="NONE",
+                                BINARY_AS_TEXT="NONE",
+                                USE_LOGICAL_TYPE="NONE",
+                                USE_VECTORIZED_SCANNER="NONE",
+                                PRESERVE_SPACE="NONE",
+                                STRIP_OUTER_ELEMENT="NONE",
+                                DISABLE_SNOWFLAKE_DATA="NONE",
+                                DISABLE_AUTO_CONVERT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -178,8 +180,8 @@ class LLMTools:
 
     def create_internalstage_object(self,
                                     DATABASE,
-                                    SCHEMA="MYSCH",
-                                    NAME="MySTAGE",
+                                    SCHEMA="NONE",
+                                    NAME="NONE",
                                     FILE_FORMAT="NONE",
                                     COMMENT="NONE",
                                     TAG="NONE",
@@ -310,12 +312,17 @@ class LLMTools:
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
 
-    def create_table_object(self,
+    def create_multiple_table_object(self,
                             database,
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
         table_list = self.obj_class_mapping['table'].create_table_using_files_from_stage(database,schema)
         return f'{ss.TABLE_OBJ} created successfully for tables {table_list}'
+
+
+    def create_single_table_object(self,
+                                   name):
+        return f'Table {name} created'
 
 
     def create_copyinto_object(self,
@@ -340,19 +347,20 @@ class LLMTools:
         
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[2:]}
-        for value in values['TABLE']:
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        
+        for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
+            self.logger.info(data_dict)
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
-                                             stage=STAGE, 
-                                             file_format=FILE_FORMAT, 
                                              user_id=self.user_id)
+            self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
                                     "SCHEMA": SCHEMA,
-                                    "NAME":f'PIPE_{TABLE}',
+                                    "NAME":f'PIPE_{value}',
                                     "AUTO_INGEST":"NONE",
                                     "ERROR_INTEGRATION":"NONE",
                                     "AWS_SNS_TOPIC":"NONE",
@@ -362,10 +370,25 @@ class LLMTools:
             snowpipe_obj.create_object(**snowpipe_data_dict)
             
         return f'COPYINTO queries and snowpipe objects created successfully'
+    
+    def create_maskingpolicy_object(self,
+                                    ROLE,
+                                    NAME,
+                                    SIGNATURE,
+                                    RETURNS,
+                                    BODY,
+                                    COMMENT="NONE",
+                                    EXEMPT_OTHER_POLICIES="NONE"
+                                    ):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.MASKINGPOLICY_OBJ} object with parameters: {data_dict}')
+        return self.create_masking_policy(ss.MASKINGPOLICY_OBJ, data_dict)
         
 
     def sf_setup(self, query):
-        init_setup = InitialSetup(session=self.sf_session)
+        init_setup = InitialSetup(session=self.sf_session,user_id = self.user_id)
         init_setup.perform_initial_setup()
         return 'Completed setup for role, warehouse, database, schema, and more'
 

@@ -320,6 +320,11 @@ class LLMTools:
         return f'{ss.TABLE_OBJ} created successfully for tables {table_list}'
 
 
+    def create_single_table_object(self,
+                                   name):
+        return f'Table {name} created'
+
+
     def create_copyinto_object(self,
                                 DATABASE="NONE",
                                 SCHEMA="NONE",
