@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
-from vars.global_vars import Config as cfg
+from vars.gvobject import Config as cfg
 
 
 class ObjectType:

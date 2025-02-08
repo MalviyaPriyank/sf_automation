@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../inf_schema'))
 
 
-from inf_schema.objectexist import ObjectExist
+from infschema.objectexist import ObjectExist
 from exception.objectexception import ( 
     ObjectDoesNotExist
 )

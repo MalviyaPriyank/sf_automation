@@ -11,6 +11,7 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
+from processing.stage import Stage
 
 
 class Database:

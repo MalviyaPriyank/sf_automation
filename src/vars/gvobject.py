@@ -275,6 +275,16 @@ class CopyInto:
     _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
 
+class NotificationIntegration:
+    _name_tag = "NAME"
+    _enabled_tag = "ENABLED"
+    _type_tag = "TYPE"
+    _allowed_recepients_tag = "ALLOWED_RECIPIENTS"
+    _default_recepients_tag = "DEFAULT_RECIPIENTS"
+    _default_subject_tag = "DEFAULT_SUBJECT"
+    _comment_tag = "COMMENT"
+    _allowed_number_of_recipients = 50
+
 
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE_FORMAT","PIPE","TASK","STAGE"]

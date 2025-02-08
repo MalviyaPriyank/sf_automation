@@ -10,8 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
 
-from vars.governance import MaskingPolicy as gv_mp
-from vars.global_vars import Config as cfg
+from vars.gvgovernance import MaskingPolicy as gv_mp
+from vars.gvobject import Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep import deploy
 

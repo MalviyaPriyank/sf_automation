@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
-from vars.global_vars import Account as gv
+from vars.gvobject import Account as gv
 from validation.validatevalue import ValidateValue as vv
 
 

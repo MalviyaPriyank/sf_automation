@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from vars.gvobject import User as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
+from processing.stage import Stage
 
 class Name:
     def __get__(self,instance,owner):
@@ -831,6 +832,11 @@ class User:
 
     def create_user(self):
         self.session.sql(self.qry)
+        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
+        stg.set_stage(cfg._deployment_stage)
+        stg.set_stage_reference()
+        stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
+
 
 
     def create_object(self,**kwargs):

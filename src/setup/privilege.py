@@ -3,9 +3,10 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
-from global_vars import Privilege as gv_priv
-from privilegeexception import InvalidObject,InvalidPrivilege
 
+
+from vars.gvobject import Privilege as gv_priv
+from exception.privilegeexception import InvalidObject,InvalidPrivilege
 
 
 class Object:

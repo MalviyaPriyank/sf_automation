@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
-from vars.global_vars import CopyInto as gv
+from vars.gvobject import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

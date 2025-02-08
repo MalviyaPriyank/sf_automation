@@ -1,3 +1,6 @@
+import sys
+import os
+
 from snowflake.snowpark.functions import col
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 

@@ -7,5 +7,4 @@ langchain_aws
 langchain_community
 snowflake-snowpark-python
 snowflake
-csv
 datetime
