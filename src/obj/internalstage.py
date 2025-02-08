@@ -239,9 +239,10 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self,session,user_id):
+    def __init__(self,session,root,user_id):
         self.attr = InternalStageAttrs(self)
         self.session = session
+        self.root = root
         self.user_id = user_id
         self.sf_object_tag = "STAGE"
         self.qry = ""
@@ -342,12 +343,13 @@ class InternalStage:
         self.set_create_qry()
         self.add_properties_to_query()
 
-    def create_internal_stage(self):
+    def create_internal_stage(self,*largs):
         self.session.sql(self.qry).collect()
-        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
-        stg.set_stage(cfg._deployment_stage)
-        stg.set_stage_reference()
-        stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.attr.database + "/" + self.attr.schema + "/" + self.__class__.__name__ )
+        if len(largs) == 0:
+            stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
+            stg.set_stage(cfg._deployment_stage)
+            stg.set_stage_reference()
+            stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.attr.database + "/" + self.attr.schema + "/" + self.__class__.__name__ )
 
 
     def grant_default_privileges(self):
@@ -397,7 +399,7 @@ class InternalStage:
         self.set_qualified_name()
 
         self.prepare_query()
-        self.create_internal_stage()
+        self.create_internal_stage(*largs)
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

@@ -138,11 +138,12 @@ class SnowpipeAttrs:
     file_type = FileType()
 
 class Snowpipe:
-    def __init__(self,session,copy_into_qry,user_id):
+    def __init__(self,session,root,copy_into_qry,user_id):
         self.attr = SnowpipeAttrs(self)
         self.copy_into_qry = copy_into_qry
         self.user_id = user_id
         self.session = session
+        self.root = root
 
     def set_database(self,value):
         self.attr.database = value

@@ -6,7 +6,7 @@ class AttributeValidationError(Exception):
         self.message = message
     
     def __str__(self):
-        return f"ERROR : Attribute {self.attr_name} of {self.object_type} object {self.message}"
+        return f" Attribute {self.attr_name} of {self.object_type} object {self.message}. Please provide different value"
 
 class MustStartWithAlphabet(AttributeValidationError):
     def __init__(self, object_type, attr_name):

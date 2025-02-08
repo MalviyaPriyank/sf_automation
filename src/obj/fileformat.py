@@ -1084,9 +1084,10 @@ class FileFormatAttrs:
 
 
 class FileFormat:
-    def __init__(self,session,user_id):
+    def __init__(self,session,root,user_id):
         self.attr = FileFormatAttrs(self)
         self.session = session
+        self.root = root
         self.user_id = user_id
         self.qry = ""
 

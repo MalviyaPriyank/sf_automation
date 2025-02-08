@@ -107,9 +107,9 @@ class InitialSetup:
 
     def perform_initial_setup(self):
         #self.create_default_role()
-        self.create_default_warehouse()
-        self.create_config_database()
-        self.create_config_schema()
+        #self.create_default_warehouse()
+        #self.create_config_database()
+        #self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_tables()
 
