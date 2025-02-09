@@ -425,7 +425,8 @@ class LLMTools:
 
 
     def deploy_all_dev_to_test(self, query):
-        deploy.deploy_from_dev_to_test()
+        deploy_obj = deploy.Deploy(session=self.sf_session)
+        deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
 
