@@ -424,7 +424,7 @@ class LLMTools:
         except ClientError as e: return 'Bedrock service unavailable'
 
 
-    def deploy_all_dev_to_test(self):
+    def deploy_all_dev_to_test(self, query):
         deploy.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
