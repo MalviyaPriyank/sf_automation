@@ -75,13 +75,23 @@ if st.session_state[ss.INITIALIZED]:
         logger.info(f'response: {response}')
 
         for content in response:
-            if ss.TEXT in content:
+            response_text = ''
+            if lcs.TOOL_USE in content:
+                if content[lcs.TOOL_USE][lcs.NAME] == lcs.GET_WORKFLOW:
+                    response_text = ss.HANG_ON
+                    st.session_state[ss.MESSAGES].append({
+                        ss.ROLE:ss.ASSISTANT,
+                        ss.CONTENT: response_text
+                    })
+            if (ss.TEXT in content) and (response_text!=''):
                 st.session_state[ss.MESSAGES].append({
                     ss.ROLE:ss.ASSISTANT,
                     ss.CONTENT:content[ss.TEXT]
                 })
+            if response_text!='':
                 with st.chat_message(ss.ASSISTANT):
-                    st.markdown(content[ss.TEXT])
+                    st.markdown(response_text)
+            
 
         while len(response)>0:
             tool_result = []

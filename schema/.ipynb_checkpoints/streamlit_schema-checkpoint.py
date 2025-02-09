@@ -1,5 +1,6 @@
 APP_TITLE = 'Snowchain'
 SHOVELING = 'shoveling ...'
+HANG_ON = 'Hang on tight, I am on it ...'
 
 ROLE = 'role'
 USER = 'user'

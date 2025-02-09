@@ -63,68 +63,65 @@ if st.session_state[ss.INITIALIZED]:
     logger.info('session started')
             
     if prompt := st.chat_input("What's on your mind?"):
-        try:
-            with st.chat_message(ss.USER):
-                st.markdown(prompt)
-            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=prompt))
-            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))                                         
-    
-            with st.chat_message(ss.ASSISTANT):
-                response = st.write_stream(helper.response_generator([ss.SHOVELING]))
-            response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
-            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-            logger.info(f'response: {response}')
-    
-            for content in response:
-                if ss.TEXT in content:
+        with st.chat_message(ss.USER):
+            st.markdown(prompt)
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=prompt))
+        st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))                                         
+
+        with st.chat_message(ss.ASSISTANT):
+            response = st.write_stream(helper.response_generator([ss.SHOVELING]))
+        response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+        logger.info(f'response: {response}')
+
+        for content in response:
+            response_text = ''
+            if lcs.TOOL_USE in content:
+                if content[lcs.TOOL_USE][lcs.NAME] == lcs.GET_WORKFLOW:
+                    response_text = ss.HANG_ON
                     st.session_state[ss.MESSAGES].append({
                         ss.ROLE:ss.ASSISTANT,
-                        ss.CONTENT:content[ss.TEXT]
+                        ss.CONTENT: response_text
                     })
-                    with st.chat_message(ss.ASSISTANT):
-                        st.markdown(content[ss.TEXT])
-    
-            while len(response)>0:
-                tool_result = []
-                done_tool_call = False
-                for content in response:
-                    if (ss.TEXT in content) and (len(response)==1): 
-                        done_tool_call = True
-                        break
-                    if lcs.TOOL_USE in content:
-                        if content[lcs.TOOL_USE][lcs.NAME] == lcs.CREATE_SF_OBJ:
-                            obj_name = content[lcs.TOOL_USE][lcs.INPUT][lcs.OBJ_NAME]
-                            json_template = helper.obj_json_template(f'conf/template/{obj_name}/required.json')
-                            json_string = json.dumps(json_template, indent=4)
-                            if json_template:
-                                st.download_button(
-                                    label="Download JSON template",
-                                    data=json_string,
-                                    file_name=f"{obj_name}_template.json",
-                                    mime="application/json",
-                                    key=f'{obj_name}_json_template'
-                                )
-                                json_upload = st.file_uploader(
-                                    lcs.JSON_UPLOAD_GREETING,
-                                    accept_multiple_files=False,
-                                    type=lcs.JSON
-                                )
-                            if json_upload is not None:
-                                with open(f'conf/template/{content[lcs.TOOL_USE][lcs.OBJ_NAME]}/user_upload.json', 'w') as f:
-                                    json.dump(json.load(json_upload), f)
-    
-                                tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                                st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                                
-                                response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
-                                st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-                                for content in response:
-                                    if ss.TEXT in content:
-                                        st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
-                                        
-                                        with st.chat_message(ss.ASSISTANT):
-                                            st.markdown(content[ss.TEXT])
-                        else:
+            if (ss.TEXT in content) and (response_text!=''):
+                st.session_state[ss.MESSAGES].append({
+                    ss.ROLE:ss.ASSISTANT,
+                    ss.CONTENT:content[ss.TEXT]
+                })
+            if response_text!='':
+                with st.chat_message(ss.ASSISTANT):
+                    st.markdown(response_text)
+            
+
+        while len(response)>0:
+            tool_result = []
+            done_tool_call = False
+            for content in response:
+                if (ss.TEXT in content) and (len(response)==1): 
+                    done_tool_call = True
+                    break
+                if lcs.TOOL_USE in content:
+                    if content[lcs.TOOL_USE][lcs.NAME] == lcs.CREATE_SF_OBJ:
+                        obj_name = content[lcs.TOOL_USE][lcs.INPUT][lcs.OBJ_NAME]
+                        json_template = helper.obj_json_template(f'conf/template/{obj_name}/required.json')
+                        json_string = json.dumps(json_template, indent=4)
+                        if json_template:
+                            st.download_button(
+                                label="Download JSON template",
+                                data=json_string,
+                                file_name=f"{obj_name}_template.json",
+                                mime="application/json",
+                                key=f'{obj_name}_json_template'
+                            )
+                            json_upload = st.file_uploader(
+                                lcs.JSON_UPLOAD_GREETING,
+                                accept_multiple_files=False,
+                                type=lcs.JSON
+                            )
+                        if json_upload is not None:
+                            with open(f'conf/template/{content[lcs.TOOL_USE][lcs.OBJ_NAME]}/user_upload.json', 'w') as f:
+                                json.dump(json.load(json_upload), f)
+
                             tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
                             st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
                             
@@ -136,7 +133,28 @@ if st.session_state[ss.INITIALIZED]:
                                     
                                     with st.chat_message(ss.ASSISTANT):
                                         st.markdown(content[ss.TEXT])
-    
-                if done_tool_call: break 
-        except AttributeValidationError as ave:
-            st.error(ave)
+                    else:
+                        try:
+                            tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
+                        except AttributeValidationError as e:
+                            st.error(e)
+                            tool_result.append({lcs.TOOL_RESULT:{
+                                lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
+                                lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
+                            }})
+                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                            done_tool_call=True
+                            break
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                    
+                        response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                        for content in response:
+                            if ss.TEXT in content:
+                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                                
+                                with st.chat_message(ss.ASSISTANT):
+                                    st.markdown(content[ss.TEXT])
+
+
+            if done_tool_call: break 
