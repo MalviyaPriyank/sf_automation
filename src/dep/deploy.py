@@ -193,23 +193,28 @@ class Deploy:
 
     def get_db_name_of_environment(self,environment_name):
         get_database_name_qry = f"""
-                                SELECT {cfg._deployment_reference_table_column_list[0]} 
+                                SELECT {cfg._deployment_reference_table_column_list[1]} 
                                 FROM 
                                 {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_reference_table}
                                 WHERE 
-                                {cfg._deployment_reference_table_column_list[1]} = {environment_name}
+                                {cfg._deployment_reference_table_column_list[0]} = '{environment_name}'
                                 """
-        db_name = self.session.sql(get_database_name_qry).collect()[0][0]
-        return db_name
+        db_name = self.session.sql(get_database_name_qry).collect()
+        return db_name[0][0]
     
     def get_scripts_to_deploy(self):
         qry = f"""
         SELECT 
             {cfg._deployment_scripts_table_column_list[0]} 
         FROM 
-            {cfg._deployment_scripts_table}
+            {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
         """
-        self.session.sql(qry).collect()[0]
+        res = self.session.sql(qry).collect()
+        qry_lst = []
+        for inner_qry in res:
+            for qry in inner_qry:
+                qry_lst.append(qry)
+        return qry_lst
     
     def deploy_from_dev_to_test(self):
         dev_db = self.get_db_name_of_environment(_dev_env)
@@ -218,6 +223,7 @@ class Deploy:
         for qry in sql_lst:
             qry = qry.replace(dev_db,test_db)
             self.session.sql(qry).collect()
+        
         
         
     
