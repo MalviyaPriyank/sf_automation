@@ -14,7 +14,17 @@ from vars.gvobject import Database as gv, Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep import deploy
 from setup import privilege 
-from processing.stage import Stage
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
@@ -219,6 +229,8 @@ class CommentTag:
 class DatabaseAttrs:
     def __init__(self,parent):
         self.parent = parent
+    
+    session = Session()
 
     name = Name()
     name_tag = NameTag()
@@ -251,9 +263,10 @@ class DatabaseAttrs:
 class Database:
     def __init__(self,session,user_id):
         self.attr = DatabaseAttrs(self)
-        self.session = session
+        self.attr.session = session
         self.user_id = user_id
         self.qry = ""
+
 
     def set_name(self, value):
         self.attr.name = value
@@ -363,7 +376,7 @@ class Database:
         self.add_properties_to_query()
 
     def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session)
+        deploy_inst = deploy.Deploy(self.attr.session)
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
@@ -375,14 +388,14 @@ class Database:
         deploy_inst.insert_into_deploy_control_table()
 
     def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
+        priv_inst = privilege.Privilege(self.attr.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
 
 
     def create_database(self):
-        self.session.sql(self.qry).collect()
+        self.attr.session.sql(self.qry).collect()
 
     def create_object(self,*largs,**kwargs):
 
@@ -418,4 +431,6 @@ class Database:
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()
+
+            
 

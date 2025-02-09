@@ -11,7 +11,17 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-from processing.stage import Stage
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Database:
     def __get__(self,instance,owner):
@@ -1007,6 +1017,7 @@ class FileFormatAttrs:
     def __init__(self,parent):
         self.parent = parent
 
+    session = Session()
     database = Database()
     schema = Schema()
     type = Type()
@@ -1086,7 +1097,7 @@ class FileFormatAttrs:
 class FileFormat:
     def __init__(self,session,user_id):
         self.attr = FileFormatAttrs(self)
-        self.session = session
+        self.attr.session = session
         self.user_id = user_id
         self.qry = ""
 
@@ -1435,10 +1446,10 @@ class FileFormat:
         self.add_properties_to_query()
 
     def create_file_format(self):
-        self.session.sql(self.qry).collect()
+        self.attr.session.sql(self.qry).collect()
 
     def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
+        priv_inst = privilege.Privilege(self.attr.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["FILE FORMAT"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "FILE FORMAT",object_identifier=self.qualified_name,role = role)
@@ -1554,7 +1565,7 @@ class FileFormat:
 
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)

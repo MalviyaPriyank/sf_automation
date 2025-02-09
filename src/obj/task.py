@@ -12,6 +12,16 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 
 
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
+
 class Database:
     def __get__(self,instance,owner):
         return instance._database
@@ -506,6 +516,7 @@ class TaskAttrs:
     def __init__(self,parent):
         self.parent = parent
 
+    session = Session()
     database = Database()
 
     schema = Schema()
@@ -578,7 +589,7 @@ class TaskAttrs:
 class Task:
     def __init__(self,session):
         self.attr = TaskAttrs(self)
-        self.session = session
+        self.attr.session = session
 
     def set_database(self,value):
         self.attr.database = value
@@ -720,7 +731,7 @@ class Task:
         self.attr.serverless_task_max_statement_size_tag = serverless_task_max_statement_size_tag
 
     def create_task(self):
-        self.session.sql(self.qry).collect()
+        self.attr.session.sql(self.qry).collect()
 
     def create_object(session,**kwargs):
         task = Task(session)
@@ -788,7 +799,7 @@ class Task:
         task.create_task()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)

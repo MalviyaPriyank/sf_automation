@@ -12,6 +12,16 @@ from vars.gvobject import Role as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
+
 class Name:
     def __get__(self,instance,owner):
         return instance._name
@@ -57,6 +67,8 @@ class CommentTag:
 class RoleAttrs:
     def __init__(self,parent):
         self.parent = parent
+
+    session = Session()
     name = Name()
     name_tag = NameTag()
 
@@ -67,7 +79,7 @@ class RoleAttrs:
 class Role:
     def __init__(self,session,user_id):
         self.attr = RoleAttrs(self)
-        self.session = session
+        self.attr.session = session
         self.user_id = user_id
         self.qry = ""
 
@@ -115,7 +127,7 @@ class Role:
         self.add_properties_to_query()
         
     def create_role(self):
-        self.session.sql(self.qry).collect()
+        self.attr.session.sql(self.qry).collect()
 
     def create_object(self,*pargs,**kwargs): 
         self.set_name(kwargs[gv._name_tag])
@@ -130,7 +142,7 @@ class Role:
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

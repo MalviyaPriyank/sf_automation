@@ -11,7 +11,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from vars.gvobject import User as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
-from processing.stage import Stage
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
@@ -529,6 +539,7 @@ class UserAttrs:
     def __init__(self,parent):
         self.parent = parent
 
+    session = Session()
     name = Name()
     name_tag = NameTag()
 
@@ -601,7 +612,7 @@ class UserAttrs:
 class User:
     def __init__(self,session,user_id):
         self.attr = UserAttrs(self)
-        self.session = session
+        self.attr.session = session
         self.qry = ""
         self.user_id = user_id
 
@@ -831,7 +842,7 @@ class User:
         self.add_properties_to_query()
 
     def create_user(self):
-        self.session.sql(self.qry).collect()
+        self.attr.session.sql(self.qry).collect()
 
 
     def create_object(self,**kwargs):
@@ -908,7 +919,7 @@ class User:
         self.create_deployment_entry()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')

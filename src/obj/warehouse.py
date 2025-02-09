@@ -16,7 +16,16 @@ from vars.gvobject import Warehouse as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from exception.valueexception import InvalidParamForObject
 from dep.deploy import Deploy
-from processing.stage import Stage
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
@@ -454,6 +463,7 @@ class StatementTimeoutInSecondsLabel:
 class WarehouseAttrs:
     def __init__(self,parent):
         self.parent = parent
+    session = Session()
     name = Name()
     name_tag = NameLabel()
     warehouse_size = WarehouseSize()
@@ -496,7 +506,7 @@ class WarehouseAttrs:
 class Warehouse:
     def __init__(self,session,user_id):
         self.attr = WarehouseAttrs(self)
-        self.session =  session
+        self.attr.session =  session
         self.qry = ""
         self.user_id = user_id
 
@@ -691,7 +701,7 @@ class Warehouse:
         self.add_properties_to_query()
     
     def create_warehouse(self,*largs):
-        self.session.sql(self.qry).collect()          
+        self.attr.session.sql(self.qry).collect()          
 
     def create_object(self,*largs,**kwargs):
         self.set_name(kwargs[gv._name_tag])
@@ -736,7 +746,7 @@ class Warehouse:
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
