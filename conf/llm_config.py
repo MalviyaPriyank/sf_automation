@@ -968,38 +968,6 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"create_snowpipe_object",
-                "description":"creates a snowflake snowpipe object for the user. DATABASE, SCHEMA, TABLE, and COPYINTO_QUERY are required inputs.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "DATABASE": {
-                                "type":"string",
-                                "description":"user provided value for DATABASE for snowpipe object"
-                            },
-			"SCHEMA": {
-                                "type":"string",
-                                "description":"user provided value for SCHEMA for snowpipe object"
-                            },
-			"TABLE": {
-                                "type":"string",
-                                "description":"user provided list for TABLE name for snowpipe object"
-                            },
-			"COPYINTO_QUERY": {
-                                "type":"string",
-                                "description":"user provided value for copyinto query for snowpipe object"
-                            },
-                        },
-                        "required":[
-                            "DATABASE","SCHEMA","TABLE","COPYINTO_QUERY"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
                 "name":"get_workflow",
                 "description":"retrieves the workflow setup instructions",
                 "inputSchema": {
