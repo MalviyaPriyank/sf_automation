@@ -318,8 +318,8 @@ class LLMTools:
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
         table_list = self.obj_class_mapping['table'].create_table_using_files_from_stage(database,schema)
-        return f'{ss.TABLE_OBJ} created successfully for tables {table_list}'
-
+        self.logger.info(f"table list returned {table_list}")
+        return f'Here is the list of tables created : [{table_list}]'
 
     def create_single_table_object(self,
                                    name):
@@ -357,7 +357,6 @@ class LLMTools:
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
-                                             root= self.root,
                                              user_id=self.user_id)
             self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
@@ -370,6 +369,7 @@ class LLMTools:
                                     "COMMENT":"NONE",
                                     "FILE_TYPE":"NONE"}
             snowpipe_obj.create_object(**snowpipe_data_dict)
+            self.logger.info("after creating snowpipe")
             
         return f'COPYINTO queries and snowpipe objects created successfully'
 

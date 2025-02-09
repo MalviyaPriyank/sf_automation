@@ -22,8 +22,8 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.database_exist(value):
-            instance._database  = value
+        #if vo.database_exist(value):
+        instance._database  = value
 
     def __delete__(self,instance):
         del instance._database
@@ -34,8 +34,8 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.schema_exist(instance._database,value):
-            instance._schema = value
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
 
     def __delete__(self,instance):
         del instance._schema
@@ -80,6 +80,8 @@ class ColumnTypeList:
 
 
 class TableAttrs:
+    def __init__(self,parent):
+        self.parent = parent
 
     database = Database()
 
@@ -94,7 +96,7 @@ class TableAttrs:
 class Table:
 
     def __init__(self,session,root,user_id):
-        self.attr = TableAttrs()
+        self.attr = TableAttrs(self)
         self.session = session 
         self.root = root
         self.user_id = user_id
@@ -135,9 +137,8 @@ class Table:
         return qry
 
     def create_table(self):
-        qry = self.get_create_table_query()
-        print(qry)
-        self.session.sql(qry).collect()
+        self.qry = self.get_create_table_query()
+        self.session.sql(self.qry).collect()
 
 
     def create_table_using_files_from_stage(self,database,schema):
@@ -161,13 +162,13 @@ class Table:
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
             self.create_table()
-            self.grant_default_privileges()
             self.create_deployment_entry()
         return tbl_lst
     
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
+        deploy_inst.insert_into_deployment_script_table(self.qry,self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)

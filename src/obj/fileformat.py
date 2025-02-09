@@ -19,8 +19,8 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.database_exist(value):
-            instance._database = value
+        #if vo.database_exist(value):
+        instance._database = value
 
     def __del__(self,instance):
         del instance._database
@@ -31,8 +31,8 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.schema_exist(instance._database,value):
-            instance._schema = value
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
 
     def __del__(self,instance):
         del instance._schema
@@ -1440,8 +1440,8 @@ class FileFormat:
     def grant_default_privileges(self):
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
+            if privileges in gv_priv._allowed_privileges["FILE FORMAT"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "FILE FORMAT",object_identifier=self.qualified_name,role = role)
 
 
     def create_object(self,*largs,**kwargs):
