@@ -1005,26 +1005,6 @@ tools = {
                     }
                 }
             }
-        },
-        {
-            "toolSpec": {
-                "name":"sf_setup",
-                "description":"performs snowflake setup for user. do this if user specifies it is their first time and explicitly ask for the setup. Does not have to tell user how to do it, instead this function does it all for the user.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "query": {
-                                "type":"string",
-                                "description":"user query"
-                            }
-                        },
-                        "required":[
-                            "query"
-                        ]
-                    }
-                }
-            }
         }
     ]
 }
