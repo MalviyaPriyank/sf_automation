@@ -105,11 +105,12 @@ class TableAttrs:
 
 class Table:
 
-    def __init__(self,session,root,user_id):
+    def __init__(self,session,root,user_id,logger):
         self.attr = TableAttrs(self)
         self.attr.session = session 
         self.root = root
         self.user_id = user_id
+        self.logger = logger
 
     def set_database(self,database):
         self.attr.database = database

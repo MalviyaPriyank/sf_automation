@@ -248,12 +248,13 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self,session,user_id):
+    def __init__(self,session,user_id,logger):
         self.attr = InternalStageAttrs(self)
         self.attr.session = session
         self.user_id = user_id
         self.sf_object_tag = "STAGE"
         self.qry = ""
+        self.logger = logger
 
     def set_database(self,val):
         self.attr.database = val

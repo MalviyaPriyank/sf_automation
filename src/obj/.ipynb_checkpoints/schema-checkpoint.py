@@ -1,22 +1,47 @@
-
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import Schema as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import Schema as gv,Config as cfg, Privilege as gv_priv
+from validation.validatevalue import ValidateValue as vv
+from dep.deploy import Deploy
+from validation.validateobject import ValidateObject as vo
+from setup import privilege
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.database_exist(value):
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
             if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
@@ -60,7 +85,9 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
+            instance._data_retention_time_in_days = value
+        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._data_retention_time_in_days = value
     
     def __delete__(self,instance):
@@ -81,7 +108,9 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
+            instance._max_data_extension_time_in_days = value
+        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -188,9 +217,8 @@ class LogLevel:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._log_level = "OFF"
-        elif value not in gv._allowed_values_log_level:
-            raise ValueError
         else:
+            vv.allowed_value_check(value,gv._allowed_values_log_level,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._log_level = value
 
     def __delete__(self,instance):
@@ -213,9 +241,8 @@ class TraceLevel:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._trace_level = "OFF"
-        elif value not in gv._allowed_values_trace_level:
-            raise ValueError
         else:
+            vv.allowed_value_check(value,gv._allowed_values_trace_level,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._trace_level = value
 
     def __delete__(self,instance):
@@ -236,7 +263,11 @@ class StorageSerializationPolicy:
         return instance._storage_serialization_policy
     
     def __set__(self,instance,value):
-        instance._storage_serialization_policy = value
+        if value == "NONE":
+            instance._storage_serialization_policy = value
+        else:
+            vv.allowed_value_check(value,gv._allowed_values_storage_serialization_policy,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
         del instance._storage_serialization_policy
@@ -276,7 +307,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        instance._comment = f'"{value}"'
     
     def __delete__(self,instance):
         del instance._comment
@@ -296,6 +327,9 @@ class CommentTag:
 class SchemaAttrs:
     def __init__(self,parent):
         self.parent = parent
+
+    session = Session()
+    database = Database()
         
     name = Name()
     name_tag = NameTag()
@@ -339,10 +373,19 @@ class SchemaAttrs:
 
 
 class Schema:
-    def __init__(self,session):
+    def __init__(self,session,user_id,logger):
         self.attr = SchemaAttrs(self)
-        self.session = session
+        self.attr.session = session
+        self.user_id = user_id
         self.qry = ""
+        self.logger = logger
+
+    def set_database(self, value):
+        self.attr.database = value
+
+    def set_database_tag(self, value):
+        self.attr.database_tag = value  
+
     def set_name(self, value):
         self.attr.name = value
 
@@ -421,6 +464,9 @@ class Schema:
     def set_comment_tag(self, value):
         self.attr.comment_tag = value
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.name}"
+
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -450,7 +496,7 @@ class Schema:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE SCHEMA  {self.attr.name} "
+        self.qry = f"CREATE SCHEMA {self.attr.database}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -488,50 +534,74 @@ class Schema:
         self.add_properties_to_query()
 
     def create_schema(self):
-        self.session.sql(self.qry)
+        self.attr.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        schema = Schema(session)
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.attr.session)
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
-        schema.set_name(kwargs[gv._name_tag])
-        schema.set_name_tag(gv._name_tag)
-
-        schema.set_with_managed_access(kwargs[gv._with_managed_access_tag])
-        schema.set_with_managed_access_tag(gv._with_managed_access_tag)
-
-        schema.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        schema.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
-
-        schema.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        schema.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
-
-        schema.set_external_volume(kwargs[gv._external_volume_tag])
-        schema.set_external_volume_tag(gv._external_volume_tag)
-
-        schema.set_catalog(kwargs[gv._catalog_tag])
-        schema.set_catalog_tag(gv._catalog_tag)
-
-        schema.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        schema.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
-
-        schema.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        schema.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
-
-        schema.set_log_level(kwargs[gv._log_level_tag])
-        schema.set_log_level_tag(gv._log_level_tag)
-
-        schema.set_trace_level(kwargs[gv._trace_level_tag])
-        schema.set_trace_level_tag(gv._trace_level_tag)
-
-        schema.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        schema.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
-
-        schema.set_classification_profile(kwargs[gv._classification_profile_tag])
-        schema.set_classification_profile_tag(gv._classification_profile_tag)
-
-        schema.set_comment(kwargs[gv._comment_tag])
-        schema.set_comment_tag(gv._comment_tag)
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.attr.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
 
-        schema.prepare_query()
-        schema.create_schema()
+    def create_object(self,*largs,**kwargs):
+
+        self.set_database(kwargs[gv._database_tag])
+
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
+
+        self.set_with_managed_access(kwargs[gv._with_managed_access_tag])
+        self.set_with_managed_access_tag(gv._with_managed_access_tag)
+
+        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+
+        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+
+        self.set_external_volume(kwargs[gv._external_volume_tag])
+        self.set_external_volume_tag(gv._external_volume_tag)
+
+        self.set_catalog(kwargs[gv._catalog_tag])
+        self.set_catalog_tag(gv._catalog_tag)
+
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+
+        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+
+        self.set_log_level(kwargs[gv._log_level_tag])
+        self.set_log_level_tag(gv._log_level_tag)
+
+        self.set_trace_level(kwargs[gv._trace_level_tag])
+        self.set_trace_level_tag(gv._trace_level_tag)
+
+        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+
+        self.set_classification_profile(kwargs[gv._classification_profile_tag])
+        self.set_classification_profile_tag(gv._classification_profile_tag)
+
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
+        self.set_qualified_name()
+
+
+        self.prepare_query()
+        self.create_schema()
+        self.grant_default_privileges()
+        if len(largs) == 0:
+            self.create_deployment_entry()

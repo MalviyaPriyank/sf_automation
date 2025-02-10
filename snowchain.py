@@ -137,7 +137,10 @@ if st.session_state[ss.INITIALIZED]:
                         try:
                             tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
                         except AttributeValidationError as e:
-                            st.error(e)
+                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
+                                    
+                            with st.chat_message(ss.ASSISTANT):
+                                st.markdown(content[ss.TEXT])
                             tool_result.append({lcs.TOOL_RESULT:{
                                 lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
                                 lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]

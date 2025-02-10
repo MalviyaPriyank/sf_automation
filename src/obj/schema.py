@@ -373,11 +373,12 @@ class SchemaAttrs:
 
 
 class Schema:
-    def __init__(self,session,user_id):
+    def __init__(self,session,user_id,logger):
         self.attr = SchemaAttrs(self)
         self.attr.session = session
         self.user_id = user_id
         self.qry = ""
+        self.logger = logger
 
     def set_database(self, value):
         self.attr.database = value

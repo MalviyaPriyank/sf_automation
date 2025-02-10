@@ -1,31 +1,34 @@
 
 import sys
 import os 
+import logging
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import InternalStage as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import Role as gv,Config as cfg
+from validation.validatevalue import ValidateValue as vv
+from dep.deploy import Deploy
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
-    
+
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
-        else:
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._name = value
 
     def __delete__(self,instance):
@@ -62,6 +65,10 @@ class CommentTag:
         del instance._comment_tag
 
 class RoleAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
+    session = Session()
     name = Name()
     name_tag = NameTag()
 
@@ -70,10 +77,12 @@ class RoleAttrs:
 
 
 class Role:
-    def __init__(self,session):
-        self.attr = RoleAttrs()
-        self.session = session
+    def __init__(self,session,user_id,logger):
+        self.attr = RoleAttrs(self)
+        self.attr.session = session
+        self.user_id = user_id
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val
@@ -119,16 +128,27 @@ class Role:
         self.add_properties_to_query()
         
     def create_role(self):
-        self.session.execute_qry(self.qry)
+        self.attr.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        role = Role(session)
+    def create_object(self,*pargs,**kwargs): 
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        role.set_name(kwargs[gv._name_tag])
-        role.set_name_tag(gv._name_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        role.set_comment(kwargs[gv._comment_tag])
-        role.set_comment_tag(gv._comment_tag)
+        self.prepare_query()
+        self.create_role()
+        if len(pargs) == 0:
+            self.create_deployment_entry()
 
-        role.prepare_query()
-        role.create_role()
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.attr.session)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database('NA')
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()

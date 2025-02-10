@@ -1,12 +1,51 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import FileFormat as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import FileFormat as gv,Config as cfg, Privilege as gv_priv
+from validation.validatevalue import ValidateValue as vv
+from dep.deploy import Deploy
+from validation.validateobject import ValidateObject as vo
+from setup import privilege
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.database_exist(value):
+        instance._database = value
+
+    def __del__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
 
 
 class Name:   
@@ -14,6 +53,7 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._name = value
 
     def __del__(self,instance):
@@ -191,11 +231,13 @@ class ParseHeader:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._parse_header = value
             else:
-                raise ValueError
-                
+                if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                    instance._parse_header = value
+                else:
+                    raise ValueError                
         else:
             raise ValueError
 
@@ -217,12 +259,12 @@ class SkipHeader:
         return instance._skip_header
     
     def __set__(self,instance,value):
-        if instance._type == "DEFAULT":
-            instance._skip_header = "TRUE"
+        if value == "NONE":
+            instance._skip_header = value  
+        elif instance._type == "DEFAULT":
+            instance._skip_header = "NONE"
         elif instance._type == gv._allowed_values_type[0]:
             instance._skip_header = value
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_header
@@ -244,12 +286,10 @@ class SkipBlankLines:
     
     def __set__(self,instance,value):
         if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._skip_blank_lines = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._skip_blank_lines = value   
-            else:
-                raise KeyError
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_blank_lines
@@ -322,41 +362,41 @@ class TimeFormatTag:
 
 class TimestampFormat:
     def __get__(self,instance,owner):
-        return instance._time_stamp_format
+        return instance._timestamp_format
     
     def __set__(self,instance,value):
-        if instance._type == "DEFAULT":
-            instance._timestamp_format = "DEFAULT"
+        if instance._type == "NONE":
+            instance._timestamp_format = "NONE"
         elif instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
-            instance._time_stamp_format = value
+            instance._timestamp_format = value
         else:
             raise ValueError
 
     def __del__(self,instance):
-        del instance._time_stamp_format
+        del instance._timestamp_format
 
 class TimestampFormatTag:
     def __get__(self,instance,owner):
-        return instance._time_stamp_format_tag
+        return instance._timestamp_format_tag
     
     def __set__(self,instance,value):
-        instance._time_stamp_format_tag = value
+        instance._timestamp_format_tag = value
 
     def __del__(self,instance):
-        del instance._time_stamp_format_tag
+        del instance._timestamp_format_tag
    
 class BinaryFormat:
     def __get__(self,instance,owner):
         return instance._binary_format
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
+        if value == "NONE":
+            instance._binary_format = value
+        elif instance._type == gv._allowed_values_type[0] or instance._type == gv._allowed_values_type[1]:
             if value not in gv._allowed_values_binary_format:
                 raise KeyError
             else:
                 instance._binary_format = value
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._binary_format
@@ -376,10 +416,11 @@ class Escape:
         return instance._escape
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]: #CSV
+        if value == "NONE":
             instance._escape = value
-        else:
-            raise ValueError
+        elif instance._type == gv._allowed_values_type[0]: #CSV
+            instance._escape = value
+
 
     def __del__(self,instance):
         del instance._escape
@@ -400,10 +441,10 @@ class EscapeUnenclosedField:
         return instance._escape_unenclosed_field
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]: #CSV
+        if value == "NONE":
             instance._escape_unenclosed_field = value
-        else:
-            raise ValueError
+        elif instance._type == gv._allowed_values_type[0]: #CSV
+            instance._escape_unenclosed_field = value
         
     def __del__(self,instance):
         del instance._escape_unenclosed_field
@@ -428,12 +469,10 @@ class TrimSpace:
             instance._type == gv._allowed_values_type[2] or
             instance._type == gv._allowed_values_type[3] or
             instance._type == gv._allowed_values_type[4] ):
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._trim_space = value
-            else:
-                raise ValueError
-        else:
-            raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._trim_space = value
 
     def __del__(self,instance):
         del instance._trim_space
@@ -481,12 +520,10 @@ class NullIf:
             instance._type == gv._allowed_values_type[2] or
             instance._type == gv._allowed_values_type[3] or
             instance._type == gv._allowed_values_type[4]):
-            if type(value) != str:
-                raise KeyError
-            else:
+            if value == "NONE":
                 instance._null_if = value
-        else:
-            raise ValueError
+            elif type(value) != str:
+                raise KeyError
 
     def __del__(self,instance):
         del instance._null_if
@@ -506,10 +543,10 @@ class ErrorOnColumnCountMismatch:
         return instance._error_on_column_count_mismatch
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._error_on_column_count_mismatch = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._error_on_column_count_mismatch = value
             
 
     def __del__(self,instance):
@@ -533,10 +570,10 @@ class ReplaceInvalidCharacters:
         return instance._replace_invalid_characters
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._replace_invalid_characters = value
-        else:
-            raise KeyError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._replace_invalid_characters = value
             
     def __del__(self,instance):
         del instance._replace_invalid_characters
@@ -556,11 +593,13 @@ class EmptyFieldAsNull:
         return instance._empty_field_as_null
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]:
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._empty_field_as_null = value
+        elif instance._type == gv._allowed_values_type[0]:
+            if value == "NONE":
+                instance._type = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._empty_field_as_null = value
-            else:
-                raise KeyError
 
     def __del__(self,instance):
         del instance._empty_field_as_null
@@ -580,15 +619,15 @@ class SkipByteOrderMark:
         return instance._skip_byte_order_mark
     
     def __set__(self,instance,value):
-        if (instance._type == gv._allowed_values_type[0] or
+        if value == "NONE":
+            instance._skip_byte_order_mark = value
+        elif (instance._type == gv._allowed_values_type[0] or
             instance._type == gv._allowed_values_type[1] or 
             instance._type == gv._allowed_values_type[5] ):
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._skip_byte_order_mark = value
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._skip_byte_order_mark = value    
-            else:
-                raise KeyError
-        else:
-            raise ValueError
 
     def __del__(self,instance):
         del instance._skip_byte_order_mark
@@ -608,11 +647,13 @@ class Encoding:
         return instance._encoding
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]:
-            if type(value) != str:
-                raise TypeError
-            else:
+        if value == "NONE":
+            instance._encoding = value
+        elif instance._type == gv._allowed_values_type[0]:
+            if value == "NONE":
                 instance._encoding = value
+            elif type(value) != str:
+                raise TypeError
 
     def __del__(self,instance):
         del instance._encoding
@@ -632,14 +673,13 @@ class EnableOctal:
         return instance._enable_octal
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]:
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._enable_octal = value
+        elif instance._type == gv._allowed_values_type[1]:
+            if value == "NONE":
                 instance._enable_octal = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._enable_octal = value
 
     def __del__(self,instance):
         del instance._enable_octal    
@@ -659,14 +699,13 @@ class AllowDuplicate:
         return instance._allow_duplicate
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]:
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._allow_duplicate = value
+        elif instance._type == gv._allowed_values_type[1]:
+            if value == "NONE":
                 instance._allow_duplicate = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._allow_duplicate = value
 
     def __del__(self,instance):
         del instance._allow_duplicate
@@ -686,14 +725,13 @@ class StripOuterArray:
         return instance._strip_outer_array
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[1]: #JSON
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._strip_outer_array = value
+        elif instance._type == gv._allowed_values_type[1]: #JSON
+            if value == "NONE":
                 instance._strip_outer_array = value
-            else:
-                raise TypeError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_outer_array = value
         
     def __del__(self,instance):
         del instance._strip_outer_array
@@ -713,14 +751,13 @@ class StripNullValues:
         return instance._strip_null_values
     
     def __set__(self,instance,value):
+        if value == "NONE":
+            instance._strip_null_values = value
         if instance._type == gv._allowed_values_type[1]: #JSON
-            if vv.is_bool(value):
+            if value == "NONE":
                 instance._strip_null_values = value
-            else:
-                raise ValueError
-        else:
-            pass
-            #raise ValueError
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_null_values = value
         
     def __del__(self,instance):
         del instance._strip_null_values
@@ -740,9 +777,13 @@ class IgnoreUTF8Errors:
         return instance._ignore_utf8_errors
     
     def __set__(self,instance,value):
-        if (instance._type == gv._allowed_values_type[1] or
+        if value == "NONE":
+            instance._ignore_utf8_errors = value
+        elif (instance._type == gv._allowed_values_type[1] or
             instance._type == gv._allowed_values_type[5]) : #JSON and XML
-            if vv.is_bool(value):
+            if value == "NONE":
+                instance._ignore_utf8_errors = value
+            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._ignore_utf8_errors = value
             else:
                 raise TypeError
@@ -768,13 +809,13 @@ class SnappyCompression:
         return instance._snappy_compression
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._snappy_compression = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
+            if value == "NONE":
                 instance._snappy_compression = value
-            else:
-                raise TypeError
-        else:
-            instance._snappy_compression = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._snappy_compression = value
 
     def __del__(self,instance):
         del instance._snappy_compression
@@ -794,13 +835,13 @@ class BinaryAsText:
         return instance._binary_as_text
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._binary_as_text = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
+            if value == "NONE":
                 instance._binary_as_text = value
-            else:
-                raise TypeError
-        else:
-            instance._binary_as_text = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._binary_as_text = value
 
     def __del__(self,instance):
         del instance._binary_as_text
@@ -820,13 +861,13 @@ class UseLogicalType:
         return instance._use_logical_type
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._use_logical_type = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
+            if value == "NONE":
                 instance._use_logical_type = value
-            else:
-                raise TypeError
-        else:
-            instance._use_logical_type = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._use_logical_type = value
 
     def __del__(self,instance):
         del instance._use_logical_type
@@ -846,13 +887,13 @@ class UseVectorizedScanner:
         return instance._use_vectorized_scanner
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[4]: #PARQUET
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._use_vectorized_scanner = value
+        elif instance._type == gv._allowed_values_type[4]: #PARQUET
+            if value == "NONE":
                 instance._use_vectorized_scanner = value
-            else:
-                raise TypeError
-        else:
-            instance._use_vectorized_scanner = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._use_vectorized_scanner = value
 
     def __del__(self,instance):
         del instance._use_vectorized_scanner
@@ -872,13 +913,13 @@ class PreserveSpace:
         return instance._preserve_space
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._preserve_space = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
+            if value == "NONE":
                 instance._preserve_space = value
-            else:
-                raise TypeError
-        else:
-            instance._preserve_space = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._preserve_space = value
 
     def __del__(self,instance):
         del instance._preserve_space
@@ -898,13 +939,13 @@ class StripOuterElement:
         return instance._strip_outer_element
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._strip_outer_element = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
+            if value == "NONE":
                 instance._strip_outer_element = value
-            else:
-                raise TypeError
-        else:
-            instance._strip_outer_element = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._strip_outer_element = value
 
     def __del__(self,instance):
         del instance._strip_outer_element
@@ -924,13 +965,13 @@ class DisableSnowflakeData:
         return instance._disable_snowflake_data
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._disable_snowflake_data = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
+            if value == "NONE":
                 instance._disable_snowflake_data = value
-            else:
-                raise TypeError
-        else:
-            instance._disable_snowflake_data = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._disable_snowflake_data = value
 
     def __del__(self,instance):
         del instance._disable_snowflake_data
@@ -950,13 +991,13 @@ class DisableAutoConvert:
         return instance._disable_auto_convert
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[5]: #XML
-            if vv.is_bool(value):
+        if value == "NONE":
+            instance._disable_auto_convert = value
+        elif instance._type == gv._allowed_values_type[5]: #XML
+            if value == "NONE":
                 instance._disable_auto_convert = value
-            else:
-                raise TypeError
-        else:
-            instance._disable_auto_convert = "NONE"
+            elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._disable_auto_convert = value
 
     def __del__(self,instance):
         del instance._disable_auto_convert
@@ -971,9 +1012,14 @@ class DisableAutoConvertTag:
 
     def __del__(self,instance):
         del instance._disable_auto_convert_tag
-    
 
 class FileFormatAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
+    session = Session()
+    database = Database()
+    schema = Schema()
     type = Type()
     type_tag = TypeTag()
     name = Name()
@@ -1049,14 +1095,22 @@ class FileFormatAttrs:
 
 
 class FileFormat:
-    def __init__(self,session):
-        self.attr = FileFormatAttrs()
-        self.session = session
+    def __init__(self,session,user_id,logger):
+        self.attr = FileFormatAttrs(self)
+        self.attr.session = session
+        self.user_id = user_id
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val
     
+    def set_database(self,val):
+        self.attr.database = val
+    
+    def set_schema(self,val):
+        self.attr.schema = val
+
     def set_name_tag(self,val):
         self.attr.name_tag = val
 
@@ -1270,13 +1324,15 @@ class FileFormat:
     def set_disable_auto_convert_tag(self, val):
         self.attr.disable_auto_convert_tag = val
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
         set_flag(gv._type_tag,"_type")
         set_flag(gv._parse_header_tag, "_parse_header")
         set_flag(gv._skip_header_tag, "_skip_header")
@@ -1316,7 +1372,7 @@ class FileFormat:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE FILE FORMAT  {self.attr.name} "
+        self.qry = f"CREATE FILE FORMAT  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -1391,109 +1447,135 @@ class FileFormat:
         self.add_properties_to_query()
 
     def create_file_format(self):
-        self.session.execute_qry(self.qry)
+        self.attr.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        
-        file_format = FileFormat(session)
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.attr.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges["FILE FORMAT"]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "FILE FORMAT",object_identifier=self.qualified_name,role = role)
 
-        file_format.set_name(kwargs[gv._name_tag])
-        file_format.set_name_tag(gv._name_tag)
 
-        file_format.set_type(kwargs[gv._type_tag])
-        file_format.set_type_tag(gv._type_tag)
+    def create_object(self,*largs,**kwargs):
 
-        file_format.set_parse_header(kwargs[gv._parse_header_tag])
-        file_format.set_parse_header_tag(gv._parse_header_tag)
+        self.set_database(kwargs[gv._database_tag])
+        self.set_schema(kwargs[gv._schema_tag])
 
-        file_format.set_skip_header(kwargs[gv._skip_header_tag])
-        file_format.set_skip_header_tag(gv._skip_header_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        file_format.set_skip_blank_lines(kwargs[gv._skip_blank_lines_tag])
-        file_format.set_skip_blank_lines_tag(gv._skip_blank_lines_tag)
+        self.set_type(kwargs[gv._type_tag])
+        self.set_type_tag(gv._type_tag)
 
-        file_format.set_date_format(kwargs[gv._date_format_tag])
-        file_format.set_date_format_tag(gv._date_format_tag)
+        self.set_parse_header(kwargs[gv._parse_header_tag])
+        self.set_parse_header_tag(gv._parse_header_tag)
 
-        file_format.set_time_format(kwargs[gv._time_format_tag])
-        file_format.set_time_format_tag(gv._time_format_tag)
+        self.set_skip_header(kwargs[gv._skip_header_tag])
+        self.set_skip_header_tag(gv._skip_header_tag)
 
-        file_format.set_timestamp_format(kwargs[gv._timestamp_format_tag])
-        file_format.set_timestamp_format_tag(gv._timestamp_format_tag)
+        self.set_skip_blank_lines(kwargs[gv._skip_blank_lines_tag])
+        self.set_skip_blank_lines_tag(gv._skip_blank_lines_tag)
 
-        file_format.set_binary_format(kwargs[gv._binary_format_tag])
-        file_format.set_binary_format_tag(gv._binary_format_tag)
+        self.set_date_format(kwargs[gv._date_format_tag])
+        self.set_date_format_tag(gv._date_format_tag)
 
-        file_format.set_escape(kwargs[gv._escape_tag])
-        file_format.set_escape_tag(gv._escape_tag)
+        self.set_time_format(kwargs[gv._time_format_tag])
+        self.set_time_format_tag(gv._time_format_tag)
 
-        file_format.set_escape_unenclosed_field(kwargs[gv._escape_unenclosed_field_tag])
-        file_format.set_escape_unenclosed_field_tag(gv._escape_unenclosed_field_tag)
+        self.set_timestamp_format(kwargs[gv._timestamp_format_tag])
+        self.set_timestamp_format_tag(gv._timestamp_format_tag)
 
-        file_format.set_trim_space(kwargs[gv._trim_space_tag])
-        file_format.set_trim_space_tag(gv._trim_space_tag)
+        self.set_binary_format(kwargs[gv._binary_format_tag])
+        self.set_binary_format_tag(gv._binary_format_tag)
 
-        file_format.set_field_optionally_enclosed_by(kwargs[gv._field_optionally_enclosed_by_tag])
-        file_format.set_field_optionally_enclosed_by_tag(gv._field_optionally_enclosed_by_tag)
+        self.set_escape(kwargs[gv._escape_tag])
+        self.set_escape_tag(gv._escape_tag)
 
-        file_format.set_null_if(kwargs[gv._null_if_tag])
-        file_format.set_null_if_tag(gv._null_if_tag)
+        self.set_escape_unenclosed_field(kwargs[gv._escape_unenclosed_field_tag])
+        self.set_escape_unenclosed_field_tag(gv._escape_unenclosed_field_tag)
 
-        file_format.set_error_on_column_count_mismatch(kwargs[gv._error_on_column_count_mismatch_tag])
-        file_format.set_error_on_column_count_mismatch_tag(gv._error_on_column_count_mismatch_tag)
+        self.set_trim_space(kwargs[gv._trim_space_tag])
+        self.set_trim_space_tag(gv._trim_space_tag)
 
-        file_format.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        file_format.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        self.set_field_optionally_enclosed_by(kwargs[gv._field_optionally_enclosed_by_tag])
+        self.set_field_optionally_enclosed_by_tag(gv._field_optionally_enclosed_by_tag)
 
-        file_format.set_empty_field_as_null(kwargs[gv._empty_field_as_null_tag])
-        file_format.set_empty_field_as_null_tag(gv._empty_field_as_null_tag)
+        self.set_null_if(kwargs[gv._null_if_tag])
+        self.set_null_if_tag(gv._null_if_tag)
 
-        file_format.set_skip_byte_order_mark(kwargs[gv._skip_byte_order_mark_tag])
-        file_format.set_skip_byte_order_mark_tag(gv._skip_byte_order_mark_tag)
+        self.set_error_on_column_count_mismatch(kwargs[gv._error_on_column_count_mismatch_tag])
+        self.set_error_on_column_count_mismatch_tag(gv._error_on_column_count_mismatch_tag)
 
-        file_format.set_encoding(kwargs[gv._encoding_tag])
-        file_format.set_encoding_tag(gv._encoding_tag)
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        file_format.set_enable_octal(kwargs[gv._enable_octal_tag])
-        file_format.set_enable_octal_tag(gv._enable_octal_tag)
+        self.set_empty_field_as_null(kwargs[gv._empty_field_as_null_tag])
+        self.set_empty_field_as_null_tag(gv._empty_field_as_null_tag)
 
-        file_format.set_allow_duplicate(kwargs[gv._allow_duplicate_tag])
-        file_format.set_allow_duplicate_tag(gv._allow_duplicate_tag)
+        self.set_skip_byte_order_mark(kwargs[gv._skip_byte_order_mark_tag])
+        self.set_skip_byte_order_mark_tag(gv._skip_byte_order_mark_tag)
 
-        file_format.set_strip_outer_array(kwargs[gv._strip_outer_array_tag])
-        file_format.set_strip_outer_array_tag(gv._strip_outer_array_tag)
+        self.set_encoding(kwargs[gv._encoding_tag])
+        self.set_encoding_tag(gv._encoding_tag)
 
-        file_format.set_strip_null_values(kwargs[gv._strip_null_values_tag])
-        file_format.set_strip_null_values_tag(gv._strip_null_values_tag)
+        self.set_enable_octal(kwargs[gv._enable_octal_tag])
+        self.set_enable_octal_tag(gv._enable_octal_tag)
 
-        file_format.set_ignore_utf8_errors(kwargs[gv._ignore_utf8_errors_tag])
-        file_format.set_ignore_utf8_errors_tag(gv._ignore_utf8_errors_tag)
+        self.set_allow_duplicate(kwargs[gv._allow_duplicate_tag])
+        self.set_allow_duplicate_tag(gv._allow_duplicate_tag)
 
-        file_format.set_snappy_compression(kwargs[gv._snappy_compression_tag])
-        file_format.set_snappy_compression_tag(gv._snappy_compression_tag)
+        self.set_strip_outer_array(kwargs[gv._strip_outer_array_tag])
+        self.set_strip_outer_array_tag(gv._strip_outer_array_tag)
 
-        file_format.set_binary_as_text(kwargs[gv._binary_as_text_tag])
-        file_format.set_binary_as_text_tag(gv._binary_as_text_tag)
+        self.set_strip_null_values(kwargs[gv._strip_null_values_tag])
+        self.set_strip_null_values_tag(gv._strip_null_values_tag)
 
-        file_format.set_use_logical_type(kwargs[gv._use_logical_type_tag])
-        file_format.set_use_logical_type_tag(gv._use_logical_type_tag)
+        self.set_ignore_utf8_errors(kwargs[gv._ignore_utf8_errors_tag])
+        self.set_ignore_utf8_errors_tag(gv._ignore_utf8_errors_tag)
 
-        file_format.set_use_vectorized_scanner(kwargs[gv._use_vectorized_scanner_tag])
-        file_format.set_use_vectorized_scanner_tag(gv._use_vectorized_scanner_tag)
+        self.set_snappy_compression(kwargs[gv._snappy_compression_tag])
+        self.set_snappy_compression_tag(gv._snappy_compression_tag)
 
-        file_format.set_preserve_space(kwargs[gv._preserve_space_tag])
-        file_format.set_preserve_space_tag(gv._preserve_space_tag)
+        self.set_binary_as_text(kwargs[gv._binary_as_text_tag])
+        self.set_binary_as_text_tag(gv._binary_as_text_tag)
 
-        file_format.set_strip_outer_element(kwargs[gv._strip_outer_element_tag])
-        file_format.set_strip_outer_element_tag(gv._strip_outer_element_tag)
+        self.set_use_logical_type(kwargs[gv._use_logical_type_tag])
+        self.set_use_logical_type_tag(gv._use_logical_type_tag)
 
-        file_format.set_disable_snowflake_data(kwargs[gv._disable_snowflake_data_tag])
-        file_format.set_disable_snowflake_data_tag(gv._disable_snowflake_data_tag)
+        self.set_use_vectorized_scanner(kwargs[gv._use_vectorized_scanner_tag])
+        self.set_use_vectorized_scanner_tag(gv._use_vectorized_scanner_tag)
 
-        file_format.set_disable_auto_convert(kwargs[gv._disable_auto_convert_tag])
-        file_format.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
-        file_format.prepare_query()
-        file_format.create_file_format()
+        self.set_preserve_space(kwargs[gv._preserve_space_tag])
+        self.set_preserve_space_tag(gv._preserve_space_tag)
+
+        self.set_strip_outer_element(kwargs[gv._strip_outer_element_tag])
+        self.set_strip_outer_element_tag(gv._strip_outer_element_tag)
+
+        self.set_disable_snowflake_data(kwargs[gv._disable_snowflake_data_tag])
+        self.set_disable_snowflake_data_tag(gv._disable_snowflake_data_tag)
+
+        self.set_disable_auto_convert(kwargs[gv._disable_auto_convert_tag])
+        self.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
+        self.set_qualified_name()
+        self.prepare_query()
+        self.create_file_format()
+        self.grant_default_privileges()
+        if len(largs) == 0:
+            self.create_deployment_entry()
+
+
+
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.attr.session)
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
 
 

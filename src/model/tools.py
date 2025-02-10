@@ -43,21 +43,21 @@ class LLMTools:
                                     aws_access_key_id=llm_config.ACCESS_KEY,
                                     aws_secret_access_key=llm_config.SECRET_KEY,
                                     region_name=self.region)
-        self.obj_class_mapping = {'account': account.Admin(self.sf_session),
-                                  'database': database.Database(session=self.sf_session, user_id=self.user_id),
-                                  #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id),
-                                  'role': role.Role(self.sf_session,self.user_id),
-                                  'copyinto':copyinto.CopyInto(),
-                                  'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id),
-                                  'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id),
-                                  #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id),
-                                  'warehouse': warehouse.Warehouse(self.sf_session,self.user_id),
-                                  'schema': schema.Schema(session=self.sf_session, user_id=self.user_id),
-                                  #'share': share.Share(self.sf_session,self.user_id),
-                                  'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id),
-                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id)
+        self.obj_class_mapping = {'account': account.Admin(self.sf_session, logger=self.logger),
+                                  'database': database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
+                                  'role': role.Role(self.sf_session,self.user_id, logger=self.logger),
+                                  'copyinto':copyinto.CopyInto(logger=self.logger),
+                                  'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
+                                  'warehouse': warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
+                                  'schema': schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
+                                  'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger)
                                   #'task': task.Task,
-                                  #'user': user.User(self.sf_session,self.user_id)
+                                  #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
 

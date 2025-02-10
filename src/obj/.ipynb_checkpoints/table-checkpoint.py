@@ -8,21 +8,31 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from vars.global_vars import Config as gv
+from vars.gvobject import Config as gv,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 from processing.stage import Stage
 from dep.deploy import Deploy
 
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Database:
     def __get__(self,instance,owner):
         return instance._database
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._database = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.database_exist(value):
+        instance._database  = value
 
     def __delete__(self,instance):
         del instance._database
@@ -32,10 +42,9 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._schema = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
 
     def __delete__(self,instance):
         del instance._schema
@@ -45,10 +54,8 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._name = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)        
+        instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -82,7 +89,10 @@ class ColumnTypeList:
 
 
 class TableAttrs:
+    def __init__(self,parent):
+        self.parent = parent
 
+    session = Session()
     database = Database()
 
     schema = Schema()
@@ -95,11 +105,12 @@ class TableAttrs:
 
 class Table:
 
-    def __init__(self,session,root,user_id):
-        self.attr = TableAttrs()
-        self.session = session 
+    def __init__(self,session,root,user_id,logger):
+        self.attr = TableAttrs(self)
+        self.attr.session = session 
         self.root = root
         self.user_id = user_id
+        self.logger = logger
 
     def set_database(self,database):
         self.attr.database = database
@@ -125,7 +136,7 @@ class Table:
         return self.attr.table_ddl_df[column_name]
     
     def get_create_table_query(self):
-        qry = f"CREATE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
+        qry = f"CREATE OR REPLACE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
 
         for i in range(0,len(self.attr.column_name_list)):
             if i != len(self.attr.column_name_list) -1:
@@ -137,9 +148,8 @@ class Table:
         return qry
 
     def create_table(self):
-        qry = self.get_create_table_query()
-        print(qry)
-        self.session.sql(qry).collect()
+        self.qry = self.get_create_table_query()
+        self.attr.session.sql(self.qry).collect()
 
 
     def create_table_using_files_from_stage(self,database,schema):
@@ -165,9 +175,11 @@ class Table:
             self.create_table()
             self.create_deployment_entry()
         return tbl_lst
+    
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.attr.session)
+        deploy_inst.insert_into_deployment_script_table(self.qry,self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)

@@ -3,12 +3,11 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-
-from global_vars import Share as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import Share as gv
+from validation.validatevalue import ValidateValue as vv
 
 
 class Name:
@@ -16,9 +15,8 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if not vv.starts_with_alphabet(value):
             raise ValueError
         elif not vv.is_enclosed_in_double_quotes(value):
             if vv.has_space(value):
@@ -62,6 +60,9 @@ class CommentTag:
         del instance._comment_tag
 
 class ShareAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+
     name = Name()
     name_tag = NameTag()
 
@@ -70,10 +71,11 @@ class ShareAttrs:
 
 
 class Share:
-    def __init__(self):
-        self.attr = ShareAttrs()
+    def __init__(self,logger):
+        self.attr = ShareAttrs(self)
         self.session = 'session'
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val
@@ -119,7 +121,7 @@ class Share:
         self.add_properties_to_query()
     
     def create_share(self):
-        self.session.execute_qry(self.qry)
+        self.session.sql(self.qry)
 
     def create_object(session,**kwargs):
         share = Share(session)

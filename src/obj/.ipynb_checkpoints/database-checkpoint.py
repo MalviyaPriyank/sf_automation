@@ -1,24 +1,40 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
-from global_vars import Database as gv
-from validatevalue import ValidateValue as vv
-from valueexception import IsARequiredAttribute
+
+from vars.gvobject import Database as gv, Config as cfg , Privilege as gv_priv
+from validation.validatevalue import ValidateValue as vv
+from dep import deploy
+from setup import privilege 
+
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise IsARequiredAttribute(instance.parent.__class__.__name__,self.__class__.__name__)
-        elif ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
             instance._name = value
 
@@ -40,8 +56,11 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
             instance._data_retention_time_in_days = value
+        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._data_retention_time_in_days = value
+
     
     def __delete__(self,instance):
         del instance._data_retention_time_in_days
@@ -61,8 +80,10 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        if vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        if value == "NONE":
             instance._max_data_extension_time_in_days = value
+        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+                instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -166,7 +187,11 @@ class StorageSerializationPolicy:
         return instance._storage_serialization_policy
     
     def __set__(self,instance,value):
-        instance._storage_serialization_policy = value
+        if value == "NONE":
+            instance._storage_serialization_policy = value
+        else:
+            vv.allowed_value_check(value,gv._allowed_values_storage_serialization_policy,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
         del instance._storage_serialization_policy
@@ -204,6 +229,8 @@ class CommentTag:
 class DatabaseAttrs:
     def __init__(self,parent):
         self.parent = parent
+    
+    session = Session()
 
     name = Name()
     name_tag = NameTag()
@@ -234,10 +261,13 @@ class DatabaseAttrs:
 
 
 class Database:
-    def __init__(self,session):
+    def __init__(self,session,user_id,logger):
         self.attr = DatabaseAttrs(self)
-        self.session = session
+        self.attr.session = session
+        self.user_id = user_id
         self.qry = ""
+        self.logger = logger
+
 
     def set_name(self, value):
         self.attr.name = value
@@ -346,39 +376,62 @@ class Database:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
+    def create_deployment_entry(self):
+        deploy_inst = deploy.Deploy(self.attr.session)
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database('NA')
+        deploy_inst.set_object_schema('NA')
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
+
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.attr.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
+
+
     def create_database(self):
-        self.session.sql(self.qry)
+        self.attr.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        database = Database(session)
+    def create_object(self,*largs,**kwargs):
 
-        database.set_name(kwargs[gv._name_tag])
-        database.set_name_tag(gv._name_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        database.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        database.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-        database.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        database.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-        database.set_external_volume(kwargs[gv._external_volume_tag])
-        database.set_external_volume_tag(gv._external_volume_tag)
+        self.set_external_volume(kwargs[gv._external_volume_tag])
+        self.set_external_volume_tag(gv._external_volume_tag)
 
-        database.set_catalog(kwargs[gv._catalog_tag])
-        database.set_catalog_tag(gv._catalog_tag)
+        self.set_catalog(kwargs[gv._catalog_tag])
+        self.set_catalog_tag(gv._catalog_tag)
 
-        database.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        database.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        database.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        database.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-        database.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        database.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-        database.set_comment(kwargs[gv._comment_tag])
-        database.set_comment_tag(gv._comment_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        database.prepare_query()
-        database.create_database()
+        self.prepare_query()
+        self.create_database()
+        self.grant_default_privileges()
+        if len(largs) == 0:
+            self.create_deployment_entry()
+
+            
 

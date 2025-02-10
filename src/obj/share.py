@@ -71,10 +71,11 @@ class ShareAttrs:
 
 
 class Share:
-    def __init__(self):
+    def __init__(self,logger):
         self.attr = ShareAttrs(self)
         self.session = 'session'
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val

@@ -1,20 +1,26 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
-from account_global_vars import * 
-import validatevalue
 
-class AccountNamne:
+from vars.gvobject import Account as gv
+from validation.validatevalue import ValidateValue as vv
+
+
+
+class AccountName:
     def __get__(self,instance,owner):
         return instance._account_name
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
             instance._account_name = value
 
     def __delete__(self,instance):
@@ -35,9 +41,8 @@ class AdminName:
         return instance._admin_name
     
     def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._admin_name = value
 
     def __delete__(self,instance):
@@ -58,9 +63,12 @@ class AdminPassword:
         return instance._admin_password
     
     def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)   
+        if (
+            (vv.is_enclosed_in_single_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+            or vv.is_enclosed_in_double_quotes(value,instance.parent.__class__.__name__,self.__class__.__name__))
+            and
+            (vv.is_valid_password(value,instance.parent.__class__.__name__,self.__class__.__name__))):
             instance._admin_password = value
 
     def __delete__(self,instance):
@@ -81,7 +89,7 @@ class AdminUserType:
         return instance._admin_user_type
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_admin_user_type:
+        if value not in gv._allowed_values_admin_user_type:
             raise ValueError
         else:
             instance._admin_user_type = value
@@ -145,10 +153,8 @@ class Email:
         return instance._email
     
     def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
-            instance._email = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._email = value
     
     def __delete__(self,instance):
         del instance._email
@@ -168,7 +174,7 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_must_change_password:
+        if value not in gv._allowed_values_must_change_password:
             raise ValueError
         else:
             instance._must_change_password = value
@@ -191,13 +197,11 @@ class Edition:
         return instance._edition
     
     def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if value not in gv._allowed_values_edition: 
+            raise ValueError
         else:
-            if value not in AccountTags._allowed_values_edition: 
-                raise ValueError
-            else:
-                instance._edition = value
+            instance._edition = value
     
     def __delete__(self,instance):
         del instance._edition
@@ -278,7 +282,7 @@ class Polaris:
         return instance._polaris
     
     def __set__(self,instance,value):
-        if value not in AccountTags._allowed_values_polaris:
+        if value not in gv._allowed_values_polaris:
             raise ValueError
         else:
             instance._polaris = value
@@ -298,7 +302,9 @@ class PolarisTag:
 
 
 class AdminAttrs:
-    account_name = AccountNamne()
+    def __init__(self,parent):
+        self.parent = parent
+    account_name = AccountName()
     account_name_tag = AccountNameTag()
     admin_name = AdminName()
     admin_name_tag = AdminNameTag()
@@ -328,160 +334,111 @@ class AdminAttrs:
 
 
 class Admin:
-    def __init__(self,session):
-        self.attr = AdminAttrs()
+    def __init__(self,session,logger):
+        self.attr = AdminAttrs(self)
         self.session = session
         self.qry = ""
+        self.logger = logger
 
-    def set_account_name(self,account_name):
-        self.attr.account_name = account_name
+    def set_account_name(self, value):
+        self.attr.account_name = value
 
-    def set_account_name_tag(self,account_name_tag):
-        self.attr.account_name_tag = account_name_tag
+    def set_account_name_tag(self, value):
+        self.attr.account_name_tag = value
 
-    def set_admin_name(self,admin_name):
-        self.attr.admin_name = admin_name 
+    def set_admin_name(self, value):
+        self.attr.admin_name = value
 
-    def set_admin_name_tag(self,admin_name_tag):
-        self.attr.admin_name_tag = admin_name_tag 
+    def set_admin_name_tag(self, value):
+        self.attr.admin_name_tag = value
 
-    def set_admin_password(self,admin_password):
-        self.attr.admin_password = admin_password
+    def set_admin_password(self, value):
+        self.attr.admin_password = value
 
-    def set_admin_password_tag(self,admin_password_tag):
-        self.attr.admin_password_tag = admin_password_tag
+    def set_admin_password_tag(self, value):
+        self.attr.admin_password_tag = value
 
+    def set_admin_user_type(self, value):
+        self.attr.admin_user_type = value
 
-    def set_admin_user_type(self,admin_user_type):
-        self.attr.admin_user_type = admin_user_type
+    def set_admin_user_type_tag(self, value):
+        self.attr.admin_user_type_tag = value
 
-    def set_admin_user_type_tag(self,admin_user_type_tag):
-        self.attr.admin_user_type_tag = admin_user_type_tag
+    def set_first_name(self, value):
+        self.attr.first_name = value
 
-    def set_first_name(self,first_name):
-        self.attr.first_name = first_name
+    def set_first_name_tag(self, value):
+        self.attr.first_name_tag = value
 
-    def set_first_name_tag(self,first_name_tag):
-        self.attr.first_name_tag = first_name_tag
+    def set_last_name(self, value):
+        self.attr.last_name = value
 
-    def set_last_name(self,last_name):
-        self.attr.last_name = last_name
+    def set_last_name_tag(self, value):
+        self.attr.last_name_tag = value
 
-    def set_last_name_tag(self,last_name_tag):
-        self.attr.last_name_tag = last_name_tag
+    def set_email(self, value):
+        self.attr.email = value
 
-    def set_email(self,email):
-        self.attr.email = email
+    def set_email_tag(self, value):
+        self.attr.email_tag = value
 
-    def set_email_tag(self,email_tag):
-        self.attr.email_tag = email_tag
+    def set_must_change_password(self, value):
+        self.attr.must_change_password = value
 
-    def set_must_change_password(self,must_change_password):
-        self.attr.must_change_password = must_change_password
+    def set_must_change_password_tag(self, value):
+        self.attr.must_change_password_tag = value
 
-    def set_must_change_password_tag(self,must_change_password_tag):
-        self.attr.must_change_password_tag = must_change_password_tag
+    def set_edition(self, value):
+        self.attr.edition = value
 
-    def set_edition(self,edition):
-        self.attr.edition = edition
+    def set_edition_tag(self, value):
+        self.attr.edition_tag = value
 
-    def set_edition_tag(self,edition_tag):
-        self.attr.edition_tag = edition_tag
+    def set_region_group(self, value):
+        self.attr.region_group = value
 
-    def set_region_group(self,region_group):
-        self.attr.region_group = region_group
+    def set_region_group_tag(self, value):
+        self.attr.region_group_tag = value
 
-    def set_region_group_tag(self,region_group_tag):
-        self.attr.region_group_tag = region_group_tag
+    def set_region(self, value):
+        self.attr.region = value
 
-    def set_region(self,region):
-        self.attr.region = region
+    def set_region_tag(self, value):
+        self.attr.region_tag = value
 
-    def set_region_tag(self,region_tag):
-        self.attr.region_tag = region_tag
+    def set_comment(self, value):
+        self.attr.comment = value
 
-    def set_comment(self,comment):
-        self.attr.comment = comment
+    def set_comment_tag(self, value):
+        self.attr.comment_tag = value
 
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
+    def set_polaris(self, value):
+        self.attr.polaris = value
 
-    def set_polaris(self,polaris):
-        self.attr.polaris = polaris
+    def set_polaris_tag(self, value):
+        self.attr.polaris_tag = value
 
-    def set_polaris_tag(self,polaris_tag):
-        self.attr.polaris_tag = polaris_tag
 
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
-        if self.attr.account_name is not None:
-            self.flag_dic['account_name'] = 1
-        else:
-            self.flag_dic['account_name'] = 0
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        if self.attr.admin_name is not None:
-            self.flag_dic['admin_name'] = 1
-        else:
-            self.flag_dic['admin_name'] = 0
-
-        if self.attr.admin_password is not None:
-            self.flag_dic['admin_password'] = 1
-        else:
-            self.flag_dic['admin_password'] = 0
-
-        if self.attr.admin_user_type is not None:
-            self.flag_dic['admin_user_type'] = 1
-        else:
-            self.flag_dic['admin_user_type'] = 0
-
-        if self.attr.first_name is not None:
-            self.flag_dic['first_name'] = 1
-        else:
-            self.flag_dic['first_name'] = 0
-
-        if self.attr.last_name is not None:
-            self.flag_dic['last_name'] = 1
-        else:
-            self.flag_dic['last_name'] = 0
-
-        if self.attr.email is not None:
-            self.flag_dic['email'] = 1
-        else:
-            self.flag_dic['email'] = 0
-        
-        if self.attr.must_change_password is not None:
-            self.flag_dic['must_change_password'] = 1
-        else:
-            self.flag_dic['must_change_password'] = 0
-
-        if self.attr.edition is not None:
-            self.flag_dic['edition'] = 1
-        else:
-            self.flag_dic['edition'] = 0
-
-        if self.attr.region_group is not None:
-            self.flag_dic['region_group'] = 1
-        else:
-            self.flag_dic['region_group'] = 0
-
-        if self.attr.region is not None:
-            self.flag_dic['region'] = 1
-        else:
-            self.flag_dic['region'] = 0
-
-        if self.attr.comment is not None:
-            self.flag_dic['comment'] = 1
-        else:
-            self.flag_dic['comment'] = 0
-
-        if self.attr.polaris is not None:
-            self.flag_dic['polaris'] = 1
-        else:
-            self.flag_dic['polaris'] = 0
-
-
+        set_flag(gv._account_name_tag,"_account_name")
+        set_flag(gv._admin_name_tag,"_admin_name")
+        set_flag(gv._admin_password_tag,"_admin_password")
+        set_flag(gv._admin_user_type_tag,"_admin_user_type")
+        set_flag(gv._first_name_tag,"_first_name")
+        set_flag(gv._last_name_tag,"_last_name")
+        set_flag(gv._email_tag,"_email")
+        set_flag(gv._must_change_password_tag,"_must_change_password")
+        set_flag(gv._edition_tag,"_edition")
+        set_flag(gv._region_group_tag,"_region_group")
+        set_flag(gv._region_tag,"_region")
+        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._polaris_tag,"_polaris")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -495,29 +452,29 @@ class Admin:
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == 'account_name':
-                    self.qry = f" {self.qry} {self.attr.account_name_tag}  = {self.attr.account_name} "
-                if prop == 'admin_name':
+                if prop == gv._admin_name_tag:
                     self.qry = f" {self.qry} {self.attr.admin_name_tag} = {self.attr.admin_name} "
-                if prop == 'admin_user_type':
+                if prop == gv._admin_password_tag:
+                    self.qry = f" {self.qry} {self.attr.admin_password_tag} = {self.attr.admin_password} "
+                if prop == gv._admin_user_type_tag:
                     self.qry = f" {self.qry} {self.attr.admin_user_type_tag} = {self.attr.admin_user_type} "
-                if prop == 'first_name':
+                if prop == gv._first_name_tag:
                     self.qry = f" {self.qry} {self.attr.first_name_tag} = {self.attr.first_name} "
-                if prop == 'last_name':
+                if prop == gv._last_name_tag:
                     self.qry = f" {self.qry} {self.attr.last_name_tag} = {self.attr.last_name} "
-                if prop == 'email':
+                if prop == gv._email_tag:
                     self.qry = f" {self.qry} {self.attr.email_tag} = {self.attr.email} "
-                if prop == 'must_change_password':
+                if prop == gv._must_change_password_tag:
                     self.qry = f" {self.qry} {self.attr.must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == 'edition':
+                if prop == gv._edition_tag:
                     self.qry = f" {self.qry} {self.attr.edition_tag} = {self.attr.edition} "
-                if prop == 'region_group':
+                if prop == gv._region_group_tag:
                     self.qry = f" {self.qry} {self.attr.region_group_tag} = {self.attr.region_group} "
-                if prop == 'region':
+                if prop == gv._region_tag:
                     self.qry = f" {self.qry} {self.attr.region_tag} = {self.attr.region} "
-                if prop == 'comment':
+                if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == 'polaris':
+                if prop == gv._polaris_tag:
                     self.qry = f" {self.qry} {self.attr.polaris_tag} = {self.attr.polaris} "
 
 
@@ -526,51 +483,52 @@ class Admin:
         self.check_properties_to_set()
         self.set_create_account_qry()
         self.add_properties_to_query()
-
     
-def main(session,**kwargs):
-    adm = Admin(session)
+    def create_account(self):
+        self.session.sql(self.qry)
+    
+    def create_object(session,**kwargs):
+        adm = Admin(session)
 
-    adm.set_account_name(kwargs[_account_name_tag])
-    adm.set_account_name_tag(_account_name_tag)
+        adm.set_account_name(kwargs[gv._account_name_tag])
+        adm.set_account_name_tag(gv._account_name_tag)
 
-    adm.set_admin_name(kwargs[_admin_name_tag])
-    adm.set_admin_name_tag(_admin_name_tag)
+        adm.set_admin_name(kwargs[gv._admin_name_tag])
+        adm.set_admin_name_tag(gv._admin_name_tag)
 
-    adm.set_admin_password(kwargs[_admin_password_tag])
-    adm.set_admin_password_tag(_admin_password_tag)
+        adm.set_admin_password(kwargs[gv._admin_password_tag])
+        adm.set_admin_password_tag(gv._admin_password_tag)
 
-    adm.set_admin_user_type(kwargs[_admin_user_type_tag])
-    adm.set_admin_user_type_tag(_admin_user_type_tag)
+        adm.set_admin_user_type(kwargs[gv._admin_user_type_tag])
+        adm.set_admin_user_type_tag(gv._admin_user_type_tag)
 
-    adm.set_first_name(kwargs[_first_name_tag])
-    adm.set_first_name_tag(_first_name_tag)
+        adm.set_first_name(kwargs[gv._first_name_tag])
+        adm.set_first_name_tag(gv._first_name_tag)
 
-    adm.set_last_name(kwargs[_last_name_tag])
-    adm.set_last_name_tag(_last_name_tag)
+        adm.set_last_name(kwargs[gv._last_name_tag])
+        adm.set_last_name_tag(gv._last_name_tag)
 
-    adm.set_email(kwargs[_email_tag])
-    adm.set_email_tag(_email_tag)
+        adm.set_email(kwargs[gv._email_tag])
+        adm.set_email_tag(gv._email_tag)
 
-    adm.set_must_change_password(kwargs[_must_change_password_tag])
-    adm.set_must_change_password_tag(_must_change_password_tag)
+        adm.set_must_change_password(kwargs[gv._must_change_password_tag])
+        adm.set_must_change_password_tag(gv._must_change_password_tag)
 
-    adm.set_edition(kwargs[_edition_tag])
-    adm.set_edition_tag(_edition_tag)
+        adm.set_edition(kwargs[gv._edition_tag])
+        adm.set_edition_tag(gv._edition_tag)
 
-    adm.set_region_group(kwargs[_region_group_tag])
-    adm.set_region_group_tag(_region_group_tag)
+        adm.set_region_group(kwargs[gv._region_group_tag])
+        adm.set_region_group_tag(gv._region_group_tag)
 
-    adm.set_region(kwargs[_region_tag])
-    adm.set_region_tag(_region_tag)
+        adm.set_region(kwargs[gv._region_tag])
+        adm.set_region_tag(gv._region_tag)
 
-    adm.set_comment(kwargs[_comment_tag])
-    adm.set_comment_tag(_comment_tag)
+        adm.set_comment(kwargs[gv._comment_tag])
+        adm.set_comment_tag(gv._comment_tag)
 
 
-    adm.set_polaris(kwargs[_polaris_tag])
-    adm.set_polaris_tag(_polaris_tag)
+        adm.set_polaris(kwargs[gv._polaris_tag])
+        adm.set_polaris_tag(gv._polaris_tag)
 
-    adm.prepare_query()
-
-    return adm.qry
+        adm.prepare_query()
+        adm.create_account()

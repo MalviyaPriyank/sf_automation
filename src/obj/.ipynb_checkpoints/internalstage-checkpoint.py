@@ -1,29 +1,65 @@
 import sys
 import os 
 
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../vars/global'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from global_vars import InternalStage as gv
-from validatevalue import ValidateValue as vv
+from vars.gvobject import InternalStage as gv, Config as cfg,Privilege as gv_priv
+from validation.validatevalue import ValidateValue as vv
+from dep.deploy import Deploy
+from validation.validateobject import ValidateObject as vo
+from setup import privilege
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+    
+    def __delete__(self,instance):
+        del instance._session
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.database_exist(value):
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database_name
+
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #if vo.schema_exist(instance._database,value):
+        instance._schema = value
+    
+    def __delete__(self,instance):
+        del instance._schema
+
 
 class Name:
     def __get__(self,instance,owner):
         return instance._name
     
     def __set__(self,instance,value):
-        if value == "NONE" :
-            raise KeyError
-        elif not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              ):
+            instance._name = value
+            
 
     def __del__(self,instance):
         del instance._name
@@ -108,9 +144,10 @@ class Encryption:
         return instance._encryption
     
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_encryption:
-            raise ValueError
+        if value == "NONE":
+            instance._encryption = value
         else:
+            vv.allowed_value_check(value,gv._allowed_values_encryption,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._encryption = value
 
     def __del__(self,instance):
@@ -131,10 +168,10 @@ class Directory:
         return instance._directory
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._directory = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._directory = value
 
     def __del__(self,instance):
         del instance._directory
@@ -155,10 +192,10 @@ class RefreshOnCreate:
         return instance._refresh_on_create
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == "NONE":
             instance._refresh_on_create = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._refresh_on_create = value
 
 
     def __del__(self,instance):
@@ -179,6 +216,14 @@ class RefreshOnCreateTag:
 
 
 class InternalStageAttrs:
+    def __init__(self,parent):
+        self.parent = parent
+    
+    session = Session()
+    database = Database()
+
+    schema = Schema()
+
     name = Name()
     name_tag = NameTag()
 
@@ -203,10 +248,19 @@ class InternalStageAttrs:
 
 
 class InternalStage:
-    def __init__(self,session):
-        self.attr = InternalStageAttrs()
-        self.session = session
+    def __init__(self,session,user_id,logger):
+        self.attr = InternalStageAttrs(self)
+        self.attr.session = session
+        self.user_id = user_id
+        self.sf_object_tag = "STAGE"
         self.qry = ""
+        self.logger = logger
+
+    def set_database(self,val):
+        self.attr.database = val
+
+    def set_schema(self,val):
+        self.attr.schema = val
 
     def set_name(self,val):
         self.attr.name = val
@@ -250,6 +304,9 @@ class InternalStage:
     def set_refresh_on_create_tag(self,val):
         self.attr.refresh_on_create_tag = val
 
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -271,7 +328,7 @@ class InternalStage:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE STAGE  {self.attr.name} "
+        self.qry = f"CREATE STAGE  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -296,34 +353,60 @@ class InternalStage:
         self.add_properties_to_query()
 
     def create_internal_stage(self):
-        self.session.execute_qry(self.qry)
+        self.attr.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        internal_stage = InternalStage(session)
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.attr.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.sf_object_tag]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.sf_object_tag,object_identifier=self.qualified_name,role = role)
 
-        internal_stage.set_name(kwargs[gv._name_tag])
-        internal_stage.set_name_tag(gv._name_tag)
+    def create_deployment_entry(self):
+        deploy_inst = Deploy(self.attr.session)
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.set_object_type(self.__class__.__name__)
+        deploy_inst.set_object_database(self.attr.database)
+        deploy_inst.set_object_schema(self.attr.schema)
+        deploy_inst.set_object_name(self.attr.name)
+        deploy_inst.set_modified_by(self.user_id)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
+        deploy_inst.set_deployment_id('NA')
+        deploy_inst.insert_into_deploy_control_table()
 
-        internal_stage.set_file_format(kwargs[gv._file_format_tag])
-        internal_stage.set_file_format_tag(gv._file_format_tag)
+    def create_object(self,*largs,**kwargs):
 
-        internal_stage.set_comment(kwargs[gv._comment_tag])
-        internal_stage.set_comment_tag(gv._comment_tag)
+        self.set_database(kwargs[gv._database_tag])
 
-        internal_stage.set_tag(kwargs[gv._tag_tag])
-        internal_stage.set_tag_tag(gv._tag_tag)
+        self.set_schema(kwargs[gv._schema_tag])
 
-        internal_stage.set_encryption(kwargs[gv._encryption_tag])
-        internal_stage.set_encryption_tag(gv._encryption_tag)
+        self.set_name(kwargs[gv._name_tag])
+        self.set_name_tag(gv._name_tag)
 
-        internal_stage.set_directory(kwargs[gv._directory_tag])
-        internal_stage.set_directory_tag(gv._directory_tag)
+        self.set_file_format(kwargs[gv._file_format_tag])
+        self.set_file_format_tag(gv._file_format_tag)
 
-        internal_stage.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
-        internal_stage.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        self.set_comment(kwargs[gv._comment_tag])
+        self.set_comment_tag(gv._comment_tag)
 
-        internal_stage.prepare_query()
-        internal_stage.create_internal_stage()
+        self.set_tag(kwargs[gv._tag_tag])
+        self.set_tag_tag(gv._tag_tag)
+
+        self.set_encryption(kwargs[gv._encryption_tag])
+        self.set_encryption_tag(gv._encryption_tag)
+
+        self.set_directory(kwargs[gv._directory_tag])
+        self.set_directory_tag(gv._directory_tag)
+
+        self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
+        self.set_refresh_on_create_tag(gv._refresh_on_create_tag)
+        
+        self.set_qualified_name()
+
+        self.prepare_query()
+        self.create_internal_stage()
+        if len(largs) == 0:
+            self.create_deployment_entry()
+
 
 
         

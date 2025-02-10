@@ -77,11 +77,12 @@ class RoleAttrs:
 
 
 class Role:
-    def __init__(self,session,user_id):
+    def __init__(self,session,user_id,logger):
         self.attr = RoleAttrs(self)
         self.attr.session = session
         self.user_id = user_id
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val

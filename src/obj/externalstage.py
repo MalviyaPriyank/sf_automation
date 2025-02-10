@@ -498,10 +498,11 @@ class ExternalStageAttrs:
     notification_integration_tag = NotificationIntegrationTag()
 
 class ExternalStage:
-    def __init__(self,session):
+    def __init__(self,session,logger):
         self.attr = ExternalStageAttrs(self)
         self.session = session
         self.qry = ""
+        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val

@@ -261,8 +261,9 @@ class CopyIntoAttrs:
     load_mode = LoadMode()
 
 class CopyInto:
-    def __init__(self):
+    def __init__(self, logger):
         self.attr = CopyIntoAttrs(self)
+        self.logger = logger
 
     def set_table(self,value):
         self.attr.table = value

@@ -334,10 +334,11 @@ class AdminAttrs:
 
 
 class Admin:
-    def __init__(self,session):
+    def __init__(self,session,logger):
         self.attr = AdminAttrs(self)
         self.session = session
         self.qry = ""
+        self.logger = logger
 
     def set_account_name(self, value):
         self.attr.account_name = value
