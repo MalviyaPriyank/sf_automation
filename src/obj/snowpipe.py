@@ -14,11 +14,6 @@ from validation.validateobject import ValidateObject as vo
 from setup import privilege
 
 
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logging.getLogger('snowchain_logs').setLevel(logging.INFO)
-logger = logging.getLogger('snowchain_logs')
-
-
 
 class Session:
     def __get__(self,instance,owner):
@@ -59,7 +54,6 @@ class Name:
         return instance._name
     
     def __set__(self,instance,value):
-        logger.info("setting name")
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -244,6 +238,7 @@ class Snowpipe:
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment snowpipe object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
@@ -267,6 +262,7 @@ class Snowpipe:
         self.set_file_type(kwargs[gv._file_type_tag])
         self.set_qualified_name()
         self.prepare_query()
+        self.logger.info(f"creating snowpipe : {self.attr.name}")
         self.create_snowpipe()
         #self.grant_default_privileges()
         if len(largs) == 0:

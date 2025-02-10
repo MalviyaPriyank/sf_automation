@@ -538,6 +538,7 @@ class Schema:
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment schema object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
@@ -602,6 +603,7 @@ class Schema:
 
         self.prepare_query()
         self.create_schema()
+        self.logger.info(f"creating schema {self.attr.name}")
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

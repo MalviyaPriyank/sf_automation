@@ -172,6 +172,7 @@ class Table:
             tbl_ddl_data = pd.read_csv(f"{files}")
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
+            self.logger.info(f"creating table {self.attr.name}")
             self.create_table()
             self.create_deployment_entry()
         return tbl_lst
@@ -179,6 +180,7 @@ class Table:
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment table object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(self.qry,self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)

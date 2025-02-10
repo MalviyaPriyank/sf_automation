@@ -742,12 +742,14 @@ class Warehouse:
         self.set_tag(kwargs[gv._tag_tag])
         self.set_tag_tag(gv._tag_tag)
         self.prepare_create_query()     
+        self.logger.info(f"creating warehouse {self.attr.name}")
         self.create_warehouse()
         if len(largs) == 0:
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment warehouse object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')

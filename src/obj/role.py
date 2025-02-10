@@ -138,12 +138,15 @@ class Role:
         self.set_comment_tag(gv._comment_tag)
 
         self.prepare_query()
+        self.logger.info(f"creating role {self.attr.name}")
         self.create_role()
         if len(pargs) == 0:
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
+        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

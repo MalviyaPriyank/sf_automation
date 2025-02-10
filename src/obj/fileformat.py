@@ -1558,6 +1558,7 @@ class FileFormat:
         self.set_disable_auto_convert_tag(gv._disable_auto_convert_tag)
         self.set_qualified_name()
         self.prepare_query()
+        self.logger.info(f"creating file format : {self.attr.name}")
         self.create_file_format()
         self.grant_default_privileges()
         if len(largs) == 0:
@@ -1567,6 +1568,7 @@ class FileFormat:
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment fileformat object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)

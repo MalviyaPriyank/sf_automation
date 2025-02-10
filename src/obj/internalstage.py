@@ -363,6 +363,7 @@ class InternalStage:
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
@@ -403,6 +404,7 @@ class InternalStage:
         self.set_qualified_name()
 
         self.prepare_query()
+        self.logger.info(f"creating internal stage {self.attr.name}")
         self.create_internal_stage()
         if len(largs) == 0:
             self.create_deployment_entry()

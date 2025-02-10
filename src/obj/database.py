@@ -378,6 +378,7 @@ class Database:
 
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.attr.session)
+        self.logger.info(f"Tracking for deployment database object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
@@ -428,6 +429,7 @@ class Database:
         self.set_comment_tag(gv._comment_tag)
 
         self.prepare_query()
+        self.logger.info(f"creating database {self.attr.name}")
         self.create_database()
         self.grant_default_privileges()
         if len(largs) == 0:

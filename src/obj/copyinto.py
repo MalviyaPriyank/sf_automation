@@ -10,9 +10,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from vars.gvobject import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
 
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logging.getLogger('snowchain_logs').setLevel(logging.INFO)
-logger = logging.getLogger('snowchain_logs')
 
 
 class Database:
@@ -20,10 +17,7 @@ class Database:
         return instance._database
 
     def __set__(self,instance,value):
-        logger.info("before check")
-        logger.info(value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        logger.info("Done required check")
         instance._database = value
 
     def __delete__(self,instance):
@@ -58,12 +52,8 @@ class Stage:
         return instance._stage
 
     def __set__(self,instance,value):
-        logger.info("inside to set stage for copy into")
-        logger.info(value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._stage = value
-        logger.info("after setting")
-        logger.info(instance._stage)
 
     def __delete__(self,instance):
         del instance._stage
@@ -379,14 +369,9 @@ class CopyInto:
         self.add_properties_to_query()
 
     def create_query(self,**kwargs):
-        logger.info("setting tblae")
         self.set_table(kwargs[gv._table_tag])
         self.set_schema(kwargs[gv._schema_tag])
-        logger.info("setting db")
-        logger.info(kwargs['DATABASE'])
         self.set_database(kwargs[gv._db_tag])
-        logger.info("setting stage")
-        logger.info(kwargs[gv._stage_tag])
         self.set_stage(kwargs[gv._stage_tag])
         self.set_file_format(kwargs[gv._file_format_tag])
         self.set_on_error(kwargs[gv._on_error_tag])
@@ -401,9 +386,8 @@ class CopyInto:
         self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
         self.set_file_processor(kwargs[gv._file_processor_tag])
         self.set_load_mode(kwargs[gv._load_mode_tag])
+        self.logger.info(f"preparing copy into for {self.attr.table}")
         self.prepare_query()
-        logger.info("qry")
-        logger.info(self.qry)
         return self.qry
 
     
