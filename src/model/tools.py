@@ -357,7 +357,8 @@ class LLMTools:
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
-                                             user_id=self.user_id)
+                                             user_id=self.user_id,
+                                             logger=self.logger)
             self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
                                     "SCHEMA": SCHEMA,

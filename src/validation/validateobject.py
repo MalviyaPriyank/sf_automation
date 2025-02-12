@@ -32,3 +32,10 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist('TABLE',table_name)
+        
+    @staticmethod
+    def is_new_database(session,database_name):
+        
+        
+
+

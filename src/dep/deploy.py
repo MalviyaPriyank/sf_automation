@@ -117,6 +117,18 @@ class Deploy:
     def set_deployment_id(self,value):
         self.attr.deployment_id = value
 
+    def get_ddl(self):
+        if self.attr.object_type.upper() == 'DATABASE':
+            ddl_qry = f""" select get_ddl('{self.attr.object_type}.upper()','{self.attr.object_name}')"""
+        elif self.attr.object_type.upper() == 'SCHEMA':
+            ddl_qry = f""" select get_ddl('{self.attr.object_type}.upper()','{self.attr.object_database}.{self.attr.object_name}')"""
+        elif self.attr.object_type.upper() == 'WAREHOUSE':
+            ddl_qry = f""" select get_ddl('{self.attr.object_type}.upper()','{self.attr.object_name}')"""
+        else:
+            ddl_qry = f""" select get_ddl('{self.attr.object_type}.upper()','{self.attr.object_database}.{self.attr.object_schema}.{self.attr.object_name}')"""
+        
+        self.session.sql(ddl_qry)
+
     def create_deploy_control_table(self):
         qry = f"CREATE TABLE {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_control_table} ("
         for i in range(0,len(cfg._deployment_control_table_column_list)):
