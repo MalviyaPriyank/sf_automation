@@ -15,15 +15,6 @@ from setup import privilege
 
 
 
-class Session:
-    def __get__(self,instance,owner):
-        return instance._session
-    
-    def __set__(self,instance,value):
-        instance._session = value
-    
-    def __delete__(self,instance):
-        del instance._session
 
 class Database:
     def __get__(self,instance,owner):
@@ -31,6 +22,7 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session, database_name=value)
         #if vo.database_exist(value):
         instance._database = value
     
@@ -43,6 +35,7 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
         #if vo.schema_exist(instance._database,value):
         instance._schema = value
     
@@ -131,7 +124,6 @@ class SnowpipeAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    session = Session()
     database = Database()
     schema = Schema()
     name = Name()
@@ -144,11 +136,12 @@ class SnowpipeAttrs:
 
 class Snowpipe:
     def __init__(self,session,copy_into_qry,user_id,logger):
-        self.attr = SnowpipeAttrs(self)
         self.copy_into_qry = copy_into_qry
         self.user_id = user_id
-        self.attr.session = session
+        self.session = session
         self.logger = logger
+        self.attr = SnowpipeAttrs(self)
+
 
     def set_database(self,value):
         self.attr.database = value
@@ -226,18 +219,18 @@ class Snowpipe:
         self.add_properties_to_query()
 
     def create_snowpipe(self):
-        self.attr.session.sql(f"USE DATABASE {self.attr.database}").collect()
-        self.attr.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
-        self.attr.session.sql(self.qry).collect()
+        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
+        self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
+        self.session.sql(self.qry).collect()
 
     def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.attr.session)
+        priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["PIPE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "PIPE",object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.attr.session)
+        deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment snowpipe object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)

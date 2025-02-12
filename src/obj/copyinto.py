@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from vars.gvobject import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 
 
 
@@ -18,6 +19,7 @@ class Database:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(instance.parent.session,value)
         instance._database = value
 
     def __delete__(self,instance):
@@ -30,6 +32,7 @@ class Schema:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
         instance._schema = value
 
     def __delete__(self,instance):
@@ -42,6 +45,7 @@ class Table:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.table_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema, table_name=value)
         instance._table = value
 
     def __delete__(self,instance):
@@ -53,6 +57,7 @@ class Stage:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.stage_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, stage_name=value)
         instance._stage = value
 
     def __delete__(self,instance):
@@ -65,6 +70,7 @@ class FileFormat:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._scheam, file_format_name=value)
         instance._file_format = value
 
     def __delete__(self,instance):
@@ -251,9 +257,11 @@ class CopyIntoAttrs:
     load_mode = LoadMode()
 
 class CopyInto:
-    def __init__(self, logger):
-        self.attr = CopyIntoAttrs(self)
+    def __init__(self, session,logger):
         self.logger = logger
+        self.session = session
+        self.attr = CopyIntoAttrs(self)
+
 
     def set_table(self,value):
         self.attr.table = value

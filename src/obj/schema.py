@@ -13,16 +13,6 @@ from validation.validateobject import ValidateObject as vo
 from setup import privilege
 
 
-class Session:
-    def __get__(self,instance,owner):
-        return instance._session
-    
-    def __set__(self,instance,value):
-        instance._session = value
-    
-    def __delete__(self,instance):
-        del instance._session
-
 class Database:
     def __get__(self,instance,owner):
         return instance._database
@@ -328,7 +318,6 @@ class SchemaAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    session = Session()
     database = Database()
         
     name = Name()
@@ -374,11 +363,12 @@ class SchemaAttrs:
 
 class Schema:
     def __init__(self,session,user_id,logger):
-        self.attr = SchemaAttrs(self)
-        self.attr.session = session
+        self.session = session
         self.user_id = user_id
         self.qry = ""
         self.logger = logger
+        self.attr = SchemaAttrs(self)
+
 
     def set_database(self, value):
         self.attr.database = value
@@ -534,10 +524,10 @@ class Schema:
         self.add_properties_to_query()
 
     def create_schema(self):
-        self.attr.session.sql(self.qry).collect()
+        self.session.sql(self.qry).collect()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.attr.session)
+        deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment schema object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
@@ -550,7 +540,7 @@ class Schema:
         deploy_inst.insert_into_deploy_control_table()
 
     def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.attr.session)
+        priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)

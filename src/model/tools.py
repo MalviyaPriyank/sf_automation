@@ -47,7 +47,7 @@ class LLMTools:
                                   'database': database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
                                   'role': role.Role(self.sf_session,self.user_id, logger=self.logger),
-                                  'copyinto':copyinto.CopyInto(logger=self.logger),
+                                  'copyinto':copyinto.CopyInto(session=self.sf_session, logger=self.logger),
                                   'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
