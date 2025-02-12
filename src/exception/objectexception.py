@@ -10,3 +10,7 @@ class ObjectException(Exception):
 class ObjectDoesNotExist(ObjectException):
      def __init__(self, object_type,object_name):
         super().__init__(object_type,f"with name {object_name} does not exist")
+
+class DuplicateObject(ObjectException):
+    def __init__(self, object_type, object_name):
+        super().__init__(object_type, f"with name {object_name} already exist")

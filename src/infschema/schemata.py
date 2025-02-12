@@ -1,16 +1,25 @@
 from snowflake.snowpark.functions import col
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 
-class Schema:
+from vars.gvinformationschema import Schema
+
+class Schemata:
     def __init__(self,session):
-        self.view = "INFORMATION_SCHEMA.SCHEMATA"
+        self.col = Schema().columns
         self.session = session
 
-    def schema_exist(self,db_name,schema_name):
-        df = self.session.table(self.view).filter((col("catalog_name") == db_name) and (col("schema_name") == schema_name))
+    def is_existing_schema(self,db_name,schema_name):
+        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
         res = df.collect()
         if len(res) == 0:
             return False
         elif len(res) > 0:
             return True
         
-    
+    def is_new_schema(self,db_name,schema_name):
+        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
+        res = df.collect()
+        if len(res) == 0:
+            return True
+        elif len(res) > 0:
+            return False
