@@ -126,7 +126,7 @@ class ValidateObject:
     @staticmethod
     def column_exist(session,database,schema,table,column):
         cols_inst=cols(session=session)
-        if cols_inst.column_exist_in_table(database_name=database,schema_name=schema,table_name=table,column_name=column)
+        if cols_inst.column_exist_in_table(database_name=database,schema_name=schema,table_name=table,column_name=column):
             return True
         else:
             raise ColumnDoesNotExist(object_type='TABLE',table_name=table,column_name=column)

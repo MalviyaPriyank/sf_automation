@@ -12,24 +12,14 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 
 
-class Session:
-    def __get__(self,instance,owner):
-        return instance._session
-    
-    def __set__(self,instance,value):
-        instance._session = value
-    
-    def __delete__(self,instance):
-        del instance._session
-
 class Database:
     def __get__(self,instance,owner):
         return instance._database
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.database_exist(value):
-            instance._database = value
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
 
     def __delete__(self,instance):
         del instance._database
@@ -40,8 +30,8 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vo.schema_exist(instance._database,value):
-            instance._schema = value
+        vo.schema_exist(instance._database,value):
+        instance._schema = value
 
     def __delete__(self,instance):
         del instance._schema
@@ -52,175 +42,85 @@ class Name:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vv.ValidateString.is_enclosed_in_double_quotes(value):
-            instance._name = value
-        elif not vv.ValidateString.starts_with_alphabet(value):
-            raise ValueError
-        elif vv.ValidateString.has_space(value):
-            raise ValueError
-        elif vv.ValidateString.has_special_characters(value):
-            raise ValueError
-        else:
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            ):
             instance._name = value
 
     def __delete__(self,instance):
         del instance._name
 
-class NameTag:
+
+class Sql:
     def __get__(self,instance,owner):
-        return instance._name_tag
+        return instance._sql
     
     def __set__(self,instance,value):
-        if value == None :
-            raise KeyError
-        else:
-            instance._name_tag = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._sql = value
 
     def __delete__(self,instance):
-        del instance._name_tag
+        del instance._sql
 
-class Definition:
-    def __get__(self,instance,owner):
-        return instance._definition
-    
-    def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
-            instance._definition = value
-
-    def __delete__(self,instance):
-        del instance._definition
-
-class DefinitionTag:
-    def __get__(self,instance,owner):
-        return instance._definition_tag
-    
-    def __set__(self,instance,value):
-        if value == None:
-            raise KeyError
-        else:
-            instance._definition_tag = value
-
-    def __delete__(self,instance):
-        del instance._definition_tag
 
 class Warehouse:
     def __get__(self,instance,owner):
         return instance._warehouse
     
     def __set__(self,instance,value):
+        vo.warehouse_exist(session=instance.parent.session, warehouse_name=value)
         instance._warehouse = value
 
     def __delete__(self,instance):
         del instance._warehouse
-
-class WarehouseTag:
-    def __get__(self,instance,owner):
-        return instance._warehouse_tag
-    
-    def __set__(self,instance,value):
-        instance._warehouse_tag = value
-
-    def __delete__(self,instance):
-        del instance._warehouse_tag
 
 class UserTaskManagedInitialWarehouseSize:
     def __get__(self,instance,owner):
         return instance._user_task_managed_initial_warehouse_size
     
     def __set__(self,instance,value):
-        if value not in tgv._allowed_values__user_task_managed_initial_warehouse_size:
-            raise ValueError
         if instance._warehouse is None:
-            instance._user_task_managed_initial_warehouse_size = value
-
+            instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
 
     def __delete__(self,instance):
         del instance._user_task_managed_initial_warehouse_size
 
-class UserTaskManagedInitialWarehouseSizeTag:
-    def __get__(self,instance,owner):
-        return instance._user_task_managed_initial_warehouse_size_tag
-    
-    def __set__(self,instance,value):
-        instance._user_task_managed_initial_warehouse_size_tag = value
-
-    def __delete__(self,instance):
-        del instance._user_task_managed_initial_warehouse_size_tag
-
 
 class Schedule:
     def __get__(self,instance,owner):
-        return instance._schedule
+        return instance._schedule    
     
     def __set__(self,instance,value):
-        if not vv.is_valid_cron(value):
-            raise ValueError
-        else:
-            instance._schedule = value
-    
+        vv.is_valid_cron(value=value,object_type=instance.parent.__class__,attr_name=self.__class__.__name__)
+        instance._schedule = value
+
     def __delete__(self,instance):
         del instance._schedule
 
-class ScheduleTag:
-    def __get__(self,instance,owner):
-        return instance._schedule_tag
-    
-    def __set__(self,instance,value):
-        instance._schedule_tag = value
-    
-    def __delete__(self,instance):
-        del instance._schedule_tag
 
 class Config:
     def __get__(self,instance,owner):
         return instance._config
     
     def __set__(self,instance,value):
-        if not vv.is_json(value):
-            raise ValueError
-        else:
-            instance._config = value
+        vv.is_json(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._config = value
     
     def __delete__(self,instance):
         del instance._config
 
-class ConfigTag:
-    def __get__(self,instance,owner):
-        return instance._config_tag
-    
-    def __set__(self,instance,value):
-        instance._config_tag = value
-    
-    def __delete__(self,instance):
-        del instance._config_tag
 
 class AllowOverlappingExecution:
     def __get__(self,instance,owner):
         return instance._allow_overlapping_execution
     
     def __set__(self,instance,value):
-        if value is None:
-            instance._allow_overlapping_execution = 'FALSE'
-        else:
-            if not vv.is_bool(value):
-                raise ValueError
-            else:
-                instance._allow_overlapping_execution = value
+        vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._allow_overlapping_execution = value
     
     def __delete__(self,instance):
         del instance._allow_overlapping_execution
-
-class AllowOverlappingExecutionTag:
-    def __get__(self,instance,owner):
-        return instance._allow_overlapping_execution_tag
-    
-    def __set__(self,instance,value):
-        instance._allow_overlapping_execution_tag = value
-    
-    def __delete__(self,instance):
-        del instance._allow_overlapping_execution_tag
 
 
 class UserTaskTimeoutMs:
@@ -228,49 +128,23 @@ class UserTaskTimeoutMs:
         return instance._user_task_timeout_ms
     
     def __set__(self,instance,value):
+        vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        vv.is_between(value=value,num1=0,num2=86400000,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._user_task_timeout_ms = value
     
     def __delete__(self,instance):
         del instance._user_task_timeout_ms
-
-class UserTaskTimeoutMsTag:
-    def __get__(self,instance,owner):
-        return instance._user_task_timeout_ms_tag
-    
-    def __set__(self,instance,value):
-        if not vv.is_positive_number(value):
-            raise ValueError
-        else:
-            if not 0<= float(value) <= 86400000:
-                raise ValueError
-            else:
-                instance._user_task_timeout_ms_tag = value
-    
-    def __delete__(self,instance):
-        del instance._user_task_timeout_ms_tag
 
 class SuspendTaskAfterNumFailures:
     def __get__(self,instance,owner):
         return instance._suspend_task_after_num_failures
     
     def __set__(self,instance,value):
-        if not vv.is_positive_number(value):
-            raise ValueError
-        else:
-            instance._suspend_task_after_num_failures = value
+        vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._suspend_task_after_num_failures = value
     
     def __delete__(self,instance):
         del instance._suspend_task_after_num_failures
-
-class SuspendTaskAfterNumFailuresTag:
-    def __get__(self,instance,owner):
-        return instance._suspen_task_after_num_failures_tag
-    
-    def __set__(self,instance,value):
-        instance._suspen_task_after_num_failures_tag = value
-    
-    def __delete__(self,instance):
-        del instance._suspen_task_after_num_failures_tag
 
 class ErrorIntegration:
     def __get__(self,instance,owner):
@@ -282,15 +156,6 @@ class ErrorIntegration:
     def __delete__(self,instance):
         del instance._error_integration
 
-class ErrorIntegrationTag:
-    def __get__(self,instance,owner):
-        return instance._error_integration_tag
-    
-    def __set__(self,instance,value):
-        instance._error_integration_tag = value
-    
-    def __delete__(self,instance):
-        del instance._error_integration_tag
 
 class SuccessIntegration:
     def __get__(self,instance,owner):
@@ -302,16 +167,6 @@ class SuccessIntegration:
     def __delete__(self,instance):
         del instance._success_integration
 
-class SuccessIntegrationTag:
-    def __get__(self,instance,owner):
-        return instance._success_integration_tag
-    
-    def __set__(self,instance,value):
-        instance._success_integration_tag = value
-    
-    def __delete__(self,instance):
-        del instance._success_integration_tag
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -322,15 +177,6 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-    
-    def __delete__(self,instance):
-        del instance._comment_tag
 
 class After:
     def __get__(self,instance,owner):
@@ -342,15 +188,6 @@ class After:
     def __delete__(self,instance):
         del instance._after
 
-class AfterTag:
-    def __get__(self,instance,owner):
-        return instance._after_tag
-    
-    def __set__(self,instance,value):
-        instance._after_tag = value
-    
-    def __delete__(self,instance):
-        del instance._after_tag
 
 class When:
     def __get__(self,instance,owner):
@@ -362,15 +199,6 @@ class When:
     def __delete__(self,instance):
         del instance._when
 
-class WhenTag:
-    def __get__(self,instance,owner):
-        return instance._when_tag
-    
-    def __set__(self,instance,value):
-        instance._when_tag = value
-    
-    def __delete__(self,instance):
-        del instance._when_tag
 
 class Tag:
     def __get__(self,instance,owner):
@@ -382,15 +210,6 @@ class Tag:
     def __delete__(self,instance):
         del instance._tag
 
-class TagTag:
-    def __get__(self,instance,owner):
-        return instance._tag_tag
-    
-    def __set__(self,instance,value):
-        instance._tag_tag = value
-    
-    def __delete__(self,instance):
-        del instance._tag_tag
 
 class Finalize:
     def __get__(self,instance,owner):
@@ -402,16 +221,6 @@ class Finalize:
     def __delete__(self,instance):
         del instance._finalize
 
-class FinalizeTag:
-    def __get__(self,instance,owner):
-        return instance._finalize_tag
-    
-    def __set__(self,instance,value):
-        instance._finalize_tag = value
-    
-    def __delete__(self,instance):
-        del instance._finalize_tag
-
 class TaskAutoRetryAttempts:
     def __get__(self,instance,owner):
         return instance._task_auto_retry_attempts
@@ -421,16 +230,6 @@ class TaskAutoRetryAttempts:
     
     def __delete__(self,instance):
         del instance._task_auto_retry_attempts
-
-class TaskAutoRetryAttemptsTag:
-    def __get__(self,instance,owner):
-        return instance._task_auto_retry_attempts_tag
-    
-    def __set__(self,instance,value):
-        instance._task_auto_retry_attempts_tag = value
-    
-    def __delete__(self,instance):
-        del instance._task_auto_retry_attempts_tag
 
 class UserTaskMinimumTriggerIntervalInSeconds:
     def __get__(self,instance,owner):
@@ -442,16 +241,6 @@ class UserTaskMinimumTriggerIntervalInSeconds:
     def __delete__(self,instance):
         del instance._user_task_minimum_trigger_interval_in_seconds
 
-class UserTaskMinimumTriggerIntervalInSecondsTag:
-    def __get__(self,instance,owner):
-        return instance._user_task_minimum_trigger_interval_in_seconds_tag
-    
-    def __set__(self,instance,value):
-        instance._user_task_minimum_trigger_interval_in_seconds_tag = value
-    
-    def __delete__(self,instance):
-        del instance._user_task_minimum_trigger_interval_in_seconds_tag
-
 class TargetCompletionInterval:
     def __get__(self,instance,owner):
         return instance._target_completion_interval
@@ -461,16 +250,6 @@ class TargetCompletionInterval:
     
     def __delete__(self,instance):
         del instance._target_completion_interval
-
-class TargetCompletionIntervalTag:
-    def __get__(self,instance,owner):
-        return instance._target_completion_interval_tag
-    
-    def __set__(self,instance,value):
-        instance._target_completion_interval_tag = value
-    
-    def __delete__(self,instance):
-        del instance._target_completion_interval_tag
 
 class ServerlessTaskMinStatementSize:
     def __get__(self,instance,owner):
@@ -482,15 +261,6 @@ class ServerlessTaskMinStatementSize:
     def __delete__(self,instance):
         del instance._serverless_task_min_statement_size
 
-class ServerlessTaskMinStatementSizeTag:
-    def __get__(self,instance,owner):
-        return instance._serverless_task_min_statement_size_tag
-    
-    def __set__(self,instance,value):
-        instance._serverless_task_min_statement_size_tag = value
-    
-    def __delete__(self,instance):
-        del instance._serverless_task_min_statement_size_tag
 
 class ServerlessTaskMaxStatementSize:
     def __get__(self,instance,owner):
@@ -502,89 +272,39 @@ class ServerlessTaskMaxStatementSize:
     def __delete__(self,instance):
         del instance._serverless_task_max_statement_size
 
-class ServerlessTaskMaxStatementSizeTag:
-    def __get__(self,instance,owner):
-        return instance._serverless_task_max_statement_size_tag
-    
-    def __set__(self,instance,value):
-        instance._serverless_task_max_statement_size_tag = value
-    
-    def __delete__(self,instance):
-        del instance._serverless_task_max_statement_size_tag
 
 class TaskAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    session = Session()
     database = Database()
-
     schema = Schema()
-
     name = Name()
-    name_tag = NameTag()
+
 
     definition = Definition()
     definition_tag = DefinitionTag()
 
     warehouse = Warehouse()
-    warehouse_tag = WarehouseTag()
 
-    user_task_managed_initial_warehouse_size = UserTaskManagedInitialWarehouse()
-    user_task_managed_initial_warehouse_size_tag = UserTaskManagedInitialWarehouseTag()
-
+    user_task_managed_initial_warehouse_size = UserTaskManagedInitialWarehouseSize()
     schedule = Schedule()
-    schedule_tag = ScheduleTag()
-
     config = Config()
-    config_tag = ConfigTag()
-
     allow_overlapping_execution = AllowOverlappingExecution()
-    allow_overlapping_execution_tag = AllowOverlappingExecutionTag()
-    
     user_task_timeout_ms = UserTaskTimeoutMs()
-    user_task_timeout_ms_tag = UserTaskTimeoutMsTag()
-
     suspend_task_after_num_failures = SuspendTaskAfterNumFailures()
-    suspend_task_after_num_failures_tag = SuspendTaskAfterNumFailuresTag()
-
     error_integration = ErrorIntegration()
-    error_integration_tag = ErrorIntegrationTag()
-
     success_integration = SuccessIntegration()
-    success_integration_tag = SuccessIntegrationTag()
-
     comment = Comment()
-    comment_tag = CommentTag()
-
     after = After()
-    after_tag = AfterTag()
-
     when = When()
-    when_tag = WhenTag()
-
     tag = Tag()
-    tag_tag = TagTag()
-
     finalize = Finalize()
-    finalize_tag = FinalizeTag()
-
     task_auto_retry_attempts = TaskAutoRetryAttempts()
-    task_auto_retry_attempts_tag = TaskAutoRetryAttemptsTag()
-
     user_task_minimum_trigger_interval_in_seconds = UserTaskMinimumTriggerIntervalInSeconds()
-    user_task_minimum_trigger_interval_in_seconds_tag = UserTaskMinimumTriggerIntervalInSecondsTag()
-
     target_completion_interval = TargetCompletionInterval()
-    target_completion_interval_tag = TargetCompletionIntervalTag()
-
     serverless_task_min_statement_size = ServerlessTaskMinStatementSize()
-    serverless_task_min_statement_size_tag = ServerlessTaskMinStatementSizeTag()
-
     serverless_task_max_statement_size = ServerlessTaskMaxStatementSize()
-    serverless_task_max_statement_size_tag = ServerlessTaskMaxStatementSizeTag()
-
-
 
 class Task:
     def __init__(self,session):
@@ -600,9 +320,6 @@ class Task:
     def set_name(self,name):
         self.attr.name = name
 
-    def set_name_tag(self,name_tag):
-        self.attr.name_tag = name_tag
-
     def set_definition(self,definition):
         self.attr.definition = definition 
 
@@ -612,32 +329,17 @@ class Task:
     def set_database(self,database):
         self.attr.database = database
 
-    def set_database_tag(self,database_tag):
-        self.attr.database_tag = database_tag
-
     def set_warehouse(self,warehouse):
         self.attr.warehouse = warehouse
-
-    def set_warehouse_tag(self,warehouse_tag):
-        self.attr.warehouse_tag = warehouse_tag
 
     def set_user_task_managed_initial_warehouse_size(self,user_task_managed_initial_warehouse_size):
         self.attr.user_task_managed_initial_warehouse_size = user_task_managed_initial_warehouse_size
 
-    def set_user_task_managed_initial_warehouse_size_tag(self,user_task_managed_initial_warehouse_size_tag):
-        self.attr.user_task_managed_initial_warehouse_size_tag = user_task_managed_initial_warehouse_size_tag
-
     def set_schedule(self,schedule):
         self.attr.schedule = schedule
 
-    def set_schedule_tag(self,schedule_tag):
-        self.attr.schedule_tag = schedule_tag
-
     def set_config(self,config):
         self.attr.config = config
-
-    def set_config_tag(self,config_tag):
-        self.attr.config_tag = config_tag
 
     def set_allow_overlapping_execution(self,allow_overlapping_execution):
         self.attr.allow_overlapping_execution = allow_overlapping_execution
