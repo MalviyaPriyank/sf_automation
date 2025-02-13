@@ -14,3 +14,7 @@ class ObjectDoesNotExist(ObjectException):
 class DuplicateObject(ObjectException):
     def __init__(self, object_type, object_name):
         super().__init__(object_type, f"with name {object_name} already exist")
+
+class ColumnDoesNotExist(ObjectException):
+    def __init__(self, object_type, table_name, column_name):
+        super().__init__(object_type, f" {table_name} does not have column named {column_name}")

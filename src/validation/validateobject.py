@@ -10,9 +10,11 @@ from infschema.schemata import Schemata as sch
 from infschema.tables import Tables as tbl
 from infschema.stages import Stages as stg
 from infschema.fileformats import FileFormats as ff
+from infschema.columns import Columns as cols
 from exception.objectexception import ( 
     ObjectDoesNotExist,
-    DuplicateObject
+    DuplicateObject,
+    ColumnDoesNotExist
 )
 
 
@@ -96,6 +98,38 @@ class ValidateObject:
             return True
         else:
             raise DuplicateObject('FILE_FORMAT',file_format_name)
+        
+    @staticmethod
+    def warehouse_exist(session,warehouse_name):
+        df=session.sql("SHOW WAREHOUSES").collect()
+        wh_list = []
+        for wh in df:
+            wh_list.append(wh[0])
+        
+        if warehouse_name in wh_list:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type='WAREHOUSE',object_name=warehouse_name)
+        
+    @staticmethod
+    def role_exist(session,role_name):
+        df=session.sql("SHOW ROLES").collect()
+        role_list = []
+        for role in df:
+            role_list.append(role[1])
+        
+        if role_name in role_list:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type='ROLE',object_name=role_name)
+        
+    @staticmethod
+    def column_exist(session,database,schema,table,column):
+        cols_inst=cols(session=session)
+        if cols_inst.column_exist_in_table(database_name=database,schema_name=schema,table_name=table,column_name=column)
+            return True
+        else:
+            raise ColumnDoesNotExist(object_type='TABLE',table_name=table,column_name=column)
 
         
 

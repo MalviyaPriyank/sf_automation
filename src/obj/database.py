@@ -258,8 +258,6 @@ class Database:
         self.logger = logger
         self.attr = DatabaseAttrs(self)
 
-
-
     def set_name(self, value):
         self.attr.name = value
 

@@ -21,6 +21,8 @@ from valueexception import (
     AttributeValidationError,
     InvalidPassword
 )
+from objectexception import ObjectException
+
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger('snowchain_logs').setLevel(logging.INFO)
@@ -129,6 +131,9 @@ if st.session_state[ss.INITIALIZED]:
                             tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
                         except AttributeValidationError as e:
                             st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
+                        except ObjectException as e:
+                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
+                        
                                     
                             with st.chat_message(ss.ASSISTANT):
                                 st.markdown(content[ss.TEXT])

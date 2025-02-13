@@ -11,7 +11,11 @@ class Schemata:
         self.col = Schema().columns
         self.session = session
 
+    def use_database(self,db_name):
+        self.session.sql(f'USE DATABASE {db_name}').collect()
+
     def is_existing_schema(self,db_name,schema_name):
+        self.use_database(db_name=db_name)
         df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
         res = df.collect()
         if len(res) == 0:
@@ -20,6 +24,7 @@ class Schemata:
             return True
         
     def is_new_schema(self,db_name,schema_name):
+        self.use_database(db_name=db_name)
         df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
         res = df.collect()
         if len(res) == 0:
