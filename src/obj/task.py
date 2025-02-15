@@ -4,12 +4,14 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../setup'))
 
 
-from vars.gvobject import Snowpipe as gv,Config as cfg
+from vars.gvobject import Task as gvtask,Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
+from setup import privilege
 
 
 class Database:
@@ -30,7 +32,7 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(instance._database,value):
+        vo.schema_exist(instance._database,value)
         instance._schema = value
 
     def __delete__(self,instance):
@@ -80,7 +82,7 @@ class UserTaskManagedInitialWarehouseSize:
         return instance._user_task_managed_initial_warehouse_size
     
     def __set__(self,instance,value):
-        if instance._warehouse is None:
+        if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
 
     def __delete__(self,instance):
@@ -129,7 +131,7 @@ class UserTaskTimeoutMs:
     
     def __set__(self,instance,value):
         vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        vv.is_between(value=value,num1=0,num2=86400000,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        vv.is_between(value=value,num1=gvtask._allowed_min_user_task_timeout_ms,num2=gvtask._allowed_max_user_task_timeout_ms,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._user_task_timeout_ms = value
     
     def __delete__(self,instance):
@@ -183,6 +185,7 @@ class After:
         return instance._after
     
     def __set__(self,instance,value):
+        vo.task_exist(session=instance.parent.session,database=instance._database,schema=instance._schema,task=value)
         instance._after = value
     
     def __delete__(self,instance):
@@ -280,13 +283,8 @@ class TaskAttrs:
     database = Database()
     schema = Schema()
     name = Name()
-
-
-    definition = Definition()
-    definition_tag = DefinitionTag()
-
+    definition=Sql()
     warehouse = Warehouse()
-
     user_task_managed_initial_warehouse_size = UserTaskManagedInitialWarehouseSize()
     schedule = Schedule()
     config = Config()
@@ -307,9 +305,11 @@ class TaskAttrs:
     serverless_task_max_statement_size = ServerlessTaskMaxStatementSize()
 
 class Task:
-    def __init__(self,session):
+    def __init__(self,session,user_id):
+        self.session = session
+        self.user_id = user_id
         self.attr = TaskAttrs(self)
-        self.attr.session = session
+
 
     def set_database(self,value):
         self.attr.database = value
@@ -322,9 +322,6 @@ class Task:
 
     def set_definition(self,definition):
         self.attr.definition = definition 
-
-    def set_definition_tag(self,definition_tag):
-        self.attr.definition_tag = definition_tag 
 
     def set_database(self,database):
         self.attr.database = database
@@ -344,161 +341,167 @@ class Task:
     def set_allow_overlapping_execution(self,allow_overlapping_execution):
         self.attr.allow_overlapping_execution = allow_overlapping_execution
 
-    def set_allow_overlapping_execution_tag(self,allow_overlapping_execution_tag):
-        self.attr.allow_overlapping_execution_tag = allow_overlapping_execution_tag
-
     def set_user_task_timeout_ms(self,user_task_timeout_ms):
         self.attr.user_task_timeout_ms = user_task_timeout_ms
-
-    def set_user_task_timeout_ms_tag(self,user_task_timeout_ms_tag):
-        self.attr.user_task_timeout_ms_tag = user_task_timeout_ms_tag
 
     def set_suspend_task_after_num_failures(self,suspend_task_after_num_failures):
         self.attr.suspend_task_after_num_failures = suspend_task_after_num_failures
 
-    def set_suspend_task_after_num_failures_tag(self,suspend_task_after_num_failures_tag):
-        self.attr.suspend_task_after_num_failures_tag = suspend_task_after_num_failures_tag
-
-
     def set_error_integration(self,error_integration):
         self.attr.error_integration = error_integration
-
-    def set_error_integration_tag(self,error_integration_tag):
-        self.attr.error_integration_tag = error_integration_tag
 
     def set_success_integration(self,success_integration):
         self.attr.success_integration = success_integration
 
-    def set_success_integration_tag(self,success_integration_tag):
-        self.attr.success_integration_tag = success_integration_tag
-
     def set_comment(self,comment):
         self.attr.comment = comment
-
-    def set_comment_tag(self,comment_tag):
-        self.attr.comment_tag = comment_tag
 
     def set_after(self,after):
         self.attr.after = after
 
-    def set_after_tag(self,after_tag):
-        self.attr.after_tag = after_tag
-
     def set_when(self,when):
         self.attr.when = when
-
-    def set_when_tag(self,when_tag):
-        self.attr.when_tag = when_tag
 
     def set_tag(self,tag):
         self.attr.tag = tag
 
-    def set_tag_tag(self,tag_tag):
-        self.attr.tag_tag = tag_tag
-
     def set_finalize(self,finalize):
         self.attr.finalize = finalize
-
-    def set_finalize_tag(self,finalize_tag):
-        self.attr.finalize_tag = finalize_tag
 
     def set_task_auto_retry_attempts(self,task_auto_retry_attempts):
         self.attr.task_auto_retry_attempts = task_auto_retry_attempts
 
-    def set_task_auto_retry_attempts_tag(self,task_auto_retry_attempts_tag):
-        self.attr.task_auto_retry_attempts_tag = task_auto_retry_attempts_tag
-
     def set_user_task_minimum_trigger_interval_in_seconds(self,user_task_minimum_trigger_interval_in_seconds):
         self.attr.user_task_minimum_trigger_interval_in_seconds = user_task_minimum_trigger_interval_in_seconds
-
-    def set_user_task_minimum_trigger_interval_in_seconds_tag(self,user_task_minimum_trigger_interval_in_seconds_tag):
-        self.attr.user_task_minimum_trigger_interval_in_seconds_tag = user_task_minimum_trigger_interval_in_seconds_tag
 
     def set_target_completion_interval(self,target_completion_interval):
         self.attr.target_completion_interval = target_completion_interval
 
-    def set_target_completion_interval_tag(self,target_completion_interval_tag):
-        self.attr.target_completion_interval_tag = target_completion_interval_tag
-
     def set_serverless_task_min_statement_size(self,serverless_task_min_statement_size):
         self.attr.serverless_task_min_statement_size = serverless_task_min_statement_size
-
-    def set_serverless_task_min_statement_size_tag(self,serverless_task_min_statement_size_tag):
-        self.attr.serverless_task_min_statement_size_tag = serverless_task_min_statement_size_tag
 
     def set_serverless_task_max_statement_size(self,serverless_task_max_statement_size):
         self.attr.serverless_task_max_statement_size = serverless_task_max_statement_size
 
-    def set_serverless_task_max_statement_size_tag(self,serverless_task_max_statement_size_tag):
-        self.attr.serverless_task_max_statement_size_tag = serverless_task_max_statement_size_tag
+    def set_qualified_name(self):
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
+    def set_object_properties_flag(self):
+        self.flag_dic = {}
+
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+
+        set_flag(gvtask._warehouse_tag,"_warehouse")
+        set_flag(gvtask._user_task_managed_initial_warehouse_size_tag,"_user_task_managed_initial_warehouse_size")
+        set_flag(gvtask._schedule_tag,"_schedule")
+        set_flag(gvtask._config_tag,"_config")
+        set_flag(gvtask._allow_overlapping_execution_tag,"_allow_overlapping_execution")
+        set_flag(gvtask._user_task_timeout_ms_tag,"_user_task_timeout_ms")
+        set_flag(gvtask._suspend_task_after_num_failures_tag,"_suspend_task_after_num_failures")
+        set_flag(gvtask._error_integration_tag,"_error_integration")
+        set_flag(gvtask._success_integration_tag,"_success_integration")
+        set_flag(gvtask._comment_tag,"_comment")
+        set_flag(gvtask._after_tag,"_after")
+        set_flag(gvtask._when_tag,"_when")
+        set_flag(gvtask._tag_tag,"_tag")
+        set_flag(gvtask._finalize_tag,"_finalize")
+        set_flag(gvtask._user_task_minimum_trigger_interval_in_seconds_tag,"_user_task_minimum_trigger_interval_in_seconds")
+        set_flag(gvtask._serverless_task_min_statement_size_tag,"_serverless_task_min_statement_size")
+        set_flag(gvtask._serverless_task_max_statement_size_tag,"_serverless_task_max_statement_size")
+
+    def check_properties_to_set(self): 
+        self.property_lst = []
+        for prop in self.flag_dic.keys():
+            if self.flag_dic[prop] == 1:
+                self.property_lst.append(prop)
+
+    def set_create_account_qry(self):
+        self.qry = f"CREATE TASK {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+
+    def add_properties_to_query(self):
+        if len(self.property_lst) != 0 :
+            for prop in self.property_lst:
+                if prop == gvtask._warehouse_tag:
+                    self.qry = f" {self.qry} {gvtask._warehouse_tag} = {self.attr.warehouse} "
+                if prop == gvtask._user_task_managed_initial_warehouse_size_tag:
+                    self.qry = f" {self.qry} {gvtask._user_task_managed_initial_warehouse_size_tag } = {self.attr.user_task_managed_initial_warehouse_size} "
+                if prop == gvtask._schedule_tag:
+                    self.qry = f" {self.qry} {gvtask._schedule_tag} = {self.attr.schedule} "
+                if prop == gvtask._config_tag:
+                    self.qry = f" {self.qry} {gvtask._config_tag} = {self.attr.config} "
+                if prop == gvtask._allow_overlapping_execution_tag:
+                    self.qry = f" {self.qry} {gvtask._allow_overlapping_execution_tag} = {self.attr.allow_overlapping_execution} "
+                if prop == gvtask._user_task_timeout_ms_tag:
+                    self.qry = f" {self.qry} {gvtask._user_task_timeout_ms_tag} = {self.attr.user_task_timeout_ms} "
+                if prop == gvtask._suspend_task_after_num_failures_tag:
+                    self.qry = f" {self.qry} {gvtask._suspend_task_after_num_failures_tag} = {self.attr.suspend_task_after_num_failures} "
+                if prop == gvtask._error_integration_tag:
+                    self.qry = f" {self.qry} {gvtask._error_integration_tag} = {self.attr.error_integration} "
+                if prop == gvtask._success_integration_tag:
+                    self.qry = f" {self.qry} {gvtask._success_integration_tag} = {self.attr.success_integration} "
+                if prop == gvtask._comment_tag:
+                    self.qry = f" {self.qry} {gvtask._comment_tag} = {self.attr.comment} "
+                if prop == gvtask._after_tag:
+                    self.qry = f" {self.qry} {gvtask._after_tag} = {self.attr.after} "
+                if prop == gvtask._when_tag:
+                    self.qry = f" {self.qry} {gvtask._when_tag} = {self.attr.when} "
+                if prop == gvtask._tag_tag:
+                    self.qry = f" {self.qry} {gvtask._tag_tag} = {self.attr.tag} "
+                if prop == gvtask._finalize_tag:
+                    self.qry = f" {self.qry} {gvtask._finalize_tag} = {self.attr.finalize} "
+                if prop == gvtask._task_auto_retry_attempts_tag:
+                    self.qry = f" {self.qry} {gvtask._task_auto_retry_attempts_tag} = {self.attr.task_auto_retry_attempts} "
+                if prop == gvtask._user_task_minimum_trigger_interval_in_seconds_tag:
+                    self.qry = f" {self.qry} {gvtask._user_task_minimum_trigger_interval_in_seconds_tag} = {self.attr.user_task_minimum_trigger_interval_in_seconds} "
+                if prop == gvtask._target_completion_interval_tag:
+                    self.qry = f" {self.qry} {gvtask._target_completion_interval_tag} = {self.attr.target_completion_interval} "
+                if prop == gvtask._serverless_task_min_statement_size_tag:
+                    self.qry = f" {self.qry} {gvtask._serverless_task_min_statement_size_tag} = {self.attr.serverless_task_min_statement_size} "
+        self.qry = self.qry + f" AS  {self.attr.definition} "    
+        
+
+    def prepare_query(self):
+        self.set_object_properties_flag()
+        self.check_properties_to_set()
+        self.set_create_account_qry()
+        self.add_properties_to_query()
 
     def create_task(self):
-        self.attr.session.sql(self.qry).collect()
+        self.session.sql(self.qry).collect()
 
-    def create_object(session,**kwargs):
-        task = Task(session)
+    def create_object(self,**kwargs):
+        self.set_name(kwargs[gvtask._name_tag])
+        self.set_definition(kwargs[gvtask._sql_tag])
+        self.set_warehouse(kwargs[gvtask._warehouse_tag])
+        self.set_user_task_managed_initial_warehouse_size(kwargs[gvtask._user_task_managed_initial_warehouse_size_tag])
+        self.set_schedule(kwargs[gvtask._schedule_tag])
+        self.set_config(kwargs[gvtask._config_tag])
+        self.set_allow_overlapping_execution(kwargs[gvtask._allow_overlapping_execution_tag])
+        self.set_user_task_timeout_ms(kwargs[gvtask._user_task_timeout_ms_tag])
+        self.set_suspend_task_after_num_failures(kwargs[gvtask._suspend_task_after_num_failures_tag])
+        self.set_error_integration(kwargs[gvtask._error_integration_tag])
+        self.set_success_integration(kwargs[gvtask._success_integration_tag])
+        self.set_comment(kwargs[gvtask._comment_tag])
+        self.set_after(kwargs[gvtask._after_tag])
+        self.set_when(kwargs[gvtask._when_tag])
+        self.set_tag(kwargs[gvtask._tag_tag])
+        self.set_finalize(kwargs[gvtask._finalize_tag])
+        self.set_task_auto_retry_attempts(kwargs[gvtask._task_auto_retry_attempts_tag])
+        self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[gvtask._user_task_minimum_trigger_interval_in_seconds_tag])
+        self.set_target_completion_interval(kwargs[gvtask._target_completion_interval_tag])
+        self.set_serverless_task_min_statement_size(kwargs[gvtask._serverless_task_min_statement_size_tag])
+        self.set_qualified_name()
 
-        task.set_name(kwargs[_name_tag])
-        task.set_name_tag(_name_tag)
+        self.prepare_query()
+        self.create_task()
+        self.create_deployment_entry()
 
-        task.set_definition(kwargs[_definition_tag])
-        task.set_definition_tag(_definition_tag)
-
-        task.set_warehouse(kwargs[_warehouse_tag])
-        task.set_warehouse_tag(_warehouse_tag)
-
-        task.set_user_task_managed_initial_warehouse_size(kwargs[_user_task_managed_initial_warehouse_tag])
-        task.set_user_task_managed_initial_warehouse_size_tag(_user_task_managed_initial_warehouse_tag)
-
-        task.set_schedule(kwargs[_schedule_tag])
-        task.set_schedule_tag(_schedule_tag)
-
-        task.set_config(kwargs[_config])
-        task.set_config_tag(_config)
-
-        task.set_allow_overlapping_execution(kwargs[_allow_overlapping_execution_tag])
-        task.set_allow_overlapping_execution_tag(_allow_overlapping_execution_tag)
-
-        task.set_user_task_timeout_ms(kwargs[_user_task_timeout_ms_tag])
-        task.set_user_task_timeout_ms_tag(_user_task_timeout_ms_tag)
-
-        task.set_suspend_task_after_num_failures(kwargs[_suspend_task_after_num_failures_tag])
-        task.set_suspend_task_after_num_failures_tag(_suspend_task_after_num_failures_tag)
-
-        task.set_error_integration(kwargs[_error_integration_tag])
-        task.set_error_integration(_error_integration_tag)
-
-        task.set_success_integration(kwargs[_success_integration_tag])
-        task.set_success_integration_tag(_success_integration_tag)
-
-        task.set_comment(kwargs[_comment_tag])
-        task.set_comment_tag(_comment_tag)
-
-        task.set_after(kwargs[_after_tag])
-        task.set_after_tag(_after_tag)
-
-        task.set_when(kwargs[_when_tag])
-        task.set_when_tag(_when_tag)
-
-        task.set_tag(kwargs[_tag_tag])
-        task.set_tag_tag(_tag_tag)
-
-        task.set_finalize(kwargs[_finalize_tag])
-        task.set_finalize_tag(_finalize_tag)
-
-        task.set_task_auto_retry_attempts(kwargs[_task_auto_retry_attempts_tag])
-        task.set_task_auto_retry_attempts_tag(_task_auto_retry_attempts_tag)
-
-        task.set_user_task_minimum_trigger_interval_in_seconds(kwargs[_user_task_minimum_trigger_interval_in_seconds_tag])
-        task.set_user_task_minimum_trigger_interval_in_seconds_tag(_user_task_minimum_trigger_interval_in_seconds_tag)
-
-        task.set_target_completion_interval(kwargs[_target_completion_interval_tag])
-        task.set_target_completion_interval_tag(_target_completion_interval_tag)
-
-        task.set_serverless_task_min_statement_size(kwargs[_serverless_task_min_statement_size_tag])
-        task.set_serverless_task_min_statement_size_tag(_serverless_task_min_statement_size_tag)
-
-        task.create_task()
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.attr.session)

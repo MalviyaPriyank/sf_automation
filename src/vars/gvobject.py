@@ -228,6 +228,34 @@ class User:
     _allowed_values_default_secondary_roles = ['ALL',{}]
 
 
+class Task:
+    def __init__(self):
+        pass
+    _name_tag="NAME"
+    _sql_tag="SQL"
+    _warehouse_tag="WAREHOUSE"
+    _user_task_managed_initial_warehouse_size_tag="USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"
+    _schedule_tag="SCHEDULE"
+    _config_tag="CONFIG"
+    _allow_overlapping_execution_tag="ALLOW_OVERLAPPING_EXECUTION"
+    _user_task_timeout_ms_tag="USER_TASK_TIMEOUT_MS"
+    _suspend_task_after_num_failures_tag="SUSPEND_TASK_AFTER_NUM_FAILURES"
+    _error_integration_tag="ERROR_INTEGRATION"
+    _success_integration_tag="SUCCESS_INTEGRATION"
+    _comment_tag="COMMENT"
+    _after_tag="AFTER"
+    _when_tag="WHEN"
+    _tag_tag="TAG"
+    _finalize_tag="FINALIZE"
+    _task_auto_retry_attempts_tag="TASK_AUTO_RETRY_ATTEMPTS"
+    _user_task_minimum_trigger_interval_in_seconds_tag="USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS"
+    _target_completion_interval_tag="TARGET_COMPLETION_INTERVAL"
+    _serverless_task_min_statement_size_tag="SERVERLESS_TASK_MIN_STATEMENT_SIZE"
+    _serverless_task_max_statement_size_tag="SERVERLESS_TASK_MAX_STATEMENT_SIZE"
+    _allowed_min_user_task_timeout_ms=0
+    _allowed_max_user_task_timeout_ms=604800000
+
+
 class Warehouse:
     def __init__(self):
         pass

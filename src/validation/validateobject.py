@@ -130,6 +130,20 @@ class ValidateObject:
             return True
         else:
             raise ColumnDoesNotExist(object_type='TABLE',table_name=table,column_name=column)
+        
+    @staticmethod    
+    def task_exist(session,database,schema,task):
+        session.sql(f"USE DATABASE {database}").collect()
+        session.sql(f"USE SCHEMA {schema}").collect()
+        df=session.sql(f"SHOW TASKS").collect()
+        task_list = []
+        for task in df:
+            task_list.append(task[1])
+
+        if task in task_list:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type='TASK',object_name=task)
 
         
 
