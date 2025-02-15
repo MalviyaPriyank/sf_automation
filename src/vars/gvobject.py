@@ -121,6 +121,8 @@ class InternalStage:
 class ExternalStage:
     def __init__(self):
         pass
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
     _name_tag = "NAME"
     _file_format_tag = "FILE_FORMAT"
     _comment_tag = "COMMENT"
