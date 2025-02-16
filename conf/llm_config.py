@@ -168,94 +168,102 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_externalstage_object",
-                "description":"creates a snowflake external stage object for the user. NAME and FILE_FORMAT are required inputs to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA, and FILE_FORMAT are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user to provide value for NAME for database object. This is to be taken as input from user. do not assume a value."
+                                "description":"user to provide value for NAME for external stage object. This is to be taken as input from user. do not assume a value."
+                            },
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user to provide value for DATABASE for external stage object. This is to be taken as input from user. do not assume a value."
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"user to provide value for SCHEMA for external stage object. This is to be taken as input from user. do not assume a value."
                             },
                             "FILE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for database object"
+                                "description":"user provided value for FILE_FORMAT for external stage object"
                             },
                         "TAG": {
                                 "type":"string",
-                                "description":"user provided value for TAG for database object"
+                                "description":"user provided value for TAG for external stage object"
                             },
                         "URL": {
                                 "type":"string",
-                                "description":"user provided value for URL for database object"
+                                "description":"user provided value for URL for external stage object"
                             },
                         "STORAGE_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_INTEGRATION for database object"
+                                "description":"user provided value for STORAGE_INTEGRATION for external stage object"
                             },
                         "AWS_KEY_ID": {
                                 "type":"string",
-                                "description":"user provided value for AWS_KEY_ID for database object"
+                                "description":"user provided value for AWS_KEY_ID for external stage object"
                             },
                         "AWS_SECRET_KEY": {
                                 "type":"string",
-                                "description":"user provided value for AWS_SECRET_KEY for database object"
+                                "description":"user provided value for AWS_SECRET_KEY for external stage object"
                             },
                         "AWS_TOKEN": {
                                 "type":"string",
-                                "description":"user provided value for AWS_TOKEN for database object"
+                                "description":"user provided value for AWS_TOKEN for external stage object"
                             },
                         "AZURE_SAS_TOKEN": {
                                 "type":"string",
-                                "description":"user provided value for AZURE_SAS_TOKEN for database object"
+                                "description":"user provided value for AZURE_SAS_TOKEN for external stage object"
                             },
                         "AWS_ROLE": {
                                 "type":"string",
-                                "description":"user provided value for AWS_ROLE for database object"
+                                "description":"user provided value for AWS_ROLE for external stage object"
                             },
                         "ENCRYPTION": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION for database object"
+                                "description":"user provided value for ENCRYPTION for external stage object"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for external stage object"
                             },
                         "ENCRYPTION_TYPE": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_TYPE for database object"
+                                "description":"user provided value for ENCRYPTION_TYPE for external stage object"
                             },
                         "ENCRYPTION_MASTER_KEY": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_MASTER_KEY for database object"
+                                "description":"user provided value for ENCRYPTION_MASTER_KEY for external stage object"
                             },
                         "ENCRYPTION_KMS_KEY_ID": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_KMS_KEY_ID for database object"
+                                "description":"user provided value for ENCRYPTION_KMS_KEY_ID for external stage object"
                             },
                         "USE_PRIVATELINK_ENDPOINT": {
                                 "type":"string",
-                                "description":"user provided value for USE_PRIVATELINK_ENDPOINT for database object"
+                                "description":"user provided value for USE_PRIVATELINK_ENDPOINT for external stage object"
                             },
                         "DIRECTORY": {
                                 "type":"string",
-                                "description":"user provided value for DIRECTORY for database object"
+                                "description":"user provided value for DIRECTORY for external stage object"
                             },
                         "REFRESH_ON_CREATE": {
                                 "type":"string",
-                                "description":"user provided value for REFRESH_ON_CREATE for database object"
+                                "description":"user provided value for REFRESH_ON_CREATE for external stage object"
                             },
                         "AUTO_REFRESH": {
                                 "type":"string",
-                                "description":"user provided value for AUTO_REFRESH for database object"
+                                "description":"user provided value for AUTO_REFRESH for external stage object"
                             },
                         "NOTIFICATION_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for NOTIFICATION_INTEGRATION for database object"
+                                "description":"user provided value for NOTIFICATION_INTEGRATION for external stage object"
                             },
                         },
                         "required":[
-                            "NAME","FILE_FORMAT"
+                            "NAME","DATABASE","SCHEMA","FILE_FORMAT"
                         ]
                     }
                 }

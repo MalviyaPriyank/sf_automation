@@ -45,7 +45,7 @@ class LLMTools:
                                     region_name=self.region)
         self.obj_class_mapping = {'account': account.Admin(self.sf_session, logger=self.logger),
                                   'database': database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
+                                  'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
                                   'role': role.Role(self.sf_session,self.user_id, logger=self.logger),
                                   'copyinto':copyinto.CopyInto(session=self.sf_session, logger=self.logger),
                                   'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
@@ -111,6 +111,8 @@ class LLMTools:
 
     def create_externalstage_object(self,
                                     NAME,
+                                    SCHEMA,
+                                    DATABASE,
                                     FILE_FORMAT,
                                     COMMENT="DEFAULT",
                                     TAG="DEF",
