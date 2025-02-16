@@ -263,7 +263,7 @@ tools = {
                             },
                         },
                         "required":[
-                            "NAME","DATABASE","SCHEMA","FILE_FORMAT"
+                            "NAME","DATABASE","SCHEMA"
                         ]
                     }
                 }

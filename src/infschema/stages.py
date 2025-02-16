@@ -15,7 +15,7 @@ class Stages:
 
     def is_existing_stage(self,db_name,schema_name,stage_name):
         self.use_database(db_name=db_name)
-        df = self.session.table(self.col._view).filter((col(self.col._stage_catalog) == db_name) and (col(self.col._stage_schema) == schema_name) and (col(self.col._stage_name) == stage_name))
+        df = self.session.table(self.col._view).filter((col(self.col._stage_catalog) == db_name) & (col(self.col._stage_schema) == schema_name) & (col(self.col._stage_name) == stage_name))
         res = df.collect()
         if len(res) == 0:
             return False
@@ -24,7 +24,7 @@ class Stages:
         
     def is_new_stage(self,db_name,schema_name,stage_name):
         self.use_database(db_name=db_name)
-        df = self.session.table(self.col._view).filter((col(self.col._stage_catalog) == db_name) and (col(self.col._stage_schema) == schema_name) and (col(self.col._stage_name) == stage_name))
+        df = self.session.table(self.col._view).filter((col(self.col._stage_catalog) == db_name) & (col(self.col._stage_schema) == schema_name) & (col(self.col._stage_name) == stage_name))
         res = df.collect()
         if len(res) == 0:
             return True

@@ -316,6 +316,17 @@ class NotificationIntegration:
     _allowed_number_of_recipients = 50
 
 
+class StorageIntegrationAws:
+    _name_tag="NAME"
+    _type_tag="TYPE"
+    _enabled_tag="ENABLED"
+    _storage_allowed_locations_tag="STORAGE_ALLOWED_LOCATIONS"
+    _storage_blocked_locations_tag="STORAGE_BLOCKED_LOCATIONS"
+    _storage_provider_tag="STORAGE_PROVIDER"
+    _storage_aws_role_arn_tag="STORAGE_AWS_ROLE_ARN"
+    _storage_aws_external_id_tag="STORAGE_AWS_EXTERNAL_ID"
+    _storage_aws_object_acl_tag="STORAGE_AWS_OBJECT_ACL"
+
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE"]
     _allowed_privileges = {

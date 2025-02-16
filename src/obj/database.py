@@ -203,7 +203,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
@@ -421,8 +421,8 @@ class Database:
         self.logger.info(f"creating database {self.attr.name}")
         self.create_database()
         self.grant_default_privileges()
-        if len(largs) == 0:
-            self.create_deployment_entry()
+        #if len(largs) == 0:
+        #    self.create_deployment_entry()
 
             
 

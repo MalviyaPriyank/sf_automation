@@ -16,7 +16,7 @@ class Schemata:
 
     def is_existing_schema(self,db_name,schema_name):
         self.use_database(db_name=db_name)
-        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
+        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) & (col(self.col.schema_name) == schema_name))
         res = df.collect()
         if len(res) == 0:
             return False
@@ -25,7 +25,7 @@ class Schemata:
         
     def is_new_schema(self,db_name,schema_name):
         self.use_database(db_name=db_name)
-        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) and (col(self.col.schema_name) == schema_name))
+        df = self.session.table(self.col._view).filter((col(self.col.catalog_name) == db_name) & (col(self.col.schema_name) == schema_name))
         res = df.collect()
         if len(res) == 0:
             return True
