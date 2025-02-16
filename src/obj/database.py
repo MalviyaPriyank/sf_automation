@@ -50,7 +50,7 @@ class DataRetentionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._data_retention_time_in_days = value
-        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        elif vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__):
                 instance._data_retention_time_in_days = value
 
     
@@ -203,7 +203,10 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = f"'{value}'"
+        if value == 'NONE':
+            instance._comment = value
+        else:
+            instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
@@ -368,7 +371,7 @@ class Database:
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session)
         self.logger.info(f"Tracking for deployment database object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')
@@ -421,8 +424,8 @@ class Database:
         self.logger.info(f"creating database {self.attr.name}")
         self.create_database()
         self.grant_default_privileges()
-        #if len(largs) == 0:
-        #    self.create_deployment_entry()
+        if len(largs) == 0:
+            self.create_deployment_entry()
 
             
 

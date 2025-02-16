@@ -37,6 +37,8 @@ class Database:
     _storage_serialization_policy_tag = "STORAGE_SERIALIZATION_POLICY"
     _comment_tag = "COMMENT"
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
+    _max_allowed_value_data_retention_time_in_days=1
+    _min_allowed_value_data_retention_time_in_days=0
 
 class Role:
     def __init__(self):

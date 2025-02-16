@@ -191,13 +191,13 @@ class Deploy:
         """     
         self.session.sql(qry).collect()
     
-    def insert_into_deployment_script_table(self,qry,user_id):
+    def insert_into_deployment_script_table(self,obj_qry,user_id):
         qry = f"""
             INSERT INTO 
             {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
             VALUES
             (
-                '{qry}',
+                '{obj_qry}',
                 '{user_id}'
             )
             """
