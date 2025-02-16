@@ -976,6 +976,110 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_task_object",
+                "description":"creates a snowflake task object for the user. DATABASE, SCHEMA, NAME, SQL, WAREHOUSE are required parameters. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for DATABASE for task object"
+                            },
+			"SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for task object"
+                            },
+			"NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for task object"
+                            },
+			"SQL": {
+                                "type":"string",
+                                "description":"user provided value for SQL query for task object"
+                            },
+			"WAREHOUSE": {
+                                "type":"string",
+                                "description":"user provided value for WAREHOUSE for task object. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE"
+                            },
+			"USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE": {
+                                "type":"string",
+                                "description":"user provided value for USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE for task object"
+                            },
+			"SCHEDULE": {
+                                "type":"string",
+                                "description":"user provided value for SCHEDULE for task object"
+                            },
+			"CONFIG": {
+                                "type":"string",
+                                "description":"user provided value for CONFIG for task object"
+                            },
+			"ALLOW_OVERLAPPING_EXECUTION": {
+                                "type":"string",
+                                "description":"user provided value for ALLOW_OVERLAPPING_EXECUTION for task object"
+                            },
+			"USER_TASK_TIMEOUT_MS": {
+                                "type":"string",
+                                "description":"user provided value for USER_TASK_TIMEOUT_MS for task object"
+                            },
+			"SUSPEND_TASK_AFTER_NUM_FAILURES": {
+                                "type":"string",
+                                "description":"user provided value for SUSPEND_TASK_AFTER_NUM_FAILURES for task object"
+                            },
+			"ERROR_INTEGRATION": {
+                                "type":"string",
+                                "description":"user provided value for ERROR_INTEGRATION for task object"
+                            },
+			"SUCCESS_INTEGRATION": {
+                                "type":"string",
+                                "description":"user provided value for SUCCESS_INTEGRATION for task object"
+                            },
+			"COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for task object"
+                            },
+			"AFTER": {
+                                "type":"string",
+                                "description":"user provided value for AFTER for task object"
+                            },
+			"WHEN": {
+                                "type":"string",
+                                "description":"user provided value for WHEN for task object"
+                            },
+			"TAG": {
+                                "type":"string",
+                                "description":"user provided value for TAG for task object"
+                            },
+                        },
+                        "FINALIZE": {
+                                "type":"string",
+                                "description":"user provided value for FINALIZE for task object"
+                            },
+                        "TASK_AUTO_RETRY_ATTEMPTS": {
+                                "type":"string",
+                                "description":"user provided value for TASK_AUTO_RETRY_ATTEMPTS for task object"
+                            },
+                        "USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS": {
+                                "type":"string",
+                                "description":"user provided value for USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS for task object"
+                            },
+                        "SERVERLESS_TASK_MIN_STATEMENT_SIZE": {
+                                "type":"string",
+                                "description":"user provided value for SERVERLESS_TASK_MIN_STATEMENT_SIZE for task object"
+                            },
+                        "SERVERLESS_TASK_MAX_STATEMENT_SIZE": {
+                                "type":"string",
+                                "description":"user provided value for SERVERLESS_TASK_MAX_STATEMENT_SIZE for task object"
+                            },
+                        "required":[
+                            "DATABASE","SCHEMA","NAME","SQL","WAREHOUSE"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"get_workflow",
                 "description":"retrieves the workflow setup instructions",
                 "inputSchema": {

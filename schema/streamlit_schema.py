@@ -17,6 +17,7 @@ CHAT_HISTORY = 'chat_history'
 #SF objects
 USER_OBJ = 'user'
 ROLE_OBJ = 'role'
+TASK_OBJ = 'task'
 TABLE_OBJ = 'table'
 SHARE_OBJ = 'share'
 SCHEMA_OBJ = 'schema'

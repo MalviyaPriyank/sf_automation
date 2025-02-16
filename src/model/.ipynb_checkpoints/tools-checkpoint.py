@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -55,8 +55,8 @@ class LLMTools:
                                   'schema': schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
                                   'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
-                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger)
-                                  #'task': task.Task,
+                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  'task': task.Task(session=self.sf_session, user_id=self.user_id),
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -114,24 +114,24 @@ class LLMTools:
                                     SCHEMA,
                                     DATABASE,
                                     FILE_FORMAT,
-                                    COMMENT="DEFAULT",
-                                    TAG="DEF",
-                                    URL="'DEF'",
-                                    STORAGE_INTEGRATION="DEF",
-                                    AWS_KEY_ID="DEF",
-                                    AWS_SECRET_KEY="DEF",
-                                    AWS_TOKEN="DEF",
-                                    AZURE_SAS_TOKEN="DEF",
-                                    AWS_ROLE="DEF",
+                                    COMMENT="NONE",
+                                    TAG="NONE",
+                                    URL="NONE",
+                                    STORAGE_INTEGRATION="NONE",
+                                    AWS_KEY_ID="NONE",
+                                    AWS_SECRET_KEY="NONE",
+                                    AWS_TOKEN="NONE",
+                                    AZURE_SAS_TOKEN="NONE",
+                                    AWS_ROLE="NONE",
                                     ENCRYPTION="SNOWFLAKE_FULL",
-                                    ENCRYPTION_TYPE="DEF",
-                                    ENCRYPTION_MASTER_KEY="DEF",
-                                    ENCRYPTION_KMS_KEY_ID="DEF",
-                                    USE_PRIVATELINK_ENDPOINT="DEF",
+                                    ENCRYPTION_TYPE="NONE",
+                                    ENCRYPTION_MASTER_KEY="NONE",
+                                    ENCRYPTION_KMS_KEY_ID="NONE",
+                                    USE_PRIVATELINK_ENDPOINT="NONE",
                                     DIRECTORY="TRUE",
                                     REFRESH_ON_CREATE="TRUE",
-                                    AUTO_REFRESH="DEF",
-                                    NOTIFICATION_INTEGRATION="DEF"):
+                                    AUTO_REFRESH="NONE",
+                                    NOTIFICATION_INTEGRATION="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -398,6 +398,37 @@ class LLMTools:
                                 "FILE_TYPE":"NONE"}
         snowpipe_obj.create_object(**snowpipe_data_dict)
         return f'SNOWPIPE object created for COPYINTO query: {COPYINTO_QUERY}'
+
+
+    def create_task_object(self,
+                            DATABASE,
+                            SCHEMA,
+                            NAME,
+                            SQL,
+                            WAREHOUSE="NONE",
+                            USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE="NONE",
+                            SCHEDULE="NONE",
+                            CONFIG="NONE",
+                            ALLOW_OVERLAPPING_EXECUTION="NONE",
+                            USER_TASK_TIMEOUT_MS="NONE",
+                            SUSPEND_TASK_AFTER_NUM_FAILURES="NONE",
+                            ERROR_INTEGRATION="NONE",
+                            SUCCESS_INTEGRATION="NONE",
+                            COMMENT="NONE",
+                            AFTER="NONE",
+                            WHEN="NONE",
+                            TAG="NONE",
+                            FINALIZE="NONE",
+                            TASK_AUTO_RETRY_ATTEMPTS="NONE",
+                            USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS="NONE",
+                            TARGET_COMPLETION_INTERVAL="NONE",
+                            SERVERLESS_TASK_MIN_STATEMENT_SIZE="NONE",
+                            SERVERLESS_TASK_MAX_STATEMENT_SIZE="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.TASK_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.TASK_OBJ, data_dict)
         
     
     def create_maskingpolicy_object(self,
