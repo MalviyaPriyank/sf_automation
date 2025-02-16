@@ -47,7 +47,7 @@ class LLMTools:
                                   'database': database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
                                   'role': role.Role(self.sf_session,self.user_id, logger=self.logger),
-                                  'copyinto':copyinto.CopyInto(logger=self.logger),
+                                  'copyinto':copyinto.CopyInto(session=self.sf_session, logger=self.logger),
                                   'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
@@ -357,7 +357,8 @@ class LLMTools:
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
                                              copy_into_qry=copyinto_query, 
-                                             user_id=self.user_id)
+                                             user_id=self.user_id,
+                                             logger=self.logger)
             self.logger.info(f'Creating snowpipe object for table {value}')
             snowpipe_data_dict = {"DATABASE":DATABASE,
                                     "SCHEMA": SCHEMA,
