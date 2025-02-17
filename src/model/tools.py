@@ -117,6 +117,7 @@ class LLMTools:
                                     COMMENT="NONE",
                                     TAG="NONE",
                                     URL="NONE",
+                                    AWS_ACCESS_POINT_ARN="NONE",
                                     STORAGE_INTEGRATION="NONE",
                                     AWS_KEY_ID="NONE",
                                     AWS_SECRET_KEY="NONE",

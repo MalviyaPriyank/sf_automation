@@ -130,6 +130,7 @@ class ExternalStage:
     _comment_tag = "COMMENT"
     _tag_tag = "TAG"
     _url_tag = "URL"
+    _aws_access_point_arn_tag="AWS_ACCESS_POINT_ARN"
     _storage_integration_tag = "STORAGE_INTEGRATION"
     _aws_key_id_tag = "AWS_KEY_ID"
     _aws_secret_key_tag = "AWS_SECRET_KEY"

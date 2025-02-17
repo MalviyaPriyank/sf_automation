@@ -47,7 +47,7 @@ class Name:
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
+              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
             instance._name = value
 
@@ -134,10 +134,10 @@ class Url:
         return instance._url
     
     def __set__(self,instance,value):
-        if vv.is_enclosed_in_single_quotes(value):
+        if value == 'NONE':
             instance._url = value
         else:
-            raise ValueError
+            instance._url = f"'{value}'"
 
     def __del__(self,instance):
         del instance._url
@@ -151,6 +151,19 @@ class UrlTag:
 
     def __del__(self,instance):
         del instance._url_tag
+
+class AwsAccessPointArn:
+    def __get__(self,instance,owner):
+        return instance._aws_access_point_arn
+    
+    def __set__(self,instance,value):
+        if value == 'NONE':
+            instance._aws_access_point_arn = value
+        else:
+            instance._aws_access_point_arn = f"'{value}'"
+
+    def __del__(self,instance):
+        del instance._aws_access_point_arn
 
 class StorageIntegration:
     def __get__(self,instance,owner):
@@ -177,7 +190,10 @@ class AwsKeyId:
         return instance._aws_key_id
     
     def __set__(self,instance,value):
-        instance._aws_key_id = value
+        if value == 'NONE':
+            instance._aws_key_id=value
+        else:
+            instance._aws_key_id=f"'{value}'"
 
     def __del__(self,instance):
         del instance._aws_key_id
@@ -197,7 +213,10 @@ class AwsSecretKey:
         return instance._aws_secret_key
     
     def __set__(self,instance,value):
-        instance._aws_secret_key = value
+        if value == 'NONE':
+            instance._aws_secret_key=value
+        else:
+            instance._aws_secret_key = f"'{value}'"
 
     def __del__(self,instance):
         del instance._aws_secret_key
@@ -278,10 +297,10 @@ class Encryption:
         return instance._encryption
     
     def __set__(self,instance,value):
-        if value not in gvextstg._allowed_values_encryption:
-            raise ValueError
+        if value == 'NONE':
+            instance._encryption=value
         else:
-            instance._encryption = value
+            instance._encryption=value
 
     def __del__(self,instance):
         del instance._encryption
@@ -381,10 +400,11 @@ class Directory:
         return instance._directory
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == 'NONE':
             instance._directory = value
-        else:
-            raise ValueError
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            instance._directory = value
+
 
     def __del__(self,instance):
         del instance._directory
@@ -404,7 +424,9 @@ class RefreshOnCreate:
         return instance._refresh_on_create
     
     def __set__(self,instance,value):
-        if vv.is_bool(value):
+        if value == 'NONE':
+            instance._refresh_on_create = value
+        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
             instance._refresh_on_create = value
         else:
             raise ValueError
@@ -484,6 +506,8 @@ class ExternalStageAttrs:
 
     url = Url()
     url_tag = UrlTag()
+
+    aws_access_point_arn=AwsAccessPointArn()
 
     storage_integration = StorageIntegration()
     storage_integration_tag = StorageIntegrationTag()
@@ -574,6 +598,9 @@ class ExternalStage:
     
     def set_url_tag(self,val):
         self.attr.url_tag = val
+
+    def set_aws_access_point_arn(self,val):
+        self.attr.aws_access_point_arn=val
 
     def set_storage_integration(self,val):
         self.attr.storage_integration = val
@@ -679,6 +706,7 @@ class ExternalStage:
         set_flag(gvextstg._comment_tag,"_comment")
         set_flag(gvextstg._tag_tag,"_tag")
         set_flag(gvextstg._url_tag,"_url")
+        set_flag(gvextstg._aws_access_point_arn_tag,"_aws_access_point_arn")
         set_flag(gvextstg._storage_integration_tag,"_storage_integration")
         set_flag(gvextstg._aws_key_id_tag,"_aws_key_id")
         set_flag(gvextstg._aws_secret_key_tag,"_aws_secret_key")
@@ -703,7 +731,7 @@ class ExternalStage:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE STAGE  {self.attr.name} "
+        self.qry = f"CREATE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -716,6 +744,8 @@ class ExternalStage:
                     self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
                 if prop == gvextstg._url_tag:
                     self.qry = f" {self.qry} {self.attr.url_tag} = {self.attr.url} "
+                if prop == gvextstg._aws_access_point_arn_tag:
+                    self.qry = f" {self.qry} {gvextstg._aws_access_point_arn_tag} = {self.attr.aws_access_point_arn} "
                 if prop == gvextstg._storage_integration_tag:
                     self.qry = f" {self.qry} {self.attr.storage_integration_tag} = {self.attr.storage_integration} "
                 if prop == gvextstg._aws_key_id_tag:
@@ -763,7 +793,7 @@ class ExternalStage:
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)
@@ -774,7 +804,7 @@ class ExternalStage:
         deploy_inst.insert_into_deploy_control_table()
 
     def create_external_stage(self):
-        self.session.sql(self.qry)
+        self.session.sql(self.qry).collect()
 
     def create_object(self,**kwargs):
 
@@ -795,6 +825,8 @@ class ExternalStage:
 
         self.set_url(kwargs[gvextstg._url_tag])
         self.set_url_tag(gvextstg._url_tag)
+
+        self.set_aws_access_point_arn(kwargs[gvextstg._aws_access_point_arn_tag])
 
         self.set_storage_integration(kwargs[gvextstg._storage_integration_tag])
         self.set_storage_integration_tag(gvextstg._storage_integration_tag)
@@ -844,7 +876,7 @@ class ExternalStage:
         self.set_qualified_name()
         self.prepare_query()
         self.create_external_stage()
-        self.create_deployment_entry()
+        #self.create_deployment_entry()
 
         
 

@@ -4,7 +4,7 @@ class InformationSchema:
     _information_schema="INFORMATION_SCHEMA"
     _database_view=f"{_information_schema}.DATABASES"
     _schema_view=f"{_information_schema}.SCHEMATA"
-    _table_view=f"{_information_schema}.TABLE"
+    _table_view=f"{_information_schema}.TABLES"
     _stage_view=f"{_information_schema}.STAGES"
     _file_format_view=f"{_information_schema}.FILE_FORMATS"
     _column_view=f"{_information_schema}.COLUMNS"

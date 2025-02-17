@@ -70,7 +70,7 @@ class FileFormat:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._scheam, file_format_name=value)
+        vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, file_format_name=value)
         instance._file_format = value
 
     def __delete__(self,instance):
@@ -377,9 +377,9 @@ class CopyInto:
         self.add_properties_to_query()
 
     def create_query(self,**kwargs):
-        self.set_table(kwargs[gv._table_tag])
-        self.set_schema(kwargs[gv._schema_tag])
         self.set_database(kwargs[gv._db_tag])
+        self.set_schema(kwargs[gv._schema_tag])
+        self.set_table(kwargs[gv._table_tag])
         self.set_stage(kwargs[gv._stage_tag])
         self.set_file_format(kwargs[gv._file_format_tag])
         self.set_on_error(kwargs[gv._on_error_tag])

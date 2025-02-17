@@ -19,7 +19,7 @@ class Database:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        #if vo.database_exist(value):
+        vo.database_exist(session=instance.parent.session, database_name=value)
         instance._database = value
     
     def __delete__(self,instance):
@@ -31,6 +31,7 @@ class Name:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.is_new_schema(session=instance.parent.session,database_name=instance._database,schema_name=value)
         if vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
             if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -373,9 +374,6 @@ class Schema:
     def set_database(self, value):
         self.attr.database = value
 
-    def set_database_tag(self, value):
-        self.attr.database_tag = value  
-
     def set_name(self, value):
         self.attr.name = value
 
@@ -529,7 +527,7 @@ class Schema:
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment schema object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema('NA')

@@ -1562,7 +1562,7 @@ class FileFormat:
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment fileformat object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
+        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)

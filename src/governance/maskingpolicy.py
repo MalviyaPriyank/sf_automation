@@ -119,10 +119,11 @@ class MaskingPolicyAttr:
 
 class MaskingPolicy:
     def __init__(self,session,user_id,logger):
-        self.attr = MaskingPolicyAttr()
         self.session = session
         self.user_id = user_id
         self.logger = logger
+        self.attr = MaskingPolicyAttr()
+
 
     def set_role(self,value):
         self.attr.role = value
