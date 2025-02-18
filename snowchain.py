@@ -17,11 +17,10 @@ from src.model.tools import LLMTools
 from src.model.bedrock import Bedrock
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
-from valueexception import (
-    AttributeValidationError,
-    InvalidPassword
+from snowchainexception import (
+    SnowchainException
 )
-from objectexception import ObjectException
+
 
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -51,6 +50,7 @@ if not st.session_state[ss.INITIALIZED]:
     session_inst.set_user('bips')
     session_inst.set_password('Snowflake@123')
     session_inst.set_account('YNBSLQA-OI00683')
+    session_inst.set_passcode('973964')
     st.session_state.session = session_inst.get_session()
     root = session_inst.get_root_object()
     st.session_state.bedrock_obj = Bedrock()
@@ -96,22 +96,9 @@ if st.session_state[ss.INITIALIZED]:
                 if lcs.TOOL_USE in content:
                     try:
                         tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                    except AttributeValidationError as e:
-                        print('attr-error')
+                    except SnowchainException as e:
+                        logger.info('attr-error')
                         st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
-                        with st.chat_message(ss.ASSISTANT):
-                            st.markdown(e)
-                        tool_result.append({lcs.TOOL_RESULT:{
-                            lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
-                            lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
-                        }})
-                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                        done_tool_call=True
-                        break
-                    except ObjectException as e:
-                        print('obj-error')
-                        st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
-                    
                         with st.chat_message(ss.ASSISTANT):
                             st.markdown(e)
                         tool_result.append({lcs.TOOL_RESULT:{

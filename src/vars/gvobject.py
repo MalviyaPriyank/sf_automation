@@ -236,6 +236,8 @@ class User:
 class Task:
     def __init__(self):
         pass
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
     _name_tag="NAME"
     _sql_tag="SQL"
     _warehouse_tag="WAREHOUSE"
@@ -308,7 +310,7 @@ class CopyInto:
     _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
 
-class NotificationIntegration:
+class NotificationIntegrationEmail:
     _name_tag = "NAME"
     _enabled_tag = "ENABLED"
     _type_tag = "TYPE"
@@ -317,6 +319,8 @@ class NotificationIntegration:
     _default_subject_tag = "DEFAULT_SUBJECT"
     _comment_tag = "COMMENT"
     _allowed_number_of_recipients = 50
+    _allowed_values_type=["EMAIL"]
+    _max_allowed_recepients=50
 
 
 class StorageIntegrationAws:

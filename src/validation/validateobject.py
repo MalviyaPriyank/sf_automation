@@ -14,7 +14,8 @@ from infschema.columns import Columns as cols
 from exception.objectexception import ( 
     ObjectDoesNotExist,
     DuplicateObject,
-    ColumnDoesNotExist
+    ColumnDoesNotExist,
+    UserEmailDoesNotExist
 )
 
 
@@ -144,7 +145,23 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist(object_type='TASK',object_name=task)
+        
+    @staticmethod
+    def is_valid_user_email(session,user_email_list):
+        df=session.sql("SHOW USERS").collect()
+        name_list=[]
+        login_name_list=[]
+        email_list=[]
+        for inner_lst in df:
+            name_list.append(inner_lst[0])
+            login_name_list.append(inner_lst[2])
+            email_list.append(inner_lst[6])
+        
+        for email in user_email_list:
+            if ( email not in name_list 
+                and email not in login_name_list
+                and email not in email_list):
+                raise UserEmailDoesNotExist(object_type='USER',object_name=email)
+        return True
 
         
-
-

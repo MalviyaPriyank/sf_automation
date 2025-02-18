@@ -32,7 +32,7 @@ class Schema:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(instance._database,value)
+        vo.schema_exist(session=instance.parent.session,database_name=instance._database,schema_name=value)
         instance._schema = value
 
     def __delete__(self,instance):
@@ -84,6 +84,8 @@ class UserTaskManagedInitialWarehouseSize:
     def __set__(self,instance,value):
         if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
+        else:
+            instance._user_task_managed_initial_warehouse_size = value
 
     def __delete__(self,instance):
         del instance._user_task_managed_initial_warehouse_size
@@ -94,8 +96,11 @@ class Schedule:
         return instance._schedule    
     
     def __set__(self,instance,value):
-        vv.is_valid_cron(value=value,object_type=instance.parent.__class__,attr_name=self.__class__.__name__)
-        instance._schedule = value
+        if value == 'NONE':
+            instance._schedule = value
+        else:
+            vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._schedule = value
 
     def __delete__(self,instance):
         del instance._schedule
@@ -106,8 +111,11 @@ class Config:
         return instance._config
     
     def __set__(self,instance,value):
-        vv.is_json(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._config = value
+        if value == 'NONE':
+            instance._config = value
+        else:
+            vv.is_json(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._config = value
     
     def __delete__(self,instance):
         del instance._config
@@ -118,8 +126,11 @@ class AllowOverlappingExecution:
         return instance._allow_overlapping_execution
     
     def __set__(self,instance,value):
-        vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._allow_overlapping_execution = value
+        if value == 'NONE':
+            instance._allow_overlapping_execution = value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._allow_overlapping_execution = value
     
     def __delete__(self,instance):
         del instance._allow_overlapping_execution
@@ -130,9 +141,12 @@ class UserTaskTimeoutMs:
         return instance._user_task_timeout_ms
     
     def __set__(self,instance,value):
-        vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        vv.is_between(value=value,num1=gvtask._allowed_min_user_task_timeout_ms,num2=gvtask._allowed_max_user_task_timeout_ms,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._user_task_timeout_ms = value
+        if value == 'NONE':
+            instance._user_task_timeout_ms = value
+        else:
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value=value,num1=gvtask._allowed_min_user_task_timeout_ms,num2=gvtask._allowed_max_user_task_timeout_ms,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._user_task_timeout_ms = value
     
     def __delete__(self,instance):
         del instance._user_task_timeout_ms
@@ -142,8 +156,11 @@ class SuspendTaskAfterNumFailures:
         return instance._suspend_task_after_num_failures
     
     def __set__(self,instance,value):
-        vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._suspend_task_after_num_failures = value
+        if value == 'NONE':
+            instance._suspend_task_after_num_failures = value
+        else:
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._suspend_task_after_num_failures = value
     
     def __delete__(self,instance):
         del instance._suspend_task_after_num_failures
@@ -153,7 +170,10 @@ class ErrorIntegration:
         return instance._error_integration
     
     def __set__(self,instance,value):
-        instance._error_integration = value
+        if value == 'NONE':
+            instance._error_integration = value
+        else:
+            instance._error_integration = value
     
     def __delete__(self,instance):
         del instance._error_integration
@@ -164,7 +184,10 @@ class SuccessIntegration:
         return instance._success_integration
     
     def __set__(self,instance,value):
-        instance._success_integration = value
+        if value == 'NONE':
+            instance._success_integration = value
+        else:
+            instance._success_integration = value
     
     def __delete__(self,instance):
         del instance._success_integration
@@ -174,7 +197,10 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        if value == 'NONE':
+            instance._comment = value
+        else:
+            instance._comment = value
     
     def __delete__(self,instance):
         del instance._comment
@@ -185,8 +211,11 @@ class After:
         return instance._after
     
     def __set__(self,instance,value):
-        vo.task_exist(session=instance.parent.session,database=instance._database,schema=instance._schema,task=value)
-        instance._after = value
+        if value == 'NONE':
+            instance._after = value
+        else:
+            vo.task_exist(session=instance.parent.session,database=instance._database,schema=instance._schema,task=value)
+            instance._after = value
     
     def __delete__(self,instance):
         del instance._after
@@ -197,7 +226,10 @@ class When:
         return instance._when
     
     def __set__(self,instance,value):
-        instance._when = value
+        if value == 'NONE':
+            instance._when = value
+        else:
+            instance._when = value
     
     def __delete__(self,instance):
         del instance._when
@@ -208,7 +240,10 @@ class Tag:
         return instance._tag
     
     def __set__(self,instance,value):
-        instance._tag = value
+        if value == 'NONE':
+            instance._tag = value
+        else:
+            instance._tag = value
     
     def __delete__(self,instance):
         del instance._tag
@@ -219,7 +254,10 @@ class Finalize:
         return instance._finalize
     
     def __set__(self,instance,value):
-        instance._finalize = value
+        if value == 'NONE':
+            instance._finalize = value
+        else:
+            instance._finalize = value
     
     def __delete__(self,instance):
         del instance._finalize
@@ -229,7 +267,10 @@ class TaskAutoRetryAttempts:
         return instance._task_auto_retry_attempts
     
     def __set__(self,instance,value):
-        instance._task_auto_retry_attempts = value
+        if value == 'NONE':
+            instance._task_auto_retry_attempts = value
+        else:
+            instance._task_auto_retry_attempts = value
     
     def __delete__(self,instance):
         del instance._task_auto_retry_attempts
@@ -239,7 +280,10 @@ class UserTaskMinimumTriggerIntervalInSeconds:
         return instance._user_task_minimum_trigger_interval_in_seconds
     
     def __set__(self,instance,value):
-        instance._user_task_minimum_trigger_interval_in_seconds = value
+        if value == 'NONE':
+            instance._user_task_minimum_trigger_interval_in_seconds = value
+        else:
+            instance._user_task_minimum_trigger_interval_in_seconds = value
     
     def __delete__(self,instance):
         del instance._user_task_minimum_trigger_interval_in_seconds
@@ -249,7 +293,10 @@ class TargetCompletionInterval:
         return instance._target_completion_interval
     
     def __set__(self,instance,value):
-        instance._target_completion_interval = value
+        if value == 'NONE':
+            instance._target_completion_interval = value
+        else:
+            instance._target_completion_interval = value
     
     def __delete__(self,instance):
         del instance._target_completion_interval
@@ -259,7 +306,10 @@ class ServerlessTaskMinStatementSize:
         return instance._serverless_task_min_statement_size
     
     def __set__(self,instance,value):
-        instance._serverless_task_min_statement_size = value
+        if value == 'NONE':
+            instance._serverless_task_min_statement_size = value
+        else:
+            instance._serverless_task_min_statement_size = value
     
     def __delete__(self,instance):
         del instance._serverless_task_min_statement_size
@@ -270,7 +320,10 @@ class ServerlessTaskMaxStatementSize:
         return instance._serverless_task_max_statement_size
     
     def __set__(self,instance,value):
-        instance._serverless_task_max_statement_size = value
+        if value == 'NONE':
+            instance._serverless_task_max_statement_size = value
+        else:
+            instance._serverless_task_max_statement_size = value
     
     def __delete__(self,instance):
         del instance._serverless_task_max_statement_size
@@ -458,6 +511,9 @@ class Task:
                     self.qry = f" {self.qry} {gvtask._target_completion_interval_tag} = {self.attr.target_completion_interval} "
                 if prop == gvtask._serverless_task_min_statement_size_tag:
                     self.qry = f" {self.qry} {gvtask._serverless_task_min_statement_size_tag} = {self.attr.serverless_task_min_statement_size} "
+                if prop == gvtask._serverless_task_min_statement_size_tag:
+                    self.qry = f" {self.qry} {gvtask._serverless_task_min_statement_size_tag} = {self.attr.serverless_task_min_statement_size} "
+
         self.qry = self.qry + f" AS  {self.attr.definition} "    
         
 
@@ -471,6 +527,8 @@ class Task:
         self.session.sql(self.qry).collect()
 
     def create_object(self,**kwargs):
+        self.set_database(kwargs[gvtask._database_tag])
+        self.set_schema(kwargs[gvtask._schema_tag])
         self.set_name(kwargs[gvtask._name_tag])
         self.set_definition(kwargs[gvtask._sql_tag])
         self.set_warehouse(kwargs[gvtask._warehouse_tag])
@@ -491,6 +549,7 @@ class Task:
         self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[gvtask._user_task_minimum_trigger_interval_in_seconds_tag])
         self.set_target_completion_interval(kwargs[gvtask._target_completion_interval_tag])
         self.set_serverless_task_min_statement_size(kwargs[gvtask._serverless_task_min_statement_size_tag])
+        self.set_serverless_task_max_statement_size(kwargs[gvtask._serverless_task_max_statement_size_tag])
         self.set_qualified_name()
 
         self.prepare_query()
@@ -504,7 +563,7 @@ class Task:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.attr.session)
+        deploy_inst = Deploy(self.session)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database(self.attr.database)
         deploy_inst.set_object_schema(self.attr.schema)

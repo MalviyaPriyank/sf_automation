@@ -10,8 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
 
-from vars.gvobject import NotificationIntegration as gv, Config as cfg , Privilege as gv_priv
+from vars.gvobject import NotificationIntegrationEmail as gv, Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
@@ -51,6 +52,7 @@ class Type:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._type = value
     
     def __delete__(self,instance):
@@ -61,7 +63,9 @@ class AllowedRecipients:
         return instance._allowed_recipients
     
     def __set__(self,instance,value):
-        instance._allowed_recipients = value
+        vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[gv._max_allowed_recepients])
+        vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
+        instance._allowed_recipients=value  
 
     def __delete__(self,instance):
         del instance._allowed_recipients
@@ -71,6 +75,8 @@ class DefaultRecipients:
         return instance._default_recipients
     
     def __set__(self,instance,value):
+        vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
         instance._default_recipients = value
 
     def __delete__(self,instance):
@@ -81,6 +87,7 @@ class DefaultSubject:
         return instance._default_subject
     
     def __set__(self,instance,value):
+        vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._default_subject = value
 
     def __delete__(self,instance):
@@ -91,6 +98,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
+        vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._comment = value
 
     def __delete__(self,instance):
@@ -109,12 +117,12 @@ class NotificationIntegrationAttr:
     comment = Comment()
 
 
-class Database:
+class NotificationIntegrationEmail:
     def __init__(self,session,user_id):
-        self.attr = NotificationIntegrationAttr(self)
         self.session = session
         self.user_id = user_id
         self.qry = ""
+        self.attr = NotificationIntegrationAttr(self)
 
     def set_name(self, value):
         self.attr.name = value
@@ -196,12 +204,8 @@ class Database:
 
     def create_notification_integration(self):
         self.session.sql(self.qry).collect()
-        stg = Stage(self.root,cfg._config_database,cfg._deployment_stage)
-        stg.set_stage(cfg._deployment_stage)
-        stg.set_stage_reference()
-        stg.upload_sql_to_a_file_in_stage(qry = self.qry,file_name=self.attr.name,  upload_path= self.__class__.__name__)
 
-    def create_object(self,**kwargs):
+    def create_object(self,*largs,**kwargs):
 
         self.set_name(kwargs[gv._name_tag])
         self.set_enabled(kwargs[gv._enabled_tag])
@@ -213,6 +217,6 @@ class Database:
 
         self.prepare_query()
         self.create_notification_integration()
-        #self.grant_default_privileges()
         self.create_deployment_entry()
-
+        if len(largs) == 0:
+            self.create_deployment_entry()

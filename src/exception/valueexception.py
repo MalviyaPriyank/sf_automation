@@ -1,12 +1,18 @@
-class AttributeValidationError(Exception):
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+
+from snowchainexception import SnowchainException
+
+class AttributeValidationError(SnowchainException):
     """Base class for attribute validation exceptions"""
     def __init__(self, object_type, attr_name, message):
         self.object_type = object_type
         self.attr_name = attr_name
         self.message = message
-    
-    def __str__(self):
-        return f" Attribute {self.attr_name} of {self.object_type} object {self.message}. Please provide different value"
+        self.error_message = f" Attribute {self.attr_name} of {self.object_type} object {self.message}. Please provide different value"
+        super.__init__(self.error_message)
 
 class MustStartWithAlphabet(AttributeValidationError):
     def __init__(self, object_type, attr_name):
@@ -74,8 +80,18 @@ class InvalidParamForObject(AttributeValidationError):
 class DependentParameterNotSet(AttributeValidationError):
     def __init__(self, object_type, child_attr_name, parent_attr_name):
         message = f" can only be set if {parent_attr_name} is set"
-        super().__init__(object_type, child_attr_name, message)    
-        
+        super().__init__(object_type, child_attr_name, message) 
+
+class MustBeAList(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message = f"must be a comma separated list."
+        super().__init__(object_type, attr_name=attr_name, message=message) 
+
+class MustBeWithinLimit(AttributeValidationError):
+    def __init__(self, object_type, attr_name, limit_value):
+        message=f"can only have maximum of {limit_value} values"
+        super().__init__(object_type, attr_name, message)
+
 
 
     

@@ -8,11 +8,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
-from vars.gvobject import Config as gv,Privilege as gv_priv
+from vars.gvobject import Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from processing.stage import Stage
 from dep.deploy import Deploy
+from setup import privilege
 
 
 class Session:
@@ -121,6 +122,9 @@ class Table:
     def set_name(self,name):
         self.attr.name = name
 
+    def set_qualified_name(self):
+        self.qualified_name=f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+
     def set_column_name_list(self,ddl_df):
         self.attr.column_name_list = ddl_df["Column_Name"].to_list()
 
@@ -151,6 +155,11 @@ class Table:
         self.qry = self.get_create_table_query()
         self.attr.session.sql(self.qry).collect()
 
+    def grant_default_privileges(self):
+        priv_inst = privilege.Privilege(self.session)
+        for role,privileges in cfg._default_role_privilege_set.items():
+            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
     def create_table_using_files_from_stage(self,database,schema):
         self.set_database(database)
@@ -173,6 +182,7 @@ class Table:
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
             self.logger.info(f"creating table {self.attr.name}")
+            self.set_qualified_name()
             self.create_table()
             self.create_deployment_entry()
         return tbl_lst

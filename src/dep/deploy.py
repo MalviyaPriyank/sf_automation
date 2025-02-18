@@ -190,8 +190,19 @@ class Deploy:
              )
         """     
         self.session.sql(qry).collect()
+
+    @staticmethod
+    def remove_escape_character_from_query(qry):
+        qry=qry.replace("''","'")
+        return qry
+    
+    @staticmethod
+    def escape_single_quotes_from_sql_query(qry):
+        qry=qry.replace("'","''")
+        return qry    
     
     def insert_into_deployment_script_table(self,obj_qry,user_id):
+        obj_qry = self.escape_single_quotes_from_sql_query(obj_qry)
         qry = f"""
             INSERT INTO 
             {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
@@ -221,6 +232,7 @@ class Deploy:
         FROM 
             {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
         """
+        qry = self.remove_escape_character_from_query(qry=qry)
         res = self.session.sql(qry).collect()
         qry_lst = []
         for inner_qry in res:
@@ -235,15 +247,3 @@ class Deploy:
         for qry in sql_lst:
             qry = qry.replace(dev_db,test_db)
             self.session.sql(qry).collect()
-        
-        
-        
-    
-
-
-
-
-
-
-
-        

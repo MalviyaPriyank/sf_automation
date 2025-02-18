@@ -257,7 +257,7 @@ class Snowpipe:
         self.prepare_query()
         self.logger.info(f"creating snowpipe : {self.attr.name}")
         self.create_snowpipe()
-        #self.grant_default_privileges()
+        self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()
 

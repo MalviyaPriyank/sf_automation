@@ -1,9 +1,15 @@
-class PrivilegeException(Exception):
+import sys
+import os 
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+
+
+from snowchainexception import SnowchainException
+
+class PrivilegeException(SnowchainException):
     def __init__(self, message):
         self.message = message
-
-    def __str__(self):
-        return f"ERROR : {self.message}"
+        super.__init__(self.message)
 
 class InvalidObject(PrivilegeException):
     def __init__(self, object_type):

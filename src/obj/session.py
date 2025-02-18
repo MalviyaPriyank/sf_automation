@@ -79,11 +79,14 @@ class Session:
     def set_session(self,value):
         self.attr.session = value
 
+    def set_passcode(self,value):
+        self.passcode=value
+
     def get_session(self):
         self.set_user(self.attr.user)
         self.set_password(self.attr.password)
         self.set_account(self.attr.account)
-        session = (snowpark.Session.builder.config("account",self.attr.account).config("user",self.attr.user).config("password",self.attr.password).create())
+        session = (snowpark.Session.builder.config("account",self.attr.account).config("user",self.attr.user).config("password",self.attr.password).config("passcode",self.passcode).create())
         self.set_session(session)
         return self.attr.session
     

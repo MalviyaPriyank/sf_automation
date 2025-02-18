@@ -21,7 +21,9 @@ from valueexception import (
     DependentParameterNotSet,
     InvalidPassword,
     IsARequiredAttribute,
-    ValueNotAllowed
+    ValueNotAllowed,
+    MustBeAList,
+    MustBeWithinLimit
 )
 
 class ValidateValue:
@@ -171,4 +173,17 @@ class ValidateValue:
             elif value[4] not in ValidateCron.allowed_values_for_week:
                 raise MustBeValidCRON(object_type,attr_name)
 
+    @staticmethod
+    def is_list(value,object_type,attr_name,*largs):
+        if isinstance(value,list):
+            if len(largs) != 0:
+                list_len = len(value)
+                if list_len < largs[0]:
+                    return True 
+                else:
+                    raise MustBeWithinLimit(object_type,attr_name,largs[0])
+            elif len(largs) == 0:
+                return True
+        else:
+            raise MustBeAList(object_type,attr_name)
 
