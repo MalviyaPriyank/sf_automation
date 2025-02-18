@@ -1121,6 +1121,26 @@ tools = {
                     }
                 }
             }
+        },
+        {
+            "toolSpec": {
+                "name":"sf_setup",
+                "description":"if user explicitly asks for initial setup with snowflake. such that user specifies it is their first time.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
         }
     ]
 }

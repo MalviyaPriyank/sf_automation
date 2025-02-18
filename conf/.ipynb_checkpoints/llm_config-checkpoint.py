@@ -168,7 +168,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_externalstage_object",
-                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA, and FILE_FORMAT are required inputs to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -196,6 +196,10 @@ tools = {
                         "URL": {
                                 "type":"string",
                                 "description":"user provided value for URL for external stage object"
+                            },
+                        "AWS_ACCESS_POINT_ARN": {
+                                "type":"string",
+                                "description":"user provided value for AWS ACCESS POINT ARN for external stage object"
                             },
                         "STORAGE_INTEGRATION": {
                                 "type":"string",
@@ -263,7 +267,7 @@ tools = {
                             },
                         },
                         "required":[
-                            "NAME","DATABASE","SCHEMA","FILE_FORMAT"
+                            "NAME","DATABASE","SCHEMA"
                         ]
                     }
                 }
@@ -272,146 +276,146 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_fileformat_object",
-                "description":"creates a snowflake fileformat object for the user. DATABASE, SCHEMA, FILE_FORMAT is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake fileformat object for the user. DATABASE, SCHEMA, FILE_FORMAT is a required input to be taken from user. Only use user provided inputs. Do not refer snowflake documentation for attributes.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
                 			"DATABASE": {
                                 "type":"string",
-                                "description":"user provided value for DATABASE for database object"
+                                "description":"user provided value for DATABASE for file format object"
                             },
                 			"SCHEMA": {
                                 "type":"string",
-                                "description":"user provided value for SCHEMA for database object"
+                                "description":"user provided value for SCHEMA for file format object"
                             },
                             "FILE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for database object"
+                                "description":"user provided value for FILE_FORMAT for file format object"
                             },
                         "TYPE": {
                                 "type":"string",
-                                "description":"user provided value for TYPE for database object"
+                                "description":"user provided value for TYPE for file format object"
                             },
                         "PARSE_HEADER": {
                                 "type":"string",
-                                "description":"user provided value for PARSE_HEADER for database object"
+                                "description":"user provided value for PARSE_HEADER for file format object"
                             },
                         "SKIP_HEADER": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_HEADER for database object"
+                                "description":"user provided value for SKIP_HEADER for file format object"
                             },
                         "SKIP_BLANK_LINES": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_BLANK_LINES for database object"
+                                "description":"user provided value for SKIP_BLANK_LINES for file format object"
                             },
                         "DATE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for DATE_FORMAT for database object"
+                                "description":"user provided value for DATE_FORMAT for file format object"
                             },
                         "TIME_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for TIME_FORMAT for database object"
+                                "description":"user provided value for TIME_FORMAT for file format object"
                             },
                         "TIMESTAMP_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for TIMESTAMP_FORMAT for database object"
+                                "description":"user provided value for TIMESTAMP_FORMAT for file format object"
                             },
                         "BINARY_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for BINARY_FORMAT for database object"
+                                "description":"user provided value for BINARY_FORMAT for file format object"
                             },
                         "ESCAPE": {
                                 "type":"string",
-                                "description":"user provided value for ESCAPE for database object"
+                                "description":"user provided value for ESCAPE for file format object"
                             },
                         "ESCAPE_UNENCLOSED_FIELD": {
                                 "type":"string",
-                                "description":"user provided value for ESCAPE_UNENCLOSED_FIELD for database object"
+                                "description":"user provided value for ESCAPE_UNENCLOSED_FIELD for file format object"
                             },
                         "TRIM_SPACE": {
                                 "type":"string",
-                                "description":"user provided value for TRIM_SPACE for database object"
+                                "description":"user provided value for TRIM_SPACE for file format object"
                             },
                         "FIELD_OPTIONALLY_ENCLOSED_BY": {
                                 "type":"string",
-                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for database object"
+                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for file format object"
                             },
                         "NULL_IF": {
                                 "type":"string",
-                                "description":"user provided value for NULL_IF for database object"
+                                "description":"user provided value for NULL_IF for file format object"
                             },
                         "ERROR_ON_COLUMN_COUNT_MISMATCH": {
                                 "type":"string",
-                                "description":"user provided value for ERROR_ON_COLUMN_COUNT_MISMATCH for database object"
+                                "description":"user provided value for ERROR_ON_COLUMN_COUNT_MISMATCH for file format object"
                             },
                         "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
-                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object"
+                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for file format object"
                             },
                         "EMPTY_FIELD_AS_NULL": {
                                 "type":"string",
-                                "description":"user provided value for EMPTY_FIELD_AS_NULL for database object"
+                                "description":"user provided value for EMPTY_FIELD_AS_NULL for file format object"
                             },
                         "SKIP_BYTE_ORDER_MARK": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_BYTE_ORDER_MARK for database object"
+                                "description":"user provided value for SKIP_BYTE_ORDER_MARK for file format object"
                             },
                         "ENCODING": {
                                 "type":"string",
-                                "description":"user provided value for ENCODING for database object"
+                                "description":"user provided value for ENCODING for file format object"
                             },
                         "ENABLE_OCTAL": {
                                 "type":"string",
-                                "description":"user provided value for ENABLE_OCTAL for database object"
+                                "description":"user provided value for ENABLE_OCTAL for file format object"
                             },
                         "ALLOW_DUPLICATE": {
                                 "type":"string",
-                                "description":"user provided value for ALLOW_DUPLICATE for database object"
+                                "description":"user provided value for ALLOW_DUPLICATE for file format object"
                             },
                         "STRIP_OUTER_ARRAY": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_OUTER_ARRAY for database object"
+                                "description":"user provided value for STRIP_OUTER_ARRAY for file format object"
                             },
                         "STRIP_NULL_VALUES": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_NULL_VALUES for database object"
+                                "description":"user provided value for STRIP_NULL_VALUES for file format object"
                             },
                         "IGNORE_UTF8_ERRORS": {
                                 "type":"string",
-                                "description":"user provided value for IGNORE_UTF8_ERRORS for database object"
+                                "description":"user provided value for IGNORE_UTF8_ERRORS for file format object"
                             },
                         "SNAPPY_COMPRESSION": {
                                 "type":"string",
-                                "description":"user provided value for SNAPPY_COMPRESSION for database object"
+                                "description":"user provided value for SNAPPY_COMPRESSION for file format object"
                             },
                         "BINARY_AS_TEXT": {
                                 "type":"string",
-                                "description":"user provided value for BINARY_AS_TEXT for database object"
+                                "description":"user provided value for BINARY_AS_TEXT for file format object"
                             },
                         "USE_LOGICAL_TYPE": {
                                 "type":"string",
-                                "description":"user provided value for USE_LOGICAL_TYPE for database object"
+                                "description":"user provided value for USE_LOGICAL_TYPE for file format object"
                             },
                         "USE_VECTORIZED_SCANNER": {
                                 "type":"string",
-                                "description":"user provided value for USE_VECTORIZED_SCANNER for database object"
+                                "description":"user provided value for USE_VECTORIZED_SCANNER for file format object"
                             },
                         "PRESERVE_SPACE": {
                                 "type":"string",
-                                "description":"user provided value for PRESERVE_SPACE for database object"
+                                "description":"user provided value for PRESERVE_SPACE for file format object"
                             },
                         "STRIP_OUTER_ELEMENT": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_OUTER_ELEMENT for database object"
+                                "description":"user provided value for STRIP_OUTER_ELEMENT for file format object"
                             },
                         "DISABLE_SNOWFLAKE_DATA": {
                                 "type":"string",
-                                "description":"user provided value for DISABLE_SNOWFLAKE_DATA for database object"
+                                "description":"user provided value for DISABLE_SNOWFLAKE_DATA for file format object"
                             },
                         "DISABLE_AUTO_CONVERT": {
                                 "type":"string",
-                                "description":"user provided value for DISABLE_AUTO_CONVERT for database object"
+                                "description":"user provided value for DISABLE_AUTO_CONVERT for file format object"
                             },
                             
                         },
@@ -893,7 +897,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_copyinto_object",
-                "description":"creates a snowflake copyinto object for the user.",
+                "description":"creates a snowflake copyinto object for the user. Do not use pattern attribute and on_error attribute.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1102,6 +1106,26 @@ tools = {
             "toolSpec": {
                 "name":"deploy_all_dev_to_test",
                 "description":"deploys all objects from dev environment to test environment.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"sf_setup",
+                "description":"if user explicitly asks for initial setup with snowflake. such that user specifies it is their first time.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
