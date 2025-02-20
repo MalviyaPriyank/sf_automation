@@ -164,8 +164,8 @@ class Table:
     def create_table_using_files_from_stage(self,database,schema):
         self.set_database(database)
         self.set_schema(schema)
-        stg = Stage(self.root,gv._config_database,gv._config_schema)
-        stg.set_stage(gv._config_stage)
+        stg = Stage(self.root,cfg._config_database,cfg._config_schema)
+        stg.set_stage(cfg._config_stage)
         stg.set_stage_reference()
         file_lst = stg.get_list_of_files_from_stage()
         file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
@@ -184,6 +184,7 @@ class Table:
             self.logger.info(f"creating table {self.attr.name}")
             self.set_qualified_name()
             self.create_table()
+            self.grant_default_privileges()
             self.create_deployment_entry()
         return tbl_lst
     
@@ -197,6 +198,6 @@ class Table:
         deploy_inst.set_object_schema(self.attr.schema)
         deploy_inst.set_object_name(self.attr.name)
         deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(gv._deployment_status_in_development)
+        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()

@@ -75,8 +75,11 @@ class FileFormat:
         return instance._file_format
     
     def __set__(self,instance,value):
-        vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, file_format_name=value)
-        instance._file_format = value
+        if value=='NONE':
+            instance._file_format=value
+        else:
+            vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, file_format_name=value)
+            instance._file_format = value
 
     def __del__(self,instance):
         del instance._file_format

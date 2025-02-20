@@ -47,10 +47,9 @@ if ss.INITIALIZED not in st.session_state:
 
 if not st.session_state[ss.INITIALIZED]:
     session_inst = session.Session()
-    session_inst.set_user('bips')
-    session_inst.set_password('Snowflake@123')
-    session_inst.set_account('YNBSLQA-OI00683')
-    session_inst.set_passcode('973964')
+    session_inst.set_user('RAJU')
+    session_inst.set_password('Hellosnowflake@123')
+    session_inst.set_account('CHBQBTW-RC94301')
     st.session_state.session = session_inst.get_session()
     root = session_inst.get_root_object()
     st.session_state.bedrock_obj = Bedrock()

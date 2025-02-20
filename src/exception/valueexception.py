@@ -12,7 +12,7 @@ class AttributeValidationError(SnowchainException):
         self.attr_name = attr_name
         self.message = message
         self.error_message = f" Attribute {self.attr_name} of {self.object_type} object {self.message}. Please provide different value"
-        super.__init__(self.error_message)
+        super().__init__(self.error_message)
 
 class MustStartWithAlphabet(AttributeValidationError):
     def __init__(self, object_type, attr_name):
@@ -90,6 +90,11 @@ class MustBeAList(AttributeValidationError):
 class MustBeWithinLimit(AttributeValidationError):
     def __init__(self, object_type, attr_name, limit_value):
         message=f"can only have maximum of {limit_value} values"
+        super().__init__(object_type, attr_name, message)
+
+class MustBeAValidCollationSpecifier(AttributeValidationError):
+    def __init__(self, object_type, attr_name, invalid_specifier):
+        message=f"can not have {invalid_specifier} as a collation specifier."
         super().__init__(object_type, attr_name, message)
 
 

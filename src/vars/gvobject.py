@@ -39,6 +39,7 @@ class Database:
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
     _max_allowed_value_data_retention_time_in_days=1
     _min_allowed_value_data_retention_time_in_days=0
+    _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
 class Role:
     def __init__(self):
@@ -333,13 +334,17 @@ class StorageIntegrationAws:
     _storage_aws_role_arn_tag="STORAGE_AWS_ROLE_ARN"
     _storage_aws_external_id_tag="STORAGE_AWS_EXTERNAL_ID"
     _storage_aws_object_acl_tag="STORAGE_AWS_OBJECT_ACL"
+    _allowed_value_type="EXTERNAL_STAGE"
+    _allowed_value_storage_provider=['S3','S3CHINA','S3GOV']
+    _comment_tag="COMMENT"
+    _use_private_link_endpoint_tag="USE_PRIVATELINK_ENDPOINT"
 
 class Privilege:
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE"]
     _allowed_privileges = {
         "USER": ["MONITOR","OWNERSHIP","ALL"],
         "ROLE": ["OWNERSHIP"],
-        "STAGE":["READ","WRITE"],
+        "STAGE":["READ","WRITE","OWNERSHIP"],
         "WAREHOUSE": ["APPLYBUDGET","MODIFY","MONITOR","OPERATE","USAGE","OWNERSHIP","ALL"],
         "DATABASE": ["APPLYBUDGET","MODIFY","MONITOR","USAGE","REFERENCE_USAGE","CREATE DATABASE ROLE","CREATE SCHEMA","IMPORTED PRIVILEGES","OWNERSHIP","ALL"],
         "SCHEMA": ["APPLYBUDGET","MODIFY","MONITOR","USAGE","CREATE AUTHENTICATION POLICY","CREATE DATA METRIC FUNCTION","CREATE TABLE","CREATE DYNAMIC TABLE","CREATE EVENT TABLE",
@@ -378,13 +383,13 @@ class Config:
         "WH_XXLARGE" : "XXLARGE"
     }
     _default_role = {
-        "RL_OWNER_EVERY_OBJ" : "'Default role to be the owner of all the objects within account'",
-        "RL_ALL_EVERY_OBJ" : "'Default role to have all allowed privileges on all objects except ownership'",
+        "RL_DEV_OWNER_EVERY_OBJ" : "'Default role to be the owner of all the objects within account'",
+        "RL_DEV_ALL_EVERY_OBJ" : "'Default role to have all allowed privileges on all objects except ownership'",
     }
 
     _default_role_privilege_set = {
-        "RL_OWNER_EVERY_OBJ": "OWNERSHIP",
-        "RL_ALL_EVERY_OBJ": "ALL"
+        "RL_DEV_OWNER_EVERY_OBJ": "OWNERSHIP",
+        "RL_DEV_ALL_EVERY_OBJ": "ALL"
     }
     _deployment_scripts_table_column_list = ["SQL_TEXT","USER_ID"]
     _deployment_scripts_table_column_data_type_dict ={

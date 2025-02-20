@@ -217,11 +217,16 @@ class Snowpipe:
         self.check_properties_to_set()
         self.set_create_qry()
         self.add_properties_to_query()
+    
+    def pause_snowpipe(self):
+        self.session.sql(f"ALTER PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} SET PIPE_EXECUTION_PAUSED=true").collect()
 
     def create_snowpipe(self):
         self.session.sql(f"USE DATABASE {self.attr.database}").collect()
         self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
         self.session.sql(self.qry).collect()
+        self.pause_snowpipe()
+
 
     def grant_default_privileges(self):
         priv_inst = privilege.Privilege(self.session)

@@ -23,7 +23,8 @@ from valueexception import (
     IsARequiredAttribute,
     ValueNotAllowed,
     MustBeAList,
-    MustBeWithinLimit
+    MustBeWithinLimit,
+    MustBeAValidCollationSpecifier
 )
 
 class ValidateValue:
@@ -187,3 +188,10 @@ class ValidateValue:
         else:
             raise MustBeAList(object_type,attr_name)
 
+    @staticmethod
+    def is_valid_collation_specifier(value,object_type,attr_name,valid_specifiers):
+        specifier_list=value.split('-')
+        for specifier in specifier_list:
+            if specifier not in valid_specifiers:
+                raise MustBeAValidCollationSpecifier(object_type,attr_name,specifier)
+        return True

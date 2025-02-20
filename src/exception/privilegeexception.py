@@ -9,7 +9,7 @@ from snowchainexception import SnowchainException
 class PrivilegeException(SnowchainException):
     def __init__(self, message):
         self.message = message
-        super.__init__(self.message)
+        super().__init__(self.message)
 
 class InvalidObject(PrivilegeException):
     def __init__(self, object_type):

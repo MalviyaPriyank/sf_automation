@@ -25,10 +25,11 @@ class Name:
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.is_new_database(session=instance.parent.session, database_name=value)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
             instance._name = value
+
 
     def __delete__(self,instance):
         del instance._name
@@ -159,7 +160,11 @@ class DefaultDdlCollation:
         return instance._default_ddl_collation
     
     def __set__(self,instance,value):
-        instance._default_ddl_collation = value
+        if value=="NONE":
+            instance._default_ddl_collation=value
+        else:
+            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=gv._allowed_collation_specifiers)
+            instance._default_ddl_collation = value
 
     def __delete__(self,instance):
         del instance._default_ddl_collation
@@ -381,50 +386,56 @@ class Database:
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()
 
-    def grant_default_privileges(self):
+    def grant_default_privileges(self,*largs):
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
+                if len(largs)==0:
+                    priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
+                else:
+                    priv_inst.grant_privilege_on_object_to_role(privilege_type=privileges, object_type=self.__class__.__name__.upper(), object_identifier='DB_CONFIG', role=role)
 
 
     def create_database(self):
         self.session.sql(self.qry).collect()
 
     def create_object(self,*largs,**kwargs):
+        if len(largs) != 0:
+            self.qry = f"CREATE DATABASE {kwargs[gv._name_tag]}"
+            self.create_database()
+            self.grant_default_privileges(*['initial'])
+        else:
+            self.set_name(kwargs[gv._name_tag])
+            self.set_name_tag(gv._name_tag)
 
-        self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
+            self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
+            self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
 
-        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
+            self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
+            self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
 
-        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
+            self.set_external_volume(kwargs[gv._external_volume_tag])
+            self.set_external_volume_tag(gv._external_volume_tag)
 
-        self.set_external_volume(kwargs[gv._external_volume_tag])
-        self.set_external_volume_tag(gv._external_volume_tag)
+            self.set_catalog(kwargs[gv._catalog_tag])
+            self.set_catalog_tag(gv._catalog_tag)
 
-        self.set_catalog(kwargs[gv._catalog_tag])
-        self.set_catalog_tag(gv._catalog_tag)
+            self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
+            self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
 
-        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
+            self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
+            self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
 
-        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+            self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
+            self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
 
-        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
+            self.set_comment(kwargs[gv._comment_tag])
+            self.set_comment_tag(gv._comment_tag)
 
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_comment_tag(gv._comment_tag)
-
-        self.prepare_query()
-        self.logger.info(f"creating database {self.attr.name}")
-        self.create_database()
-        self.grant_default_privileges()
-        if len(largs) == 0:
+            self.prepare_query()
+            self.logger.info(f"creating database {self.attr.name}")
+            self.create_database()
+            self.grant_default_privileges()
             self.create_deployment_entry()
 
             

@@ -6,24 +6,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import Schema as gv,Config as cfg, Privilege as gv_priv
+from vars.gvobject import StorageIntegrationAws as gv_stgintaws,Config as cfg, Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 
-
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        #if vo.database_exist(value):
-        instance._database = value
-    
-    def __delete__(self,instance):
-        del instance._database
 
 class Name:
     def __get__(self,instance,owner):
@@ -40,421 +28,170 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class NameTag:
+class Type:
     def __get__(self,instance,owner):
-        return instance._name_tag
+        return instance._type
     
     def __set__(self,instance,value):
-        instance._name_tag = value
+        instance._type = gv_stgintaws._allowed_value_type
     
     def __delete__(self,instance):
-        del instance._name_tag
+        del instance._type
 
-class WithManagedAccess:
+class Enabled:
     def __get__(self,instance,owner):
-        return instance._with_managed_access
+        return instance._enabled
     
     def __set__(self,instance,value):
-        instance._with_managed_access = value
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._enabled = value
     
     def __delete__(self,instance):
-        del instance._with_managed_access
+        del instance._enabled
 
-class WithManagedAccessTag:
+class StorageAllowedLocations:
     def __get__(self,instance,owner):
-        return instance._with_managed_access_tag
+        return instance._storage_allowed_locations
     
     def __set__(self,instance,value):
-        instance._with_managed_access_tag = value
+        instance._storage_allowed_locations = value
     
     def __delete__(self,instance):
-        del instance._with_managed_access_tag
+        del instance._storage_allowed_locations
 
-class DataRetentionTimeInDays:
+class StorageProvider:
     def __get__(self,instance,owner):
-        return instance._data_retention_time_in_days
+        return instance._storage_provider
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            instance._data_retention_time_in_days = value
-        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._data_retention_time_in_days = value
+        instance._storage_provider = value
     
     def __delete__(self,instance):
-        del instance._data_retention_time_in_days
+        del instance._storage_provider
 
-class DataRetentionTimeInDaysTag:
+class StorageAwsRoleArn:
     def __get__(self,instance,owner):
-        return instance._data_retention_time_in_days_tag
+        return instance._storage_aws_role_arn
     
     def __set__(self,instance,value):
-        instance._data_retention_time_in_days_tag = value
+        instance._storage_aws_role_arn = value
     
     def __delete__(self,instance):
-        del instance._data_retention_time_in_days_tag
+        del instance._storage_aws_role_arn
 
-class MaxDataExtensionTimeInDays:
+class StorageAwsExternalId:
     def __get__(self,instance,owner):
-        return instance._max_data_extension_time_in_days
+        return instance._storage_aws_external_id
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            instance._max_data_extension_time_in_days = value
-        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._max_data_extension_time_in_days = value
-
+        instance._storage_aws_external_id = value
+    
     def __delete__(self,instance):
-        del instance._max_data_extension_time_in_days
+        del instance._storage_aws_external_id
 
-class MaxDataExtensionTimeInDaysTag:
+class StorageAwsObjectAcl:
     def __get__(self,instance,owner):
-        return instance._max_data_extension_time_in_days_tag
+        return instance._storage_aws_object_acl
     
     def __set__(self,instance,value):
-        instance._max_data_extension_time_in_days_tag = value
-
+        instance._storage_aws_object_acl = value
+    
     def __delete__(self,instance):
-        del instance._max_data_extension_time_in_days_tag
+        del instance._storage_aws_object_acl
 
-class ExternalVolume:
+class UsePrivateLinkEndPoint:
     def __get__(self,instance,owner):
-        return instance._external_volume
+        return instance._use_private_link_end_point
     
     def __set__(self,instance,value):
-        instance._external_volume = value
-
-    def __delete__(self,instance):
-        del instance._external_volume
-
-class ExternalVolumeTag:
-    def __get__(self,instance,owner):
-        return instance._external_volume_tag
-    
-    def __set__(self,instance,value):
-        instance._external_volume_tag = value
-
-    def __delete__(self,instance):
-        del instance._external_volume_tag
-
-class Catalog:
-    def __get__(self,instance,owner):
-        return instance._catalog
-    
-    def __set__(self,instance,value):
-        instance._catalog = value
-
-    def __delete__(self,instance):
-        del instance._catalog
-
-class CatalogTag:
-    def __get__(self,instance,owner):
-        return instance._catalog_tag
-    
-    def __set__(self,instance,value):
-        instance._catalog_tag = value
-
-    def __delete__(self,instance):
-        del instance._catalog_tag
-
-class ReplaceInvalidCharacters:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters
-    
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._replace_invalid_characters = "FALSE"
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._replace_invalid_characters = value
-
-    def __delete__(self,instance):
-        del instance._replace_invalid_characters
-
-class ReplaceInvalidCharactersTag:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters_tag
-    
-    def __set__(self,instance,value):
-        instance._replace_invalid_characters_tag = value
-
-    def __delete__(self,instance):
-        del instance._replace_invalid_characters_tag
-
-
-class DefaultDdlCollation:
-    def __get__(self,instance,owner):
-        return instance._default_ddl_collation
-    
-    def __set__(self,instance,value):
-        instance._default_ddl_collation = value
-
-    def __delete__(self,instance):
-        del instance._default_ddl_collation
-
-class DefaultDdlCollationTag:
-    def __get__(self,instance,owner):
-        return instance._default_ddl_collation_tag
-    
-    def __set__(self,instance,value):
-        instance._default_ddl_collation_tag = value
-
-    def __delete__(self,instance):
-        del instance._default_ddl_collation_tag
-
-class LogLevel:
-    def __get__(self,instance,owner):
-        return instance._log_level
-    
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._log_level = "OFF"
+        if value=='NONE':
+            instance._use_private_link_end_point=value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_log_level,instance.parent.__class__.__name__,self.__class__.__name__)
-            instance._log_level = value
-
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._use_private_link_end_point = value
+    
     def __delete__(self,instance):
-        del instance._log_level
+        del instance._use_private_link_end_point
 
-class LogLevelTag:
+class StorageBlockedLocations:
     def __get__(self,instance,owner):
-        return instance._log_level_tag
+        return instance._storage_blocked_locations
     
     def __set__(self,instance,value):
-        instance._log_level_tag = value
-
-    def __delete__(self,instance):
-        del instance._log_level_tag
-
-class TraceLevel:
-    def __get__(self,instance,owner):
-        return instance._trace_level
+        instance._storage_blocked_locations = value
     
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._trace_level = "OFF"
-        else:
-            vv.allowed_value_check(value,gv._allowed_values_trace_level,instance.parent.__class__.__name__,self.__class__.__name__)
-            instance._trace_level = value
-
     def __delete__(self,instance):
-        del instance._trace_level
-
-class TraceLevelTag:
-    def __get__(self,instance,owner):
-        return instance._trace_level_tag
-    
-    def __set__(self,instance,value):
-        instance._trace_level_tag = value
-
-    def __delete__(self,instance):
-        del instance._trace_level_tag
-
-class StorageSerializationPolicy:
-    def __get__(self,instance,owner):
-        return instance._storage_serialization_policy
-    
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._storage_serialization_policy = value
-        else:
-            vv.allowed_value_check(value,gv._allowed_values_storage_serialization_policy,instance.parent.__class__.__name__,self.__class__.__name__)
-            instance._storage_serialization_policy = value
-
-    def __delete__(self,instance):
-        del instance._storage_serialization_policy
-
-class StorageSerializationPolicyTag:
-    def __get__(self,instance,owner):
-        return instance._storage_serialization_policy_tag
-    
-    def __set__(self,instance,value):
-        instance._storage_serialization_policy_tag = value
-
-    def __delete__(self,instance):
-        del instance._storage_serialization_policy_tag
-
-class ClassificationProfile:
-    def __get__(self,instance,owner):
-        return instance._classification_profile
-    
-    def __set__(self,instance,value):
-        instance._classification_profile = value
-
-    def __delete__(self,instance):
-        del instance._classification_profile
-
-class ClassificationProfileTag:
-    def __get__(self,instance,owner):
-        return instance._classification_profile_tag
-    
-    def __set__(self,instance,value):
-        instance._classification_profile_tag = value
-
-    def __delete__(self,instance):
-        del instance._classification_profile_tag
+        del instance._storage_blocked_locations
 
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
     
     def __set__(self,instance,value):
-        if value != 'NONE':
-            instance._comment = f'"{value}"'
-    
+        instance._comment = value
+
     def __delete__(self,instance):
         del instance._comment
 
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-    
-    def __delete__(self,instance):
-        del instance._comment_tag
 
-
-
-class SchemaAttrs:
+class StorageIntegrationAttrs:
     def __init__(self,parent):
         self.parent = parent
-
-    database = Database()
         
-    name = Name()
-    name_tag = NameTag()
+    name=Name()
+    type=Type()
+    enabled=Enabled()
+    storage_allowed_locations=StorageAllowedLocations()
+    storage_provider=StorageProvider()
+    storage_aws_role_arn=StorageAwsRoleArn()
+    storage_aws_external_id=StorageAwsExternalId()
+    storage_aws_object_acl=StorageAwsObjectAcl()
+    use_private_link_endpoint=UsePrivateLinkEndPoint()
+    storage_blocked_locations=StorageBlockedLocations()
+    comment=Comment()
 
-    with_managed_access = WithManagedAccess()
-    with_managed_access_tag = WithManagedAccessTag()
-
-    data_retention_time_in_days = DataRetentionTimeInDays()
-    data_retention_time_in_days_tag = DataRetentionTimeInDaysTag()
-
-    max_data_extension_time_in_days = MaxDataExtensionTimeInDays()
-    max_data_extension_time_in_days_tag = MaxDataExtensionTimeInDaysTag()
-
-    external_volume = ExternalVolume()
-    external_volume_tag = ExternalVolumeTag()
-
-    catalog = Catalog()
-    catalog_tag = CatalogTag()
-
-    replace_invalid_characters = ReplaceInvalidCharacters()
-    replace_invalid_characters_tag = ReplaceInvalidCharactersTag()
-
-    default_ddl_collation = DefaultDdlCollation()
-    default_ddl_collation_tag = DefaultDdlCollationTag()
-
-    log_level = LogLevel()
-    log_level_tag = LogLevelTag()
-
-    trace_level = TraceLevel()
-    trace_level_tag = TraceLevelTag()
-
-    storage_serialization_policy = StorageSerializationPolicy()
-    storage_serialization_policy_tag = StorageSerializationPolicyTag()
-
-    classification_profile = ClassificationProfile()
-    classification_profile_tag = ClassificationProfileTag()
-
-    comment = Comment()
-    comment_tag = CommentTag()
-
-
-
-class Schema:
+class StorageIntegration:
     def __init__(self,session,user_id,logger):
         self.session = session
         self.user_id = user_id
         self.qry = ""
         self.logger = logger
-        self.attr = SchemaAttrs(self)
+        self.attr = StorageIntegrationAttrs(self)
 
-
-    def set_database(self, value):
-        self.attr.database = value
 
     def set_name(self, value):
         self.attr.name = value
 
-    def set_name_tag(self, value):
-        self.attr.name_tag = value
+    def set_type(self, value):
+        self.attr.type = value
 
-    def set_with_managed_access(self, value):
-        self.attr.with_managed_access = value
+    def set_enabled(self, value):
+        self.attr.enabled = value
 
-    def set_with_managed_access_tag(self, value):
-        self.attr.with_managed_access_tag = value
+    def set_storage_allowed_locations(self, value):
+        self.attr.storage_allowed_locations = value
 
-    def set_data_retention_time_in_days(self, value):
-        self.attr.data_retention_time_in_days = value
+    def set_storage_provider(self, value):
+        self.attr.storage_provider = value
 
-    def set_data_retention_time_in_days_tag(self, value):
-        self.attr.data_retention_time_in_days_tag = value
+    def set_storage_aws_role_arn(self, value):
+        self.attr.storage_aws_role_arn = value
 
-    def set_max_data_extension_time_in_days(self, value):
-        self.attr.max_data_extension_time_in_days = value
+    def set_storage_aws_external_id(self, value):
+        self.attr.storage_aws_external_id = value
 
-    def set_max_data_extension_time_in_days_tag(self, value):
-        self.attr.max_data_extension_time_in_days_tag = value
+    def set_storage_aws_object_acl(self, value):
+        self.attr.storage_aws_object_acl = value
 
-    def set_external_volume(self, value):
-        self.attr.external_volume = value
+    def set_use_private_link_endpoint(self, value):
+        self.attr.use_private_link_endpoint = value
 
-    def set_external_volume_tag(self, value):
-        self.attr.external_volume_tag = value
-
-    def set_catalog(self, value):
-        self.attr.catalog = value
-
-    def set_catalog_tag(self, value):
-        self.attr.catalog_tag = value
-
-    def set_replace_invalid_characters(self, value):
-        self.attr.replace_invalid_characters = value
-
-    def set_replace_invalid_characters_tag(self, value):
-        self.attr.replace_invalid_characters_tag = value
-
-    def set_default_ddl_collation(self, value):
-        self.attr.default_ddl_collation = value
-
-    def set_default_ddl_collation_tag(self, value):
-        self.attr.default_ddl_collation_tag = value
-
-    def set_log_level(self, value):
-        self.attr.log_level = value
-
-    def set_log_level_tag(self, value):
-        self.attr.log_level_tag = value
-
-    def set_trace_level(self, value):
-        self.attr.trace_level = value
-
-    def set_trace_level_tag(self, value):
-        self.attr.trace_level_tag = value
-
-    def set_storage_serialization_policy(self, value):
-        self.attr.storage_serialization_policy = value
-
-    def set_storage_serialization_policy_tag(self, value):
-        self.attr.storage_serialization_policy_tag = value
-
-    def set_classification_profile(self, value):
-        self.attr.classification_profile = value
-
-    def set_classification_profile_tag(self, value):
-        self.attr.classification_profile_tag = value
+    def set_storage_blocked_locations(self, value):
+        self.attr.storage_blocked_locations = value
 
     def set_comment(self, value):
         self.attr.comment = value
-
-    def set_comment_tag(self, value):
-        self.attr.comment_tag = value
-
-    def set_qualified_name(self):
-        self.qualified_name = f"{self.attr.database}.{self.attr.name}"
-
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -462,19 +199,19 @@ class Schema:
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._with_managed_access_tag,"_with_managed_access")
-        set_flag(gv._data_retention_time_in_days_tag,"_data_retention_time_in_days")
-        set_flag(gv._max_data_extension_time_in_days_tag,"_max_data_extension_time_in_days")
-        set_flag(gv._external_volume_tag,"_external_volume")
-        set_flag(gv._catalog_tag,"_catalog")
-        set_flag(gv._replace_invalid_characters_tag,"_replace_invalid_characters")
-        set_flag(gv._default_ddl_collation_tag,"_default_ddl_collation")
-        set_flag(gv._log_level_tag,"_log_level")
-        set_flag(gv._trace_level_tag,"_trace_level")
-        set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
-        set_flag(gv._classification_profile_tag,"_classification_profile")
-        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv_stgintaws._name_tag,"_name")
+        set_flag(gv_stgintaws._with_managed_access_tag,"_with_managed_access")
+        set_flag(gv_stgintaws._data_retention_time_in_days_tag,"_data_retention_time_in_days")
+        set_flag(gv_stgintaws._max_data_extension_time_in_days_tag,"_max_data_extension_time_in_days")
+        set_flag(gv_stgintaws._external_volume_tag,"_external_volume")
+        set_flag(gv_stgintaws._catalog_tag,"_catalog")
+        set_flag(gv_stgintaws._replace_invalid_characters_tag,"_replace_invalid_characters")
+        set_flag(gv_stgintaws._default_ddl_collation_tag,"_default_ddl_collation")
+        set_flag(gv_stgintaws._log_level_tag,"_log_level")
+        set_flag(gv_stgintaws._trace_level_tag,"_trace_level")
+        set_flag(gv_stgintaws._storage_serialization_policy_tag,"_storage_serialization_policy")
+        set_flag(gv_stgintaws._classification_profile_tag,"_classification_profile")
+        set_flag(gv_stgintaws._comment_tag,"_comment")
 
 
     def check_properties_to_set(self): 
@@ -484,36 +221,25 @@ class Schema:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE SCHEMA {self.attr.database}.{self.attr.name} "
+        self.qry = f"CREATE STORAGE INTEGRATION {self.attr.name} {gv_stgintaws._type_tag} = {self.attr.type} {gv_stgintaws._enabled_tag}={self.attr.enabled} {gv_stgintaws._storage_allowed_locations_tag}={self.attr.storage_allowed_locations} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._with_managed_access_tag:
-                    self.qry = f" {self.qry} {self.attr.with_managed_access_tag} = {self.attr.with_managed_access} "
-                if prop == gv._data_retention_time_in_days_tag:
-                    self.qry = f" {self.qry} {self.attr.data_retention_time_in_days_tag} = {self.attr.data_retention_time_in_days} "
-                if prop == gv._max_data_extension_time_in_days_tag:
-                    self.qry = f" {self.qry} {self.attr.max_data_extension_time_in_days_tag} = {self.attr.max_data_extension_time_in_days} "
-                if prop == gv._external_volume_tag:
-                    self.qry = f" {self.qry} {self.attr.external_volume_tag} = {self.attr.external_volume} "
-                if prop == gv._catalog_tag:
-                    self.qry = f" {self.qry} {self.attr.catalog_tag} = {self.attr.catalog} "
-                if prop == gv._replace_invalid_characters_tag:
-                    self.qry = f" {self.qry} {self.attr.replace_invalid_characters_tag} = {self.attr.replace_invalid_characters} "
-                if prop == gv._default_ddl_collation_tag:
-                    self.qry = f" {self.qry} {self.attr.default_ddl_collation_tag} = {self.attr.default_ddl_collation} "
-                if prop == gv._log_level_tag:
-                    self.qry = f" {self.qry} {self.attr.log_level_tag} = {self.attr.log_level} "
-                if prop == gv._trace_level_tag:
-                    self.qry = f" {self.qry} {self.attr.trace_level_tag} = {self.attr.trace_level} "
-                if prop == gv._storage_serialization_policy_tag:
-                    self.qry = f" {self.qry} {self.attr.storage_serialization_policy_tag} = {self.attr.storage_serialization_policy} "
-                if prop == gv._classification_profile_tag:
-                    self.qry = f" {self.qry} {self.attr.classification_profile_tag} = {self.attr.classification_profile} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-
+                if prop == gv_stgintaws._storage_blocked_locations_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._storage_blocked_locations_tag} = {self.attr.storage_blocked_locations} "
+                if prop == gv_stgintaws._comment_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._comment_tag} = {self.attr.comment} "
+                if prop == gv_stgintaws._storage_provider_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._storage_provider_tag} = {self.attr.storage_provider} "
+                if prop == gv_stgintaws._storage_aws_role_arn_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._storage_aws_role_arn_tag} = {self.attr.storage_aws_role_arn} "
+                if prop == gv_stgintaws._storage_aws_external_id_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._storage_aws_external_id_tag} = {self.attr.storage_aws_external_id} "
+                if prop == gv_stgintaws._storage_aws_object_acl_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._storage_aws_object_acl_tag} = {self.attr.storage_aws_object_acl} "
+                if prop == gv_stgintaws._use_private_link_endpoint_tag:
+                    self.qry = f" {self.qry} {gv_stgintaws._use_private_link_endpoint_tag} = {self.attr.use_private_link_endpoint} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -521,7 +247,7 @@ class Schema:
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-    def create_schema(self):
+    def create_storage_integration(self):
         self.session.sql(self.qry).collect()
 
     def create_deployment_entry(self):
@@ -545,52 +271,19 @@ class Schema:
 
 
     def create_object(self,*largs,**kwargs):
-
-        self.set_database(kwargs[gv._database_tag])
-
-        self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
-
-        self.set_with_managed_access(kwargs[gv._with_managed_access_tag])
-        self.set_with_managed_access_tag(gv._with_managed_access_tag)
-
-        self.set_data_retention_time_in_days(kwargs[gv._data_retention_time_in_days_tag])
-        self.set_data_retention_time_in_days_tag(gv._data_retention_time_in_days_tag)
-
-        self.set_max_data_extension_time_in_days(kwargs[gv._max_data_extension_time_in_days_tag])
-        self.set_max_data_extension_time_in_days_tag(gv._max_data_extension_time_in_days_tag)
-
-        self.set_external_volume(kwargs[gv._external_volume_tag])
-        self.set_external_volume_tag(gv._external_volume_tag)
-
-        self.set_catalog(kwargs[gv._catalog_tag])
-        self.set_catalog_tag(gv._catalog_tag)
-
-        self.set_replace_invalid_characters(kwargs[gv._replace_invalid_characters_tag])
-        self.set_replace_invalid_characters_tag(gv._replace_invalid_characters_tag)
-
-        self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
-        self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
-
-        self.set_log_level(kwargs[gv._log_level_tag])
-        self.set_log_level_tag(gv._log_level_tag)
-
-        self.set_trace_level(kwargs[gv._trace_level_tag])
-        self.set_trace_level_tag(gv._trace_level_tag)
-
-        self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
-        self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)
-
-        self.set_classification_profile(kwargs[gv._classification_profile_tag])
-        self.set_classification_profile_tag(gv._classification_profile_tag)
-
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_comment_tag(gv._comment_tag)
-        self.set_qualified_name()
-
+        self.set_name(kwargs[gv_stgintaws._name_tag])
+        self.set_type(kwargs[gv_stgintaws._type_tag])
+        self.set_enabled(kwargs[gv_stgintaws._enabled_tag])
+        self.set_storage_allowed_locations(kwargs[gv_stgintaws._storage_allowed_locations_tag])
+        self.set_storage_blocked_locations(kwargs[gv_stgintaws._storage_blocked_locations_tag])
+        self.set_comment(kwargs[gv_stgintaws._comment_tag])
+        self.set_storage_aws_role_arn(kwargs[gv_stgintaws._storage_aws_role_arn_tag])
+        self.set_storage_aws_external_id(kwargs[gv_stgintaws._storage_aws_external_id_tag])
+        self.set_storage_aws_object_acl(kwargs[gv_stgintaws._storage_aws_object_acl_tag])
+        self.set_use_private_link_endpoint(kwargs[gv_stgintaws._use_private_link_endpoint_tag])
 
         self.prepare_query()
-        self.create_schema()
+        self.create_storage_integration()
         self.logger.info(f"creating schema {self.attr.name}")
         self.grant_default_privileges()
         if len(largs) == 0:

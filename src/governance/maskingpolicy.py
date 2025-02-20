@@ -107,6 +107,8 @@ class ExemptOtherPolicies:
         del instance._exempt_other_policies
 
 class MaskingPolicyAttr:
+    def __init__(self,parent):
+        self.parent=parent
     role = Role()
     mask_value = MaskValue()
     name = Name()
@@ -122,7 +124,7 @@ class MaskingPolicy:
         self.session = session
         self.user_id = user_id
         self.logger = logger
-        self.attr = MaskingPolicyAttr()
+        self.attr = MaskingPolicyAttr(self)
 
 
     def set_role(self,value):
@@ -191,7 +193,7 @@ class MaskingPolicy:
     def execute_query(self):
         self.session.sql(self.qry).collect()
     
-    def create_masking_policy(self,**kwargs):
+    def create_object(self,**kwargs):
         self.set_name(kwargs[gv_mp._name_tag])
         self.set_signature(kwargs[gv_mp._signature_tag])
         self.set_returns(kwargs[gv_mp._returns_tag])
