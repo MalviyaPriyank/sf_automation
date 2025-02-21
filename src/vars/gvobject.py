@@ -187,7 +187,8 @@ class FileFormat:
     _disable_snowflake_data_tag = "DISABLE_SNOWFLAKE_DATA"
     _disable_auto_convert_tag = "DISABLE_AUTO_CONVERT"
     _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
-    _allowed_values_binary_format = ["HEX","BASE64","UTF8"]    
+    _allowed_values_binary_format = ["HEX","BASE64","UTF8"]  
+    _allowed_values_compression_for_csv=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLAT","RAW_DEFLATE","NONE"]  
 
 class Snowpipe:
     def __init__(self):

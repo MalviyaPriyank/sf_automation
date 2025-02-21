@@ -24,7 +24,9 @@ from valueexception import (
     ValueNotAllowed,
     MustBeAList,
     MustBeWithinLimit,
-    MustBeAValidCollationSpecifier
+    MustBeAValidCollationSpecifier,
+    MustBeValidUTF8Character,
+    MustNotBeASubString
 )
 
 class ValidateValue:
@@ -195,3 +197,18 @@ class ValidateValue:
             if specifier not in valid_specifiers:
                 raise MustBeAValidCollationSpecifier(object_type,attr_name,specifier)
         return True
+    
+    @staticmethod
+    def is_valid_utf8(value,object_type,attr_name):
+        try:
+            value.encode('utf-8')
+            return True
+        except UnicodeEncodeError:
+            raise MustBeValidUTF8Character(object_type,attr_name)
+        
+    @staticmethod
+    def is_a_substring(src_value,ref_value,src_attr_name,ref_attr_name,object_type):
+        if src_value in ref_value:
+            raise MustNotBeASubString(src_value,ref_value,object_type)
+        else:
+            return False

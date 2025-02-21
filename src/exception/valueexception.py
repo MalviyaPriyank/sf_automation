@@ -84,7 +84,7 @@ class DependentParameterNotSet(AttributeValidationError):
 
 class MustBeAList(AttributeValidationError):
     def __init__(self, object_type, attr_name):
-        message = f"must be a comma separated list."
+        message = f"must be a comma separated list"
         super().__init__(object_type, attr_name=attr_name, message=message) 
 
 class MustBeWithinLimit(AttributeValidationError):
@@ -94,8 +94,18 @@ class MustBeWithinLimit(AttributeValidationError):
 
 class MustBeAValidCollationSpecifier(AttributeValidationError):
     def __init__(self, object_type, attr_name, invalid_specifier):
-        message=f"can not have {invalid_specifier} as a collation specifier."
+        message=f"can not have {invalid_specifier} as a collation specifier"
         super().__init__(object_type, attr_name, message)
+
+class MustBeValidUTF8Character(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f"must be a valid UTF8 character"
+        super().__init__(object_type, attr_name, message)
+
+class MustNotBeASubString(AttributeValidationError):
+    def __init__(self, src_attr_name,ref_attr_name,object_type):
+        message=f"must not be a substring of {ref_attr_name}"
+        super().__init__(object_type, src_attr_name, message)
 
 
 
