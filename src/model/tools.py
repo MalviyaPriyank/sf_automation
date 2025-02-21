@@ -15,6 +15,7 @@ from src.obj import account,database,share,internalstage,snowpipe,externalstage,
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
+from src.accountusage import copyhistory
 
 from valueexception import (
     AttributeValidationError,
@@ -57,6 +58,7 @@ class LLMTools:
                                   'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
                                   'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   'task': task.Task(session=self.sf_session, user_id=self.user_id),
+                                  'copyhistory': copyhistory.CopyHistory(session=self.sf_session)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -463,6 +465,26 @@ class LLMTools:
         deploy_obj = deploy.Deploy(session=self.sf_session)
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
+
+
+    def get_history_for_pipe(self,
+                             pipe_db,
+                             pipe_schema,
+                             pipe_name):
+        self.logger.info(f'Getting copyhistory for pipe')
+        return copyhistory.get_load_history_for_a_pipe(pipe_db=pipe_db,
+                                                        pipe_schema=pipe_schema,
+                                                        pipe_name=pipe_name)
+
+    
+    def get_history_for_table(self,
+                             table_db,
+                             table_schema,
+                             table_name):
+        self.logger.info(f'Getting copyhistory for table')
+        return copyhistory.get_load_history_for_a_table(table_db=table_db,
+                                                        table_schema=table_schema,
+                                                        table_name=table_name)
 
 
     def tool_call(self, content, tool_result):

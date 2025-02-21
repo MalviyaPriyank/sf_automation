@@ -15,6 +15,7 @@ from src.obj import account,database,share,internalstage,snowpipe,externalstage,
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
+from src.accountusage import copyhistory
 
 from valueexception import (
     AttributeValidationError,
@@ -57,6 +58,7 @@ class LLMTools:
                                   'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
                                   'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   'task': task.Task(session=self.sf_session, user_id=self.user_id),
+                                  'copyhistory': copyhistory.CopyHistory(session=self.sf_session)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -111,25 +113,26 @@ class LLMTools:
 
     def create_externalstage_object(self,
                                     NAME,
-                                    SCHEMA,
-                                    DATABASE,
-                                    FILE_FORMAT,
+                                    DATABASE="DB_CONFIG",
+                                    SCHEMA="SCH_CONFIG",
+                                    FILE_FORMAT="NONE",
                                     COMMENT="NONE",
                                     TAG="NONE",
                                     URL="NONE",
+                                    AWS_ACCESS_POINT_ARN="NONE",
                                     STORAGE_INTEGRATION="NONE",
                                     AWS_KEY_ID="NONE",
                                     AWS_SECRET_KEY="NONE",
                                     AWS_TOKEN="NONE",
                                     AZURE_SAS_TOKEN="NONE",
                                     AWS_ROLE="NONE",
-                                    ENCRYPTION="SNOWFLAKE_FULL",
+                                    ENCRYPTION="NONE",
                                     ENCRYPTION_TYPE="NONE",
                                     ENCRYPTION_MASTER_KEY="NONE",
                                     ENCRYPTION_KMS_KEY_ID="NONE",
                                     USE_PRIVATELINK_ENDPOINT="NONE",
-                                    DIRECTORY="TRUE",
-                                    REFRESH_ON_CREATE="TRUE",
+                                    DIRECTORY="NONE",
+                                    REFRESH_ON_CREATE="NONE",
                                     AUTO_REFRESH="NONE",
                                     NOTIFICATION_INTEGRATION="NONE"):
         frame = inspect.currentframe()
@@ -448,7 +451,7 @@ class LLMTools:
         
 
     def sf_setup(self, query):
-        init_setup = InitialSetup(session=self.sf_session,user_id = self.user_id)
+        init_setup = InitialSetup(logger=self.logger,session=self.sf_session,user_id = self.user_id)
         init_setup.perform_initial_setup()
         return 'Completed setup for role, warehouse, database, schema, and more'
 
@@ -462,6 +465,26 @@ class LLMTools:
         deploy_obj = deploy.Deploy(session=self.sf_session)
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
+
+
+    def get_history_for_pipe(self,
+                             pipe_db,
+                             pipe_schema,
+                             pipe_name):
+        self.logger.info(f'Getting copyhistory for pipe')
+        return copyhistory.get_load_history_for_a_pipe(pipe_db=pipe_db,
+                                                        pipe_schema=pipe_schema,
+                                                        pipe_name=pipe_name)
+
+    
+    def get_history_for_table(self,
+                             table_db,
+                             table_schema,
+                             table_name):
+        self.logger.info(f'Getting copyhistory for table')
+        return copyhistory.get_load_history_for_a_table(table_db=table_db,
+                                                        table_schema=table_schema,
+                                                        table_name=table_name)
 
 
     def tool_call(self, content, tool_result):

@@ -1141,6 +1141,62 @@ tools = {
                     }
                 }
             }
+        },
+        {
+            "toolSpec": {
+                "name":"get_history_for_pipe",
+                "description":"If user ask if the data was loaded in the table, or when was the data loaded. user wants to provide details of snowpipe that is linked to the table",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "pipe_db": {
+                                "type":"string",
+                                "description":"database for snowpipe object"
+                            },
+                            "pipe_schema": {
+                                "type":"string",
+                                "description":"schema for snowpipe object"
+                            },
+                            "pipe_name": {
+                                "type":"string",
+                                "description":"name for snowpipe object"
+                            }
+                        },
+                        "required":[
+                            "pipe_db","pipe_schema","pipe_name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"get_history_for_table",
+                "description":"If user ask if the data was loaded in the table, or when was the data loaded. if user wants to give the name of table and schema and db",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "table_db": {
+                                "type":"string",
+                                "description":"database for table object"
+                            },
+                            "table_schema": {
+                                "type":"string",
+                                "description":"schema for table object"
+                            },
+                            "table_name": {
+                                "type":"string",
+                                "description":"name for table object"
+                            }
+                        },
+                        "required":[
+                            "table_db","table_schema","table_name"
+                        ]
+                    }
+                }
+            }
         }
     ]
 }
