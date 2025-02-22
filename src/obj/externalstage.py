@@ -776,6 +776,7 @@ class ExternalStage:
                     self.qry = f" {self.qry} {self.attr.auto_refresh_tag} = {self.attr.auto_refresh} "
                 if prop == gvextstg._notification_integration_tag:
                     self.qry = f" {self.qry} {self.attr.notification_integration_tag} = {self.attr.notification_integration} "
+        self.qry = f'{self.qry} STORAGE_INTEGRATION=SNOWCHAIN_S3_INT'
 
     def prepare_query(self):
         self.set_object_properties_flag()
