@@ -476,7 +476,7 @@ class LLMTools:
                              pipe_schema,
                              pipe_name):
         self.logger.info(f'Getting copyhistory for pipe')
-        return copyhistory.get_load_history_for_a_pipe(pipe_db=pipe_db,
+        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_pipe(pipe_db=pipe_db,
                                                         pipe_schema=pipe_schema,
                                                         pipe_name=pipe_name)
 
@@ -486,7 +486,7 @@ class LLMTools:
                              table_schema,
                              table_name):
         self.logger.info(f'Getting copyhistory for table')
-        return copyhistory.get_load_history_for_a_table(table_db=table_db,
+        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_table(table_db=table_db,
                                                         table_schema=table_schema,
                                                         table_name=table_name)
 
