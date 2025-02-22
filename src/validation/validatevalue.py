@@ -209,6 +209,11 @@ class ValidateValue:
     @staticmethod
     def is_a_substring(src_value,ref_value,src_attr_name,ref_attr_name,object_type):
         if src_value in ref_value:
-            raise MustNotBeASubString(src_value,ref_value,object_type)
+            raise MustNotBeASubString(src_attr_name,ref_attr_name,object_type)
         else:
             return False
+        
+    @staticmethod
+    def is_single_byte_characetr(value,object_type,attr_name):
+        if len(value)==1:
+            return True
