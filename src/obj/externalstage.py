@@ -877,7 +877,8 @@ class ExternalStage:
         self.set_qualified_name()
         self.prepare_query()
         self.create_external_stage()
-        #self.create_deployment_entry()
+        self.grant_default_privileges()
+        self.create_deployment_entry()
 
         
 

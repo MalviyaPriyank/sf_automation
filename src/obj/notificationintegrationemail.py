@@ -39,8 +39,8 @@ class Enabled:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if vv.is_bool(value=value, object_type= instance.parent.__class__.__name__,attr_name=self.__class__.__name__):
-            instance._enabled = value
+        vv.is_bool(value=value, object_type= instance.parent.__class__.__name__,attr_name=self.__class__.__name__):
+        instance._enabled = value
 
     
     def __delete__(self,instance):
@@ -51,9 +51,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._type = value
+        instance._type = 'EMAIL'
     
     def __delete__(self,instance):
         del instance._type
@@ -104,7 +102,7 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class NotificationIntegrationAttr:
+class NotificationIntegrationEmailAttr:
     def __init__(self,parent):
         self.parent = parent
 
@@ -122,7 +120,7 @@ class NotificationIntegrationEmail:
         self.session = session
         self.user_id = user_id
         self.qry = ""
-        self.attr = NotificationIntegrationAttr(self)
+        self.attr = NotificationIntegrationEmailAttr(self)
 
     def set_name(self, value):
         self.attr.name = value

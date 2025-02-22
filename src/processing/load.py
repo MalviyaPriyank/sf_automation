@@ -32,6 +32,3 @@ class Load:
 
     def set_load_sequence(self,value):
         self.attr.load_sequence = value
-
-
-    def insert_record_into_load_control(self):

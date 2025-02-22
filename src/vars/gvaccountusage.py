@@ -1,5 +1,6 @@
 class AccountUsageViews:
-    _copy_history_view="COPY_HISTORY"
+    _account_usage_view="SNOWFLAKE.ACCOUNT_USAGE"
+    _copy_history_view=f"{_account_usage_view}.COPY_HISTORY"
 
 
 class CopyHistoryColumnList:
