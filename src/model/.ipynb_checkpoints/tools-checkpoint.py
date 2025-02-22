@@ -147,6 +147,10 @@ class LLMTools:
                                 DATABASE,
                                 SCHEMA,
                                 TYPE="CSV",
+                                COMPRESSION="NONE",
+                                RECORD_DELIMITER="NONE",
+                                FIELD_DELIMITER="NONE",
+                                FILE_EXTENSION="NONE",
                                 PARSE_HEADER="NONE",
                                 SKIP_HEADER="NONE",
                                 SKIP_BLANK_LINES="NONE",
@@ -354,7 +358,7 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
-        
+        self.logger.info(f"Tables provided = {values['TABLE']}")
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
@@ -472,7 +476,7 @@ class LLMTools:
                              pipe_schema,
                              pipe_name):
         self.logger.info(f'Getting copyhistory for pipe')
-        return copyhistory.get_load_history_for_a_pipe(pipe_db=pipe_db,
+        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_pipe(pipe_db=pipe_db,
                                                         pipe_schema=pipe_schema,
                                                         pipe_name=pipe_name)
 
@@ -482,7 +486,7 @@ class LLMTools:
                              table_schema,
                              table_name):
         self.logger.info(f'Getting copyhistory for table')
-        return copyhistory.get_load_history_for_a_table(table_db=table_db,
+        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_table(table_db=table_db,
                                                         table_schema=table_schema,
                                                         table_name=table_name)
 

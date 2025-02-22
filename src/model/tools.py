@@ -358,7 +358,7 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
-        
+        self.logger.info(f"Tables provided = {values['TABLE']}")
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value
