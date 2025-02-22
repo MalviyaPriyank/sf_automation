@@ -897,7 +897,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_copyinto_object",
-                "description":"creates a snowflake copyinto object for the user. Do not use pattern attribute and on_error attribute.",
+                "description":"creates a snowflake copyinto and snowpipe objects for the user. Do not use pattern attribute and on_error attribute. Respond to user saying 'I will create copy into for the tables and embed it into snowpipe for the real time ingestion of files from your external stage. The location for each table would be @EXTERNAL_STAGE/{table_name}/'.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
