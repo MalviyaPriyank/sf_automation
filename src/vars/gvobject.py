@@ -203,7 +203,19 @@ class Snowpipe:
     _comment_tag = "COMMENT"
     _file_type_tag = "FILE_TYPE"
 
-
+class Stream:
+    def __init__(self):
+        pass
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
+    _name_tag="NAME"
+    _table_name_tag="TABLE_NAME"
+    _tag_tag="TAG"
+    _at_tag="AT"
+    _append_only_tag="APPEND_ONLY"
+    _insert_only_tag="INSERT_ONLY"
+    _show_initial_rows_tag="SHOW_INITIAL_ROWS"
+    _comment_tag="COMMENT"
 
 class User:
     def __init__(self):
@@ -341,7 +353,7 @@ class StorageIntegrationAws:
     _use_private_link_endpoint_tag="USE_PRIVATELINK_ENDPOINT"
 
 class Privilege:
-    _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE"]
+    _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE","STREAM"]
     _allowed_privileges = {
         "USER": ["MONITOR","OWNERSHIP","ALL"],
         "ROLE": ["OWNERSHIP"],
@@ -358,6 +370,7 @@ class Privilege:
         "TABLE": ["SELECT","INSERT","UPDATE","TRUNCATE","DELETE","EVOLVE SCHEMA","REFERENCES","APPLYBUDGET","OWNERSHIP","ALL"],
         "FILE FORMAT": ["USAGE","OWNERSHIP","ALL"],
         "PIPE": ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"],
+        "STREAM":["SELECT","OWNERSHIP","ALL"],
         "TASK": ["APPLYBUDGET","MONITOR","OPERATE","OWNERSHIP","ALL"]
     }
 

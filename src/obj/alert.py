@@ -104,7 +104,7 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class NotificationIntegrationAttr:
+class AlertAttrs:
     def __init__(self,parent):
         self.parent = parent
 
@@ -117,12 +117,12 @@ class NotificationIntegrationAttr:
     comment = Comment()
 
 
-class NotificationIntegrationEmail:
+class Alerts:
     def __init__(self,session,user_id):
         self.session = session
         self.user_id = user_id
         self.qry = ""
-        self.attr = NotificationIntegrationAttr(self)
+        self.attr = AlertAttrs(self)
 
     def set_name(self, value):
         self.attr.name = value
