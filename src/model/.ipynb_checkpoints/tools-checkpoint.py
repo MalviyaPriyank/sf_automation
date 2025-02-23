@@ -514,11 +514,11 @@ class LLMTools:
     
     def create_alert_object(self,
                             NAME,
-                            SCHEDULE):
+                            SCHEDULE,
                             #TAG,
-                            #IF,
-                            #THEN, #name of notification
-                            #WAREHOUSE="NONE",
+                            IF="NONE",
+                            THEN="NONE", #name of notification
+                            WAREHOUSE="NONE"):
                             #COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)

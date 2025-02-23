@@ -516,8 +516,8 @@ class LLMTools:
                             NAME,
                             SCHEDULE,
                             #TAG,
-                            #IF,
-                            #THEN, #name of notification
+                            IF="NONE",
+                            THEN="NONE", #name of notification
                             WAREHOUSE="NONE"):
                             #COMMENT="NONE"):
         frame = inspect.currentframe()

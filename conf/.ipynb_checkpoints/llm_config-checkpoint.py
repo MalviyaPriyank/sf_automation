@@ -1270,6 +1270,14 @@ tools = {
                                 "type":"string",
                                 "description":"SCHEDULE for alert object"
                             },
+                            "IF": {
+                                "type":"string",
+                                "description":"SQL query for alert object"
+                            },
+                            "THEN": {
+                                "type":"string",
+                                "description":"NOTIFICATION object name for alert object"
+                            },
                             "WAREHOUSE": {
                                 "type":"string",
                                 "description":"WAREHOUSE for alert object"
@@ -1280,7 +1288,7 @@ tools = {
                             }
                         },
                         "required":[
-                            "NAME","SCHEDULE"
+                            "NAME","SCHEDULE","IF","THEN"
                         ]
                     }
                 }
