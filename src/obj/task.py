@@ -99,8 +99,8 @@ class Schedule:
         if value == 'NONE':
             instance._schedule = value
         else:
-            vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._schedule = value
+            #vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._schedule = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._schedule
