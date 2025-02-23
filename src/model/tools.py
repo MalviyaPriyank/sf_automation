@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -44,21 +44,24 @@ class LLMTools:
                                     aws_access_key_id=llm_config.ACCESS_KEY,
                                     aws_secret_access_key=llm_config.SECRET_KEY,
                                     region_name=self.region)
-        self.obj_class_mapping = {'account': account.Admin(self.sf_session, logger=self.logger),
-                                  'database': database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  'externalstage': externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
-                                  'role': role.Role(self.sf_session,self.user_id, logger=self.logger),
-                                  'copyinto':copyinto.CopyInto(session=self.sf_session, logger=self.logger),
-                                  'internalstage': internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  'fileformat': fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+        self.obj_class_mapping = {ss.ACCOUNT_OBJ: account.Admin(self.sf_session, logger=self.logger),
+                                  ss.DATABASE_OBJ: database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  ss.EXTERNAL_STAGE_OBJ: externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
+                                  ss.ROLE_OBJ: role.Role(self.sf_session,self.user_id, logger=self.logger),
+                                  ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, logger=self.logger),
+                                  ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
-                                  'warehouse': warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
-                                  'schema': schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
+                                  ss.SCHEMA_OBJ: schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
-                                  'table': table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
-                                  'maskingpolicy' : maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  'task': task.Task(session=self.sf_session, user_id=self.user_id),
-                                  'copyhistory': copyhistory.CopyHistory(session=self.sf_session)
+                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
+                                  ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id),
+                                  ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
+                                  ss.STREAM_OBJ: stream.Stream(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id),
+                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -489,6 +492,54 @@ class LLMTools:
         return self.obj_class_mapping['copyhistory'].get_load_history_for_a_table(table_db=table_db,
                                                         table_schema=table_schema,
                                                         table_name=table_name)
+
+
+    def create_stream_object(self,
+                            DATABASE,
+                            SCHEMA,
+                            NAME,
+                            TABLE_NAME,
+                            TAG="NONE",
+                            AT="NONE",
+                            APPEND_ONLY="NONE",
+                            INSERT_ONLY="NONE",
+                            SHOW_INITIAL_ROWS="NONE",
+                            COMMENT="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.STREAM_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.STREAM_OBJ, data_dict)
+
+    
+    def create_alert_object(self,
+                            NAME,
+                            SCHEDULE,
+                            TAG,
+                            IF,
+                            THEN, #name of notification
+                            WAREHOUSE="NONE",
+                            COMMENT="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.ALERT_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.ALERT_OBJ, data_dict)
+
+
+    def create_notification_object(self,
+                                    NAME,
+                                    ENABLED,
+                                    TYPE="NONE",
+                                    ALLOWED_RECIPIENTS="NONE",
+                                    DEFAULT_RECIPIENTS="NONE",
+                                    DEFAULT_SUBJECT="NONE",
+                                    COMMENT="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.NOTIFICATION_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.NOTIFICATION_OBJ, data_dict)
 
 
     def tool_call(self, content, tool_result):

@@ -1197,6 +1197,150 @@ tools = {
                     }
                 }
             }
+        },
+        {
+            "toolSpec": {
+                "name":"create_stream_object",
+                "description":"creates snowflake stream object for the user. DATABSE, SCHEMA, NAME, and TABLE_NAME are the required parameters",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"DATABASE for stream object"
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"SCHEMA for stream object"
+                            },
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for stream object"
+                            },
+                            "TABLE_NAME": {
+                                "type":"string",
+                                "description":"TABLE for stream object"
+                            },
+                            "TAG": {
+                                "type":"string",
+                                "description":"TAG for stream object"
+                            },
+                            "AT": {
+                                "type":"string",
+                                "description":"AT value for stream object"
+                            },
+                            "APPEND_ONLY": {
+                                "type":"string",
+                                "description":"APPEND_ONLY value for stream object"
+                            },
+                            "INSERT_ONLY": {
+                                "type":"string",
+                                "description":"INSERT_ONLY value for stream object"
+                            },
+                            "SHOW_INITIAL_ROWS": {
+                                "type":"string",
+                                "description":"SHOW_INITIAL_ROWS for stream object"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for stream object"
+                            }
+                        },
+                        "required":[
+                            "DATABSE","SCHEMA","NAME","TABLE_NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_alert_object",
+                "description":"creates snowflake alert object for the user. NAME, SCHEDULE, TAG, IF, and THEN are the required parameters. depends on notification object. notification object has to be created before creating alert object.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for alert object"
+                            },
+                            "SCHEDULE": {
+                                "type":"string",
+                                "description":"SCHEDULE for alert object"
+                            },
+                            "TAG": {
+                                "type":"string",
+                                "description":"TAG value for alert object"
+                            },
+                            "IF": {
+                                "type":"string",
+                                "description":"SQL query for alert object"
+                            },
+                            "THEN": {
+                                "type":"string",
+                                "description":"NOTIFICATION object name for alert object"
+                            },
+                            "WAREHOUSE": {
+                                "type":"string",
+                                "description":"WAREHOUSE for alert object"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for alert object"
+                            }
+                        },
+                        "required":[
+                            "NAME","SCHEDULE","TAG","IF","THEN"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_notification_object",
+                "description":"creates snowflake notification object for the user. NAME and ENABLED are the required parameters.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for notification object"
+                            },
+                            "ENABLED": {
+                                "type":"string",
+                                "description":"ENABLED value for notification object"
+                            },
+                            "TYPE": {
+                                "type":"string",
+                                "description":"TYPE value for notification object"
+                            },
+                            "ALLOWED_RECIPIENTS": {
+                                "type":"string",
+                                "description":"ALLOWED_RECIPIENTS value for notification object"
+                            },
+                            "DEFAULT_RECIPIENTS": {
+                                "type":"string",
+                                "description":"DEFAULT_RECIPIENTS value for notification object"
+                            },
+                            "DEFAULT_SUBJECT": {
+                                "type":"string",
+                                "description":"DEFAULT_SUBJECT value for notification object"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for notification object"
+                            }
+                        },
+                        "required":[
+                            "NAME","ENABLED"
+                        ]
+                    }
+                }
+            }
         }
     ]
 }
