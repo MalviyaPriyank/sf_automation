@@ -253,7 +253,7 @@ class Stream:
         self.set_database(kwargs[gv._database_tag])
         self.set_schema(kwargs[gv._schema_tag])
         self.set_name(kwargs[gv._name_tag])
-        self.set_table_name(gv._table_name_tag)
+        self.set_table_name(kwargs[gv._table_name_tag])
         self.set_tag(kwargs[gv._tag_tag])
         self.set_at(kwargs[gv._at_tag])
         self.set_append_only(kwargs[gv._append_only_tag])

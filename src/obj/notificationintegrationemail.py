@@ -61,9 +61,9 @@ class AllowedRecipients:
         return instance._allowed_recipients
     
     def __set__(self,instance,value):
-        vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[gv._max_allowed_recepients])
-        vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
-        instance._allowed_recipients=value  
+        #vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[gv._max_allowed_recepients])
+        #vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
+        instance._allowed_recipients=f"('{value}')"  
 
     def __delete__(self,instance):
         del instance._allowed_recipients
@@ -73,9 +73,12 @@ class DefaultRecipients:
         return instance._default_recipients
     
     def __set__(self,instance,value):
-        vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
-        instance._default_recipients = value
+        if value=='NONE':
+            instance._default_recipients=value
+        else:
+            vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
+            instance._default_recipients = value
 
     def __delete__(self,instance):
         del instance._default_recipients
@@ -85,8 +88,11 @@ class DefaultSubject:
         return instance._default_subject
     
     def __set__(self,instance,value):
-        vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._default_subject = value
+        if value=='NONE':
+            instance._default_subject=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._default_subject = value
 
     def __delete__(self,instance):
         del instance._default_subject
@@ -96,8 +102,11 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._comment = value
+        if value=='NONE':
+            instance._comment=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._comment = value
 
     def __delete__(self,instance):
         del instance._comment
@@ -149,10 +158,10 @@ class NotificationIntegrationEmail:
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._allowed_recepients_tag,"_data_retention_time_in_days")
-        set_flag(gv._default_recepients_tag,"_max_data_extension_time_in_days")
-        set_flag(gv._default_subject_tag,"_external_volume")
-        set_flag(gv._comment_tag,"_catalog")
+        set_flag(gv._allowed_recepients_tag,"_allowed_recipients")
+        set_flag(gv._default_recepients_tag,"default_recipients")
+        set_flag(gv._default_subject_tag,"_default_subject")
+        set_flag(gv._comment_tag,"_comment")
 
 
     def check_properties_to_set(self): 
@@ -216,5 +225,3 @@ class NotificationIntegrationEmail:
         self.prepare_query()
         self.create_notification_integration()
         self.create_deployment_entry()
-        if len(largs) == 0:
-            self.create_deployment_entry()

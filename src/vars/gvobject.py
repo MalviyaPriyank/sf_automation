@@ -336,6 +336,12 @@ class NotificationIntegrationEmail:
     _allowed_values_type=["EMAIL"]
     _max_allowed_recepients=50
 
+class Alert:
+    _name_tag="NAME"
+    _schedule_tag="NAME"
+    _if_tag="IF"
+    _then_tag="THEN"
+
 
 class StorageIntegrationAws:
     _name_tag="NAME"
