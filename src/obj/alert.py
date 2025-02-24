@@ -39,7 +39,7 @@ class Schedule:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._schedule = value
+        instance._schedule = f"'{value}'"
 
     
     def __delete__(self,instance):
@@ -103,12 +103,12 @@ class Alerts:
         SCHEDULE={self.attr.schedule} 
         IF( EXISTS
             (
-            SELECT DISTINCT cfa.LOYALTY_NUMBER
-            FROM DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUSTOMERS cst
-            LEFT JOIN DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUSTOMER_FLIGHT_ACTIVITY cfa
-            ON cst.CUSTOMER_ID = cfa.LOYALTY_NUMBER
-            WHERE cst.CUSTOMER_ID IS NULL
-            AND cfa.LOYALTY_NUMBER IS NOT NULL
+            SELECT DISTINCT cfa."Loyalty_Number"
+            FROM DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUSTOMER_FLIGHT_ACTIVITY cfa
+            LEFT JOIN DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUStOMERS cst
+            ON cst."customer_id" = cfa."Loyalty_Number"
+            WHERE cst."customer_id" IS NULL
+            AND cfa."Loyalty_Number" IS NOT NULL
             ) 
         ) 
         THEN 
@@ -123,6 +123,7 @@ class Alerts:
 
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session)
+        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry,user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
         deploy_inst.set_object_database('NA')
         deploy_inst.set_object_schema('NA')

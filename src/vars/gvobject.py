@@ -338,7 +338,7 @@ class NotificationIntegrationEmail:
 
 class Alert:
     _name_tag="NAME"
-    _schedule_tag="NAME"
+    _schedule_tag="SCHEDULE"
     _if_tag="IF"
     _then_tag="THEN"
 
