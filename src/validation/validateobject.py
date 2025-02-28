@@ -15,7 +15,8 @@ from exception.objectexception import (
     ObjectDoesNotExist,
     DuplicateObject,
     ColumnDoesNotExist,
-    UserEmailDoesNotExist
+    UserEmailDoesNotExist,
+    ExternalVolumeDoesNotExist
 )
 
 
@@ -163,5 +164,15 @@ class ValidateObject:
                 and email not in email_list):
                 raise UserEmailDoesNotExist(object_type='USER',object_name=email)
         return True
+    
+    @staticmethod
+    def is_valid_external_volume(session,external_volume_identifier,object_type):
+        df=session.sql(f"SELECT SYSTEM$VERIFY_EXTERNAL_VOLUME('{external_volume_identifier}')").collect()
+        for return_lst in df:
+            for return_stmt in return_lst:
+                if "ERROR" in return_stmt.upper():
+                    raise ExternalVolumeDoesNotExist(object_type=object_type,object_identifier=external_volume_identifier)
+        return True
+        
 
         

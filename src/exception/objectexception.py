@@ -28,3 +28,7 @@ class ColumnDoesNotExist(ObjectException):
 class UserEmailDoesNotExist(ObjectException):
     def __init__(self, object_type, user_email):
         super().__init__(object_type, f" with email {user_email} does not exist")
+
+class ExternalVolumeDoesNotExist(ObjectException):
+    def __init__(self, object_type, object_identifier):
+        super().__init__(object_type, f" with name {object_identifier} does not exist or not authorized")

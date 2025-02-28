@@ -82,6 +82,8 @@ class LLMTools:
                                COMMENT="NONE",  
                                EXTERNAL_VOLUME="NONE", 
                                DEFAULT_DDL_COLLATION="NONE", 
+                               LOG_LEVEL="NONE",
+                               TRACE_LEVEL="NONE",
                                REPLACE_INVALID_CHARACTERS="NONE",
                                DATA_RETENTION_TIME_IN_DAYS="NONE",
                                STORAGE_SERIALIZATION_POLICY="NONE",
@@ -364,7 +366,7 @@ class LLMTools:
         self.logger.info(f"Tables provided = {values['TABLE']}")
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
-            data_dict['TABLE'] = value
+            data_dict['TABLE'] = value.replace('[','').replace(']','').replace('"','')
             self.logger.info(data_dict)
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 

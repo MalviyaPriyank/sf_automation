@@ -51,8 +51,9 @@ class DataRetentionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._data_retention_time_in_days = value
-        elif vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._data_retention_time_in_days = value
+        vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._data_retention_time_in_days = value
 
     
     def __delete__(self,instance):
@@ -75,8 +76,9 @@ class MaxDataExtensionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._max_data_extension_time_in_days = value
-        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._max_data_extension_time_in_days = value
+        vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_between(value,gv._min_allowed_value_max_data_extension_time_in_days,gv._max_allowed_value_max_data_extension_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)    
+        instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -96,7 +98,11 @@ class ExternalVolume:
         return instance._external_volume
     
     def __set__(self,instance,value):
-        instance._external_volume = value
+        if value=="NONE":
+            instance._external_volume = value
+        else:
+            vo.is_valid_external_volume(session=instance.parent.session,external_volume_identifier=value,object_type=self.__class__.__name__)
+            instance._external_volume=value
 
     def __delete__(self,instance):
         del instance._external_volume
@@ -116,7 +122,7 @@ class Catalog:
         return instance._catalog
     
     def __set__(self,instance,value):
-        instance._catalog = value
+        instance._catalog = "NONE"
 
     def __delete__(self,instance):
         del instance._catalog
@@ -179,6 +185,36 @@ class DefaultDdlCollationTag:
     def __delete__(self,instance):
         del instance._default_ddl_collation_tag
 
+class LogLevel:
+    def __get__(self,instance,owner):
+        return instance._log_level
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._log_level=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_log_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._log_level = value
+
+    def __delete__(self,instance):
+        del instance._log_level
+
+class TraceLevel:
+    def __get__(self,instance,owner):
+        return instance._trace_level
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._trace_level=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_trace_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._trace_level = value
+
+    def __delete__(self,instance):
+        del instance._trace_level
+
 class StorageSerializationPolicy:
     def __get__(self,instance,owner):
         return instance._storage_serialization_policy
@@ -187,7 +223,8 @@ class StorageSerializationPolicy:
         if value == "NONE":
             instance._storage_serialization_policy = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_storage_serialization_policy,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_storage_serialization_policy,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
@@ -251,6 +288,9 @@ class DatabaseAttrs:
     default_ddl_collation = DefaultDdlCollation()
     default_ddl_collation_tag = DefaultDdlCollationTag()
 
+    log_level=LogLevel()
+    trace_level=TraceLevel()
+
     storage_serialization_policy = StorageSerializationPolicy()
     storage_serialization_policy_tag = StorageSerializationPolicyTag()
 
@@ -308,6 +348,12 @@ class Database:
     def set_default_ddl_collation_tag(self, value):
         self.attr.default_ddl_collation_tag = value
 
+    def set_log_level(self, value):
+        self.attr.log_level = value
+
+    def set_trace_level(self, value):
+        self.attr.trace_level = value
+
     def set_storage_serialization_policy(self, value):
         self.attr.storage_serialization_policy = value
 
@@ -334,6 +380,8 @@ class Database:
         set_flag(gv._catalog_tag,"_catalog")
         set_flag(gv._replace_invalid_characters_tag,"_replace_invalid_characters")
         set_flag(gv._default_ddl_collation_tag,"_default_ddl_collation")
+        set_flag(gv._log_level_tag,"_log_level")
+        set_flag(gv._trace_level_tag,"_trace_level")
         set_flag(gv._storage_serialization_policy_tag,"_storage_serialization_policy")
         set_flag(gv._comment_tag,"_comment")
 
@@ -362,6 +410,10 @@ class Database:
                     self.qry = f" {self.qry} {self.attr.replace_invalid_characters_tag} = {self.attr.replace_invalid_characters} "
                 if prop == gv._default_ddl_collation_tag:
                     self.qry = f" {self.qry} {self.attr.default_ddl_collation_tag} = {self.attr.default_ddl_collation} "
+                if prop == gv._log_level_tag:
+                    self.qry = f" {self.qry} {gv._log_level_tag} = {self.attr.log_level} "
+                if prop == gv._trace_level_tag:
+                    self.qry = f" {self.qry} {gv._trace_level_tag} = {self.attr.trace_level} "
                 if prop == gv._storage_serialization_policy_tag:
                     self.qry = f" {self.qry} {self.attr.storage_serialization_policy_tag} = {self.attr.storage_serialization_policy} "
                 if prop == gv._comment_tag:
@@ -425,6 +477,9 @@ class Database:
 
             self.set_default_ddl_collation(kwargs[gv._default_ddl_collation_tag])
             self.set_default_ddl_collation_tag(gv._default_ddl_collation_tag)
+
+            self.set_log_level(kwargs[gv._log_level_tag])
+            self.set_trace_level(kwargs[gv._trace_level_tag])
 
             self.set_storage_serialization_policy(kwargs[gv._storage_serialization_policy_tag])
             self.set_storage_serialization_policy_tag(gv._storage_serialization_policy_tag)

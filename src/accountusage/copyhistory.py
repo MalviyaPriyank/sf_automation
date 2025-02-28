@@ -32,6 +32,8 @@ class CopyHistory:
         """
         self.session.sql(f"use database {table_db}").collect()
         self.session.sql(f"use schema {table_schema}").collect()
-        df=self.session.sql(f"select * from table(information_schema.copy_history(TABLE_NAME=>'{table_name}', START_TIME=> DATEADD(hours, -24, CURRENT_TIMESTAMP())))").collect()
-        return df
+        df=self.session.sql(f"select * from table(information_schema.copy_history(TABLE_NAME=>'{table_name}', START_TIME=> DATEADD(hours, -24, CURRENT_TIMESTAMP())))").collect()        
+        for row in df:
+            return f"{row}"
+
     
