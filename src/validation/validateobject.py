@@ -14,9 +14,7 @@ from infschema.columns import Columns as cols
 from exception.objectexception import ( 
     ObjectDoesNotExist,
     DuplicateObject,
-    ColumnDoesNotExist,
-    UserEmailDoesNotExist,
-    ExternalVolumeDoesNotExist
+    ColumnDoesNotExist
 )
 
 
@@ -162,7 +160,7 @@ class ValidateObject:
             if ( email not in name_list 
                 and email not in login_name_list
                 and email not in email_list):
-                raise UserEmailDoesNotExist(object_type='USER',object_name=email)
+                raise ObjectDoesNotExist(object_type='USER',object_name=email)
         return True
     
     @staticmethod
@@ -171,8 +169,20 @@ class ValidateObject:
         for return_lst in df:
             for return_stmt in return_lst:
                 if "ERROR" in return_stmt.upper():
-                    raise ExternalVolumeDoesNotExist(object_type=object_type,object_identifier=external_volume_identifier)
+                    raise ObjectDoesNotExist(object_type=object_type,object_name=external_volume_identifier)
         return True
+    
+    @staticmethod
+    def is_valid_catalog(session,catalog_identifier,object_type):
+        df=session.sql(f"SHOW INTEGRATIONS").collect()
+        catalog_lst=[]
+        for internal_lst in df:
+            if 'CATALOG' in internal_lst[1]:
+                catalog_lst.append(internal_lst[0].upper())
+        if catalog_identifier in catalog_lst:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type=object_type,object_name=catalog_identifier)
         
 
         

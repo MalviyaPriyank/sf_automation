@@ -89,6 +89,10 @@ class Schema:
     _allowed_values_log_level = ["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
     _allowed_values_trace_level = ["ALWAYS","ON_EVENT","OFF"]
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
+    _min_allowed_value_data_retention_time_in_days=0
+    _max_allowed_value_data_retention_time_in_days=1
+    _min_allowed_value_max_data_extension_time_in_days=0
+    _max_allowed_value_max_data_extension_time_in_days=90
 
 class Share:
     def __init__(self):

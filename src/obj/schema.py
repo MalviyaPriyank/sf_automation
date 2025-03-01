@@ -56,7 +56,14 @@ class WithManagedAccess:
         return instance._with_managed_access
     
     def __set__(self,instance,value):
-        instance._with_managed_access = value
+        if value=="NONE":
+            instance._with_managed_access="NONE"
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__)
+            if value.upper()=="TRUE":
+                instance._with_managed_access = value
+            else:
+                instance._with_managed_access="NONE"
     
     def __delete__(self,instance):
         del instance._with_managed_access
@@ -78,7 +85,9 @@ class DataRetentionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._data_retention_time_in_days = value
-        elif vv.is_between(value,0,90,instance.parent.__class__.__name__,self.__class__.__name__):
+        else:
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._data_retention_time_in_days = value
     
     def __delete__(self,instance):
@@ -101,7 +110,9 @@ class MaxDataExtensionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._max_data_extension_time_in_days = value
-        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_between(value,gv._min_allowed_value_max_data_extension_time_in_days,gv._max_allowed_value_max_data_extension_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -122,7 +133,12 @@ class ExternalVolume:
         return instance._external_volume
     
     def __set__(self,instance,value):
-        instance._external_volume = value
+        if value=="NONE":
+            instance._external_volume=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.is_valid_external_volume(session=instance.parent.session,external_volume_identifier=value,object_type=instance.parent.__class__.__name__)
+            instance._external_volume = value
 
     def __delete__(self,instance):
         del instance._external_volume
@@ -142,7 +158,10 @@ class Catalog:
         return instance._catalog
     
     def __set__(self,instance,value):
-        instance._catalog = value
+        if value=="NONE":
+            instance._catalog = value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
 
     def __delete__(self,instance):
         del instance._catalog
@@ -490,7 +509,7 @@ class Schema:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._with_managed_access_tag:
-                    self.qry = f" {self.qry} {self.attr.with_managed_access_tag} = {self.attr.with_managed_access} "
+                    self.qry = f" {self.qry} {self.attr.with_managed_access_tag} "
                 if prop == gv._data_retention_time_in_days_tag:
                     self.qry = f" {self.qry} {self.attr.data_retention_time_in_days_tag} = {self.attr.data_retention_time_in_days} "
                 if prop == gv._max_data_extension_time_in_days_tag:
