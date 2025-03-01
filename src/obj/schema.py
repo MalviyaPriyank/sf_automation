@@ -162,6 +162,8 @@ class Catalog:
             instance._catalog = value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.is_valid_catalog(session=instance.parent.session,catalog_identifier=value,object_type=self.__class__.__name__)
+            instance._catalog=value
 
     def __delete__(self,instance):
         del instance._catalog
@@ -183,7 +185,8 @@ class ReplaceInvalidCharacters:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._replace_invalid_characters = "FALSE"
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._replace_invalid_characters = value
 
     def __delete__(self,instance):
@@ -205,7 +208,11 @@ class DefaultDdlCollation:
         return instance._default_ddl_collation
     
     def __set__(self,instance,value):
-        instance._default_ddl_collation = value
+        if value=="NONE":
+            instance._default_ddl_collation=value
+        else:
+            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._default_ddl_collation = value
 
     def __delete__(self,instance):
         del instance._default_ddl_collation
@@ -226,9 +233,9 @@ class LogLevel:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            instance._log_level = "OFF"
+            instance._log_level = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_log_level,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_log_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._log_level = value
 
     def __delete__(self,instance):
@@ -250,9 +257,9 @@ class TraceLevel:
     
     def __set__(self,instance,value):
         if value == "NONE":
-            instance._trace_level = "OFF"
+            instance._trace_level = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_trace_level,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_trace_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._trace_level = value
 
     def __delete__(self,instance):
@@ -276,7 +283,7 @@ class StorageSerializationPolicy:
         if value == "NONE":
             instance._storage_serialization_policy = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_storage_serialization_policy,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_storage_serialization_policy,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
@@ -297,7 +304,7 @@ class ClassificationProfile:
         return instance._classification_profile
     
     def __set__(self,instance,value):
-        instance._classification_profile = value
+        instance._classification_profile = "NONE"
 
     def __delete__(self,instance):
         del instance._classification_profile
