@@ -158,6 +158,7 @@ class ExternalStage:
     _auto_refresh_tag = "AUTO_REFRESH"
     _notification_integration_tag = "NOTIFICATION_INTEGRATION"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE","DEF"]
+    _allowed_values_protocols=['s3','s3china','s3gov','gcs','azure']
 
 class FileFormat:
     def __init__(self):

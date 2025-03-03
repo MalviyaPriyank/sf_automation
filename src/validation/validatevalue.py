@@ -26,7 +26,11 @@ from valueexception import (
     MustBeWithinLimit,
     MustBeAValidCollationSpecifier,
     MustBeValidUTF8Character,
-    MustNotBeASubString
+    MustNotBeASubString,
+    InvalidProtocol,
+    InvalidAzureUrl,
+    UrlMustStartWith,
+    ArnNotRequired
 )
 
 class ValidateValue:
@@ -217,3 +221,34 @@ class ValidateValue:
     def is_single_byte_characetr(value,object_type,attr_name):
         if len(value)==1:
             return True
+        
+    @staticmethod
+    def is_valid_url(value,allowed_protocols,object_type,attr_name):
+        protocol=value.split(':')[0]
+        url=value.split(':')[1]
+        #check for protocol
+        if protocol not in allowed_protocols:
+            raise InvalidProtocol(object_type,attr_name,allowed_protocols)
+        #check for URL after protocol
+        if url.startswith("//"):
+            if 'azure' in protocol:
+                azure_url=url.removeprefix("//")
+                account=azure_url.split('/')[0]
+                account_chunks=account.split('.')
+                if (len(account_chunks) != 5
+                    or account_chunks[1] != 'blob'
+                    or account_chunks[2] != 'core'
+                    or account_chunks[3] != 'windows'
+                    or account_chunks[4] != 'net'):
+                    raise InvalidAzureUrl(object_type,attr_name)
+        else:
+            raise UrlMustStartWith(object_type,attr_name)
+        
+    @staticmethod
+    def arn_required(object_type,attr_name,url):
+        if url.endswith('s3alias'):
+            return True
+        else:
+            raise ArnNotRequired(object_type,attr_name)
+        
+    

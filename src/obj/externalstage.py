@@ -75,6 +75,8 @@ class FileFormat:
         if value=="NONE":
             instance._file_format=value
         else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=value)
             instance._file_format = value
 
     def __del__(self,instance):
@@ -96,8 +98,10 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
-
+        if value=="NONE":
+            instance._comment=value
+        else:
+            instance._comment = f"'{value}'"
 
     def __del__(self,instance):
         del instance._comment
@@ -112,27 +116,6 @@ class CommentTag:
     def __del__(self,instance):
         del instance._comment_tag
 
-class Tag:
-    def __get__(self,instance,owner):
-        return instance._tag
-    
-    def __set__(self,instance,value):
-        instance._tag = value
-
-
-    def __del__(self,instance):
-        del instance._tag
-
-class TagTag:
-    def __get__(self,instance,owner):
-        return instance._tag_tag
-    
-    def __set__(self,instance,value):
-        instance._tag_tag = value
-
-    def __del__(self,instance):
-        del instance._tag_tag
-
 class Url:
     def __get__(self,instance,owner):
         return instance._url
@@ -141,6 +124,7 @@ class Url:
         if value == 'NONE':
             instance._url = value
         else:
+            vv.is_valid_url(value=value,allowed_protocols=gvextstg._allowed_values_protocols,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._url = f"'{value}'"
 
     def __del__(self,instance):

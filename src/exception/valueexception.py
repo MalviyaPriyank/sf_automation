@@ -107,6 +107,26 @@ class MustNotBeASubString(AttributeValidationError):
         message=f"must not be a substring of {ref_attr_name}"
         super().__init__(object_type, src_attr_name, message)
 
+class InvalidProtocol(AttributeValidationError):
+    def __init__(self, object_type, attr_name, allowed_protocols):
+        message=f"can have only following protocols {allowed_protocols}"
+        super().__init__(object_type, attr_name, message)
+
+class InvalidAzureUrl(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f"for Azure must be in the format 'azure://<account>.blob.core.windows.net'"
+        super().__init__(object_type, attr_name, message)
+
+class UrlMustStartWith(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f" must be in the format '<protocol>://<url>'.Make sure your url starts wtih '//'"
+        super().__init__(object_type, attr_name, message)
+
+class ArnNotRequired(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f" should only be provided if URL is S3 alias"
+        super().__init__(object_type, attr_name, message)
+
 
 
     
