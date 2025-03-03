@@ -49,6 +49,7 @@ class Name:
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
+            vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._schema,stage=value,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
             instance._name = value
 
     def __del__(self,instance):
@@ -71,7 +72,10 @@ class FileFormat:
         return instance._file_format
     
     def __set__(self,instance,value):
-        instance._file_format = value
+        if value=="NONE":
+            instance._file_format=value
+        else:
+            instance._file_format = value
 
     def __del__(self,instance):
         del instance._file_format

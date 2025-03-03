@@ -184,5 +184,14 @@ class ValidateObject:
         else:
             raise ObjectDoesNotExist(object_type=object_type,object_name=catalog_identifier)
         
+    @staticmethod
+    def is_new_stage(session,database,schema,stage,obj_type,obj_name):
+        stg_inst=stg(session=session)
+        res=stg_inst.is_new_stage(db_name=database,schema_name=schema,stage_name=stage)
+        if res:
+            return res
+        else:
+            raise DuplicateObject(object_type=obj_type,object_name=obj_name)
+        
 
         

@@ -177,7 +177,6 @@ class Table:
             self.grant_default_privileges()
             self.create_deployment_entry()
         return tbl_lst
-    
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)
