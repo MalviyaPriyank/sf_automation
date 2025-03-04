@@ -46,7 +46,7 @@ tools = {
                 "name":"create_database_object",
                 "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
                 "inputSchema": {
-                    "json":{
+                    "json":{   
                         "type":"object",
                         "properties": {
                             "NAME": {
@@ -77,10 +77,6 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for DEFAULT_DDL_COLLATION for database object"
                             },
-                        "DATA_RETENTION_TIME_IN_DAYS": {
-                                "type":"string",
-                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object"
-                            },
                         "STORAGE_SERIALIZATION_POLICY": {
                                 "type":"string",
                                 "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object"
@@ -89,6 +85,14 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for COMMENT for database object"
                             },
+                            "LOG_LEVEL": {
+                                "type":"string",
+                                "description":"user provided value for LOG_LEVEL for database object"
+                            },
+                            "TRACE_LEVEL": {
+                                "type":"string",
+                                "description":"user provided value for TRACE_LEVEL for database object"
+                            }
                         },
                         "required":[
                             "NAME"
