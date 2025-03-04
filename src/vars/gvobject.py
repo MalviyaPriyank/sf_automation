@@ -159,6 +159,10 @@ class ExternalStage:
     _notification_integration_tag = "NOTIFICATION_INTEGRATION"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE","DEF"]
     _allowed_values_protocols=['s3','s3china','s3gov','gcs','azure']
+    _allowed_values_s3_encryption_type=['AWS_CSE','AWS_SSE_S3','AWS_SSE_KMS']
+    _allowed_values_gcs_encyption_type=['GCS_SSE_KMS']
+    _allowed_values_azure_encyption_type=['AZURE_CSE']
+
 
 class FileFormat:
     def __init__(self):

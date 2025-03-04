@@ -148,6 +148,7 @@ class AwsAccessPointArn:
         if value == 'NONE':
             instance._aws_access_point_arn = value
         else:
+            vv.is_s3_alias(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,url=instance._url)
             instance._aws_access_point_arn = f"'{value}'"
 
     def __del__(self,instance):
@@ -158,7 +159,11 @@ class StorageIntegration:
         return instance._storage_integration
     
     def __set__(self,instance,value):
-        instance._storage_integration = value
+        if value=="NONE":
+            instance._storage_integration=value
+        else:
+            vo.storage_integration_exist(session=instance.parent.session,object_type=instance.parent.__class__.__name__,integration_name=value)
+            instance._storage_integration=value
 
     def __del__(self,instance):
         del instance._storage_integration
@@ -173,142 +178,23 @@ class StorageIntegrationTag:
     def __del__(self,instance):
         del instance._storage_integration_tag
 
-class AwsKeyId:
-    def __get__(self,instance,owner):
-        return instance._aws_key_id
-    
-    def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._aws_key_id=value
-        else:
-            instance._aws_key_id=f"'{value}'"
-
-    def __del__(self,instance):
-        del instance._aws_key_id
-
-class AwsKeyIdTag:
-    def __get__(self,instance,owner):
-        return instance._aws_key_id_tag
-    
-    def __set__(self,instance,value):
-        instance._aws_key_id_tag = value
-
-    def __del__(self,instance):
-        del instance._aws_key_id_tag
-
-class AwsSecretKey:
-    def __get__(self,instance,owner):
-        return instance._aws_secret_key
-    
-    def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._aws_secret_key=value
-        else:
-            instance._aws_secret_key = f"'{value}'"
-
-    def __del__(self,instance):
-        del instance._aws_secret_key
-
-class AwsSecretKeyTag:
-    def __get__(self,instance,owner):
-        return instance._aws_secret_key_tag
-    
-    def __set__(self,instance,value):
-        instance._aws_secret_key_tag = value
-
-    def __del__(self,instance):
-        del instance._aws_secret_key_tag
-
-class AwsToken:
-    def __get__(self,instance,owner):
-        return instance._aws_token
-    
-    def __set__(self,instance,value):
-        instance._aws_token = value
-
-
-    def __del__(self,instance):
-        del instance._aws_token
-
-class AwsTokenTag:
-    def __get__(self,instance,owner):
-        return instance._aws_token_tag
-    
-    def __set__(self,instance,value):
-        instance._aws_token_tag = value
-
-    def __del__(self,instance):
-        del instance._aws_token_tag
-
-class AzureSasToken:
-    def __get__(self,instance,owner):
-        return instance._azure_sas_token
-    
-    def __set__(self,instance,value):
-        instance._azure_sas_token = value
-
-    def __del__(self,instance):
-        del instance._azure_sas_token
-
-class AzureSasTokenTag:
-    def __get__(self,instance,owner):
-        return instance._azure_sas_token_tag
-    
-    def __set__(self,instance,value):
-        instance._azure_sas_token_tag = value
-
-    def __del__(self,instance):
-        del instance._azure_sas_token_tag
-
-class AwsRole:
-    def __get__(self,instance,owner):
-        return instance._aws_role
-    
-    def __set__(self,instance,value):
-        instance._aws_role = value
-
-    def __del__(self,instance):
-        del instance._aws_role
-
-class AwsRoleTag:
-    def __get__(self,instance,owner):
-        return instance._aws_role_tag
-    
-    def __set__(self,instance,value):
-        instance._aws_role_tag = value
-
-    def __del__(self,instance):
-        del instance._aws_role_tag
-
-class Encryption:
-    def __get__(self,instance,owner):
-        return instance._encryption
-    
-    def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._encryption=value
-        else:
-            instance._encryption=value
-
-    def __del__(self,instance):
-        del instance._encryption
-
-class EncryptionTag:
-    def __get__(self,instance,owner):
-        return instance._encryption_tag
-    
-    def __set__(self,instance,value):
-        instance._encryption_tag = value
-
-    def __del__(self,instance):
-        del instance._encryption_tag
-
 class EncryptionType:
     def __get__(self,instance,owner):
         return instance._encryption_type
     
     def __set__(self,instance,value):
-        instance._encryption_type = value
+        if value=="NONE":
+            instance._encryption_type=value
+        else:
+            if 's3' in instance._url.split(":")[0]:
+                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_s3_encryption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._encryption_type = value
+            elif 'gcs' in instance._url.split(":")[0]:
+                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_gcs_encyption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._encryption_type=value
+            elif 'azure' in instance._url.split(":")[0]:
+                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_azure_encyption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._encryption_type=value
 
     def __del__(self,instance):
         del instance._encryption_type
@@ -500,24 +386,6 @@ class ExternalStageAttrs:
     storage_integration = StorageIntegration()
     storage_integration_tag = StorageIntegrationTag()
 
-    aws_key_id = AwsKeyId()
-    aws_key_id_tag = AwsKeyIdTag()
-
-    aws_secret_key = AwsSecretKey()
-    aws_secret_key_tag = AwsSecretKeyTag()
-
-    aws_token = AwsToken()
-    aws_token_tag = AwsTokenTag()
-
-    azure_sas_token = AzureSasToken()
-    azure_sas_token_tag = AzureSasTokenTag()
-
-    aws_role = AwsRole()
-    aws_role_tag = AwsRoleTag()
-
-    encryption = Encryption()
-    encryption_tag = EncryptionTag()
-
     encryption_type = EncryptionType()
     encryption_type_tag = EncryptionTypeTag()
 
@@ -596,42 +464,6 @@ class ExternalStage:
     def set_storage_integration_tag(self,val):
         self.attr.storage_integration_tag = val
 
-    def set_aws_key_id(self,val):
-        self.attr.aws_key_id = val
-    
-    def set_aws_key_id_tag(self,val):
-        self.attr.aws_key_id_tag = val
-
-    def set_aws_secret_key(self,val):
-        self.attr.aws_secret_key = val
-    
-    def set_aws_secret_key_tag(self,val):
-        self.attr.aws_secret_key_tag = val
-
-    def set_aws_token(self,val):
-        self.attr.aws_token = val
-    
-    def set_aws_token_tag(self,val):
-        self.attr.aws_token_tag = val
-
-    def set_azure_sas_token(self,val):
-        self.attr.azure_sas_token = val
-    
-    def set_azure_sas_token_tag(self,val):
-        self.attr.azure_sas_token_tag = val
-
-    def set_aws_role(self,val):
-        self.attr.aws_role = val
-    
-    def set_aws_role_tag(self,val):
-        self.attr.aws_role_tag = val
-
-    def set_encryption(self,val):
-        self.attr.encryption = val
-    
-    def set_encryption_tag(self,val):
-        self.attr.encryption_tag = val
-
     def set_encryption_type(self,val):
         self.attr.encryption_type = val
     
@@ -696,12 +528,6 @@ class ExternalStage:
         set_flag(gvextstg._url_tag,"_url")
         set_flag(gvextstg._aws_access_point_arn_tag,"_aws_access_point_arn")
         set_flag(gvextstg._storage_integration_tag,"_storage_integration")
-        set_flag(gvextstg._aws_key_id_tag,"_aws_key_id")
-        set_flag(gvextstg._aws_secret_key_tag,"_aws_secret_key")
-        set_flag(gvextstg._aws_token_tag,"_aws_token")
-        set_flag(gvextstg._azure_sas_token_tag,"_azure_sas_token")
-        set_flag(gvextstg._aws_role_tag,"_aws_role")
-        set_flag(gvextstg._encryption_tag,"_encryption")
         set_flag(gvextstg._encryption_type_tag,"_encryption_type")
         set_flag(gvextstg._encryption_master_key_tag,"_encryption_master_key")
         set_flag(gvextstg._encryption_kms_key_id_tag,"_encryption_kms_key_id")
@@ -736,18 +562,6 @@ class ExternalStage:
                     self.qry = f" {self.qry} {gvextstg._aws_access_point_arn_tag} = {self.attr.aws_access_point_arn} "
                 if prop == gvextstg._storage_integration_tag:
                     self.qry = f" {self.qry} {self.attr.storage_integration_tag} = {self.attr.storage_integration} "
-                if prop == gvextstg._aws_key_id_tag:
-                    self.qry = f" {self.qry} {self.attr.aws_key_id_tag} = {self.attr.aws_key_id} "
-                if prop == gvextstg._aws_secret_key_tag:
-                    self.qry = f" {self.qry} {self.attr.aws_secret_key_tag} = {self.attr.aws_secret_key} "
-                if prop == gvextstg._aws_token_tag:
-                    self.qry = f" {self.qry} {self.attr.aws_token_tag} = {self.attr.aws_token} "
-                if prop == gvextstg._azure_sas_token_tag:
-                    self.qry = f" {self.qry} {self.attr.azure_sas_token_tag} = {self.attr.azure_sas_token} "
-                if prop == gvextstg._aws_role_tag:
-                    self.qry = f" {self.qry} {self.attr.aws_role_tag} = {self.attr.aws_role} "
-                if prop == gvextstg._encryption_tag:
-                    self.qry = f" {self.qry} {self.attr.encryption_tag} = {self.attr.encryption} "
                 if prop == gvextstg._encryption_type_tag:
                     self.qry = f" {self.qry} {self.attr.encryption_type_tag} = {self.attr.encryption_type} "
                 if prop == gvextstg._encryption_master_key_tag:
@@ -816,27 +630,9 @@ class ExternalStage:
         self.set_url_tag(gvextstg._url_tag)
 
         self.set_aws_access_point_arn(kwargs[gvextstg._aws_access_point_arn_tag])
-
+        
         self.set_storage_integration(kwargs[gvextstg._storage_integration_tag])
         self.set_storage_integration_tag(gvextstg._storage_integration_tag)
-
-        self.set_aws_key_id(kwargs[gvextstg._aws_key_id_tag])
-        self.set_aws_key_id_tag(gvextstg._aws_key_id_tag)
-
-        self.set_aws_secret_key(kwargs[gvextstg._aws_secret_key_tag])
-        self.set_aws_secret_key_tag(gvextstg._aws_secret_key_tag)
-
-        self.set_aws_token(kwargs[gvextstg._aws_token_tag])
-        self.set_aws_token_tag(gvextstg._aws_token_tag)
-
-        self.set_azure_sas_token(kwargs[gvextstg._azure_sas_token_tag])
-        self.set_azure_sas_token_tag(gvextstg._azure_sas_token_tag)
-
-        self.set_aws_role(kwargs[gvextstg._aws_role_tag])
-        self.set_aws_role_tag(gvextstg._aws_role_tag)
-
-        self.set_encryption(kwargs[gvextstg._encryption_tag])
-        self.set_encryption_tag(gvextstg._encryption_tag)
 
         self.set_encryption_type(kwargs[gvextstg._encryption_type_tag])
         self.set_encryption_type_tag(gvextstg._encryption_type_tag)

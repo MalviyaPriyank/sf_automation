@@ -192,6 +192,19 @@ class ValidateObject:
             return res
         else:
             raise DuplicateObject(object_type=obj_type,object_name=obj_name)
+    
+    @staticmethod
+    def storage_integration_exist(session,object_type,integration_name):
+        df=session.sql('SHOW INTEGRATIONS').collect()
+        integration_lst=[]
+        for inner_lst in df:
+            integration_lst.append(inner_lst[0].upper())
+        
+        if integration_name.upper() in integration_lst:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type=object_type,object_name=integration_name)
+
         
 
         
