@@ -245,7 +245,7 @@ class ValidateValue:
             raise UrlMustStartWith(object_type,attr_name)
         
     @staticmethod
-    def arn_required(object_type,attr_name,url):
+    def is_s3_alias(object_type,attr_name,url):
         if url.endswith('s3alias'):
             return True
         else:

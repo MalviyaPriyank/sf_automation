@@ -374,9 +374,6 @@ class ExternalStageAttrs:
 
     comment = Comment()
     comment_tag = CommentTag()
-    
-    tag = Tag()
-    tag_tag = TagTag()
 
     url = Url()
     url_tag = UrlTag()
