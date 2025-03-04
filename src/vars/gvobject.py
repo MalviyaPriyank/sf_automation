@@ -152,7 +152,7 @@ class ExternalStage:
     _encryption_master_key_tag = "ENCRYPTION_MASTER_KEY"
     _encryption_kms_key_id_tag ="ENCRYPTION_KMS_KEY_ID"
     _use_privatelink_endpoint_tag = "USE_PRIVATELINK_ENDPOINT"
-    _directory_tag = "DIRECTORY"
+    _enable_tag="ENABLE"
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _auto_refresh_tag = "AUTO_REFRESH"
     _notification_integration_tag = "NOTIFICATION_INTEGRATION"

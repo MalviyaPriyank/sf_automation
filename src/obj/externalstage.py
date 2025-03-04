@@ -119,7 +119,7 @@ class StorageIntegration:
         if value=="NONE":
             instance._storage_integration=value
         else:
-            vo.storage_integration_exist(session=instance.parent.session,object_type=instance.parent.__class__.__name__,integration_name=value)
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
             instance._storage_integration=value
 
     def __del__(self,instance):
@@ -186,59 +186,37 @@ class EncryptionKmsKeyId:
     def __del__(self,instance):
         del instance._encryption_kms_key_id
 
-class EncryptionKmsKeyIdTag:
-    def __get__(self,instance,owner):
-        return instance._encryption_kms_key_id_tag
-    
-    def __set__(self,instance,value):
-        instance._encryption_kms_key_id_tag = value
-
-    def __del__(self,instance):
-        del instance._encryption_kms_key_id_tag
 
 class UsePrivatelinkEndpoint:
     def __get__(self,instance,owner):
         return instance._use_privatelink_endpoint
     
     def __set__(self,instance,value):
-        instance._use_privatelink_endpoint = value
+        if value=="NONE":
+            instance._use_privatelink_endpoint=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            if 's3' in instance._url.split(":")[0] or 'azure' in instance._url.split(":")[0]:
+                instance._use_privatelink_endpoint=value
+            else:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition="GCS")
 
     def __del__(self,instance):
         del instance._use_privatelink_endpoint
 
-class UsePrivatelinkEndpointTag:
+class Enable:
     def __get__(self,instance,owner):
-        return instance._use_privatelink_endpoint_tag
-    
-    def __set__(self,instance,value):
-        instance._use_privatelink_endpoint_tag = value
-
-    def __del__(self,instance):
-        del instance._use_privatelink_endpoint_tag
-
-class Directory:
-    def __get__(self,instance,owner):
-        return instance._directory
+        return instance._enable
     
     def __set__(self,instance,value):
         if value == 'NONE':
-            instance._directory = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._directory = value
-
-
-    def __del__(self,instance):
-        del instance._directory
-
-class DirectoryTag:
-    def __get__(self,instance,owner):
-        return instance._directory_tag
-    
-    def __set__(self,instance,value):
-        instance._directory_tag = value
+            instance._enable = value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._enable=value
 
     def __del__(self,instance):
-        del instance._directory_tag
+        del instance._enable    
 
 class RefreshOnCreate:
     def __get__(self,instance,owner):
@@ -247,64 +225,43 @@ class RefreshOnCreate:
     def __set__(self,instance,value):
         if value == 'NONE':
             instance._refresh_on_create = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._refresh_on_create = value
         else:
-            raise ValueError
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._refresh_on_create=value
 
     def __del__(self,instance):
         del instance._refresh_on_create
-
-class RefreshOnCreateTag:
-    def __get__(self,instance,owner):
-        return instance._refresh_on_create_tag
-    
-    def __set__(self,instance,value):
-        instance._refresh_on_create_tag = value
-
-    def __del__(self,instance):
-        del instance._refresh_on_create_tag
 
 class AutoRefresh:
     def __get__(self,instance,owner):
         return instance._auto_refresh
     
     def __set__(self,instance,value):
-        instance._auto_refresh = value
-
+        if value=="NONE":
+            instance._auto_refresh=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._auto_refresh=value
 
     def __del__(self,instance):
         del instance._auto_refresh
-
-class AutoRefreshTag:
-    def __get__(self,instance,owner):
-        return instance._auto_refresh_tag
-    
-    def __set__(self,instance,value):
-        instance._auto_refresh_tag = value
-
-    def __del__(self,instance):
-        del instance._auto_refresh_tag
 
 class NotificationIntegration:
     def __get__(self,instance,owner):
         return instance._notification_integration
     
     def __set__(self,instance,value):
-        instance._notification_integration = value
+        if value=="NONE":
+            instance._notification_integration=value
+        else:
+            if 'gcs' in instance._url.split(":")[0] or 'azure' in instance._url.split(":")[0]:
+                vo.integration_exist(session=instance.parent.session,integration_name=value)
+                instance._notification_integration = value
+            else:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition='S3')
 
     def __del__(self,instance):
         del instance._notification_integration
-
-class NotificationIntegrationTag:
-    def __get__(self,instance,owner):
-        return instance._notification_integration_tag
-    
-    def __set__(self,instance,value):
-        instance._notification_integration_tag = value
-
-    def __del__(self,instance):
-        del instance._notification_integration_tag
 
 class ExternalStageAttrs:
     def __init__(self,parent):
@@ -312,47 +269,20 @@ class ExternalStageAttrs:
 
     database=Database()
     schema=Schema()
-
     name = Name()
-    name_tag = NameTag()
-
     file_format = FileFormat()
-    file_format_tag = FileFormatTag()
-
     comment = Comment()
-    comment_tag = CommentTag()
-
     url = Url()
-    url_tag = UrlTag()
-
     aws_access_point_arn=AwsAccessPointArn()
-
     storage_integration = StorageIntegration()
-    storage_integration_tag = StorageIntegrationTag()
-
     encryption_type = EncryptionType()
-    encryption_type_tag = EncryptionTypeTag()
-
     encryption_master_key = EncryptionMasterKey()
-    encryption_master_key_tag = EncryptionMasterKeyTag()
-
     encryption_kms_key_id = EncryptionKmsKeyId()
-    encryption_kms_key_id_tag = EncryptionKmsKeyIdTag()
-
     use_privatelink_endpoint = UsePrivatelinkEndpoint()
-    use_privatelink_endpoint_tag = UsePrivatelinkEndpointTag()
-
-    directory = Directory()
-    directory_tag = DirectoryTag()
-
+    enable=Enable()
     refresh_on_create = RefreshOnCreate()
-    refresh_on_create_tag = RefreshOnCreateTag()
-
     auto_refresh = AutoRefresh()
-    auto_refresh_tag = AutoRefreshTag()
-
     notification_integration = NotificationIntegration()
-    notification_integration_tag = NotificationIntegrationTag()
 
 class ExternalStage:
     def __init__(self,session,user_id,logger):
@@ -371,90 +301,45 @@ class ExternalStage:
 
     def set_name(self,val):
         self.attr.name = val
-    
-    def set_name_tag(self,val):
-        self.attr.name_tag = val
 
     def set_file_format(self,val):
         self.attr.file_format = val
-    
-    def set_file_format_tag(self,val):
-        self.attr.file_format_tag = val
-    
+
     def set_comment(self,val):
         self.attr.comment = val
-    
-    def set_comment_tag(self,val):
-        self.attr.comment_tag = val
-
-    def set_tag(self,val):
-        self.attr.tag = val
-    
-    def set_tag_tag(self,val):
-        self.attr.tag_tag = val
 
     def set_url(self,val):
         self.attr.url = val
-    
-    def set_url_tag(self,val):
-        self.attr.url_tag = val
 
     def set_aws_access_point_arn(self,val):
         self.attr.aws_access_point_arn=val
 
     def set_storage_integration(self,val):
         self.attr.storage_integration = val
-    
-    def set_storage_integration_tag(self,val):
-        self.attr.storage_integration_tag = val
 
     def set_encryption_type(self,val):
         self.attr.encryption_type = val
-    
-    def set_encryption_type_tag(self,val):
-        self.attr.encryption_type_tag = val
 
     def set_encryption_master_key(self,val):
         self.attr.encryption_master_key = val
-    
-    def set_encryption_master_key_tag(self,val):
-        self.attr.encryption_master_key_tag = val
 
     def set_encryption_kms_key_id(self,val):
         self.attr.encryption_kms_key_id = val
-    
-    def set_encryption_kms_key_id_tag(self,val):
-        self.attr.encryption_kms_key_id_tag = val
 
     def set_use_privatelink_endpoint(self,val):
         self.attr.use_privatelink_endpoint = val
-    
-    def set_use_privatelink_endpoint_tag(self,val):
-        self.attr.use_privatelink_endpoint_tag = val
 
-    def set_directory(self,val):
-        self.attr.directory = val
-    
-    def set_directory_tag(self,val):
-        self.attr.directory_tag = val
+    def set_enable(self,val):
+        self.attr.enable=val
 
     def set_refresh_on_create(self,val):
         self.attr.refresh_on_create = val
-    
-    def set_refresh_on_create_tag(self,val):
-        self.attr.refresh_on_create_tag = val
 
     def set_auto_refresh(self,val):
         self.attr.auto_refresh = val
-    
-    def set_auto_refresh_tag(self,val):
-        self.attr.auto_refresh_tag = val
 
     def set_notification_integration(self,val):
         self.attr.notification_integration = val
-
-    def set_notification_integration_tag(self,val):
-        self.attr.notification_integration_tag = val
     
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
@@ -468,7 +353,6 @@ class ExternalStage:
         set_flag(gvextstg._name_tag,"_name")
         set_flag(gvextstg._file_format_tag,"_file_format")
         set_flag(gvextstg._comment_tag,"_comment")
-        set_flag(gvextstg._tag_tag,"_tag")
         set_flag(gvextstg._url_tag,"_url")
         set_flag(gvextstg._aws_access_point_arn_tag,"_aws_access_point_arn")
         set_flag(gvextstg._storage_integration_tag,"_storage_integration")
@@ -476,7 +360,7 @@ class ExternalStage:
         set_flag(gvextstg._encryption_master_key_tag,"_encryption_master_key")
         set_flag(gvextstg._encryption_kms_key_id_tag,"_encryption_kms_key_id")
         set_flag(gvextstg._use_privatelink_endpoint_tag,"_use_privatelink_endpoint")
-        set_flag(gvextstg._directory_tag,"_directory")
+        set_flag(gvextstg._enable_tag,"_enable")
         set_flag(gvextstg._refresh_on_create_tag,"_refresh_on_create")
         set_flag(gvextstg._auto_refresh_tag,"_auto_refresh")
         set_flag(gvextstg._notification_integration_tag,"_notification_integration")
@@ -495,34 +379,32 @@ class ExternalStage:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gvextstg._file_format_tag:
-                    self.qry = f" {self.qry} {self.attr.file_format_tag} = {self.attr.file_format} "
+                    self.qry = f" {self.qry} {gvextstg._file_format_tag} = {self.attr.file_format} "
                 if prop == gvextstg._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == gvextstg._tag_tag:
-                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
+                    self.qry = f" {self.qry} {gvextstg._comment_tag} = {self.attr.comment} "
                 if prop == gvextstg._url_tag:
-                    self.qry = f" {self.qry} {self.attr.url_tag} = {self.attr.url} "
+                    self.qry = f" {self.qry} {gvextstg._url_tag} = {self.attr.url} "
                 if prop == gvextstg._aws_access_point_arn_tag:
                     self.qry = f" {self.qry} {gvextstg._aws_access_point_arn_tag} = {self.attr.aws_access_point_arn} "
                 if prop == gvextstg._storage_integration_tag:
-                    self.qry = f" {self.qry} {self.attr.storage_integration_tag} = {self.attr.storage_integration} "
+                    self.qry = f" {self.qry} {gvextstg._storage_integration_tag} = {self.attr.storage_integration} "
                 if prop == gvextstg._encryption_type_tag:
-                    self.qry = f" {self.qry} {self.attr.encryption_type_tag} = {self.attr.encryption_type} "
+                    self.qry = f" {self.qry} {gvextstg._encryption_type_tag} = {self.attr.encryption_type} "
                 if prop == gvextstg._encryption_master_key_tag:
-                    self.qry = f" {self.qry} {self.attr.encryption_master_key_tag} = {self.attr.encryption_master_key} "
+                    self.qry = f" {self.qry} {gvextstg._encryption_master_key_tag} = {self.attr.encryption_master_key} "
                 if prop == gvextstg._encryption_kms_key_id_tag:
-                    self.qry = f" {self.qry} {self.attr.encryption_kms_key_id_tag} = {self.attr.encryption_kms_key_id} "
+                    self.qry = f" {self.qry} {gvextstg._encryption_kms_key_id_tag} = {self.attr.encryption_kms_key_id} "
                 if prop == gvextstg._use_privatelink_endpoint_tag:
-                    self.qry = f" {self.qry} {self.attr.use_privatelink_endpoint_tag} = {self.attr.use_privatelink_endpoint} "
-                if prop == gvextstg._directory_tag:
-                    self.qry = f" {self.qry} {self.attr.directory_tag} = {self.attr.directory} "
-                if prop == gvextstg._refresh_on_create_tag:
-                    self.qry = f" {self.qry} {self.attr.refresh_on_create_tag} = {self.attr.refresh_on_create} "
-                if prop == gvextstg._auto_refresh_tag:
-                    self.qry = f" {self.qry} {self.attr.auto_refresh_tag} = {self.attr.auto_refresh} "
-                if prop == gvextstg._notification_integration_tag:
-                    self.qry = f" {self.qry} {self.attr.notification_integration_tag} = {self.attr.notification_integration} "
-        self.qry = f'{self.qry} STORAGE_INTEGRATION=SNOWCHAIN_S3_INT'
+                    self.qry = f" {self.qry} {gvextstg._use_privatelink_endpoint_tag} = {self.attr.use_privatelink_endpoint} "
+                if prop == gvextstg._enable_tag:
+                    self.qry = f" {self.qry} DIRECTORY = ( {gvextstg._enable_tag} = {self.attr.enable} "
+                    if gvextstg._refresh_on_create_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gvextstg._refresh_on_create_tag} = {self.attr.refresh_on_create}"
+                    if gvextstg._auto_refresh_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gvextstg._auto_refresh_tag} = {self.attr.auto_refresh}"
+                    if gvextstg._notification_integration_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gvextstg._notification_integration_tag} = {self.attr.notification_integration}"
+                    self.qry=f" {self.qry} )"
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -559,49 +441,19 @@ class ExternalStage:
         self.set_schema(kwargs[gvextstg._schema_tag])
         
         self.set_name(kwargs[gvextstg._name_tag])
-        self.set_name_tag(gvextstg._name_tag)
-
         self.set_file_format(kwargs[gvextstg._file_format_tag])
-        self.set_file_format_tag(gvextstg._file_format_tag)
-
         self.set_comment(kwargs[gvextstg._comment_tag])
-        self.set_comment_tag(gvextstg._comment_tag)
-
-        self.set_tag(kwargs[gvextstg._tag_tag])
-        self.set_tag_tag(gvextstg._tag_tag)
-
         self.set_url(kwargs[gvextstg._url_tag])
-        self.set_url_tag(gvextstg._url_tag)
-
         self.set_aws_access_point_arn(kwargs[gvextstg._aws_access_point_arn_tag])
-        
         self.set_storage_integration(kwargs[gvextstg._storage_integration_tag])
-        self.set_storage_integration_tag(gvextstg._storage_integration_tag)
-
         self.set_encryption_type(kwargs[gvextstg._encryption_type_tag])
-        self.set_encryption_type_tag(gvextstg._encryption_type_tag)
-
         self.set_encryption_master_key(kwargs[gvextstg._encryption_master_key_tag])
-        self.set_encryption_master_key_tag(gvextstg._encryption_master_key_tag)
-
         self.set_encryption_kms_key_id(kwargs[gvextstg._encryption_kms_key_id_tag])
-        self.set_encryption_kms_key_id_tag(gvextstg._encryption_kms_key_id_tag)
-
         self.set_use_privatelink_endpoint(kwargs[gvextstg._use_privatelink_endpoint_tag])
-        self.set_use_privatelink_endpoint_tag(gvextstg._use_privatelink_endpoint_tag)
-
-        self.set_directory(kwargs[gvextstg._directory_tag])
-        self.set_directory_tag(gvextstg._directory_tag)
-
+        self.set_enable(kwargs[gvextstg._enable_tag])
         self.set_refresh_on_create(kwargs[gvextstg._refresh_on_create_tag])
-        self.set_refresh_on_create_tag(gvextstg._refresh_on_create_tag)
-
         self.set_auto_refresh(kwargs[gvextstg._auto_refresh_tag])
-        self.set_auto_refresh_tag(gvextstg._auto_refresh_tag)
-
         self.set_notification_integration(kwargs[gvextstg._notification_integration_tag])
-        self.set_notification_integration_tag(gvextstg._notification_integration_tag)
-
         self.set_qualified_name()
         self.prepare_query()
         self.create_external_stage()

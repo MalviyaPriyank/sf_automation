@@ -14,7 +14,8 @@ from infschema.columns import Columns as cols
 from exception.objectexception import ( 
     ObjectDoesNotExist,
     DuplicateObject,
-    ColumnDoesNotExist
+    ColumnDoesNotExist,
+    IntegrationDoesNotExist
 )
 
 
@@ -194,7 +195,7 @@ class ValidateObject:
             raise DuplicateObject(object_type=obj_type,object_name=obj_name)
     
     @staticmethod
-    def storage_integration_exist(session,object_type,integration_name):
+    def integration_exist(session,integration_name):
         df=session.sql('SHOW INTEGRATIONS').collect()
         integration_lst=[]
         for inner_lst in df:
@@ -203,7 +204,7 @@ class ValidateObject:
         if integration_name.upper() in integration_lst:
             return True
         else:
-            raise ObjectDoesNotExist(object_type=object_type,object_name=integration_name)
+            raise IntegrationDoesNotExist(object_name=integration_name)
 
         
 
