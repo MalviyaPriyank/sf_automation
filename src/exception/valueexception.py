@@ -127,6 +127,16 @@ class ArnNotRequired(AttributeValidationError):
         message=f" should only be provided if URL is S3 alias"
         super().__init__(object_type, attr_name, message)
 
+class InvalidParentAttribute(AttributeValidationError):
+    def __init__(self, object_type, attr_name,parent_attribute,compatible_value_parent_attribute):
+        message=f" can only be set if attribute {parent_attribute} is one of the following {compatible_value_parent_attribute}"
+        super().__init__(object_type, attr_name, message)
+
+class AttributeNotRequired(AttributeValidationError):
+    def __init__(self, object_type, attr_name,condition):
+        message=f" is not required for {condition}"
+        super().__init__(object_type, attr_name, message)
+
 
 
     

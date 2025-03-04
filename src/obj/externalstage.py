@@ -55,18 +55,6 @@ class Name:
     def __del__(self,instance):
         del instance._name
 
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-
-    def __del__(self,instance):
-        del instance._name_tag
-
-
-
 class FileFormat:   
     def __get__(self,instance,owner):
         return instance._file_format
@@ -82,17 +70,6 @@ class FileFormat:
     def __del__(self,instance):
         del instance._file_format
 
-
-class FileFormatTag:   
-    def __get__(self,instance,owner):
-        return instance._file_format_tag
-    
-    def __set__(self,instance,value):
-        instance._file_format_tag = value
-
-    def __del__(self,instance):
-        del instance._file_format_tag
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -105,16 +82,6 @@ class Comment:
 
     def __del__(self,instance):
         del instance._comment
-
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-
-    def __del__(self,instance):
-        del instance._comment_tag
 
 class Url:
     def __get__(self,instance,owner):
@@ -129,16 +96,6 @@ class Url:
 
     def __del__(self,instance):
         del instance._url
-
-class UrlTag:
-    def __get__(self,instance,owner):
-        return instance._url_tag
-    
-    def __set__(self,instance,value):
-        instance._url_tag = value
-
-    def __del__(self,instance):
-        del instance._url_tag
 
 class AwsAccessPointArn:
     def __get__(self,instance,owner):
@@ -168,16 +125,6 @@ class StorageIntegration:
     def __del__(self,instance):
         del instance._storage_integration
 
-class StorageIntegrationTag:
-    def __get__(self,instance,owner):
-        return instance._storage_integration_tag
-    
-    def __set__(self,instance,value):
-        instance._storage_integration_tag = value
-
-    def __del__(self,instance):
-        del instance._storage_integration_tag
-
 class EncryptionType:
     def __get__(self,instance,owner):
         return instance._encryption_type
@@ -199,42 +146,42 @@ class EncryptionType:
     def __del__(self,instance):
         del instance._encryption_type
 
-class EncryptionTypeTag:
-    def __get__(self,instance,owner):
-        return instance._encryption_type_tag
-    
-    def __set__(self,instance,value):
-        instance._encryption_type_tag = value
-
-    def __del__(self,instance):
-        del instance._encryption_type_tag
-
 class EncryptionMasterKey:
     def __get__(self,instance,owner):
         return instance._encryption_master_key
     
     def __set__(self,instance,value):
-        instance._encryption_master_key = value
+        if value=="NONE":
+            instance._encryption_master_key=value
+        else:
+            if 's3' in instance._url.split(":")[0]:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__, attr_name=self.__class__.__name__,parent_attribute=instance._encryption_type.__class__.__name__,compatible_value_lst_parent_attribute=['AWS_CSE'])
+                instance._encryption_master_key=value
+            elif 'gcs' in instance._url.split(":")[0]:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition='GCS')
+            elif 'azure' in instance._url.split(":")[0]:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__, attr_name=self.__class__.__name__,parent_attribute=instance._encryption_type.__class__.__name__,compatible_value_lst_parent_attribute=['AZURE_CSE'])
+                instance._encryption_master_key=value     
 
     def __del__(self,instance):
         del instance._encryption_master_key
-
-class EncryptionMasterKeyTag:
-    def __get__(self,instance,owner):
-        return instance._encryption_master_key_tag
-    
-    def __set__(self,instance,value):
-        instance._encryption_master_key_tag = value
-
-    def __del__(self,instance):
-        del instance._encryption_master_key_tag
 
 class EncryptionKmsKeyId:
     def __get__(self,instance,owner):
         return instance._encryption_kms_key_id
     
     def __set__(self,instance,value):
-        instance._encryption_kms_key_id = value
+        if value=="NONE":
+            instance._encryption_kms_key_id = value
+        else:
+            if 's3' in instance._url.split(":")[0]:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__, attr_name=self.__class__.__name__,parent_attribute=instance._encryption_type.__class__.__name__,compatible_value_lst_parent_attribute=['AWS_SSE_KMS'])
+                instance._encryption_kms_key_id=value
+            elif 'gcs' in instance._url.split(":")[0]:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__, attr_name=self.__class__.__name__,parent_attribute=instance._encryption_type.__class__.__name__,compatible_value_lst_parent_attribute=['GCS_SSE_KMS'])
+                instance._encryption_kms_key_id=value
+            elif 'azure' in instance._url.split(":")[0]:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition='AZURE')
 
     def __del__(self,instance):
         del instance._encryption_kms_key_id

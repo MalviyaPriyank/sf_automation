@@ -30,7 +30,9 @@ from valueexception import (
     InvalidProtocol,
     InvalidAzureUrl,
     UrlMustStartWith,
-    ArnNotRequired
+    ArnNotRequired,
+    InvalidParentAttribute,
+    AttributeNotRequired
 )
 
 class ValidateValue:
@@ -250,5 +252,18 @@ class ValidateValue:
             return True
         else:
             raise ArnNotRequired(object_type,attr_name)
+        
+    @staticmethod
+    def is_parent_attribute_compatible(value,object_type,attr_name,parent_attribute,compatible_value_lst_parent_attribute):
+        if value not in compatible_value_lst_parent_attribute:
+            raise InvalidParentAttribute(object_type,attr_name,parent_attribute,compatible_value_lst_parent_attribute)
+        elif value in compatible_value_lst_parent_attribute:
+            return True
+    
+    @staticmethod
+    def not_required(object_type,attr_name,condition):
+        raise AttributeNotRequired(object_type,attr_name,condition)
+
+
         
     
