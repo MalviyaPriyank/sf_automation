@@ -202,7 +202,11 @@ class FileFormat:
     _disable_auto_convert_tag = "DISABLE_AUTO_CONVERT"
     _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
     _allowed_values_binary_format = ["HEX","BASE64","UTF8"]  
-    _allowed_values_compression_for_csv=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLAT","RAW_DEFLATE","NONE"]  
+    _allowed_values_compression_for_csv=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
+    _allowed_values_compression_for_json=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]  
+    _allowed_values_compression_for_avro=["AUTO","GZIP","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]  
+    _allowed_values_compression_for_parquet=["AUTO","LZO","SNAPPY"]
+    _allowed_values_compression_for_xml=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
 
 class Snowpipe:
     def __init__(self):

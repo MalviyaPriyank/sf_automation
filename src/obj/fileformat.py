@@ -53,82 +53,47 @@ class Name:
         del instance._name
 
 
-class NameTag:   
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-
-    def __del__(self,instance):
-        del instance._name_tag
-
 class Type:
     def __get__(self,instance,owner):
         return instance._type
     
     def __set__(self,instance,value):
-        instance._type = value
+        if value=="NONE":
+            instance._type=value
+        else:
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._type = value
 
     def __del__(self,instance):
         del instance._type
-
-class TypeTag:
-    def __get__(self,instance,owner):
-        return instance._type_tag
-    
-    def __set__(self,instance,value):
-        instance._type_tag = value
-
-    def __del__(self,instance):
-        del instance._type_tag
-
 
 class Compression:
     def __get__(self,instance,owner):
         return instance._compression
     
     def __set__(self,instance,value):
-        if instance._type == gv._allowed_values_type[0]: #CSV
-            if value not in gv._allowed_values_compression_for_csv:
-                raise KeyError
-            else:
-                instance._compression = value
+        if value=="NONE":
+            instance._compression=value
+        elif instance._type == gv._allowed_values_type[0]: #CSV
+            vv.is_allowed_value(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._compression=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            if value not in gv._allowed_values_compression_for_json:
-                raise KeyError
-            else:
-                instance._compression = value
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_json,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._compression=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            if value not in gv._allowed_values_compression_for_avro:
-                raise KeyError
-            else:
-                instance._compression = value
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_avro,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._compression=value
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            raise KeyError('Parameternot allowed')
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=" ORC Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            if value not in gv._allowed_values_compression_for_parquet:
-                raise KeyError
-            else:
-                instance._compression = value
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_parquet,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._compression=value
         elif instance._type == gv._allowed_values_type[5]: #XML
-            if value not in gv._allowed_values_compression_for_xml:
-                raise KeyError
-            else:
-                instance._compression = value
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_xml,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._compression=value
 
     def __del__(self,instance):
         del instance._compression
-
-class CompressionTag:
-    def __get__(self,instance,owner):
-        return instance._compression_tag
-    
-    def __set__(self,instance,value):
-        instance._compression_tag = value
-
-    def __del__(self,instance):
-        del instance._compression_tag
 
 class RecordDelimiter:
     def __get__(self,instance,owner):
@@ -1013,11 +978,8 @@ class FileFormatAttrs:
     database = Database()
     schema = Schema()
     type = Type()
-    type_tag = TypeTag()
     name = Name()
-    name_tag = NameTag()
     compression = Compression()
-    compression_tag = CompressionTag()
     record_delimiter = RecordDelimiter()
     record_delimiter_tag = RecordDelimiterTag()
     field_delimiter = FieldDelimiter()
@@ -1104,22 +1066,12 @@ class FileFormat:
     def set_schema(self,val):
         self.attr.schema = val
 
-    def set_name_tag(self,val):
-        self.attr.name_tag = val
-
     def set_type(self,type):
         self.attr.type = type
-    
-    def set_type_tag(self,val):
-        self.attr.type_tag = val
-
 
     def set_compression(self,val):
         self.attr.compression = val
     
-    def set_compression_tag(self,val):
-        self.attr.compression_tag = val
-
     def set_record_delimiter(self,val):
         self.attr.record_delimiter = val
     
@@ -1371,7 +1323,7 @@ class FileFormat:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._type_tag:
-                    self.qry = f" {self.qry} {self.attr.type_tag} = {self.attr.type} "
+                    self.qry = f" {self.qry} {gv._type_tag} = {self.attr.type} "
                 if prop == gv._parse_header_tag:
                     self.qry = f" {self.qry} {self.attr.parse_header_tag} = {self.attr.parse_header} "
                 if prop == gv._skip_header_tag:
@@ -1455,10 +1407,9 @@ class FileFormat:
         self.set_schema(kwargs[gv._schema_tag])
 
         self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
 
         self.set_type(kwargs[gv._type_tag])
-        self.set_type_tag(gv._type_tag)
+
 
         self.set_parse_header(kwargs[gv._parse_header_tag])
         self.set_parse_header_tag(gv._parse_header_tag)
