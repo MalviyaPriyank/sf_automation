@@ -263,7 +263,5 @@ class ValidateValue:
     @staticmethod
     def not_required(object_type,attr_name,condition):
         raise AttributeNotRequired(object_type,attr_name,condition)
-
-
         
     

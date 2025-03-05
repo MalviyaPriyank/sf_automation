@@ -170,6 +170,11 @@ class FileFormat:
     _schema_tag = "SCHEMA"
     _name_tag = "FILE_FORMAT"
     _type_tag = "TYPE"
+    _compression_tag="COMPRESSION"
+    _record_delimiter_tag="RECORD_DELIMITER"
+    _field_delimiter_tag="FIELD_DELIMITER"
+    _multi_line_tag="MULTI_LINE"
+    _file_extension_tag="FILE_EXTENSION"
     _parse_header_tag = "PARSE_HEADER"
     _skip_header_tag = "SKIP_HEADER"
     _skip_blank_lines_tag = "SKIP_BLANK_LINES"
@@ -207,6 +212,7 @@ class FileFormat:
     _allowed_values_compression_for_avro=["AUTO","GZIP","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]  
     _allowed_values_compression_for_parquet=["AUTO","LZO","SNAPPY"]
     _allowed_values_compression_for_xml=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
+    _allowed_values_encoding=["BIG5","EUCJP","EUCKR","GB18030","IBM420","IBM424","IBM949","ISO2022CN","ISO2022JP","ISO2022KR","ISO88591","ISO88592","ISO88595","ISO88596","ISO88597","ISO88598","ISO88599","ISO885915","KOI8R","SHIFTJIS","UTF8","UTF16","UTF16BE","UTF16LE","UTF32","UTF32BE","UTF32LE","WINDOWS874","WINDOWS949","WINDOWS1250","WINDOWS1251","WINDOWS1252","WINDOWS1253","WINDOWS1254","WINDOWS1255","WINDOWS1256"]
 
 class Snowpipe:
     def __init__(self):

@@ -11,7 +11,7 @@ class AttributeValidationError(SnowchainException):
         self.object_type = object_type
         self.attr_name = attr_name
         self.message = message
-        self.error_message = f" Attribute {self.attr_name} of {self.object_type} object {self.message}. Please provide different value"
+        self.error_message = f" Attribute {self.attr_name} of {self.object_type} {self.message}. Please provide different value."
         super().__init__(self.error_message)
 
 class MustStartWithAlphabet(AttributeValidationError):
@@ -134,7 +134,7 @@ class InvalidParentAttribute(AttributeValidationError):
 
 class AttributeNotRequired(AttributeValidationError):
     def __init__(self, object_type, attr_name,condition):
-        message=f" is not required for {condition}"
+        message=f" is not required {condition}"
         super().__init__(object_type, attr_name, message)
 
 
