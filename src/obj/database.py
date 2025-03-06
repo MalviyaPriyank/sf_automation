@@ -51,9 +51,10 @@ class DataRetentionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._data_retention_time_in_days = value
-        vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._data_retention_time_in_days = value
+        else:
+            vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value,gv._min_allowed_value_data_retention_time_in_days,gv._max_allowed_value_data_retention_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._data_retention_time_in_days = value
 
     
     def __delete__(self,instance):
@@ -76,9 +77,10 @@ class MaxDataExtensionTimeInDays:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._max_data_extension_time_in_days = value
-        vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vv.is_between(value,gv._min_allowed_value_max_data_extension_time_in_days,gv._max_allowed_value_max_data_extension_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)    
-        instance._max_data_extension_time_in_days = value
+        else:
+            vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_between(value,gv._min_allowed_value_max_data_extension_time_in_days,gv._max_allowed_value_max_data_extension_time_in_days,instance.parent.__class__.__name__,self.__class__.__name__)    
+            instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
@@ -122,7 +124,12 @@ class Catalog:
         return instance._catalog
     
     def __set__(self,instance,value):
-        instance._catalog = "NONE"
+        if value=="NONE":
+            instance._catalog=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.is_valid_catalog(session=instance.parent.session,catalog_identifier=value,object_type=self.__class__.__name__)
+            instance._catalog=value
 
     def __delete__(self,instance):
         del instance._catalog
@@ -170,7 +177,7 @@ class DefaultDdlCollation:
             instance._default_ddl_collation=value
         else:
             vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=gv._allowed_collation_specifiers)
-            instance._default_ddl_collation = value
+            instance._default_ddl_collation = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._default_ddl_collation
@@ -195,7 +202,7 @@ class LogLevel:
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_log_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._log_level = value
+            instance._log_level = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._log_level
@@ -210,7 +217,7 @@ class TraceLevel:
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_trace_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._trace_level = value
+            instance._trace_level = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._trace_level

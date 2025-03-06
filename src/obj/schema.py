@@ -59,11 +59,8 @@ class WithManagedAccess:
         if value=="NONE":
             instance._with_managed_access="NONE"
         else:
-            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__)
-            if value.upper()=="TRUE":
-                instance._with_managed_access = value
-            else:
-                instance._with_managed_access="NONE"
+            vv.is_bool(value=value, object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._with_managed_access = value
     
     def __delete__(self,instance):
         del instance._with_managed_access

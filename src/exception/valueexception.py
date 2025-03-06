@@ -52,7 +52,7 @@ class IsARequiredAttribute(AttributeValidationError):
 
 class MustBeJSON(AttributeValidationError):
     def __init__(self, object_type, attr_name, message):
-        super().__init__(object_type, attr_name, f" must be a JSON")
+        super().__init__(object_type, attr_name, f"must be a JSON")
 
 class MustBeValidNumber(AttributeValidationError):
     def __init__(self, object_type, attr_name):
@@ -64,7 +64,7 @@ class MustBeValidCRON(AttributeValidationError):
 
 class ValueNotAllowed(AttributeValidationError):
     def __init__(self, object_type, attr_name, allowed_values):
-        message = f" can only have following values : {allowed_values}"
+        message = f"can only have following values : {allowed_values}"
         super().__init__(object_type, attr_name, message)
     
 class InvalidPassword(AttributeValidationError):
@@ -79,7 +79,7 @@ class InvalidParamForObject(AttributeValidationError):
 
 class DependentParameterNotSet(AttributeValidationError):
     def __init__(self, object_type, child_attr_name, parent_attr_name):
-        message = f" can only be set if {parent_attr_name} is set"
+        message = f"can only be set if {parent_attr_name} is set"
         super().__init__(object_type, child_attr_name, message) 
 
 class MustBeAList(AttributeValidationError):
@@ -119,22 +119,27 @@ class InvalidAzureUrl(AttributeValidationError):
 
 class UrlMustStartWith(AttributeValidationError):
     def __init__(self, object_type, attr_name):
-        message=f" must be in the format '<protocol>://<url>'.Make sure your url starts wtih '//'"
+        message=f"must be in the format '<protocol>://<url>'.Make sure your url starts wtih '//'"
         super().__init__(object_type, attr_name, message)
 
 class ArnNotRequired(AttributeValidationError):
     def __init__(self, object_type, attr_name):
-        message=f" should only be provided if URL is S3 alias"
+        message=f"should only be provided if URL is S3 alias"
         super().__init__(object_type, attr_name, message)
 
 class InvalidParentAttribute(AttributeValidationError):
     def __init__(self, object_type, attr_name,parent_attribute,compatible_value_parent_attribute):
-        message=f" can only be set if attribute {parent_attribute} is one of the following {compatible_value_parent_attribute}"
+        message=f"can only be set if attribute {parent_attribute} is one of the following {compatible_value_parent_attribute}"
         super().__init__(object_type, attr_name, message)
 
 class AttributeNotRequired(AttributeValidationError):
     def __init__(self, object_type, attr_name,condition):
-        message=f" is not required {condition}"
+        message=f"is not required {condition}"
+        super().__init__(object_type, attr_name, message)
+    
+class MustBeSingleByteCharacter(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f"must be a single byte character"
         super().__init__(object_type, attr_name, message)
 
 

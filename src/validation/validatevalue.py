@@ -32,7 +32,8 @@ from valueexception import (
     UrlMustStartWith,
     ArnNotRequired,
     InvalidParentAttribute,
-    AttributeNotRequired
+    AttributeNotRequired,
+    MustBeSingleByteCharacter
 )
 
 class ValidateValue:
@@ -54,7 +55,7 @@ class ValidateValue:
         
     @staticmethod
     def is_valid_value(value,allowed_list,object_type,attr_name):
-        if value not in allowed_list:
+        if value.upper() not in allowed_list:
             raise ValueNotAllowed(object_type,attr_name,allowed_list)
         else:
             return True
@@ -102,7 +103,7 @@ class ValidateValue:
         
     @staticmethod
     def is_allowed_value(value,allowed_list,object_type,attr_name):
-        if value not in allowed_list:
+        if value.upper() not in allowed_list:
             raise ValueNotAllowed(object_type,attr_name,allowed_list)
 
         
@@ -142,7 +143,7 @@ class ValidateValue:
         
     @staticmethod
     def is_bool(value,object_type,attr_name):
-        if value not in ["TRUE","FALSE"]:
+        if value.upper() not in ["TRUE","FALSE"]:
             raise MustBeBool(object_type,attr_name)
         else:
             return True
@@ -223,7 +224,8 @@ class ValidateValue:
     def is_single_byte_characetr(value,object_type,attr_name):
         if len(value)==1:
             return True
-        
+        else:
+            raise MustBeSingleByteCharacter(object_type,attr_namej)
     @staticmethod
     def is_valid_url(value,allowed_protocols,object_type,attr_name):
         protocol=value.split(':')[0]
