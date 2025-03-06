@@ -82,6 +82,8 @@ class LLMTools:
                                COMMENT="NONE",  
                                EXTERNAL_VOLUME="NONE", 
                                DEFAULT_DDL_COLLATION="NONE", 
+                               LOG_LEVEL="NONE",
+                               TRACE_LEVEL="NONE",
                                REPLACE_INVALID_CHARACTERS="NONE",
                                DATA_RETENTION_TIME_IN_DAYS="NONE",
                                STORAGE_SERIALIZATION_POLICY="NONE",
@@ -120,21 +122,14 @@ class LLMTools:
                                     SCHEMA="SCH_CONFIG",
                                     FILE_FORMAT="NONE",
                                     COMMENT="NONE",
-                                    TAG="NONE",
                                     URL="NONE",
                                     AWS_ACCESS_POINT_ARN="NONE",
                                     STORAGE_INTEGRATION="NONE",
-                                    AWS_KEY_ID="NONE",
-                                    AWS_SECRET_KEY="NONE",
-                                    AWS_TOKEN="NONE",
-                                    AZURE_SAS_TOKEN="NONE",
-                                    AWS_ROLE="NONE",
-                                    ENCRYPTION="NONE",
                                     ENCRYPTION_TYPE="NONE",
                                     ENCRYPTION_MASTER_KEY="NONE",
                                     ENCRYPTION_KMS_KEY_ID="NONE",
                                     USE_PRIVATELINK_ENDPOINT="NONE",
-                                    DIRECTORY="NONE",
+                                    ENABLE="NONE",
                                     REFRESH_ON_CREATE="NONE",
                                     AUTO_REFRESH="NONE",
                                     NOTIFICATION_INTEGRATION="NONE"):
@@ -246,8 +241,7 @@ class LLMTools:
                             TRACE_LEVEL="NONE",
                             STORAGE_SERIALIZATION_POLICY="NONE",
                             CLASSIFICATION_PROFILE="NONE",
-                            COMMENT="NONE",
-                            TAG="NONE"):
+                            COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {}
@@ -364,7 +358,7 @@ class LLMTools:
         self.logger.info(f"Tables provided = {values['TABLE']}")
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
-            data_dict['TABLE'] = value
+            data_dict['TABLE'] = value.replace('[','').replace(']','').replace('"','')
             self.logger.info(data_dict)
             copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
             snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 

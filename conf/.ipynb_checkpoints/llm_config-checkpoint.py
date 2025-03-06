@@ -193,10 +193,6 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for FILE_FORMAT for external stage object"
                             },
-                        "TAG": {
-                                "type":"string",
-                                "description":"user provided value for TAG for external stage object"
-                            },
                         "URL": {
                                 "type":"string",
                                 "description":"user provided value for URL for external stage object"
@@ -209,30 +205,7 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for STORAGE_INTEGRATION for external stage object"
                             },
-                        "AWS_KEY_ID": {
-                                "type":"string",
-                                "description":"user provided value for AWS_KEY_ID for external stage object"
-                            },
-                        "AWS_SECRET_KEY": {
-                                "type":"string",
-                                "description":"user provided value for AWS_SECRET_KEY for external stage object"
-                            },
-                        "AWS_TOKEN": {
-                                "type":"string",
-                                "description":"user provided value for AWS_TOKEN for external stage object"
-                            },
-                        "AZURE_SAS_TOKEN": {
-                                "type":"string",
-                                "description":"user provided value for AZURE_SAS_TOKEN for external stage object"
-                            },
-                        "AWS_ROLE": {
-                                "type":"string",
-                                "description":"user provided value for AWS_ROLE for external stage object"
-                            },
-                        "ENCRYPTION": {
-                                "type":"string",
-                                "description":"user provided value for ENCRYPTION for external stage object"
-                            },
+                        
                         "COMMENT": {
                                 "type":"string",
                                 "description":"user provided value for COMMENT for external stage object"
@@ -253,7 +226,7 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for USE_PRIVATELINK_ENDPOINT for external stage object"
                             },
-                        "DIRECTORY": {
+                        "ENABLE": {
                                 "type":"string",
                                 "description":"user provided value for DIRECTORY for external stage object"
                             },
@@ -296,6 +269,10 @@ tools = {
                             "FILE_FORMAT": {
                                 "type":"string",
                                 "description":"user provided value for FILE_FORMAT for file format object"
+                            },
+                            "MULTI_LINE": {
+                                "type":"string",
+                                "description":"user provided value for MULTI_LINE for file format object"
                             },
                         "TYPE": {
                                 "type":"string",
@@ -622,10 +599,6 @@ tools = {
                         "COMMENT": {
                                 "type":"string",
                                 "description":"user provided value for COMMENT for database object"
-                            },
-                        "TAG": {
-                                "type":"string",
-                                "description":"user provided value for TAG for database object"
                             },
                             
                         },
