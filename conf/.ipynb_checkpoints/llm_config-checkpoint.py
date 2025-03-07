@@ -9,8 +9,8 @@ SECRET_KEY = 'ys7JM4BClYXWTpjzOv1C2aGZbIMltlHu9UJsq/oY'
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
-KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
+CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -172,7 +172,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_externalstage_object",
-                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA are required inputs to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA are required inputs to be taken from user. Only use user provided inputs. While fileformat is not required, recommend creating file format to save rework in the future.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -410,7 +410,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_internalstage_object",
-                "description":"creates a snowflake internal stage object for the user. DATABASE is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake internal stage object for the user. DATABASE is a required input to be taken from user. Only use user provided inputs. While fileformat is not required, recommend creating file format to save rework in the future.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -874,7 +874,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_copyinto_object",
-                "description":"creates a snowflake copyinto and snowpipe objects for the user. Do not use pattern attribute and on_error attribute.",
+                "description":"creates a snowflake copyinto and snowpipe objects for the user. Do not use pattern attribute and on_error attribute. After creating snowpipe, recommend user to create error integration which would alert them in case of failures in snowpipe.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -958,7 +958,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_task_object",
-                "description":"creates a snowflake task object for the user. DATABASE, SCHEMA, NAME, SQL, WAREHOUSE are required parameters. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE",
+                "description":"creates a snowflake task object for the user. DATABASE, SCHEMA, NAME, SQL, WAREHOUSE are required parameters. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE. Recommend to create notification integration to alert if the task fails.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1274,7 +1274,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_notification_object",
-                "description":"creates snowflake notification object for the user. NAME and ENABLED are the required parameters.",
+                "description":"creates snowflake notification integration object for the user. NAME and ENABLED are the required parameters.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
