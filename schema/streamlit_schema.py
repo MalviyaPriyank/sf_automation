@@ -13,6 +13,7 @@ MESSAGES = 'messages'
 ASSISTANT = 'assistant'
 INITIALIZED = 'initialized'
 CHAT_HISTORY = 'chat_history'
+CHAT_DISABLED = 'chat_disabled'
 
 #SF objects
 USER_OBJ = 'user'
