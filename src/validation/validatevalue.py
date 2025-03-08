@@ -35,7 +35,7 @@ from valueexception import (
     AttributeNotRequired,
     MustBeSingleByteCharacter,
     StringMustBeOfAllowedLength,
-    BaseValueMustBeLessThanReferenceValue
+    BaseValueMustBeLessThanOrEqualReferenceValue
 )
 
 class ValidateValue:
@@ -280,6 +280,6 @@ class ValidateValue:
         if value_base<=value_ref:
             return True
         else:
-            raise BaseValueMustBeLessThanReferenceValue(object_type,attr_name,value_ref)
+            raise BaseValueMustBeLessThanOrEqualReferenceValue(object_type,attr_name,value_ref)
         
     

@@ -224,9 +224,8 @@ class MaxConcurrencyLevel:
         return instance._max_concurrency_level
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
-                instance._max_concurrency_level = value
+        if value=="NONE":
+            instance._max_concurrency_level=value
         else:
             instance._max_concurrency_level = gv._max_concurrency_level_tag
 
