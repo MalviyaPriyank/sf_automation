@@ -381,10 +381,18 @@ class NotificationIntegrationEmail:
     _allowed_length_subject=256
 
 class Alert:
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
     _name_tag="NAME"
     _schedule_tag="SCHEDULE"
     _if_tag="IF"
     _then_tag="THEN"
+    _action_type_tag="ACTION_TYPE"
+    _action_sql_tag="ACTION_SQL"
+    _integration_name_tag="INTEGRATION_NAME"
+    _email_address_tag="EMAIL_ADDRESS"
+    _email_content_tag="EMAIL_CONTENT"
+    _email_subject_tag="EMAIL_SUBJECT"
 
 
 class StorageIntegrationAws:

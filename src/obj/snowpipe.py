@@ -135,8 +135,7 @@ class SnowpipeAttrs:
     file_type = FileType()
 
 class Snowpipe:
-    def __init__(self,session,copy_into_qry,user_id,logger):
-        self.copy_into_qry = copy_into_qry
+    def __init__(self,session,user_id,logger):
         self.user_id = user_id
         self.session = session
         self.logger = logger
@@ -151,6 +150,9 @@ class Snowpipe:
 
     def set_name(self,value):
         self.attr.name = value
+
+    def set_copy_into(self,value):
+        self.copy_into=value
 
     def set_auto_ingest(self,auto_ingest):
         self.attr.auto_ingest = auto_ingest
@@ -193,7 +195,7 @@ class Snowpipe:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AS {self.copy_into_qry} '
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AS {self.copy_into} '
 
 
     def add_properties_to_query(self):
@@ -252,6 +254,7 @@ class Snowpipe:
         self.set_database(kwargs[gv._database_tag])
         self.set_schema(kwargs[gv._schema_tag])
         self.set_name(kwargs[gv._name_tag])
+        self.set_copy_into()
         self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
         self.set_error_integration(kwargs[gv._error_integration_tag])
         self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])

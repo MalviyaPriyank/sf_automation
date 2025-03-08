@@ -16,7 +16,8 @@ from exception.objectexception import (
     ObjectDoesNotExist,
     DuplicateObject,
     ColumnDoesNotExist,
-    IntegrationDoesNotExist
+    IntegrationDoesNotExist,
+    MustBeAnAdmin
 )
 
 
@@ -212,6 +213,37 @@ class ValidateObject:
         else:
             raise ObjectDoesNotExist(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
 
+    @staticmethod    
+    def is_new_alert(session,database,schema,alert_name):
+        session.sql(f"USE DATABASE {database}").collect()
+        session.sql(f"USE SCHEMA {schema}").collect()
+        df=session.sql('SHOW ALERTS')
+        df=df.select(col("*")).collect()
+        alert_df=session.create_dataframe(df)
+        alert_count=alert_df.filter(col("NAME") ==f'{alert_name.upper()}').count()        
+        if alert_count == 0:
+            return True
+        else:
+            raise DuplicateObject(object_type="ALERT",object_name=alert_name)
         
+    @staticmethod
+    def is_account_admin(session,user,object_type):
+        grants=session.sql(f"show grants to user {user}")
+        df=grants.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        count_df=df.filter(col("ROLE")=="ACCOUNTADMIN").count()
+        if count_df == 0:
+            raise MustBeAnAdmin(object_type=object_type)
+        else:
+            return True
 
-        
+    @staticmethod    
+    def is_new_resource_monitor(session,resource_monitor_name):
+        df=session.sql('SHOW RESOURCE MONITORS')
+        df=df.select(col("*")).collect()
+        rm_df=session.create_dataframe(df)
+        rm_count=rm_df.filter(col("NAME") ==f'{resource_monitor_name.upper()}').count()        
+        if rm_count == 0:
+            return True
+        else:
+            raise DuplicateObject(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)

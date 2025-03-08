@@ -17,6 +17,30 @@ from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
 
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
+
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session,database_name=instance._database,schema_name=value)
+        instance._schema = value
+
+    def __delete__(self,instance):
+        del instance._schema
+
 class Name:
     def __get__(self,instance,owner):
         return instance._name
@@ -27,6 +51,7 @@ class Name:
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
+            vo.is_new_alert(session=instance.parent.session,database=instance._database,schema=instance._schema,alert_name=value)
             instance._name = value
 
     def __delete__(self,instance):
@@ -47,34 +72,113 @@ class Schedule:
 
 class Iff:
     def __get__(self,instance,owner):
-        return instance._allowed_recipients
+        return instance._iff
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._allowed_recipients=value  
+        instance._iff=value  
 
     def __delete__(self,instance):
-        del instance._allowed_recipients
+        del instance._iff
 
-class Then:
+class ActionType:
     def __get__(self,instance,owner):
-        return instance._default_recipients
+        return instance._action_type
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._default_recipients = value
+        instance._action_type=value  
 
     def __delete__(self,instance):
-        del instance._default_recipients
+        del instance._action_type
+
+class ActionSql:
+    def __get__(self,instance,owner):
+        return instance._action_sql
+    
+    def __set__(self,instance,value):
+        if instance._action_type.upper()=="SQL":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._action_sql = value
+
+    def __delete__(self,instance):
+        del instance._action_sql
+
+class IntegrationName:
+    def __get__(self,instance,owner):
+        return instance._integration_name
+    
+    def __set__(self,instance,value):
+        if instance._action_type.upper()=="INTEGRATION":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
+            instance._integration_name = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._integration_name
+
+class EmailAddress:
+    def __get__(self,instance,owner):
+        return instance._email_address
+    
+    def __set__(self,instance,value):
+        if instance._action_type.upper()=="INTEGRATION":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._email_address = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._email_address
+
+class EmailSubject:
+    def __get__(self,instance,owner):
+        return instance._email_subject
+    
+    def __set__(self,instance,value):
+        if instance._action_type.upper()=="INTEGRATION":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._email_subject = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._email_subject
+
+class EmailContent:
+    def __get__(self,instance,owner):
+        return instance._email_content
+    
+    def __set__(self,instance,value):
+        if instance._action_type.upper()=="INTEGRATION":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._email_content = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._email_content
+
+class Warehouse:
+    def __get__(self,instance,owner):
+        return instance._warehouse
+    
+    def __set__(self,instance,value):
+        vo.warehouse_exist(session=instance.parent.session,warehouse_name=value)
+        instance._warehouse = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._warehouse
 
 class AlertAttrs:
     def __init__(self,parent):
         self.parent = parent
 
+    database=Database()
+    schema=Schema()
     name = Name()
     schedule = Schedule()
     iff=Iff()
-    then=Then()
+    action_type=ActionType()
+    action_sql=ActionSql()
+    integration_name=IntegrationName()
+    email_address=EmailAddress()
+    email_subject=EmailSubject()
+    email_content=EmailContent()
+    warehouse=Warehouse()
 
 
 class Alerts:
@@ -83,6 +187,12 @@ class Alerts:
         self.user_id = user_id
         self.qry = ""
         self.attr = AlertAttrs(self)
+
+    def set_database(self, value):
+        self.attr.database = value
+
+    def set_schema(self, value):
+        self.attr.schema = value
 
     def set_name(self, value):
         self.attr.name = value
@@ -93,31 +203,48 @@ class Alerts:
     def set_iff(self,value):
         self.attr.iff=value
 
-    def set_then(self,value):
-        self.attr.then=value
+    def set_action_type(self,value):
+        self.attr.action_type=value
+
+    def set_action_sql(self,value):
+        self.attr.action_sql=value
+
+    def set_integration_name(self,value):
+        self.attr.integration_name=value
+
+    def set_email_address(self,value):
+        self.attr.email_address=value
+
+    def set_email_subject(self,value):
+        self.attr.email_subject=value
+
+    def set_email_content(self,value):
+        self.attr.email_content=value
+
+    def set_warehouse(self,value):
+        self.attr.warehouse=value
 
 
     def set_create_alert_qry(self):
-        self.qry = f"""CREATE ALERT {self.attr.name} 
-        WAREHOUSE='WH_XSMALL' 
-        SCHEDULE={self.attr.schedule} 
-        IF( EXISTS
-            (
-            SELECT DISTINCT cfa."Loyalty_Number"
-            FROM DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUSTOMER_FLIGHT_ACTIVITY cfa
-            LEFT JOIN DB_DEV_SNOWCHAIN.SCH_SNOWCHAIN.CUStOMERS cst
-            ON cst."customer_id" = cfa."Loyalty_Number"
-            WHERE cst."customer_id" IS NULL
-            AND cfa."Loyalty_Number" IS NOT NULL
-            ) 
-        ) 
-        THEN 
-        CALL SYSTEM$SEND_EMAIL('NOT_INT_EMAIL','snowchain123@gmail.com','ALERT {self.attr.name}','Referential integrity breached')
-        """
+        self.qry = f"""CREATE ALERT {self.attr.database}.{self.attr.schema}.{self.attr.name} """
+        if self.attr.warehouse != "NONE":
+            self.qry=self.qry + f""" WAREHOUSE = {self.attr.warehouse} """
+        self.qry=self.qry + f""" 
+                            SCHEDULE = {self.attr.schedule} 
+                            IF 
+                            ( 
+                                EXISTS
+                                (
+                                {self.attr.iff}
+                                )
+                            )   
+                            """
+        if self.attr.action_type.upper()=="SQL":
+            self.qry=self.qry+ f""" THEN {self.attr.action_sql} ;"""
+        elif self.attr.action_type.upper()=="INTEGRATION":
+            self.qry=self.qry + f""" THEN CALL SYSTEM$SEND_EMAIL({self.attr.integration_name},{self.attr.email_address},{self.attr.email_subject},{self.attr.email_content} ) ;"""
     
     def prepare_query(self):
-        self.session.sql("USE DATABASE DB_DEV_SNOWCHAIN").collect()
-        self.session.sql("USE SCHEMA SCH_SNOWCHAIN").collect()
         self.set_create_alert_qry()
 
 
@@ -144,11 +271,17 @@ class Alerts:
         self.session.sql(self.qry).collect()
 
     def create_object(self,*largs,**kwargs):
-
+        self.set_database(kwargs[gv._database_tag])
+        self.set_schema(kwargs[gv._schema_tag])
         self.set_name(kwargs[gv._name_tag])
         self.set_schedule(kwargs[gv._schedule_tag])
         self.set_iff(kwargs[gv._if_tag])
-        self.set_then(kwargs[gv._then_tag])
+        self.set_action_type(kwargs[gv._action_type_tag])
+        self.set_action_sql(kwargs[gv._action_sql_tag])
+        self.set_integration_name(kwargs[gv._integration_name_tag])
+        self.set_email_address(kwargs[gv._email_address_tag])
+        self.set_email_subject(kwargs[gv._email_subject_tag])
+        self.set_email_content(kwargs[gv._email_content_tag])
         self.prepare_query()
         self.create_alert()
         self.create_deployment_entry()

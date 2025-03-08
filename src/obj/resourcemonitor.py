@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from vars.gvobject import ResourceMonitor as gv
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 
 
 class Name:
@@ -14,100 +15,53 @@ class Name:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
-            else:
-                instance._name = value
+        vo.is_new_resource_monitor(session=instance.parent.session,resource_monitor_name=value)
+        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+            and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            ):
+            instance._name = value
 
     def __delete__(self,instance):
         del instance._name
-
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-
-    def __delete__(self,instance):
-        del instance._name_tag
 
 class CreditQuota:
     def __get__(self,instance,owner):
         return instance._credit_quota
     
     def __set__(self,instance,value):
-        if  vv.is_positive_number(value):
-            instance._credit_quota = value
+        if value=="NONE":
+            instance._credit_quota=value
         else:
-            raise KeyError
+            vv.is_positive_number(value)
+            instance._credit_quota = value
     
     def __delete__(self,instance):
         del instance._credit_quota
-
-class CreditQuotaTag:
-    def __get__(self,instance,owner):
-        return instance._credit_quota_tag
-    
-    def __set__(self,instance,value):
-        instance._credit_quota_tag = value
-    
-    def __delete__(self,instance):
-        del instance._credit_quota_tag
-
 
 class Frequency:
     def __get__(self,instance,owner):
         return instance._frequency
     
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_frequency:
-            raise ValueError
+        if value=="NONE":
+            instance._frequency=value
         else:
-            instance._frequency = value
-    
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_frequency,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._frequency=value
+
     def __delete__(self,instance):
         del instance._frequency
-
-class FrequencyTag:
-    def __get__(self,instance,owner):
-        return instance._frequency_tag
-    
-    def __set__(self,instance,value):
-        instance._frequency_tag = value
-    
-    def __delete__(self,instance):
-        del instance._frequency_tag
 
 class StartTimestamp:
     def __get__(self,instance,owner):
         return instance._start_timestamp
     
     def __set__(self,instance,value):
-        if instance._frequency == "NONE":
-            raise ValueError
-        elif value == "NONE":
-            instance._start_timestamp = 'IMMEDIATELY'
-        else:
-            instance._start_timestamp = value
+        instance._start_timestamp="IMMEDIATELY"
     
     def __delete__(self,instance):
         del instance._start_timestamp
-
-class StartTimestampTag:
-    def __get__(self,instance,owner):
-        return instance._start_timestamp_tag
-    
-    def __set__(self,instance,value):
-        instance._start_timestamp_tag = value
-    
-    def __delete__(self,instance):
-        del instance._start_timestamp_tag
 
 class EndTimestamp:
     def __get__(self,instance,owner):
@@ -118,16 +72,6 @@ class EndTimestamp:
     
     def __delete__(self,instance):
         del instance._end_timestamp
-
-class EndTimestampTag:
-    def __get__(self,instance,owner):
-        return instance._end_timestamp_tag
-    
-    def __set__(self,instance,value):
-        instance._end_timestamp_tag = value
-    
-    def __delete__(self,instance):
-        del instance._end_timestamp_tag
 
 
 class NotifyUsers:
@@ -233,10 +177,15 @@ class ResourceMonitorAttrs:
 
 
 class ResourceMonitor:
-    def __init__(self,session):
-        self.attr = ResourceMonitorAttrs(self)
+    def __init__(self,session,user_id,logger):
         self.session = session
         self.qry = ""
+        self.user_id=user_id
+        self.logger=logger
+        self.attr = ResourceMonitorAttrs(self)
+    
+    def validate_user(self):
+        vo.is_account_admin(self.session,self.user_id,self.__class__.__name__)
 
     def set_name(self, value):
         self.attr.name = value
@@ -342,7 +291,8 @@ class ResourceMonitor:
 
 
     def create_object(session,**kwargs):
-        rm = ResourceMonitor(session)
+        rm = ResourceMonitor(session) 
+        rm.validate_user()
 
         rm.set_name(kwargs[gv._name_tag])
         rm.set_name_tag(gv._name_tag)

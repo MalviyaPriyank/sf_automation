@@ -28,3 +28,8 @@ class ColumnDoesNotExist(ObjectException):
 class IntegrationDoesNotExist(ObjectException):
     def __init__(self, integration_name):
         super().__init__("INTEGRATION", f" named {integration_name} does not exist")
+
+class MustBeAnAdmin(ObjectException):
+    def __init__(self, object_type):
+        message=f"can only be operated on using ACCOUNTADMIN role"
+        super().__init__(object_type, message)
