@@ -141,7 +141,6 @@ class Snowpipe:
         self.logger = logger
         self.attr = SnowpipeAttrs(self)
 
-
     def set_database(self,value):
         self.attr.database = value
 

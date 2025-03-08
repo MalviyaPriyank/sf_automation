@@ -79,101 +79,57 @@ class NotifyUsers:
         return instance._notify_users
     
     def __set__(self,instance,value):
-        if vv.has_space(value):
-            if vv.is_enclosed_in_double_quotes(value):
-                instance._notify_users = value
-            else:
-                raise KeyError
-        elif vv.has_special_characters(value):
-            if vv.is_enclosed_in_double_quotes(value):
-                instance._notify_users = value
-            else:
-                raise KeyError
+        if value=="NONE":
+            instance._notify_users=value
         else:
-            instance._notify_users = value
+            for names in value:
+                vo.user_exist(session=instance.parent.session,user_name=names)
+            instance._notify_users=f"({value})"
     
     def __delete__(self,instance):
         del instance._notify_users
-
-
-class NotifyUsersTag:
-    def __get__(self,instance,owner):
-        return instance._notify_users_tag
-    
-    def __set__(self,instance,value):
-        instance._notify_users_tag = value
-    
-    def __delete__(self,instance):
-        del instance._notify_users_tag
 
 class TriggersOn:
     def __get__(self,instance,owner):
         return instance._triggers_on
     
     def __set__(self,instance,value):
-        if vv.is_positive_number(value):
-            instance._triggers_on = value
+        if value=="NONE":
+            instance._triggers_on=value
         else:
-            raise ValueError
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._triggers_on=value
         
     
     def __delete__(self,instance):
         del instance._triggers_on
-
-class TriggersOnTag:
-    def __get__(self,instance,owner):
-        return instance._triggers_on_tag
-    
-    def __set__(self,instance,value):
-        instance._triggers_on_tag = value
-    
-    def __delete__(self,instance):
-        del instance._triggers_on_tag
 
 class Do:
     def __get__(self,instance,owner):
         return instance._do
     
     def __set__(self,instance,value):
-        if value not in gv._allowed_values_do:
-            raise ValueError
+        if value=="NONE":
+            instance._do=value
         else:
-            instance._do = value
-    
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_do,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._do=value
+
     def __delete__(self,instance):
         del instance._do
-
-class DoTag:
-    def __get__(self,instance,owner):
-        return instance._do_tag
-    
-    def __set__(self,instance,value):
-        instance._do_tag = value
-    
-    def __delete__(self,instance):
-        del instance._do_tag
-
 
 class ResourceMonitorAttrs:
     def __init__(self,parent):
         self.parent = parent
         
     name = Name()
-    name_tag = NameTag()
     credit_quota = CreditQuota()
-    credit_quota_tag = CreditQuotaTag()
     frequency = Frequency()
-    frequency_tag = FrequencyTag()
     start_timestamp = StartTimestamp()
-    start_timestamp_tag = StartTimestampTag()
     end_timestamp = EndTimestamp()
-    end_timestamp_tag = EndTimestampTag()
     notify_users = NotifyUsers()
-    notify_users_tag = NotifyUsersTag()
     triggers_on = TriggersOn()
-    triggers_on_tag = TriggersOnTag()
     do = Do()
-    do_tag = DoTag()
 
 
 class ResourceMonitor:
@@ -190,51 +146,26 @@ class ResourceMonitor:
     def set_name(self, value):
         self.attr.name = value
 
-    def set_name_tag(self, value):
-        self.attr.name_tag = value
-
     def set_credit_quota(self, value):
         self.attr.credit_quota = value
-
-    def set_credit_quota_tag(self, value):
-        self.attr.credit_quota_tag = value
 
     def set_frequency(self, value):
         self.attr.frequency = value
 
-    def set_frequency_tag(self, value):
-        self.attr.frequency_tag = value
-
     def set_start_timestmap(self, value):
         self.attr.start_timestamp = value
-
-    def set_start_timestamp_tag(self, value):
-        self.attr.start_timestamp_tag = value
 
     def set_end_timestamp(self, value):
         self.attr.end_timestamp = value
 
-    def set_end_timestamp_tag(self, value):
-        self.attr.end_timestamp_tag = value
-
     def set_notify_users(self, value):
         self.attr.notify_users = value
-
-    def set_notify_users_tag(self, value):
-        self.attr.notify_users_tag = value
 
     def set_triggers_on(self, value):
         self.attr.triggers_on = value
 
-    def set_triggers_on_tag(self, value):
-        self.attr.triggers_on_tag = value
-
     def set_do(self, value):
         self.attr.do = value
-
-    def set_do_tag(self, value):
-        self.attr.do_tag = value
-
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -266,19 +197,19 @@ class ResourceMonitor:
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
                 if prop == gv._credit_quota_tag:
-                    self.qry = f" {self.qry} {self.attr.credit_quota_tag}  = {self.attr.credit_quota} "
+                    self.qry = f" {self.qry} {gv._credit_quota_tag}  = {self.attr.credit_quota} "
                 if prop == gv._frequency_tag:
-                    self.qry = f" {self.qry} {self.attr.frequency_tag} = {self.attr.frequency} "
+                    self.qry = f" {self.qry} {gv._frequency_tag} = {self.attr.frequency} "
                 if prop == gv._start_timestamp_tag:
-                    self.qry = f" {self.qry} {self.attr.start_timestamp_tag} = {self.attr.start_timestamp} "
+                    self.qry = f" {self.qry} {gv._start_timestamp_tag} = {self.attr.start_timestamp} "
                 if prop == gv._end_timestamp_tag:
-                    self.qry = f" {self.qry} {self.attr.end_timestamp_tag} = {self.attr.end_timestamp} "
+                    self.qry = f" {self.qry} {gv._end_timestamp_tag} = {self.attr.end_timestamp} "
                 if prop == gv._notify_users_tag:
-                    self.qry = f" {self.qry} {self.attr.notify_users_tag} = {self.attr.notify_users} "
+                    self.qry = f" {self.qry} {gv._notify_users_tag} = {self.attr.notify_users} "
                 if prop == gv._triggers_on_tag:
-                    self.qry = f" {self.qry} {self.attr.triggers_on_tag} = {self.attr.triggers_on} "
+                    self.qry = f" {self.qry} {gv._triggers_on_tag} = {self.attr.triggers_on} "
                 if prop == gv._do_tag:
-                    self.qry = f" {self.qry} {self.attr.do_tag} = {self.attr.do} "
+                    self.qry = f" {self.qry} {gv._do_tag} = {self.attr.do} "
 
     def prepare_query(self):
         self.set_object_properties_flag()

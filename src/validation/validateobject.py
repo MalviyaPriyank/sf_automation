@@ -247,3 +247,16 @@ class ValidateObject:
             return True
         else:
             raise DuplicateObject(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
+
+    @staticmethod
+    def user_exist(session,user_name):
+        df=session.sql('SHOW USERS')
+        user_df=df.select(col("*")).collect()
+        df=session.create_dataframe(user_df)
+        user_exist=df.select(col("name")).filter(col("name")== user_name).count()
+        if user_exist:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type="USER", object_name=user_name)
+
+        
