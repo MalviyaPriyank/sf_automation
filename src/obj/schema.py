@@ -208,7 +208,7 @@ class DefaultDdlCollation:
         if value=="NONE":
             instance._default_ddl_collation=value
         else:
-            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=gv._allowed_collation_specifiers)
             instance._default_ddl_collation = value
 
     def __delete__(self,instance):

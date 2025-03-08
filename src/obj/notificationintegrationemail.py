@@ -23,6 +23,7 @@ class Name:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.is_new_integration(session=instance.parent.session,object_type=instance.parent.__class__.__name__,object_name=value)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -31,7 +32,6 @@ class Name:
 
     def __delete__(self,instance):
         del instance._name
-
 
 class Enabled:
     def __get__(self,instance,owner):
@@ -61,9 +61,20 @@ class AllowedRecipients:
         return instance._allowed_recipients
     
     def __set__(self,instance,value):
-        #vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[gv._max_allowed_recepients])
-        #vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
-        instance._allowed_recipients=f"('{value}')"  
+        if value=="NONE":
+            instance._allowed_recipients=value
+        else:
+            value_str=""
+            vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            for email in value:
+                email=f"'{email}'"
+                vo.is_valid_user_email(session=instance.parent.session,user_email=email)
+            for i in range(0,len(value)):
+                if i != len(value)-1:
+                    value_str=value_str+f"'{email}',"
+                else:
+                    value_str=value_str+f"'{email}'"
+            instance._allowed_recipients=value_str
 
     def __delete__(self,instance):
         del instance._allowed_recipients
@@ -76,9 +87,17 @@ class DefaultRecipients:
         if value=='NONE':
             instance._default_recipients=value
         else:
+            value_str=""
             vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vo.is_valid_user_email(session=instance.parent.session,user_email_list=value)
-            instance._default_recipients = value
+            for email in value:
+                email=f"'{email}'"
+                vo.is_valid_user_email(session=instance.parent.session,user_email=email)
+            for i in range(0,len(value)):
+                if i != len(value)-1:
+                    value_str=value_str+f"'{email}',"
+                else:
+                    value_str=value_str+f"'{email}'"
+            instance._default_recipients=value_str
 
     def __delete__(self,instance):
         del instance._default_recipients
@@ -92,7 +111,8 @@ class DefaultSubject:
             instance._default_subject=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._default_subject = value
+            vv.is_string_of_allowed_length(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,allowed_length=gv._allowed_length_subject)
+            instance._default_subject = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._default_subject
@@ -106,7 +126,7 @@ class Comment:
             instance._comment=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._comment = value
+            instance._comment = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._comment
@@ -177,9 +197,9 @@ class NotificationIntegrationEmail:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._allowed_recepients_tag:
-                    self.qry = f" {self.qry} {gv._allowed_recepients_tag} = {self.attr.allowed_recipients} "
+                    self.qry = f" {self.qry} {gv._allowed_recepients_tag} = ({self.attr.allowed_recipients}) "
                 if prop == gv._default_recepients_tag:
-                    self.qry = f" {self.qry} {gv._default_recepients_tag} = {self.attr.default_recipients} "
+                    self.qry = f" {self.qry} {gv._default_recepients_tag} = ({self.attr.default_recipients}) "
                 if prop == gv._default_subject_tag:
                     self.qry = f" {self.qry} {gv._default_subject_tag} = {self.attr.default_subject} "
                 if prop == gv._comment_tag:

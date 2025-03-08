@@ -12,15 +12,6 @@ from vars.gvobject import Role as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 
-class Session:
-    def __get__(self,instance,owner):
-        return instance._session
-    
-    def __set__(self,instance,value):
-        instance._session = value
-    
-    def __delete__(self,instance):
-        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
@@ -34,52 +25,28 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-    
-    def __delete__(self,instance):
-        del instance._name_tag
 
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
-
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-    
-    def __delete__(self,instance):
-        del instance._comment_tag
 
 class RoleAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    session = Session()
     name = Name()
-    name_tag = NameTag()
-
     comment = Comment()
-    comment_tag = CommentTag()
-
 
 class Role:
     def __init__(self,session,user_id,logger):
         self.attr = RoleAttrs(self)
-        self.attr.session = session
+        self.session = session
         self.user_id = user_id
         self.qry = ""
         self.logger = logger
@@ -87,14 +54,8 @@ class Role:
     def set_name(self,val):
         self.attr.name = val
 
-    def set_name_tag(self,val):
-        self.attr.name_tag = val
-
     def set_comment(self,val):
         self.attr.comment = val
-
-    def set_comment_tag(self,val):
-        self.attr.comment_tag = val
 
 
     def set_object_properties_flag(self):
@@ -119,7 +80,7 @@ class Role:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -132,11 +93,7 @@ class Role:
 
     def create_object(self,*pargs,**kwargs): 
         self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
-
         self.set_comment(kwargs[gv._comment_tag])
-        self.set_comment_tag(gv._comment_tag)
-
         self.prepare_query()
         self.logger.info(f"creating role {self.attr.name}")
         self.create_role()

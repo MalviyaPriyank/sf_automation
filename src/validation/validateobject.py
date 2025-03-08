@@ -1,5 +1,6 @@
 import sys
 import os
+from snowflake.snowpark.functions import col
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../inf_schema'))
@@ -85,14 +86,6 @@ class ValidateObject:
             raise DuplicateObject('TABLE', schema_name)
         
     @staticmethod
-    def is_new_stage(session,database_name,schema_name,stage_name):
-        stg_inst = stg(session)
-        if stg_inst.is_new_stage(db_name=database_name, schema_name=schema_name, stage_name=stage_name):
-            return True
-        else:
-            raise DuplicateObject('STAGE',stage_name)
-        
-    @staticmethod
     def is_new_file_format(session,database_name,schema_name,file_format_name):
         ff_inst = ff(session)
         if ff_inst.is_new_file_format(db_name=database_name, schema_name=schema_name, file_format_name=file_format_name):
@@ -102,12 +95,11 @@ class ValidateObject:
         
     @staticmethod
     def warehouse_exist(session,warehouse_name):
-        df=session.sql("SHOW WAREHOUSES").collect()
-        wh_list = []
-        for wh in df:
-            wh_list.append(wh[0])
-        
-        if warehouse_name in wh_list:
+        df=session.sql("SHOW WAREHOUSES")
+        df=df.select(col("*")).collect()
+        wh_df=session.create_dataframe(df)
+        wh_count=wh_df.filter(col("NAME")==f'{warehouse_name}').count()
+        if wh_count!=0:
             return True
         else:
             raise ObjectDoesNotExist(object_type='WAREHOUSE',object_name=warehouse_name)
@@ -147,21 +139,14 @@ class ValidateObject:
             raise ObjectDoesNotExist(object_type='TASK',object_name=task)
         
     @staticmethod
-    def is_valid_user_email(session,user_email_list):
-        df=session.sql("SHOW USERS").collect()
-        name_list=[]
-        login_name_list=[]
-        email_list=[]
-        for inner_lst in df:
-            name_list.append(inner_lst[0])
-            login_name_list.append(inner_lst[2])
-            email_list.append(inner_lst[6])
-        
-        for email in user_email_list:
-            if ( email not in name_list 
-                and email not in login_name_list
-                and email not in email_list):
-                raise ObjectDoesNotExist(object_type='USER',object_name=email)
+    def is_valid_user_email(session,user_email):
+        df=session.sql("SHOW USERS")
+        df=df.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        df_users=df.select(col("NAME"),col("EMAIL"))
+        exist_count=df_users.filter(col("NAME")==user_email).union(df_users.filter(col("EMAIL")== user_email)).count()
+        if exist_count==0:
+                raise ObjectDoesNotExist(object_type='USER',object_name=user_email)
         return True
     
     @staticmethod
@@ -193,18 +178,39 @@ class ValidateObject:
             return res
         else:
             raise DuplicateObject(object_type=obj_type,object_name=obj_name)
+
+    @staticmethod
+    def is_new_integration(session,object_type,object_name):
+        df=session.sql("SHOW INTEGRATIONS")
+        df=df.select(col("*")).collect()
+        int_df=session.create_dataframe(df)
+        int_count=int_df.filter(col("NAME")==f'{object_name.upper()}').count()
+        if int_count==0:
+            return True
+        else:
+            raise DuplicateObject(object_type=object_type,object_name=object_name)
     
     @staticmethod
     def integration_exist(session,integration_name):
-        df=session.sql('SHOW INTEGRATIONS').collect()
-        integration_lst=[]
-        for inner_lst in df:
-            integration_lst.append(inner_lst[0].upper())
-        
-        if integration_name.upper() in integration_lst:
+        df=session.sql('SHOW INTEGRATIONS')
+        df=df.select(col("*")).collect()
+        int_df=session.create_dataframe(df)
+        int_count=int_df.filter(col("NAME") ==f'{integration_name.upper()}').count()        
+        if int_count > 0:
             return True
         else:
-            raise IntegrationDoesNotExist(object_name=integration_name)
+            raise ObjectDoesNotExist(object_type="INTEGRATION",object_name=integration_name)
+
+    @staticmethod    
+    def resource_monitor_exist(session,resource_monitor_name):
+        df=session.sql('SHOW RESOURCE MONITORS')
+        df=df.select(col("*")).collect()
+        rm_df=session.create_dataframe(df)
+        rm_count=rm_df.filter(col("NAME") ==f'{resource_monitor_name.upper()}').count()        
+        if rm_count > 0:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
 
         
 

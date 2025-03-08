@@ -93,6 +93,8 @@ class Schema:
     _max_allowed_value_data_retention_time_in_days=1
     _min_allowed_value_max_data_extension_time_in_days=0
     _max_allowed_value_max_data_extension_time_in_days=90
+    _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
+
 
 class Share:
     def __init__(self):
@@ -127,7 +129,7 @@ class InternalStage:
     _comment_tag = "COMMENT"
     _tag_tag = "TAG"
     _encryption_tag = "ENCRYPTION"
-    _directory_tag = "DIRECTORY"
+    _enable_tag="ENABLE"
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
 
@@ -325,6 +327,18 @@ class Warehouse:
     _allowed_values_scaling_policy = ["STANDARD","ECONOMY"]
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
+    _allowed_max_cluster_size_for_warehouse_type={
+        "XSMALL":300,
+        "SMALL":300,
+        "MEDIUM":300,
+        "LARGE":160,
+        "XLARGE":80,
+        "2XLARGE":40,
+        "3XLARGE":20,
+        "4XLARGE":10,
+        "5XLARGE":10,
+        "6XLARGE":10
+    }
 
 class CopyInto:
     _table_tag = "TABLE"
@@ -359,6 +373,7 @@ class NotificationIntegrationEmail:
     _allowed_number_of_recipients = 50
     _allowed_values_type=["EMAIL"]
     _max_allowed_recepients=50
+    _allowed_length_subject=256
 
 class Alert:
     _name_tag="NAME"

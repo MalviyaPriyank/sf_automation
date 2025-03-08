@@ -47,28 +47,15 @@ class Name:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.is_new_stage(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, stage_name=value)
+        vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._shcema,stage=value,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
             instance._name = value
-            
 
     def __del__(self,instance):
         del instance._name
-
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-
-    def __del__(self,instance):
-        del instance._name_tag
-
-
 
 class FileFormat:   
     def __get__(self,instance,owner):
@@ -85,16 +72,6 @@ class FileFormat:
         del instance._file_format
 
 
-class FileFormatTag:   
-    def __get__(self,instance,owner):
-        return instance._file_format_tag
-    
-    def __set__(self,instance,value):
-        instance._file_format_tag = value
-
-    def __del__(self,instance):
-        del instance._file_format_tag
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -106,37 +83,6 @@ class Comment:
     def __del__(self,instance):
         del instance._comment
 
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-
-    def __del__(self,instance):
-        del instance._comment_tag
-
-class Tag:
-    def __get__(self,instance,owner):
-        return instance._tag
-    
-    def __set__(self,instance,value):
-        instance._tag = value
-
-
-    def __del__(self,instance):
-        del instance._tag
-
-class TagTag:
-    def __get__(self,instance,owner):
-        return instance._tag_tag
-    
-    def __set__(self,instance,value):
-        instance._tag_tag = value
-
-    def __del__(self,instance):
-        del instance._tag_tag
-
 class Encryption:
     def __get__(self,instance,owner):
         return instance._encryption
@@ -145,45 +91,27 @@ class Encryption:
         if value == "NONE":
             instance._encryption = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_encryption,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_encryption,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._encryption = value
 
     def __del__(self,instance):
         del instance._encryption
 
-class EncryptionTag:
-    def __get__(self,instance,owner):
-        return instance._encryption_tag
-    
-    def __set__(self,instance,value):
-        instance._encryption_tag = value
 
-    def __del__(self,instance):
-        del instance._encryption_tag
-
-class Directory:
+class Enable:
     def __get__(self,instance,owner):
-        return instance._directory
+        return instance._enable
     
     def __set__(self,instance,value):
         if value == "NONE":
-            instance._directory = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._directory = value
+            instance._enable = value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._enable = value
 
     def __del__(self,instance):
-        del instance._directory
+        del instance._enable
 
-class DirectoryTag:
-    def __get__(self,instance,owner):
-        return instance._directory_tag
-    
-    def __set__(self,instance,value):
-        instance._directory_tag = value
-
-
-    def __del__(self,instance):
-        del instance._directory_tag
 
 class RefreshOnCreate:
     def __get__(self,instance,owner):
@@ -192,25 +120,15 @@ class RefreshOnCreate:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._refresh_on_create = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._refresh_on_create = value
-
+        else:
+            if instance._enable != "NONE":
+                vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._refresh_on_create = value
+            else:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=" when Directory table is not enabled")
 
     def __del__(self,instance):
         del instance._refresh_on_create
-
-class RefreshOnCreateTag:
-    def __get__(self,instance,owner):
-        return instance._refresh_on_create_tag
-    
-    def __set__(self,instance,value):
-        instance._refresh_on_create_tag = value
-
-
-    def __del__(self,instance):
-        del instance._refresh_on_create_tag
-
-
 
 
 class InternalStageAttrs:
@@ -218,29 +136,13 @@ class InternalStageAttrs:
         self.parent = parent
     
     database = Database()
-
     schema = Schema()
-
     name = Name()
-    name_tag = NameTag()
-
     file_format = FileFormat()
-    file_format_tag = FileFormatTag()
-
-    comment = Comment()
-    comment_tag = CommentTag()
-    
-    tag = Tag()
-    tag_tag = TagTag()
-    
+    comment = Comment()        
     encryption = Encryption()
-    encryption_tag = EncryptionTag()
-
-    directory = Directory()
-    directory_tag = DirectoryTag()
-
+    enable = Enable()
     refresh_on_create = RefreshOnCreate()
-    refresh_on_create_tag = RefreshOnCreateTag()
     
 
 
@@ -262,45 +164,21 @@ class InternalStage:
 
     def set_name(self,val):
         self.attr.name = val
-    
-    def set_name_tag(self,val):
-        self.attr.name_tag = val
 
     def set_file_format(self,val):
         self.attr.file_format = val
     
-    def set_file_format_tag(self,val):
-        self.attr.file_format_tag = val
-    
     def set_comment(self,val):
         self.attr.comment = val
-    
-    def set_comment_tag(self,val):
-        self.attr.comment_tag = val
-
-    def set_tag(self,val):
-        self.attr.tag = val
-    
-    def set_tag_tag(self,val):
-        self.attr.tag_tag = val
 
     def set_encryption(self,val):
         self.attr.encryption = val
-    
-    def set_encryption_tag(self,val):
-        self.attr.encryption_tag = val
 
-    def set_directory(self,val):
-        self.attr.directory = val
-    
-    def set_directory_tag(self,val):
-        self.attr.directory_tag = val
+    def set_enable(self,val):
+        self.attr.enable = val
 
     def set_refresh_on_create(self,val):
         self.attr.refresh_on_create = val
-    
-    def set_refresh_on_create_tag(self,val):
-        self.attr.refresh_on_create_tag = val
 
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
@@ -314,9 +192,8 @@ class InternalStage:
         set_flag(gv._name_tag,"_name")
         set_flag(gv._file_format_tag,"_file_format")
         set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._tag_tag,"_tag")
         set_flag(gv._encryption_tag,"_encryption")
-        set_flag(gv._directory_tag,"_directory")
+        set_flag(gv._enable_tag,"_enable")
         set_flag(gv._refresh_on_create_tag,"_refresh_on_create")
 
     def check_properties_to_set(self): 
@@ -332,17 +209,17 @@ class InternalStage:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._file_format_tag:
-                    self.qry = f" {self.qry} {self.attr.file_format_tag} = {self.attr.file_format} "
+                    self.qry = f" {self.qry} {gv._file_format_tag} = {self.attr.file_format} "
                 if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == gv._tag_tag:
-                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
+                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
                 if prop == gv._encryption_tag:
-                    self.qry = f" {self.qry} {self.attr.encryption_tag} = {self.attr.encryption} "
-                if prop == gv._directory_tag:
-                    self.qry = f" {self.qry} {self.attr.directory_tag} = {self.attr.directory} "
-                if prop == gv._refresh_on_create_tag:
-                    self.qry = f" {self.qry} {self.attr.refresh_on_create_tag} = {self.attr.refresh_on_create} "
+                    self.qry = f" {self.qry} {gv._encryption_tag} = {self.attr.encryption} "
+                if prop == gv._enable_tag:
+                    self.qry = f" {self.qry} DIRECTORY = ( {gv._enable_tag} = {self.attr.enable} "
+                    if prop == gv._refresh_on_create_tag:
+                        self.qry = f" {self.qry} {gv._refresh_on_create_tag} = {self.attr.refresh_on_create} "
+                    
+                    self.qry=f" {self.qry} )"
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -375,32 +252,14 @@ class InternalStage:
     def create_object(self,*largs,**kwargs):
 
         self.set_database(kwargs[gv._database_tag])
-
         self.set_schema(kwargs[gv._schema_tag])
-
         self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
-
         self.set_file_format(kwargs[gv._file_format_tag])
-        self.set_file_format_tag(gv._file_format_tag)
-
         self.set_comment(kwargs[gv._comment_tag])
-        self.set_comment_tag(gv._comment_tag)
-
-        self.set_tag(kwargs[gv._tag_tag])
-        self.set_tag_tag(gv._tag_tag)
-
         self.set_encryption(kwargs[gv._encryption_tag])
-        self.set_encryption_tag(gv._encryption_tag)
-
-        self.set_directory(kwargs[gv._directory_tag])
-        self.set_directory_tag(gv._directory_tag)
-
-        self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])
-        self.set_refresh_on_create_tag(gv._refresh_on_create_tag)
-        
+        self.set_enable(kwargs[gv._enable_tag])
+        self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])  
         self.set_qualified_name()
-
         self.prepare_query()
         self.logger.info(f"creating internal stage {self.attr.name}")
         self.create_internal_stage()

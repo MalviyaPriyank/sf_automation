@@ -83,7 +83,7 @@ class Compression:
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_avro,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._compression=value
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=" for ORC Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_compression_for_parquet,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._compression=value
@@ -105,15 +105,15 @@ class RecordDelimiter:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._record_delimiter=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._record_delimiter
@@ -129,15 +129,15 @@ class FieldDelimiter:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._field_delimiter=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._field_delimiter
@@ -154,13 +154,13 @@ class MultiLine:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._multi_line=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -178,13 +178,13 @@ class FileExtension:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._file_extension=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._file_extension      
@@ -200,15 +200,15 @@ class ParseHeader:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._parse_header=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._parse_header
@@ -224,15 +224,15 @@ class SkipHeader:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._skip_header=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._skip_header
@@ -248,15 +248,15 @@ class SkipBlankLines:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._skip_header=value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
        
     def __del__(self,instance):
         del instance._skip_blank_lines
@@ -273,13 +273,13 @@ class DateFormat:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._date_format=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._date_format
@@ -296,13 +296,13 @@ class TimeFormat:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._time_format=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._time_format
@@ -319,13 +319,13 @@ class TimestampFormat:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._timestamp_format=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -343,13 +343,13 @@ class BinaryFormat:
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_binary_format,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._binary_format=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._binary_format
@@ -365,15 +365,15 @@ class Escape:
             vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._escape = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._escape
@@ -389,15 +389,15 @@ class EscapeUnenclosedField:
             vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._escape_unenclosed_field = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         
     def __del__(self,instance):
         del instance._escape_unenclosed_field
@@ -417,7 +417,7 @@ class TrimSpace:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._trim_space=value
         elif instance._type == gv._allowed_values_type[5]:
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._trim_space
@@ -433,15 +433,15 @@ class FieldOptionallyEnclosedBy:
             vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._field_optionally_enclosed_by = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -462,7 +462,7 @@ class NullIf:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._null_if=value
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._null_if
@@ -478,15 +478,15 @@ class ErrorOnColumnCountMismatch:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._error_on_column_count_mismatch = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
             
 
     def __del__(self,instance):
@@ -517,15 +517,15 @@ class EmptyFieldAsNull:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._empty_field_as_null = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._empty_field_as_null
@@ -543,7 +543,7 @@ class SkipByteOrderMark:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._skip_byte_order_mark=value
         else:
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._skip_byte_order_mark
@@ -559,15 +559,15 @@ class Encoding:
             vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_encoding,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._encoding = value
         elif instance._type == gv._allowed_values_type[1]: #JSON
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -581,18 +581,18 @@ class EnableOctal:
         if value == "NONE":
             instance._enable_octal = value
         elif instance._type == gv._allowed_values_type[0]: #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[1]: #JSON
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._enable_octal=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._enable_octal    
@@ -605,18 +605,18 @@ class AllowDuplicate:
         if value == "NONE":
             instance._allow_duplicate = value
         elif instance._type == gv._allowed_values_type[0]: #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[1]: #JSON
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._allow_duplicate=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -631,18 +631,18 @@ class StripOuterArray:
         if value == "NONE":
             instance._strip_outer_array = value
         elif instance._type == gv._allowed_values_type[0]: #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[1]: #JSON
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._strip_outer_array=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
         
     def __del__(self,instance):
@@ -656,18 +656,18 @@ class StripNullValues:
         if value == "NONE":
             instance._strip_null_values = value
         elif instance._type == gv._allowed_values_type[0]: #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[1]: #JSON
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._strip_null_values=value
         elif instance._type == gv._allowed_values_type[2]: #AVRO
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[3]: #ORC
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} Files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
         elif instance._type == gv._allowed_values_type[4]: #PARQUET
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == gv._allowed_values_type[5]: #XML
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
         
     def __del__(self,instance):
@@ -688,7 +688,7 @@ class IgnoreUTF8Errors:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[4]): #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         
     def __del__(self,instance):
         del instance._ignore_utf8_errors
@@ -708,7 +708,7 @@ class SnappyCompression:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[5]): #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         
 
     def __del__(self,instance):
@@ -730,7 +730,7 @@ class BinaryAsText:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[5]): #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -752,7 +752,7 @@ class UseLogicalType:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[5]): #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._use_logical_type
@@ -772,7 +772,7 @@ class UseVectorizedScanner:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[5]): #CSV
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._use_vectorized_scanner
@@ -792,7 +792,7 @@ class PreserveSpace:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[4]): 
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._preserve_space
@@ -812,7 +812,7 @@ class StripOuterElement:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[4]): 
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._strip_outer_element
@@ -832,7 +832,7 @@ class DisableSnowflakeData:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[4]): 
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._disable_snowflake_data
@@ -852,7 +852,7 @@ class DisableAutoConvert:
               or instance._type == gv._allowed_values_type[2]
               or instance._type == gv._allowed_values_type[3]
               or instance._type == gv._allowed_values_type[4]): 
-            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type.__class__.__name__} files ")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._disable_auto_convert

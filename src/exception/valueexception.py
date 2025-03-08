@@ -84,7 +84,7 @@ class DependentParameterNotSet(AttributeValidationError):
 
 class MustBeAList(AttributeValidationError):
     def __init__(self, object_type, attr_name):
-        message = f"must be a comma separated list"
+        message = f"must be a comma separated list like [val1,val2]"
         super().__init__(object_type, attr_name=attr_name, message=message) 
 
 class MustBeWithinLimit(AttributeValidationError):
@@ -93,8 +93,8 @@ class MustBeWithinLimit(AttributeValidationError):
         super().__init__(object_type, attr_name, message)
 
 class MustBeAValidCollationSpecifier(AttributeValidationError):
-    def __init__(self, object_type, attr_name, invalid_specifier):
-        message=f"can not have {invalid_specifier} as a collation specifier"
+    def __init__(self, object_type, attr_name, invalid_specifier,specifier_list):
+        message=f"can not have {invalid_specifier} as a collation specifier. List of valid specifiers include {specifier_list}"
         super().__init__(object_type, attr_name, message)
 
 class MustBeValidUTF8Character(AttributeValidationError):
@@ -134,7 +134,7 @@ class InvalidParentAttribute(AttributeValidationError):
 
 class AttributeNotRequired(AttributeValidationError):
     def __init__(self, object_type, attr_name,condition):
-        message=f"is not required {condition}"
+        message=f"is not required for {condition}"
         super().__init__(object_type, attr_name, message)
     
 class MustBeSingleByteCharacter(AttributeValidationError):
@@ -142,6 +142,14 @@ class MustBeSingleByteCharacter(AttributeValidationError):
         message=f"must be a single byte character"
         super().__init__(object_type, attr_name, message)
 
+class StringMustBeOfAllowedLength(AttributeValidationError):
+    def __init__(self, object_type, attr_name, allowed_length):
+        message=f"can have maximum {allowed_length} characters"
+        super().__init__(object_type, attr_name, message)
 
+class BaseValueMustBeLessThanOrEqualReferenceValue(AttributeValidationError):
+    def __init__(self, object_type, attr_name,value_ref):
+        message=f"should be set to a value less than or equal to {value_ref}"
+        super().__init__(object_type, attr_name,message)
 
     

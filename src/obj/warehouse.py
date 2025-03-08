@@ -14,18 +14,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 from vars.gvobject import Warehouse as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
 from exception.valueexception import InvalidParamForObject
 from dep.deploy import Deploy
-
-class Session:
-    def __get__(self,instance,owner):
-        return instance._session
-    
-    def __set__(self,instance,value):
-        instance._session = value
-    
-    def __delete__(self,instance):
-        del instance._session
 
 class Name:
     def __get__(self,instance,owner):
@@ -42,299 +33,162 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class NameLabel:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-
-    def __set__(self,instance,value):
-        instance._name_tag = value
-
-    def __delete__(self,instance):
-        del instance._name_tag
-
 class WarehouseType:
     def __get__(self,instance,owner):
         return instance._warehouse_type
 
     def __set__(self,instance,value):
-        vv.is_allowed_value(value,gv._allowed_values_warehouse_type,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._warehouse_type = value
+        if value=="NONE":
+            instance._warehouse_type=value
+        else:
+            vv.is_allowed_value(value,gv._allowed_values_warehouse_type,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._warehouse_type = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._warehouse_type
-
-class WarehouseTypeLabel:
-    def __get__(self,instance,owner):
-        return instance._warehouse_type_tag
-
-    def __set__(self,instance,value):
-        instance._warehouse_type_tag = value
-
-    def __delete__(self,instance):
-        del instance._warehouse_type_tag
 
 class WarehouseSize:
     def __get__(self,instance,owner):
         return instance._warehouse_size
 
     def __set__(self,instance,value):
-        vv.is_allowed_value(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
-        instance._warehouse_size = value
+        if value=="NONE":
+            instance._warehouse_size=value
+        else:
+            vv.is_allowed_value(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._warehouse_size = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._warehouse_size
-
-class WarehouseSizeLabel:
-    def __get__(self,instance,owner):
-        return instance._warehouse_size_tag
-
-    def __set__(self,instance,value):
-        instance._warehouse_size_tag = value
-
-    def __delete__(self,instance):
-        del instance._warehouse_size_tag
-
-
 
 class ResourceConstraint:
     def __get__(self,instance,owner):
         return instance._resource_constraint
 
     def __set__(self,instance,value):
-        if instance._warehouse_type == 'SNOWPARK-OPTIMIZED': 
-            instance._resource_constraint = value
-        elif value == "NONE":
+        if value == "NONE":
             instance._resource_constraint = "NONE"
+        elif instance._warehouse_type == 'SNOWPARK-OPTIMIZED': 
+            instance._resource_constraint = value
         else:
-            raise InvalidParamForObject(instance.parent.__class__.__name__,self.__class__.__name__,"SNOWPARK-OPTIMIZED")
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for {instance._warehouse_type} warehouse")
 
     def __delete__(self,instance):
         del instance._resource_constraint
-
-class ResourceConstraintLabel:
-    def __get__(self,instance,owner):
-        return instance._resource_constraint_tag
-
-    def __set__(self,instance,value): 
-        instance._resource_constraint_tag = value
-
-    def __delete__(self,instance):
-        del instance._resource_constraint_tag
 
 class MaxClusterCount:
     def __get__(self,instance,owner):
         return instance._max_cluster_count
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_between(value,1,10,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._max_cluster_count = value
+        if value=="NONE":
+            instance._max_cluster_count=value
         else:
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value,1,gv._allowed_max_cluster_size_for_warehouse_type[instance._warehouse_size],instance.parent.__class__.__name__,self.__class__.__name__)
             instance._max_cluster_count = value
 
     def __delete__(self,instance):
         del instance._max_cluster_count
-
-
-class MaxClusterCountLabel:
-    def __get__(self,instance,owner):
-        return instance._max_cluster_count_tag
-
-    def __set__(self,instance,value):
-        instance._max_cluster_count_tag = value
-
-    def __delete__(self,instance):
-        del instance._max_cluster_count_tag
 
 class MinClusterCount:
     def __get__(self,instance,owner):
         return instance._min_cluster_count
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_between(value,1,10,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._min_cluster_count = value   
+        if value=="NONE":
+            instance._min_cluster_count=value
         else:
-            instance._min_cluster_count = value
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_less_than_or_equal_to(value_base=instance._max_cluster_count,value_ref=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._min_cluster_count=value
 
     def __delete__(self,instance):
         del instance._min_cluster_count
-
-
-class MinClusterCountLabel:
-    def __get__(self,instance,owner):
-        return instance._min_cluster_count_tag
-
-    def __set__(self,instance,value):
-        instance._min_cluster_count_tag = value
-
-    def __delete__(self,instance):
-        del instance._min_cluster_count_tag
 
 class ScalingPolicy:
     def __get__(self,instance,owner):
         return instance._scaling_policy
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_valid_value(value,gv._allowed_values_scaling_policy,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._scaling_policy = value   
+        if value=="NONE":
+            instance._scaling_policy=value
         else:
-            instance._scaling_policy = value
+            vv.is_allowed_value(value,gv._allowed_values_scaling_policy,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._scaling_policy = value   
 
 
     def __delete__(self,instance):
         del instance._scaling_policy
-
-
-class ScalingPolicyLabel:
-    def __get__(self,instance,owner):
-        return instance._scaling_policy_tag
-
-    def __set__(self,instance,value):
-        instance._scaling_policy_tag = value
-
-    def __delete__(self,instance):
-        del instance._scaling_policy_tag
-
 
 class AutoSuspend:
     def __get__(self,instance,owner):
         return instance._auto_suspend
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._auto_suspend = value
+        if value=="NONE":
+            instance._auto_suspend=value
         else:
+            vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._auto_suspend = value
 
     def __delete__(self,instance):
         del instance._auto_suspend
-
-class AutoSuspendLabel:
-    def __get__(self,instance,owner):
-        return instance._auto_suspend_tag
-
-    def __set__(self,instance,value):
-        instance._auto_suspend_tag = value
-
-    def __delete__(self,instance):
-        del instance._auto_suspend_tag
 
 class AutoResume:
     def __get__(self,instance,owner):
         return instance._auto_resume
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._auto_resume = value
+        if value=="NONE":
+            instance._auto_resume=value
         else:
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._auto_resume = value
+
     def __delete__(self,instance):
         del instance._auto_resume
-
-class AutoResumeLabel:
-    def __get__(self,instance,owner):
-        return instance._auto_resume_tag
-
-    def __set__(self,instance,value):
-        instance._auto_resume_tag = value
-
-
-    def __delete__(self,instance):
-        del instance._auto_resume_tag
 
 class InitiallySuspended:
     def __get__(self,instance,owner):
         return instance._initially_suspended
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._initially_suspended = value
+        if value=="NONE":
+            instance._initially_suspended=value
         else:
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._initially_suspended = value
+
     def __delete__(self,instance):
         del instance._initially_suspended
-
-
-class InitiallySuspendedLabel:
-    def __get__(self,instance,owner):
-        return instance._initially_suspended_tag
-
-    def __set__(self,instance,value):
-        instance._initially_suspended_tag = value
-
-    def __delete__(self,instance):
-        del instance._initially_suspended_tag
 
 class ResourceMonitor:
     def __get__(self,instance,owner):
         return instance._resource_monitor
 
     def __set__(self,instance,value):
-        instance._resource_monitor = value
+        if value=="NONE":
+            instance._resource_monitor=value
+        else:
+            vo.resource_monitor_exist(session=instance.parent.session,resource_monitor_name=value)
+            instance._resource_monitor = value
 
     def __delete__(self,instance):
         del instance._resource_monitor
-
-class ResourceMonitorLabel:
-    def __get__(self,instance,owner):
-        return instance._resource_monitor_tag
-
-    def __set__(self,instance,value):
-        instance._resource_monitor_tag = value
-
-    def __delete__(self,instance):
-        del instance._resource_monitor_tag
 
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
 
     def __set__(self,instance,value):
-        if value == None:
-            instance._comment = None
-        else:
+        if value == "NONE":
             instance._comment = value
+        else:
+            instance._comment = f"'{value}'"
+
     def __delete__(self,instance):
         del instance._comment
-
-class CommentLabel:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-
-    def __delete__(self,instance):
-        del instance._comment_tag
-
-
-class Tag:
-    def __get__(self,instance,owner):
-        return instance._tag
-
-    def __set__(self,instance,value):
-        if value == None:
-            instance._tag = None
-        else:
-            instance._tag = value
-
-    def __delete__(self,instance):
-        del instance._tag
-
-class TagLabel:
-    def __get__(self,instance,owner):
-        return instance._tag_tag
-
-    def __set__(self,instance,value):
-        instance._tag_tag = value
-
-    def __delete__(self,instance):
-        del instance._tag_tag
 
 
 class EnableQueryAcceleration:
@@ -342,25 +196,14 @@ class EnableQueryAcceleration:
         return instance._enable_query_acceleration
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._enable_query_acceleration = value
+        if value=="NONE":
+            instance._enable_query_acceleration=value
         else:
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._enable_query_acceleration = value
 
     def __delete__(self,instance):
         del instance._enable_query_acceleration
-
-
-class EnableQueryAccelerationLabel:
-    def __get__(self,instance,owner):
-        return instance._enable_query_acceleration_tag
-
-    def __set__(self,instance,value):
-        instance._enable_query_acceleration_tag = value
-
-    def __delete__(self,instance):
-        del instance._enable_query_acceleration_tag
 
 class QueryAccelerationMaxScaleFactor:
     def __get__(self,instance,owner):
@@ -463,7 +306,7 @@ class StatementTimeoutInSecondsLabel:
 class WarehouseAttrs:
     def __init__(self,parent):
         self.parent = parent
-    session = Session()
+
     name = Name()
     name_tag = NameLabel()
     warehouse_size = WarehouseSize()
@@ -506,7 +349,7 @@ class WarehouseAttrs:
 class Warehouse:
     def __init__(self,session,user_id,logger):
         self.attr = WarehouseAttrs(self)
-        self.attr.session =  session
+        self.session =  session
         self.qry = ""
         self.user_id = user_id
         self.logger = logger
@@ -578,10 +421,7 @@ class Warehouse:
         self.attr.resource_monitor_tag = value
 
     def set_comment(self, value):
-        self.attr.comment = value
-
-    def set_comment_tag(self, value):
-        self.attr.comment_tag = value
+        self.attr.comment = f"'{value}'" 
 
     def set_tag(self, value):
         self.attr.tag = value

@@ -33,7 +33,9 @@ from valueexception import (
     ArnNotRequired,
     InvalidParentAttribute,
     AttributeNotRequired,
-    MustBeSingleByteCharacter
+    MustBeSingleByteCharacter,
+    StringMustBeOfAllowedLength,
+    BaseValueMustBeLessThanReferenceValue
 )
 
 class ValidateValue:
@@ -202,7 +204,7 @@ class ValidateValue:
         specifier_list=value.split('-')
         for specifier in specifier_list:
             if specifier not in valid_specifiers:
-                raise MustBeAValidCollationSpecifier(object_type,attr_name,specifier)
+                raise MustBeAValidCollationSpecifier(object_type,attr_name,specifier,valid_specifiers)
         return True
     
     @staticmethod
@@ -265,5 +267,19 @@ class ValidateValue:
     @staticmethod
     def not_required(object_type,attr_name,condition):
         raise AttributeNotRequired(object_type,attr_name,condition)
+    
+    @staticmethod
+    def is_string_of_allowed_length(value,object_type,attr_name,allowed_length):
+        if len(value)<=allowed_length:
+            return True
+        else:
+            raise StringMustBeOfAllowedLength(object_type,attr_name,allowed_length)
+    
+    @staticmethod
+    def is_less_than_or_equal_to(value_base,value_ref,object_type,attr_name):
+        if value_base<=value_ref:
+            return True
+        else:
+            raise BaseValueMustBeLessThanReferenceValue(object_type,attr_name,value_ref)
         
     
