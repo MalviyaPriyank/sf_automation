@@ -270,7 +270,7 @@ class User:
     _enable_unredacted_query_syntax_error_tag = "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR"
     _allowed_values_display_name = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
     _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
-    _allowed_values_default_secondary_roles = ['ALL',{}]
+    _allowed_values_default_secondary_roles = ['ALL']
 
 
 class Task:
