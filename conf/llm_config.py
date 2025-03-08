@@ -873,8 +873,64 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_snowpipe_object",
+                "description":"creates a snowpipe object for the user. After creating snowpipe, recommend user to create error integration which would alert them in case of failures in snowpipe.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for DATABASE for snowpipe object"
+                            },
+                			"SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for snowpipe object"
+                            },
+                			"TABLE": {
+                                "type":"string",
+                                "description":"user provided list for TABLE names for snowpipe object"
+                            },
+                			"COPYINTO_QUERY": {
+                                "type":"string",
+                                "description":"user provided list for COPYINTO names for snowpipe object"
+                            },
+                			"AUTO_INGEST": {
+                                "type":"string",
+                                "description":"user provided value for AUTO_INGEST for snowpipe object"
+                            },
+                			"ERROR_INTEGRATION": {
+                                "type":"string",
+                                "description":"user provided value for ERROR_INTEGRATION for snowpipe object"
+                            },
+                			"AWS_SNS_TOPIC": {
+                                "type":"string",
+                                "description":"user provided value for AWS_SNS_TOPIC for snowpipe object"
+                            },
+                			"INTEGRATION": {
+                                "type":"string",
+                                "description":"user provided value for INTEGRATION for snowpipe object"
+                            },
+                			"FILE_TYPE": {
+                                "type":"string",
+                                "description":"user provided value for FILE_TYPE for snowpipe object"
+                            },
+                			"COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for copyinto object"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA","TABLE","COPYINTO_QUERY"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"create_copyinto_object",
-                "description":"creates a snowflake copyinto and snowpipe objects for the user. Do not use pattern attribute and on_error attribute. After creating snowpipe, recommend user to create error integration which would alert them in case of failures in snowpipe.",
+                "description":"creates a snowflake copyinto object for the user. Do not use pattern attribute and on_error attribute.",
                 "inputSchema": {
                     "json":{
                         "type":"object",

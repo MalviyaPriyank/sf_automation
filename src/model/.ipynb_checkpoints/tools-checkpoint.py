@@ -50,6 +50,7 @@ class LLMTools:
                                   ss.ROLE_OBJ: role.Role(self.sf_session,self.user_id, logger=self.logger),
                                   ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, logger=self.logger),
                                   ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  ss.SNOWPIPE_OBJ: snowpipe.Snowpipe(self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
                                   ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
@@ -148,6 +149,7 @@ class LLMTools:
                                 COMPRESSION="NONE",
                                 RECORD_DELIMITER="NONE",
                                 FIELD_DELIMITER="NONE",
+                                MULTI_LINE="NONE",
                                 FILE_EXTENSION="NONE",
                                 PARSE_HEADER="NONE",
                                 SKIP_HEADER="NONE",
@@ -356,52 +358,42 @@ class LLMTools:
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f"Tables provided = {values['TABLE']}")
+        copyinto_queries = {}
         for value in values['TABLE'].split(','):
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value.replace('[','').replace(']','').replace('"','')
             self.logger.info(data_dict)
-            copyinto_query = self.obj_class_mapping['copyinto'].create_query(**data_dict)
-            snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
-                                             copy_into_qry=copyinto_query, 
-                                             user_id=self.user_id,
-                                             logger=self.logger)
-            self.logger.info(f'Creating snowpipe object for table {value}')
-            snowpipe_data_dict = {"DATABASE":DATABASE,
-                                    "SCHEMA": SCHEMA,
-                                    "NAME":f'PIPE_{value}',
-                                    "AUTO_INGEST":"NONE",
-                                    "ERROR_INTEGRATION":"NONE",
-                                    "AWS_SNS_TOPIC":"NONE",
-                                    "INTEGRATION":"NONE",
-                                    "COMMENT":"NONE",
-                                    "FILE_TYPE":"NONE"}
-            snowpipe_obj.create_object(**snowpipe_data_dict)
-            self.logger.info("after creating snowpipe")
-            
-        return f'COPYINTO queries and snowpipe objects created successfully'
+            copyinto_queries[data_dict['TABLE']] = self.obj_class_mapping['copyinto'].create_query(**data_dict)
+        return f'COPYINTO queries created successfully. Heres the table-query mapping: {copyinto_queries}'
 
 
     def create_snowpipe_object(self,
                                COPYINTO_QUERY,
                                DATABASE,
                                SCHEMA,
-                               TABLE):
-        snowpipe_obj = snowpipe.Snowpipe(self.sf_session, 
-                                             copy_into_qry=COPYINTO_QUERY, 
-                                             root= self.root,
-                                             user_id=self.user_id)
-        self.logger.info(f'Creating snowpipe object for table {TABLE}')
-        snowpipe_data_dict = {"DATABASE":DATABASE,
-                                "SCHEMA": SCHEMA,
-                                "NAME":f'PIPE_{TABLE}',
-                                "AUTO_INGEST":"NONE",
-                                "ERROR_INTEGRATION":"NONE",
-                                "AWS_SNS_TOPIC":"NONE",
-                                "INTEGRATION":"NONE",
-                                "COMMENT":"NONE",
-                                "FILE_TYPE":"NONE"}
-        snowpipe_obj.create_object(**snowpipe_data_dict)
-        return f'SNOWPIPE object created for COPYINTO query: {COPYINTO_QUERY}'
+                               TABLE,
+                               AUTO_INGEST="NONE",
+                               ERROR_INTEGRATION="NONE",
+                               AWS_SNS_TOPIC="NONE",
+                               INTEGRATION="NONE",
+                               COMMENT="NONE",
+                               FILE_TYPE="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f"Tables provided = {values['TABLE']}")
+        #snowpipe_obj = self.obj_class_mapping['snowpipe'].create_query(**data_dict)
+        table_values = values['TABLE'].split(',')
+        copinto_values = values['COPYINTO_QUERY'].split(',')
+        for value in len(table_values):
+            self.logger.info(f'Creating snowpipe for table {table_values[value]} with copyinto query {copyinto_values[value]}')
+            data_dict['TABLE'] = table_values[value].replace('[','').replace(']','').replace('"','')
+            data_dict['TABLE'] = f"PIPE_{table_values[value]}"
+            data_dict['COPYINTO_QUERY'] = copyinto_values[value]
+            self.logger.info(data_dict)
+            self.logger.info(f'Creating snowpipe object for table {TABLE}')
+            snowpipe_obj.create_object(**data_dict)
+        return f'SNOWPIPE object created successfully for all tables'
 
 
     def create_task_object(self,
