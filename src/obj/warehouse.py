@@ -210,25 +210,14 @@ class QueryAccelerationMaxScaleFactor:
         return instance._query_acceleration_max_scale_factor
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_between(value,0,100,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._query_acceleration_max_scale_factor = value
+        if value=="NONE":
+            instance._query_acceleration_max_scale_factor=value
         else:
+            vv.is_between(value=value,num1=gv._min_value_query_acceleration_max_scale_factor,num2=gv._max_value_query_acceleration_max_scale_factor,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._query_acceleration_max_scale_factor = value
 
     def __delete__(self,instance):
         del instance._query_acceleration_max_scale_factor
-
-class QueryAccelerationMaxScaleFactorLabel:
-    def __get__(self,instance,owner):
-        return instance._query_acceleration_max_scale_factor_tag
-
-    def __set__(self,instance,value):
-        instance._query_acceleration_max_scale_factor_tag = value
-
-
-    def __delete__(self,instance):
-        del instance._query_acceleration_max_scale_factor_tag
 
 class MaxConcurrencyLevel:
     def __get__(self,instance,owner):
@@ -236,71 +225,41 @@ class MaxConcurrencyLevel:
 
     def __set__(self,instance,value):
         if value != "NONE":
-            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
                 instance._max_concurrency_level = value
         else:
-            instance._max_concurrency_level = value
+            instance._max_concurrency_level = gv._max_concurrency_level_tag
 
     def __delete__(self,instance):
         del instance._max_concurrency_level
-
-class MaxConcurrencyLevelLabel:
-    def __get__(self,instance,owner):
-        return instance._max_concurrency_level_tag
-
-    def __set__(self,instance,value):
-        instance._max_concurrency_level_tag = value
-
-    def __delete__(self,instance):
-        del instance._max_concurrency_level_tag
 
 class StatementQueuedTimeoutInSeconds:
     def __get__(self,instance,owner):
         return instance._statement_queued_timeout_in_seconds
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._statement_queued_timeout_in_seconds = value
+        if value=="NONE":
+            instance._statement_queued_timeout_in_seconds=value
         else:
+            vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._statement_queued_timeout_in_seconds = value
 
     def __delete__(self,instance):
         del instance._statement_queued_timeout_in_seconds
-
-class StatementQueuedTimeoutInSecondsLabel:
-    def __get__(self,instance,owner):
-        return instance._statement_queued_timeout_in_seconds_tag
-
-    def __set__(self,instance,value):
-        instance._statement_queued_timeout_in_seconds_tag = value
-
-    def __delete__(self,instance):
-        del instance._statement_queued_timeout_in_seconds_tag
 
 class StatementTimeoutInSeconds:
     def __get__(self,instance,owner):
         return instance._statement_timeout_in_seconds
 
     def __set__(self,instance,value):
-        if value != "NONE":
-            if vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
-                instance._statement_timeout_in_seconds = value
+        if value=="NONE":
+            instance._statement_timeout_in_seconds=value
         else:
+            vv.is_between(value=value,num1=gv._min_value_statement_timeout_in_seconds,num2=gv._max_value_statement_timeout_in_seconds,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._statement_timeout_in_seconds = value
 
     def __delete__(self,instance):
         del instance._statement_timeout_in_seconds
-
-class StatementTimeoutInSecondsLabel:
-    def __get__(self,instance,owner):
-        return instance._statement_timeout_in_seconds_tag
-
-    def __set__(self,instance,value):
-        instance._statement_timeout_in_seconds_tag = value
-
-    def __delete__(self,instance):
-        del instance._statement_timeout_in_seconds_tag
 
 
 class WarehouseAttrs:
@@ -308,43 +267,22 @@ class WarehouseAttrs:
         self.parent = parent
 
     name = Name()
-    name_tag = NameLabel()
     warehouse_size = WarehouseSize()
-    warehouse_size_tag = WarehouseSizeLabel()
     warehouse_type = WarehouseType()
-    warehouse_type_tag = WarehouseTypeLabel()
     resource_constraint = ResourceConstraint()
-    resource_constraint_tag = ResourceConstraintLabel()
     max_cluster_count = MaxClusterCount()
-    max_cluster_count_tag = MaxClusterCountLabel()
     min_cluster_count = MinClusterCount()
-    min_cluster_count_tag = MinClusterCountLabel()
     scaling_policy = ScalingPolicy()
-    scaling_policy_tag = ScalingPolicyLabel()
     auto_suspend = AutoSuspend()
-    auto_suspend_tag = AutoSuspendLabel()
     auto_resume = AutoResume()
-    auto_resume_tag = AutoResumeLabel()
     initially_suspended = InitiallySuspended()
-    initially_suspended_tag = InitiallySuspendedLabel()
     resource_monitor = ResourceMonitor()
-    resource_monitor_tag = ResourceMonitorLabel()
     comment = Comment()
-    comment_tag = CommentLabel()
-    tag = Tag()
-    tag_tag = TagLabel()
     enable_query_acceleration = EnableQueryAcceleration()
-    enable_query_acceleration_tag = EnableQueryAccelerationLabel()
     query_acceleration_max_scale_factor = QueryAccelerationMaxScaleFactor()
-    query_acceleration_max_scale_factor_tag = QueryAccelerationMaxScaleFactorLabel()
     max_concurrency_level = MaxConcurrencyLevel()
-    max_concurrency_level_tag = MaxConcurrencyLevelLabel()
     statement_queued_timeout_in_seconds = StatementQueuedTimeoutInSeconds()
-    statement_queued_timeout_in_seconds_tag = StatementQueuedTimeoutInSecondsLabel()
     statement_timeout_in_seconds = StatementTimeoutInSeconds()
-    statement_timeout_in_seconds_tag = StatementTimeoutInSecondsLabel()
-
-
 
 class Warehouse:
     def __init__(self,session,user_id,logger):
@@ -357,108 +295,53 @@ class Warehouse:
     def set_name(self, value):
         self.attr.name = value
 
-    def set_name_tag(self, value):
-        self.attr.name_tag = value
-
     def set_warehouse_size(self, value):
         self.attr.warehouse_size = value
-
-    def set_warehouse_size_tag(self, value):
-        self.attr.warehouse_size_tag = value
 
     def set_warehouse_type(self, value):
         self.attr.warehouse_type = value
 
-    def set_warehouse_type_tag(self, value):
-        self.attr.warehouse_type_tag = value
-
     def set_resource_constraint(self, value):
         self.attr.resource_constraint = value
-
-    def set_resource_constraint_tag(self, value):
-        self.attr.resource_constraint_tag = value
 
     def set_max_cluster_count(self, value):
         self.attr.max_cluster_count = value
 
-    def set_max_cluster_count_tag(self, value):
-        self.attr.max_cluster_count_tag = value
-
     def set_min_cluster_count(self, value):
         self.attr.min_cluster_count = value
-
-    def set_min_cluster_count_tag(self, value):
-        self.attr.min_cluster_count_tag = value
 
     def set_scaling_policy(self, value):
         self.attr.scaling_policy = value
 
-    def set_scaling_policy_tag(self, value):
-        self.attr.scaling_policy_tag = value
-
     def set_auto_suspend(self, value):
         self.attr.auto_suspend = value
-
-    def set_auto_suspend_tag(self, value):
-        self.attr.auto_suspend_tag = value
 
     def set_auto_resume(self, value):
         self.attr.auto_resume = value
 
-    def set_auto_resume_tag(self, value):
-        self.attr.auto_resume_tag = value
-
     def set_initially_suspended(self, value):
         self.attr.initially_suspended = value
-
-    def set_initially_suspended_tag(self, value):
-        self.attr.initially_suspended_tag = value
 
     def set_resource_monitor(self, value):
         self.attr.resource_monitor = value
 
-    def set_resource_monitor_tag(self, value):
-        self.attr.resource_monitor_tag = value
-
     def set_comment(self, value):
         self.attr.comment = f"'{value}'" 
-
-    def set_tag(self, value):
-        self.attr.tag = value
-
-    def set_tag_tag(self, value):
-        self.attr.tag_tag = value
 
     def set_enable_query_acceleration(self, value):
         self.attr.enable_query_acceleration = value
 
-    def set_enable_query_acceleration_tag(self, value):
-        self.attr.enable_query_acceleration_tag = value
-
     def set_query_acceleration_max_scale_factor(self, value):
         self.attr.query_acceleration_max_scale_factor = value
-
-    def set_query_acceleration_max_scale_factor_tag(self, value):
-        self.attr.query_acceleration_max_scale_factor_tag = value
 
     def set_max_concurrency_level(self, value):
         self.attr.max_concurrency_level = value
 
-    def set_max_concurrency_level_tag(self, value):
-        self.attr.max_concurrency_level_tag = value
-
     def set_statement_queued_timeout_in_seconds(self, value):
         self.attr.statement_queued_timeout_in_seconds = value
 
-    def set_statement_queued_timeout_in_seconds_tag(self, value):
-        self.attr.statement_queued_timeout_in_seconds_tag = value
-
     def set_statement_timeout_in_seconds(self, value):
-        self.attr.statement_timeout_in_seconds = value
-
-    def set_statement_timeout_in_seconds_tag(self, value):
-        self.attr.statement_timeout_in_seconds_tag = value
-        
+        self.attr.statement_timeout_in_seconds = value       
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -500,39 +383,37 @@ class Warehouse:
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._warehouse_type_tag:
-                    self.qry = f" {self.qry} {self.attr.warehouse_type_tag}  = {self.attr.warehouse_type} "
+                    self.qry = f" {self.qry} {gv._warehouse_type_tag}  = {self.attr.warehouse_type} "
                 if prop == gv._warehouse_size_tag:
-                    self.qry = f" {self.qry} {self.attr.warehouse_size_tag} = {self.attr.warehouse_size} "
+                    self.qry = f" {self.qry} {gv._warehouse_size_tag} = {self.attr.warehouse_size} "
                 if prop == gv._resource_constraint_tag:
-                    self.qry = f" {self.qry} {self.attr.resource_constraint_tag} = {self.attr.resource_constraint} "
+                    self.qry = f" {self.qry} {gv._resource_constraint_tag} = {self.attr.resource_constraint} "
                 if prop == gv._max_cluster_count_tag:
-                    self.qry = f" {self.qry} {self.attr.max_cluster_count_tag} = {self.attr.max_cluster_count} "
+                    self.qry = f" {self.qry} {gv._max_cluster_count_tag} = {self.attr.max_cluster_count} "
                 if prop == gv._min_cluster_count_tag:
-                    self.qry = f" {self.qry} {self.attr.min_cluster_count_tag} = {self.attr.min_cluster_count} "
+                    self.qry = f" {self.qry} {gv._min_cluster_count_tag} = {self.attr.min_cluster_count} "
                 if prop == gv._scaling_policy_tag:
-                    self.qry = f" {self.qry} {self.attr.scaling_policy_tag} = {self.attr.scaling_policy} "
+                    self.qry = f" {self.qry} {gv._scaling_policy_tag} = {self.attr.scaling_policy} "
                 if prop == gv._auto_suspend_tag:
-                    self.qry = f" {self.qry} {self.attr.auto_suspend_tag} = {self.attr.auto_suspend} "
+                    self.qry = f" {self.qry} {gv._auto_suspend_tag} = {self.attr.auto_suspend} "
                 if prop == gv._auto_resume_tag:
-                    self.qry = f" {self.qry} {self.attr.auto_resume_tag} = {self.attr.auto_resume} "
+                    self.qry = f" {self.qry} {gv._auto_resume_tag} = {self.attr.auto_resume} "
                 if prop == gv._initially_suspended_tag:
-                    self.qry = f" {self.qry} {self.attr.initially_suspended_tag} = {self.attr.initially_suspended} "
+                    self.qry = f" {self.qry} {gv._initially_suspended_tag} = {self.attr.initially_suspended} "
                 if prop == gv._resource_monitor_tag:
-                    self.qry = f" {self.qry} {self.attr.resource_monitor_tag} = {self.attr.resource_monitor} "
+                    self.qry = f" {self.qry} {gv._resource_monitor_tag} = {self.attr.resource_monitor} "
                 if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
-                if prop == gv._tag_tag:
-                    self.qry = f" {self.qry} {self.attr.tag_tag} = {self.attr.tag} "
+                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
                 if prop == gv._enable_query_acceleration_tag:
-                    self.qry = f" {self.qry} {self.attr.enable_query_acceleration_tag} = {self.attr.enable_query_acceleration} "
+                    self.qry = f" {self.qry} {gv._enable_query_acceleration_tag} = {self.attr.enable_query_acceleration} "
                 if prop == gv._query_acceleration_max_scale_factor_tag:
-                    self.qry = f" {self.qry} {self.attr.query_acceleration_max_scale_factor_tag} = {self.attr.query_acceleration_max_scale_factor} "
+                    self.qry = f" {self.qry} {gv._query_acceleration_max_scale_factor_tag} = {self.attr.query_acceleration_max_scale_factor} "
                 if prop == gv._max_concurrency_level_tag:
-                    self.qry = f" {self.qry} {self.attr.max_concurrency_level_tag} = {self.attr.max_concurrency_level} "
+                    self.qry = f" {self.qry} {gv._max_concurrency_level_tag} = {self.attr.max_concurrency_level} "
                 if prop == gv._statement_queued_timeout_in_seconds_tag:
-                    self.qry = f" {self.qry} {self.attr.statement_queued_timeout_in_seconds_tag} = {self.attr.statement_queued_timeout_in_seconds} "
+                    self.qry = f" {self.qry} {gv._statement_queued_timeout_in_seconds_tag} = {self.attr.statement_queued_timeout_in_seconds} "
                 if prop == gv._statement_timeout_in_seconds_tag:
-                    self.qry = f" {self.qry} {self.attr.statement_timeout_in_seconds_tag} = {self.attr.statement_timeout_in_seconds} "
+                    self.qry = f" {self.qry} {gv._statement_timeout_in_seconds_tag} = {self.attr.statement_timeout_in_seconds} "
 
 
     def prepare_create_query(self):
@@ -546,41 +427,22 @@ class Warehouse:
 
     def create_object(self,*largs,**kwargs):
         self.set_name(kwargs[gv._name_tag])
-        self.set_name_tag(gv._name_tag)
         self.set_warehouse_type(kwargs[gv._warehouse_type_tag])
-        self.set_warehouse_type_tag(gv._warehouse_type_tag)
         self.set_warehouse_size(kwargs[gv._warehouse_size_tag])
-        self.set_warehouse_size_tag(gv._warehouse_size_tag)
         self.set_auto_resume(kwargs[gv._auto_resume_tag])
-        self.set_auto_resume_tag(gv._auto_resume_tag)
         self.set_auto_suspend(kwargs[gv._auto_suspend_tag])
-        self.set_auto_suspend_tag(gv._auto_suspend_tag)
         self.set_comment(kwargs[gv._comment_tag])
-        self.set_comment_tag(gv._comment_tag)
         self.set_enable_query_acceleration(kwargs[gv._enable_query_acceleration_tag])
-        self.set_enable_query_acceleration_tag(gv._enable_query_acceleration_tag)
         self.set_initially_suspended(kwargs[gv._initially_suspended_tag])
-        self.set_initially_suspended_tag(gv._initially_suspended_tag)
         self.set_max_cluster_count(kwargs[gv._max_cluster_count_tag])
-        self.set_max_cluster_count_tag(gv._max_cluster_count_tag)
         self.set_resource_constraint(kwargs[gv._resource_constraint_tag])
-        self.set_resource_constraint_tag(gv._resource_constraint_tag)
         self.set_max_concurrency_level(kwargs[gv._max_concurrency_level_tag])
-        self.set_max_concurrency_level_tag(gv._max_concurrency_level_tag)
         self.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
-        self.set_min_cluster_count_tag(gv._min_cluster_count_tag)
         self.set_query_acceleration_max_scale_factor(kwargs[gv._query_acceleration_max_scale_factor_tag])
-        self.set_query_acceleration_max_scale_factor_tag(gv._query_acceleration_max_scale_factor_tag)
         self.set_resource_monitor(kwargs[gv._resource_monitor_tag])
-        self.set_resource_monitor_tag(gv._resource_monitor_tag)
         self.set_scaling_policy(kwargs[gv._scaling_policy_tag])
-        self.set_scaling_policy_tag(gv._scaling_policy_tag)
         self.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
-        self.set_statement_timeout_in_seconds_tag(gv._statement_timeout_in_seconds_tag)
         self.set_statement_queued_timeout_in_seconds(kwargs[gv._statement_queued_timeout_in_seconds_tag])
-        self.set_statement_queued_timeout_in_seconds_tag(gv._statement_queued_timeout_in_seconds_tag)
-        self.set_tag(kwargs[gv._tag_tag])
-        self.set_tag_tag(gv._tag_tag)
         self.prepare_create_query()     
         self.logger.info(f"creating warehouse {self.attr.name}")
         self.create_warehouse()

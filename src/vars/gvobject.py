@@ -327,6 +327,11 @@ class Warehouse:
     _allowed_values_scaling_policy = ["STANDARD","ECONOMY"]
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
+    _min_value_query_acceleration_max_scale_factor=0
+    _max_value_query_acceleration_max_scale_factor=100
+    _default_value_max_concurrency_level=8
+    _min_value_statement_timeout_in_seconds=0
+    _max_value_statement_timeout_in_seconds=604800
     _allowed_max_cluster_size_for_warehouse_type={
         "XSMALL":300,
         "SMALL":300,
