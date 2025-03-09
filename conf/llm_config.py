@@ -1262,7 +1262,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_alert_object",
-                "description":"creates snowflake alert object for the user. NAME, SCHEDULE, DATABASE, and SCHEMA are the required parameters. depends on notification object. notification object has to be created before creating alert object.",
+                "description":"creates snowflake alert object for the user. NAME, SCHEDULE, DATABASE, and SCHEMA are the required parameters. depends on notification object. notification object has to be created before creating alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1270,6 +1270,18 @@ tools = {
                             "NAME": {
                                 "type":"string",
                                 "description":"NAME for alert object"
+                            },
+                            "CONDITION": {
+                                "type":"string",
+                                "description":"CONDITION for alert object. If CONDITION returns one or more rows then ACTION would be taken. Options for CONDITION are: SELECT statement, SHOW Objects, Stored procedure. If user wants a custom stored procedure to be used then they have to provide the definition of stored proc for example SP_CUSTOM_SPROC('VAR1','VAR2'). if they want to use SHOW Objects then they need to specify object name. if they want to use SELECT statement, there are two options Frosty can write a query for them if they describe the problem (and then pass it to create_object), or they can provide the select statement. This should be passed as a value to IF parameter. For select pass the select sql statement 'STATEMENT'. For show objects pass 'SHOW object name', For stored proc pass 'CALL SP_CUSTOM_SPROC('VAR1','VAR2')'"
+                            },
+                            "ACTION": {
+                                "type":"string",
+                                "description":"ACTION for alert object. For ACTION, if User wants to provide custom SQL or Wants to send out emails using notification integration email. (If they have existing one use it else follow the flow where we take them to create one.). If they are using notification integration, then we need integration_name, email_addresses, email_subject, email_content. This should be passed as a value to THEN parameter. For custom SQL pass sql: 'custom sql', pass all other params i.e integration_name, email_address, email_subject, email_content as 'NONE'. For notification integration : pass sql:'NONE', and values for integration_name, email_address, email_subject, email_content"
+                            },
+                            "ACTION_TYPE": {
+                                "type":"string",
+                                "description":"ACTION_TYPE for alert object"
                             },
                             "DATABASE": {
                                 "type":"string",
@@ -1293,7 +1305,7 @@ tools = {
                             },
                             "WAREHOUSE": {
                                 "type":"string",
-                                "description":"WAREHOUSE for alert object"
+                                "description":"WAREHOUSE for alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized."
                             },
                             "COMMENT": {
                                 "type":"string",
