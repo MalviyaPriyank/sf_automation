@@ -258,14 +258,6 @@ class LLMTools:
         return self.create_sf_object(ss.SCHEMA_OBJ, data_dict)
 
 
-    def create_share_object(self, NAME, COMMENT="DEFAULT"):
-        frame = inspect.currentframe()
-        args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
-        self.logger.info(f'creating {ss.SHARE_OBJ} object with parameters: {data_dict}')
-        return self.create_sf_object(ss.SHARE_OBJ, data_dict)
-
-
     def create_user_object(self,
                             NAME,
                             PASSWORD,

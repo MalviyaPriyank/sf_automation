@@ -591,31 +591,6 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"create_share_object",
-                "description":"creates a snowflake share object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "NAME": {
-                                "type":"string",
-                                "description":"user provided value for NAME for database object"
-                            },
-                        "COMMENT": {
-                                "type":"string",
-                                "description":"user provided value for COMMENT for database object"
-                            },
-                            
-                        },
-                        "required":[
-                            "NAME"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
                 "name":"create_user_object",
                 "description":"creates a snowflake user object for the user. NAME and PASSWORD are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {
