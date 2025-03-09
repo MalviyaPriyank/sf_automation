@@ -474,8 +474,6 @@ class CopyInto:
                     self.qry = f" {self.qry} {gv._force_tag} = {self.attr.force} "
                 if prop == gv._load_uncertain_files_tag:
                     self.qry = f" {self.qry} {gv._load_uncertain_files_tag} = {self.attr.load_uncertain_files} "
-                if prop == gv._file_processor_tag:
-                    self.qry = f" {self.qry} {gv._file_processor_tag} = {self.attr.file_processor} "
                 if prop == gv._scanner_tag:
                     self.qry = f" {self.qry} {gv._file_processor_tag} = ( {gv._scanner_tag} = {self.attr.scanner} SCANNER_OPTIONS=("
                     if gv._project_name_tag in self.property_lst:
@@ -511,6 +509,10 @@ class CopyInto:
         self.set_force(kwargs[gv._force_tag])
         self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
         self.set_file_processor(kwargs[gv._file_processor_tag])
+        self.set_scanner(kwargs[gv._scanner_tag])
+        self.set_project_name(kwargs[gv._project_name_tag])
+        self.set_model_name(kwargs[gv._model_name_tag])
+        self.set_model_version(kwargs[gv._model_version_tag])
         self.set_load_mode(kwargs[gv._load_mode_tag])
         self.logger.info(f"preparing copy into for {self.attr.table}")
         self.prepare_query()
