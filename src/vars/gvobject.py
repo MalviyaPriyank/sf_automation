@@ -362,10 +362,15 @@ class CopyInto:
     _force_tag = "FORCE"
     _load_uncertain_files_tag = "LOAD_UNCERTAIN_FILES"
     _file_processor_tag = "FILE_PROCESSOR"
+    _scanner_tag="SCANNER"
+    _project_name_tag="PROJECT_NAME"
+    _model_name_tag="MODEL_NAME"
+    _model_version_tag="MODEL_VERSION"
     _load_mode_tag = "LOAD_MODE"
     _allowed_values_on_error = ["CONTINUE","SKIP_FILE"]
     _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
+    _allowed_values_scanner=['document_ai']
 
 class NotificationIntegrationEmail:
     _name_tag = "NAME"

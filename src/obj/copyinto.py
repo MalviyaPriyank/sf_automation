@@ -185,7 +185,8 @@ class TruncateColumns:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._truncatecolumns = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._truncatecolumns = value
 
     def __delete__(self,instance):
@@ -199,7 +200,8 @@ class Force:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._force = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._force = value
     def __delete__(self,instance):
         del instance._force 
@@ -210,7 +212,11 @@ class LoadUncertainFiles:
         return instance._load_uncertain_files
 
     def __set__(self,instance,value):
-        instance._load_uncertain_files = value
+        if value=="NONE":
+            instance._load_uncertain_files=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._load_uncertain_files = value
 
     def __delete__(self,instance):
         del instance._load_uncertain_files
@@ -221,11 +227,83 @@ class FileProcessor:
         return instance._file_processor
 
     def __set__(self,instance,value):
-        instance._file_processor = value
+        if value=="NONE":
+            instance._file_processor=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._file_processor = value
 
     def __delete__(self,instance):
         del instance._file_processor
 
+class Scanner:
+    def __get__(self,instance,owner):
+        return instance._scanner
+
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._scanner=value
+        else:
+            vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,parent_attribute="ON_ERROR",compatible_value_lst_parent_attribute=["ABORT_STATEMENT"])
+            vv.is_conflicting_parameter_null(original_parameter_val=value,conflicting_parameter_val=instance._match_by_column_name,original_parameter=self.__class__.__name__,conflicting_parameter="MATCH_BY_COLUMN_NAME",object_type=instance.parent.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_scanner,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._scanner = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._scanner
+
+class ProjectName:
+    def __get__(self,instance,owner):
+        return instance._project_name
+
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._project_name=value
+        else:
+            vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,parent_attribute="ON_ERROR",compatible_value_lst_parent_attribute=["ABORT_STATEMENT"])
+            vv.is_conflicting_parameter_null(original_parameter_val=value,conflicting_parameter_val=instance._match_by_column_name,original_parameter=self.__class__.__name__,conflicting_parameter="MATCH_BY_COLUMN_NAME",object_type=instance.parent.__class__.__name__)
+            instance._project_name = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._project_name
+
+class ModelName:
+    def __get__(self,instance,owner):
+        return instance._model_name
+
+    def __set__(self,instance,value):
+        if instance._scanner=='document_ai':
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._model_name=f"'{value}'"
+        else:
+            if value=="NONE":
+                instance._model_name=value
+            else:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,parent_attribute="ON_ERROR",compatible_value_lst_parent_attribute=["ABORT_STATEMENT"])
+                vv.is_conflicting_parameter_null(original_parameter_val=value,conflicting_parameter_val=instance._match_by_column_name,original_parameter=self.__class__.__name__,conflicting_parameter="MATCH_BY_COLUMN_NAME",object_type=instance.parent.__class__.__name__)
+                instance._model_name = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._model_name
+
+class ModelVersion:
+    def __get__(self,instance,owner):
+        return instance._model_version
+
+    def __set__(self,instance,value):
+        if instance._scanner=='document_ai':
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._model_version=f"'{value}'"
+        else:
+            if value=="NONE":
+                instance._model_version=value
+            else:
+                vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,parent_attribute="ON_ERROR",compatible_value_lst_parent_attribute=["ABORT_STATEMENT"])
+                vv.is_conflicting_parameter_null(original_parameter_val=value,conflicting_parameter_val=instance._match_by_column_name,original_parameter=self.__class__.__name__,conflicting_parameter="MATCH_BY_COLUMN_NAME",object_type=instance.parent.__class__.__name__)
+                instance._model_version = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._model_version
 
 class LoadMode:
     def __get__(self,instance,owner):
@@ -235,7 +313,7 @@ class LoadMode:
         if value == "NONE":
             instance._load_mode = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_load_mode,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_load_mode,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._load_mode = value
 
     def __delete__(self,instance):
@@ -262,6 +340,10 @@ class CopyIntoAttrs:
     force = Force()
     load_uncertain_files = LoadUncertainFiles()
     file_processor = FileProcessor()
+    scanner=Scanner()
+    project_name=ProjectName()
+    model_name=ModelName()
+    model_version=ModelVersion()
     load_mode = LoadMode()
 
 class CopyInto:
@@ -319,6 +401,21 @@ class CopyInto:
     def set_file_processor(self,value):
         self.attr.file_processor = value
 
+    def set_file_processor(self,value):
+        self.attr.file_processor = value
+
+    def set_scanner(self,value):
+        self.attr.scanner = value
+
+    def set_project_name(self,value):
+        self.attr.project_name = value
+
+    def set_model_name(self,value):
+        self.attr.model_name = value
+
+    def set_model_version(self,value):
+        self.attr.model_version = value
+
     def set_load_mode(self,value):
         self.attr.load_mode = value
 
@@ -339,6 +436,10 @@ class CopyInto:
         set_flag(gv._force_tag,"_force")
         set_flag(gv._load_uncertain_files_tag,"_load_uncertain_files")
         set_flag(gv._file_processor_tag,"_file_processor")
+        set_flag(gv._scanner_tag,"_scanner")
+        set_flag(gv._project_name_tag,"_project_name")
+        set_flag(gv._model_name_tag,"_model_name")
+        set_flag(gv._model_version_tag,"_model_version")
         set_flag(gv._load_mode_tag,"_load_mode")
 
     def check_properties_to_set(self): 
@@ -375,6 +476,16 @@ class CopyInto:
                     self.qry = f" {self.qry} {gv._load_uncertain_files_tag} = {self.attr.load_uncertain_files} "
                 if prop == gv._file_processor_tag:
                     self.qry = f" {self.qry} {gv._file_processor_tag} = {self.attr.file_processor} "
+                if prop == gv._scanner_tag:
+                    self.qry = f" {self.qry} {gv._file_processor_tag} = ( {gv._scanner_tag} = {self.attr.scanner} SCANNER_OPTIONS=("
+                    for props in self.property_lst:
+                        if props==gv._project_name_tag:
+                            self.qry=f" {self.qry} {gv._project_name_tag} = {self.attr.project_name}"
+                        if props==gv._model_name_tag:
+                            self.qry=f" {self.qry} {gv._model_name_tag} = {self.attr.model_name}"
+                        if props==gv._model_version_tag:
+                            self.qry=f" {self.qry} {gv._model_version_tag} = {self.attr.model_version}"
+                        self.qry=f"{self.qry} ))"
                 if prop == gv._load_mode_tag:
                     self.qry = f" {self.qry} {gv._load_mode_tag} = {self.attr.load_mode} "
 

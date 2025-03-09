@@ -152,4 +152,9 @@ class BaseValueMustBeLessThanOrEqualReferenceValue(AttributeValidationError):
         message=f"should be set to a value less than or equal to {value_ref}"
         super().__init__(object_type, attr_name,message)
 
+class CannotSetBothParameters(AttributeValidationError):
+    def __init__(self, original_param, conflicting_param, object_type):
+        message=f" cannot be set along with {conflicting_param}. Only one of them can be used"
+        super().__init__(object_type, original_param,message)
+
     

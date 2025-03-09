@@ -35,7 +35,8 @@ from valueexception import (
     AttributeNotRequired,
     MustBeSingleByteCharacter,
     StringMustBeOfAllowedLength,
-    BaseValueMustBeLessThanOrEqualReferenceValue
+    BaseValueMustBeLessThanOrEqualReferenceValue,
+    CannotSetBothParameters
 )
 
 class ValidateValue:
@@ -281,5 +282,12 @@ class ValidateValue:
             return True
         else:
             raise BaseValueMustBeLessThanOrEqualReferenceValue(object_type,attr_name,value_ref)
+        
+    @staticmethod
+    def is_conflicting_parameter_null(original_parameter_val,conflicting_parameter_val,original_parameter,conflicting_parameter,object_type):
+        if conflicting_parameter_val !="NONE":
+            raise CannotSetBothParameters(original_parameter,conflicting_parameter,object_type)
+        elif conflicting_parameter_val=="NONE":
+            return True
         
     

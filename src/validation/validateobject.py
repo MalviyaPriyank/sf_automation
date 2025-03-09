@@ -16,7 +16,6 @@ from exception.objectexception import (
     ObjectDoesNotExist,
     DuplicateObject,
     ColumnDoesNotExist,
-    IntegrationDoesNotExist,
     MustBeAnAdmin
 )
 
