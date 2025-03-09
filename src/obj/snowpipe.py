@@ -23,7 +23,6 @@ class Database:
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.database_exist(session=instance.parent.session, database_name=value)
-        #if vo.database_exist(value):
         instance._database = value
     
     def __delete__(self,instance):
@@ -36,7 +35,6 @@ class Schema:
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        #if vo.schema_exist(instance._database,value):
         instance._schema = value
     
     def __delete__(self,instance):
@@ -62,7 +60,11 @@ class AutoIngest:
         return instance._auto_ingest
     
     def __set__(self,instance,value):
-        instance._auto_ingest = value
+        if value=="NONE":
+            instance._auto_ingest=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._auto_ingest = value
     
     def __delete__(self,instance):
         del instance._auto_ingest
@@ -72,7 +74,11 @@ class ErrorIntegration:
         return instance._error_integration
     
     def __set__(self,instance,value):
-        instance._error_integration = value
+        if value=="NONE":
+            instance._error_integration=value
+        else:
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
+            instance._error_integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._error_integration
@@ -82,7 +88,11 @@ class AwsSnsTopic:
         return instance._aws_sns_topic
     
     def __set__(self,instance,value):
-        instance._aws_sns_topic = value
+        if value=="NONE":
+            instance._aws_sns_topic=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._aws_sns_topic = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._aws_sns_topic
@@ -92,7 +102,11 @@ class Integration:
         return instance._integration
     
     def __set__(self,instance,value):
-        instance._integration = value
+        if value=="NONE":
+            instance._integration=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._integration
@@ -103,20 +117,13 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        if value=="NONE":
+            instance._comment=value
+        else:
+            instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
-
-class FileType:
-    def __get__(self,instance,owner):
-        return instance._file_type
-    
-    def __set__(self,instance,value):
-        instance._file_type = value
-    
-    def __delete__(self,instance):
-        del instance._file_type
 
 
 
@@ -132,7 +139,6 @@ class SnowpipeAttrs:
     aws_sns_topic = AwsSnsTopic()
     integration = Integration()
     comment = Comment()
-    file_type = FileType()
 
 class Snowpipe:
     def __init__(self,session,user_id,logger):
@@ -167,9 +173,6 @@ class Snowpipe:
 
     def set_comment(self,comment):
         self.attr.comment = comment
-
-    def set_file_type(self,file_type):
-        self.attr.file_type = file_type
 
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
@@ -210,8 +213,6 @@ class Snowpipe:
                     self.qry = f" {self.qry} {gv._integration_tag} = {self.attr.integration} "
                 if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
-                if prop == gv._file_type_tag:
-                    self.qry = f" {self.qry} {gv._file_type_tag} = {self.attr.file_type} "
         self.qry= self.qry + f" AS {self.copy_into}"
 
     def prepare_query(self):
@@ -260,7 +261,6 @@ class Snowpipe:
         self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])
         self.set_integration(kwargs[gv._integration_tag])
         self.set_comment(kwargs[gv._comment_tag])
-        self.set_file_type(kwargs[gv._file_type_tag])
         self.set_qualified_name()
         self.prepare_query()
         self.logger.info(f"creating snowpipe : {self.attr.name}")
