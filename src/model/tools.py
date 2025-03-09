@@ -351,7 +351,11 @@ class LLMTools:
                                 FORCE="NONE",
                                 LOAD_UNCERTAIN_FILES="NONE",
                                 FILE_PROCESSOR="NONE",
-                                LOAD_MODE="NONE"
+                                LOAD_MODE="NONE",
+                                SCANNER="NONE",
+                                PROJECT_NAME="NONE",
+                                MODEL_NAME="NONE",
+                                MODEL_VERSION="NONE"
                               ):
         
         frame = inspect.currentframe()

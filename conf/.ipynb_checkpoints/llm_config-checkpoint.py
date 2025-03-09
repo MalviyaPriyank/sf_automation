@@ -935,6 +935,22 @@ tools = {
                     "json":{
                         "type":"object",
                         "properties": {
+                            "SCANNER": {
+                                "type":"string",
+                                "description":"user provided value for SCANNER for copyinto object"
+                            },
+                            "PROJECT_NAME": {
+                                "type":"string",
+                                "description":"user provided value for PROJECT_NAME for copyinto object"
+                            },
+                            "MODEL_NAME": {
+                                "type":"string",
+                                "description":"user provided value for MODEL_NAME for copyinto object"
+                            },
+                            "MODEL_VERSION": {
+                                "type":"string",
+                                "description":"user provided value for MODEL_VERSION for copyinto object"
+                            },
                             "DATABASE": {
                                 "type":"string",
                                 "description":"user provided value for DATABASE for copyinto object"
