@@ -254,7 +254,7 @@ class Snowpipe:
         self.set_database(kwargs[gv._database_tag])
         self.set_schema(kwargs[gv._schema_tag])
         self.set_name(kwargs[gv._name_tag])
-        self.set_copy_into()
+        self.set_copy_into(kwargs[gv._copyinto_query_tag])
         self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
         self.set_error_integration(kwargs[gv._error_integration_tag])
         self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])

@@ -34,11 +34,17 @@ class Database:
     _external_volume_tag = "EXTERNAL_VOLUME"
     _catalog_tag = "CATALOG"
     _default_ddl_collation_tag = "DEFAULT_DDL_COLLATION"
+    _log_level_tag="LOG_LEVEL"
+    _trace_level_tag="TRACE_LEVEL"
     _storage_serialization_policy_tag = "STORAGE_SERIALIZATION_POLICY"
     _comment_tag = "COMMENT"
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
     _max_allowed_value_data_retention_time_in_days=1
     _min_allowed_value_data_retention_time_in_days=0
+    _max_allowed_value_max_data_extension_time_in_days=1
+    _min_allowed_value_max_data_extension_time_in_days=0
+    _allowed_values_log_level=['TRACE','DEBUG','INFO','WARN','ERROR','FATAL','OFF']
+    _allowed_values_trace_level=['ALWAYS','ON_EVENT','OFF']
     _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
 class Role:
@@ -83,6 +89,12 @@ class Schema:
     _allowed_values_log_level = ["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
     _allowed_values_trace_level = ["ALWAYS","ON_EVENT","OFF"]
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
+    _min_allowed_value_data_retention_time_in_days=0
+    _max_allowed_value_data_retention_time_in_days=1
+    _min_allowed_value_max_data_extension_time_in_days=0
+    _max_allowed_value_max_data_extension_time_in_days=90
+    _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
+
 
 class Share:
     def __init__(self):
@@ -117,7 +129,7 @@ class InternalStage:
     _comment_tag = "COMMENT"
     _tag_tag = "TAG"
     _encryption_tag = "ENCRYPTION"
-    _directory_tag = "DIRECTORY"
+    _enable_tag="ENABLE"
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
 
@@ -138,16 +150,20 @@ class ExternalStage:
     _aws_token_tag = "AWS_TOKEN"
     _azure_sas_token_tag = "AZURE_SAS_TOKEN"
     _aws_role_tag = "AWS_ROLE"
-    _encryption_tag = "ENCRYPTION"
-    _encryption_type_tag = "ENCRYPTION_TYPE"
+    _encryption_type_tag = "ENCRYPTION"
     _encryption_master_key_tag = "ENCRYPTION_MASTER_KEY"
     _encryption_kms_key_id_tag ="ENCRYPTION_KMS_KEY_ID"
     _use_privatelink_endpoint_tag = "USE_PRIVATELINK_ENDPOINT"
-    _directory_tag = "DIRECTORY"
+    _enable_tag="ENABLE"
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _auto_refresh_tag = "AUTO_REFRESH"
     _notification_integration_tag = "NOTIFICATION_INTEGRATION"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE","DEF"]
+    _allowed_values_protocols=['s3','s3china','s3gov','gcs','azure']
+    _allowed_values_s3_encryption_type=['AWS_CSE','AWS_SSE_S3','AWS_SSE_KMS']
+    _allowed_values_gcs_encyption_type=['GCS_SSE_KMS']
+    _allowed_values_azure_encyption_type=['AZURE_CSE']
+
 
 class FileFormat:
     def __init__(self):
@@ -156,6 +172,11 @@ class FileFormat:
     _schema_tag = "SCHEMA"
     _name_tag = "FILE_FORMAT"
     _type_tag = "TYPE"
+    _compression_tag="COMPRESSION"
+    _record_delimiter_tag="RECORD_DELIMITER"
+    _field_delimiter_tag="FIELD_DELIMITER"
+    _multi_line_tag="MULTI_LINE"
+    _file_extension_tag="FILE_EXTENSION"
     _parse_header_tag = "PARSE_HEADER"
     _skip_header_tag = "SKIP_HEADER"
     _skip_blank_lines_tag = "SKIP_BLANK_LINES"
@@ -188,7 +209,12 @@ class FileFormat:
     _disable_auto_convert_tag = "DISABLE_AUTO_CONVERT"
     _allowed_values_type = ["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"]
     _allowed_values_binary_format = ["HEX","BASE64","UTF8"]  
-    _allowed_values_compression_for_csv=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLAT","RAW_DEFLATE","NONE"]  
+    _allowed_values_compression_for_csv=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
+    _allowed_values_compression_for_json=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]  
+    _allowed_values_compression_for_avro=["AUTO","GZIP","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]  
+    _allowed_values_compression_for_parquet=["AUTO","LZO","SNAPPY"]
+    _allowed_values_compression_for_xml=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
+    _allowed_values_encoding=["BIG5","EUCJP","EUCKR","GB18030","IBM420","IBM424","IBM949","ISO2022CN","ISO2022JP","ISO2022KR","ISO88591","ISO88592","ISO88595","ISO88596","ISO88597","ISO88598","ISO88599","ISO885915","KOI8R","SHIFTJIS","UTF8","UTF16","UTF16BE","UTF16LE","UTF32","UTF32BE","UTF32LE","WINDOWS874","WINDOWS949","WINDOWS1250","WINDOWS1251","WINDOWS1252","WINDOWS1253","WINDOWS1254","WINDOWS1255","WINDOWS1256"]
 
 class Snowpipe:
     def __init__(self):
@@ -202,6 +228,7 @@ class Snowpipe:
     _integration_tag =  "INTEGRATION"
     _comment_tag = "COMMENT"
     _file_type_tag = "FILE_TYPE"
+    _copyinto_query_tag = "COPYINTO_QUERY"
 
 class Stream:
     def __init__(self):
@@ -244,7 +271,7 @@ class User:
     _enable_unredacted_query_syntax_error_tag = "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR"
     _allowed_values_display_name = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
     _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
-    _allowed_values_default_secondary_roles = ['ALL',{}]
+    _allowed_values_default_secondary_roles = ['ALL']
 
 
 class Task:
@@ -301,6 +328,23 @@ class Warehouse:
     _allowed_values_scaling_policy = ["STANDARD","ECONOMY"]
     _allowed_values_warehouse_type = ["STANDARD","SNOWPARK-OPTIMIZED"]
     _allowed_values_warehouse_size = ["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE","XXXLARGE","X4LARGE","X5LARGE","X6LARGE"]
+    _min_value_query_acceleration_max_scale_factor=0
+    _max_value_query_acceleration_max_scale_factor=100
+    _default_value_max_concurrency_level=8
+    _min_value_statement_timeout_in_seconds=0
+    _max_value_statement_timeout_in_seconds=604800
+    _allowed_max_cluster_size_for_warehouse_type={
+        "XSMALL":300,
+        "SMALL":300,
+        "MEDIUM":300,
+        "LARGE":160,
+        "XLARGE":80,
+        "2XLARGE":40,
+        "3XLARGE":20,
+        "4XLARGE":10,
+        "5XLARGE":10,
+        "6XLARGE":10
+    }
 
 class CopyInto:
     _table_tag = "TABLE"
@@ -335,6 +379,21 @@ class NotificationIntegrationEmail:
     _allowed_number_of_recipients = 50
     _allowed_values_type=["EMAIL"]
     _max_allowed_recepients=50
+    _allowed_length_subject=256
+
+class Alert:
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
+    _name_tag="NAME"
+    _schedule_tag="SCHEDULE"
+    _if_tag="IF"
+    _then_tag="THEN"
+    _action_type_tag="ACTION_TYPE"
+    _action_sql_tag="ACTION_SQL"
+    _integration_name_tag="INTEGRATION_NAME"
+    _email_address_tag="EMAIL_ADDRESS"
+    _email_content_tag="EMAIL_CONTENT"
+    _email_subject_tag="EMAIL_SUBJECT"
 
 
 class StorageIntegrationAws:

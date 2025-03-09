@@ -140,7 +140,7 @@ if st.session_state[ss.INITIALIZED]:
             logger.info('app-error')
             logger.info(e)
             if st.session_state[ss.CHAT_HISTORY][-1][ss.ROLE]!=ss.ASSISTANT:
-                st.session_state[ss.CHAT_HISTORY].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
+                st.session_state[ss.CHAT_HISTORY].append(helper.msg_template(role=ss.ASSISTANT, prompt=str(e)))
             with st.chat_message(ss.ASSISTANT):
                 st.markdown('Looks like I dont have the tools to help with this request right now. Apologies :(')
             st.session_state[ss.CHAT_DISABLED] = False

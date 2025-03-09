@@ -228,6 +228,7 @@ class Snowpipe:
     _integration_tag =  "INTEGRATION"
     _comment_tag = "COMMENT"
     _file_type_tag = "FILE_TYPE"
+    _copyinto_query_tag = "COPYINTO_QUERY"
 
 class Stream:
     def __init__(self):
