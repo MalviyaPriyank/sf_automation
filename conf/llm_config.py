@@ -828,6 +828,70 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_storage_integration_object",
+                "description":"creates storage integration object for the user. NAME, ENABLED, and STORAGE_PROVIDER are required inputs from user.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"user provided NAME for storage integration object"
+                            },
+                            "ENABLED": {
+                                "type":"string",
+                                "description":"user provided ENABLED for storage integration object"
+                            },
+                            "STORAGE_PROVIDER": {
+                                "type":"string",
+                                "description":"user provided STORAGE_PROVIDER for storage integration object"
+                            },
+                            "TYPE": {
+                                "type":"string",
+                                "description":"user provided TYPE for storage integration object"
+                            },
+                            "STORAGE_ALLOWED_LOCATIONS": {
+                                "type":"string",
+                                "description":"user provided STORAGE_ALLOWED_LOCATIONS for storage integration object. should be passed as a tuple with each value enclosed in single quote, example: STORAGE_ALLOWED_LOCATIONS=('val1','val2')"
+                            },
+                            "STORAGE_BLOCKED_LOCATIONS": {
+                                "type":"string",
+                                "description":"user provided STORAGE_BLOCKED_LOCATIONS for storage integration object. should be passed as a tuple with each value enclosed in single quote, example: STORAGE_BLOCKED_LOCATIONS=('val1','val2')"
+                            },
+                            "STORAGE_AWS_ROLE_ARN": {
+                                "type":"string",
+                                "description":"user provided STORAGE_AWS_ROLE_ARN for storage integration object"
+                            },
+                            "STORAGE_AWS_EXTERNAL_ID": {
+                                "type":"string",
+                                "description":"user provided STORAGE_AWS_EXTERNAL_ID for storage integration object"
+                            },
+                            "STORAGE_AWS_OBJECT_ACL": {
+                                "type":"string",
+                                "description":"user provided STORAGE_AWS_OBJECT_ACL for storage integration object"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"user provided COMMENT for storage integration object"
+                            },
+                            "AZURE_TENANT_ID": {
+                                "type":"string",
+                                "description":"user provided AZURE_TENANT_ID for storage integration object"
+                            },
+                            "USE_PRIVATELINK_ENDPOINT": {
+                                "type":"string",
+                                "description":"user provided USE_PRIVATELINK_ENDPOINT for storage integration object"
+                            },
+                        },
+                        "required":[
+                            "NAME","ENABLED","STORAGE_PROVIDER"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"create_snowpipe_object",
                 "description":"creates a snowpipe object for the user. After creating snowpipe, recommend user to create error integration which would alert them in case of failures in snowpipe.",
                 "inputSchema": {

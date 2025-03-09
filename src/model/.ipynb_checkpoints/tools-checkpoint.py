@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -62,7 +62,8 @@ class LLMTools:
                                   ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
                                   ss.STREAM_OBJ: stream.Stream(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id),
-                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id)
+                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id),
+                                  ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -222,12 +223,32 @@ class LLMTools:
         return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
 
 
-    def create_role_object(self, NAME, COMMENT="DEFAULT"):
+    def create_role_object(self, NAME, COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.ROLE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.ROLE_OBJ, data_dict)
+
+
+    def create_storage_integration_object(self,
+                                            NAME,
+                                            ENABLED,
+                                            STORAGE_PROVIDER,
+                                            TYPE="NONE",
+                                            STORAGE_ALLOWED_LOCATIONS="NONE",
+                                            STORAGE_BLOCKED_LOCATIONS="NONE",
+                                            STORAGE_AWS_ROLE_ARN="NONE",
+                                            STORAGE_AWS_EXTERNAL_ID="NONE",
+                                            STORAGE_AWS_OBJECT_ACL="NONE",
+                                            COMMENT="NONE",
+                                            AZURE_TENANT_ID="NONE",
+                                            USE_PRIVATELINK_ENDPOINT="NONE"):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.STORAGE_INTEGRATION_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.STORAGE_INTEGRATION_OBJ, data_dict)
 
 
     def create_schema_object(self,
