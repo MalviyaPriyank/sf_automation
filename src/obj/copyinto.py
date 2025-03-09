@@ -81,7 +81,11 @@ class OnError:
         return instance._on_error
 
     def __set__(self,instance,value):
-        instance._on_error = value
+        if value=="NONE":
+            instance._on_error=value
+        else:
+            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_on_error,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._on_error = value
 
     def __delete__(self,instance):
         del instance._on_error
@@ -94,7 +98,8 @@ class SizeLimit:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._size_limit = value
-        elif vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._size_limit = value
 
     def __delete__(self,instance):
@@ -108,7 +113,8 @@ class Purge:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._purge = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._purge = value
 
     def __delete__(self,instance):
@@ -122,7 +128,8 @@ class ReturnFailedOnly:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._return_failed_only = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._return_failed_only = value
 
     def __delete__(self,instance):
@@ -164,7 +171,8 @@ class EnforceLength:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._enforce_length = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
             instance._enforce_length = value
 
     def __delete__(self,instance):

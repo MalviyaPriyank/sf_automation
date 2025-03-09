@@ -194,7 +194,7 @@ class Snowpipe:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AS {self.copy_into} '
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  '
 
 
     def add_properties_to_query(self):
@@ -212,6 +212,7 @@ class Snowpipe:
                     self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
                 if prop == gv._file_type_tag:
                     self.qry = f" {self.qry} {gv._file_type_tag} = {self.attr.file_type} "
+        self.qry= self.qry + f" AS {self.copy_into}"
 
     def prepare_query(self):
         self.set_object_properties_flag()
