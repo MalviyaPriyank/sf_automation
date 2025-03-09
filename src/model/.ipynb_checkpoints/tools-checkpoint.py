@@ -213,7 +213,8 @@ class LLMTools:
                                     END_TIMESTAMP="NONE",
                                     NOTIFY_USERS="ADMIN",
                                     TRIGGERS_ON="75",
-                                    DO="SUSPEND"):
+                                    THRESHOLD="NONE",
+                                    ACTION="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -507,9 +508,13 @@ class LLMTools:
                             SCHEDULE,
                             DATABASE,
                             SCHEMA,
+                            CONDITION,
+                            ACTION,
+                            ACTION_TYPE,
                             IF="NONE",
                             THEN="NONE",
-                            WAREHOUSE="NONE"):
+                            WAREHOUSE="NONE",
+                            COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}

@@ -448,35 +448,39 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user provided value for NAME for database object"
+                                "description":"user provided value for NAME for resource monitor object"
                             },
                         "CREDIT_QUOTA": {
                                 "type":"string",
-                                "description":"user provided value for CREDIT_QOUTA for database object"
+                                "description":"user provided value for CREDIT_QOUTA for resource monitor object"
                             },
                         "FREQUENCY": {
                                 "type":"string",
-                                "description":"user provided value for FREQUENCY for database object"
+                                "description":"user provided value for FREQUENCY for resource monitor object"
                             },
                         "START_TIMESTAMP": {
                                 "type":"string",
-                                "description":"user provided value for START_TIMESTAMP for database object"
+                                "description":"user provided value for START_TIMESTAMP for resource monitor object"
                             },
                         "END_TIMESTAMP": {
                                 "type":"string",
-                                "description":"user provided value for END_TIMESTAMP for database object"
+                                "description":"user provided value for END_TIMESTAMP for resource monitor object"
                             },
                         "NOTIFY_USERS": {
                                 "type":"string",
-                                "description":"user provided value for NOTIFY_USERS for database object"
+                                "description":"user provided value for NOTIFY_USERS for resource monitor object"
                             },
-                        "TRIGGERS_ON": {
+                        "TRIGGERS": {
                                 "type":"string",
-                                "description":"user provided value for TRIGGERS_ON for database object"
+                                "description":"user provided value for TRIGGERS for resource monitor object.  ask user if they want to setup single action or multiple based on which values passed should be either 'SINGLE' or 'MULTIPLE' or 'NONE'"
                             },
-                        "DO": {
+                        "THRESHOLD": {
                                 "type":"string",
-                                "description":"user provided value for DO for database object"
+                                "description":"user provided value for THRESHOLD for resource monitor object. If TRIGGERS parameter value is 'MULTIPLE', sets list of numbers having threshold values for each action"
+                            },
+                            "ACTION": {
+                                "type":"string",
+                                "description":"user provided value for ACTION for resource monitor object. list of actions to be taken against each THRESHOLD. List can only be [SUSPEND, SUSPEND_IMMEDIATE, NOTIFY]"
                             },
                             
                         },
