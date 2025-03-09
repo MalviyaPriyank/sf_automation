@@ -37,7 +37,8 @@ from valueexception import (
     StringMustBeOfAllowedLength,
     BaseValueMustBeLessThanOrEqualReferenceValue,
     CannotSetBothParameters,
-    MustBeOfLength
+    MustBeOfLength,
+    MustBeATuple
 )
 
 class ValidateValue:
@@ -208,6 +209,13 @@ class ValidateValue:
 
         else:
             raise MustBeAList(object_type,attr_name)
+        
+    @staticmethod
+    def is_tuple(value,object_type,object_name):
+        if isinstance(value,tuple):
+            return True
+        else:
+            raise MustBeATuple(object_type,object_name)
 
     @staticmethod
     def is_valid_collation_specifier(value,object_type,attr_name,valid_specifiers):

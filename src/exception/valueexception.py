@@ -162,4 +162,9 @@ class MustBeOfLength(AttributeValidationError):
         message=f"must be of length {length}"
         super().__init__(object_type, attr_name, message)
 
+class MustBeATuple(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message="must be a Tuple"
+        super().__init__(object_type, attr_name, message)
+
     

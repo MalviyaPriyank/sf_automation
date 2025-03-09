@@ -403,7 +403,7 @@ class Alert:
     _email_subject_tag="EMAIL_SUBJECT"
 
 
-class StorageIntegrationAws:
+class StorageIntegration:
     _name_tag="NAME"
     _type_tag="TYPE"
     _enabled_tag="ENABLED"
@@ -414,8 +414,9 @@ class StorageIntegrationAws:
     _storage_aws_external_id_tag="STORAGE_AWS_EXTERNAL_ID"
     _storage_aws_object_acl_tag="STORAGE_AWS_OBJECT_ACL"
     _allowed_value_type="EXTERNAL_STAGE"
-    _allowed_value_storage_provider=['S3','S3CHINA','S3GOV']
+    _allowed_value_storage_provider=['S3','GCS','AZURE','S3CHINA','S3GOV']
     _comment_tag="COMMENT"
+    _azure_tenant_id_tag="AZURE_TENANT_ID"
     _use_private_link_endpoint_tag="USE_PRIVATELINK_ENDPOINT"
 
 class Privilege:
