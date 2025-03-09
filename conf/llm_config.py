@@ -866,10 +866,6 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for INTEGRATION for snowpipe object"
                             },
-                			"FILE_TYPE": {
-                                "type":"string",
-                                "description":"user provided value for FILE_TYPE for snowpipe object"
-                            },
                 			"COMMENT": {
                                 "type":"string",
                                 "description":"user provided value for COMMENT for copyinto object"

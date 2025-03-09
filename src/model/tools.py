@@ -373,8 +373,7 @@ class LLMTools:
                                ERROR_INTEGRATION="NONE",
                                AWS_SNS_TOPIC="NONE",
                                INTEGRATION="NONE",
-                               COMMENT="NONE",
-                               FILE_TYPE="NONE"):
+                               COMMENT="NONE"):
         
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
@@ -388,7 +387,7 @@ class LLMTools:
             self.logger.info(f'Creating snowpipe for table {table_values[value]} with copyinto query {copyinto_values[value]}')
             data_dict['TABLE'] = table_values[value].replace('[','').replace(']','').replace('"','')
             data_dict['NAME'] = f"PIPE_{data_dict['TABLE']}"
-            data_dict['COPYINTO_QUERY'] = copyinto_values[value]
+            data_dict['COPYINTO_QUERY'] = copyinto_values[value].replace('{table}', data_dict['TABLE'])
             snowpipe_obj = self.obj_class_mapping[ss.SNOWPIPE_OBJ].create_object(**data_dict)
         return f'SNOWPIPE object created successfully for all tables'
 
