@@ -1306,7 +1306,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_alert_object",
-                "description":"creates snowflake alert object for the user. NAME and SCHEDULE are the required parameters. depends on notification object. notification object has to be created before creating alert object.",
+                "description":"creates snowflake alert object for the user. NAME, SCHEDULE, DATABASE, and SCHEMA are the required parameters. depends on notification object. notification object has to be created before creating alert object.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1314,6 +1314,14 @@ tools = {
                             "NAME": {
                                 "type":"string",
                                 "description":"NAME for alert object"
+                            },
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"DATABASE for alert object"
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"SCHEMA for alert object"
                             },
                             "SCHEDULE": {
                                 "type":"string",
@@ -1337,7 +1345,7 @@ tools = {
                             }
                         },
                         "required":[
-                            "NAME","SCHEDULE","IF","THEN"
+                            "NAME","SCHEDULE","IF","THEN","DATABASE","SCHEMA"
                         ]
                     }
                 }
