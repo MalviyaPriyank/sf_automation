@@ -52,7 +52,7 @@ class LLMTools:
                                   ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.SNOWPIPE_OBJ: snowpipe.Snowpipe(self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  #'resourcemonitor': resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
+                                  ss.RESOURCE_MONITOR_OBJ: resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
                                   ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
                                   ss.SCHEMA_OBJ: schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
