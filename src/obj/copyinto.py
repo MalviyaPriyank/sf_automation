@@ -478,14 +478,13 @@ class CopyInto:
                     self.qry = f" {self.qry} {gv._file_processor_tag} = {self.attr.file_processor} "
                 if prop == gv._scanner_tag:
                     self.qry = f" {self.qry} {gv._file_processor_tag} = ( {gv._scanner_tag} = {self.attr.scanner} SCANNER_OPTIONS=("
-                    for props in self.property_lst:
-                        if props==gv._project_name_tag:
-                            self.qry=f" {self.qry} {gv._project_name_tag} = {self.attr.project_name}"
-                        if props==gv._model_name_tag:
-                            self.qry=f" {self.qry} {gv._model_name_tag} = {self.attr.model_name}"
-                        if props==gv._model_version_tag:
-                            self.qry=f" {self.qry} {gv._model_version_tag} = {self.attr.model_version}"
-                        self.qry=f"{self.qry} ))"
+                    if gv._project_name_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gv._project_name_tag} = {self.attr.project_name}"
+                    if gv._model_name_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gv._model_name_tag} = {self.attr.model_name}"
+                    if gv._model_version_tag in self.property_lst:
+                        self.qry=f" {self.qry} {gv._model_version_tag} = {self.attr.model_version}"
+                    self.qry=f"{self.qry} ))"
                 if prop == gv._load_mode_tag:
                     self.qry = f" {self.qry} {gv._load_mode_tag} = {self.attr.load_mode} "
 
