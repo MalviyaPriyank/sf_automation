@@ -89,34 +89,58 @@ class NotifyUsers:
     def __delete__(self,instance):
         del instance._notify_users
 
-class TriggersOn:
+class Triggers:
     def __get__(self,instance,owner):
-        return instance._triggers_on
+        return instance._triggers
     
     def __set__(self,instance,value):
         if value=="NONE":
-            instance._triggers_on=value
+            instance._triggers=value
         else:
-            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._triggers_on=value
+            vv.is_allowed_value(value=value.upper(),allowed_list=gv._allowed_values_triggers,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._triggers=value
         
-    
     def __delete__(self,instance):
-        del instance._triggers_on
+        del instance._triggers
 
-class Do:
+class Threshold:
     def __get__(self,instance,owner):
-        return instance._do
+        return instance._threshold
     
     def __set__(self,instance,value):
-        if value=="NONE":
-            instance._do=value
-        else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_do,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._do=value
-
+        if instance._triggers!="NONE":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            if instance._triggers=="SINGLE":
+                vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._threshold=value
+            elif instance._triggers=="MULTIPLE":
+                vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._threshold=value
+        elif instance._triggers=="NONE":
+            instance._threshold="NONE"
+        
     def __delete__(self,instance):
-        del instance._do
+        del instance._threshold
+
+class Action:
+    def __get__(self,instance,owner):
+        return instance._action
+    
+    def __set__(self,instance,value):
+        if instance._triggers!="NONE":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            if instance._triggers=="SINGLE":
+                vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._action=value
+            elif instance._triggers=="MULTIPLE":
+                vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[],**{"MUST_BE_OF_LENGTH":len(instance._threshold)})
+                instance._action=value
+        elif instance._triggers=="NONE":
+            instance._action="NONE"
+
+        
+    def __delete__(self,instance):
+        del instance._action
 
 class ResourceMonitorAttrs:
     def __init__(self,parent):
@@ -128,8 +152,9 @@ class ResourceMonitorAttrs:
     start_timestamp = StartTimestamp()
     end_timestamp = EndTimestamp()
     notify_users = NotifyUsers()
-    triggers_on = TriggersOn()
-    do = Do()
+    triggers = Triggers()
+    threshold=Threshold()
+    action=Action()
 
 
 class ResourceMonitor:
@@ -161,11 +186,14 @@ class ResourceMonitor:
     def set_notify_users(self, value):
         self.attr.notify_users = value
 
-    def set_triggers_on(self, value):
-        self.attr.triggers_on = value
+    def set_triggers(self, value):
+        self.attr.triggers = value
 
-    def set_do(self, value):
-        self.attr.do = value
+    def set_threshold(self, value):
+        self.attr.threshold = value
+
+    def set_action(self, value):
+        self.attr.action = value
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -179,8 +207,9 @@ class ResourceMonitor:
         set_flag(gv._start_timestamp_tag,"_start_timestamp")
         set_flag(gv._end_timestamp_tag,"_end_timestamp")
         set_flag(gv._notify_users_tag,"_notify_users")
-        set_flag(gv._triggers_on_tag,"_triggers_on")
-        set_flag(gv._do_tag,"_do")
+        set_flag(gv._triggers_tag,"_triggers")
+        set_flag(gv._threshold_tag,"_threshold")
+        set_flag(gv._action_tag,"_action")
 
 
     def check_properties_to_set(self): 
@@ -206,10 +235,13 @@ class ResourceMonitor:
                     self.qry = f" {self.qry} {gv._end_timestamp_tag} = {self.attr.end_timestamp} "
                 if prop == gv._notify_users_tag:
                     self.qry = f" {self.qry} {gv._notify_users_tag} = {self.attr.notify_users} "
-                if prop == gv._triggers_on_tag:
-                    self.qry = f" {self.qry} {gv._triggers_on_tag} = {self.attr.triggers_on} "
-                if prop == gv._do_tag:
-                    self.qry = f" {self.qry} {gv._do_tag} = {self.attr.do} "
+                if prop == gv._triggers_tag:
+                    self.qry=f" {self.qry} TRIGGERS "
+                    if gv._triggers_tag.upper()=="SINGLE":
+                        self.qry = f" {self.qry} ON {self.attr.threshold} DO {self.attr.action} "
+                    if gv._triggers_tag.upper()=="MULTIPLE":
+                        for i in range(0,len(self.attr.threshold)):
+                            self.qry=f" {self.qry} ON {self.attr.threshold[i]} DO {self.attr.action[i]} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -224,30 +256,14 @@ class ResourceMonitor:
     def create_object(session,**kwargs):
         rm = ResourceMonitor(session) 
         rm.validate_user()
-
         rm.set_name(kwargs[gv._name_tag])
-        rm.set_name_tag(gv._name_tag)
-
         rm.set_credit_quota(kwargs[gv._credit_quota_tag])
-        rm.set_credit_quota_tag(gv._credit_quota_tag)
-
         rm.set_frequency(kwargs[gv._frequency_tag])
-        rm.set_frequency_tag(gv._frequency_tag)
-
         rm.set_start_timestmap(kwargs[gv._start_timestamp_tag])
-        rm.set_start_timestamp_tag(gv._start_timestamp_tag)
-
         rm.set_end_timestamp(kwargs[gv._end_timestamp_tag])
-        rm.set_end_timestamp_tag(gv._end_timestamp_tag)
-
         rm.set_notify_users(kwargs[gv._notify_users_tag])
-        rm.set_notify_users_tag(gv._notify_users_tag)
-
-        rm.set_triggers_on(kwargs[gv._triggers_on_tag])
-        rm.set_triggers_on_tag(gv._triggers_on_tag)
-
-        rm.set_do(kwargs[gv._do_tag])
-        rm.set_do_tag(gv._do_tag)
-
+        rm.set_triggers(kwargs[gv._triggers_tag])
+        rm.set_threshold(kwargs[gv._threshold_tag])
+        rm.set_action(kwargs[gv._action_tag])
         rm.prepare_query()
         rm.create_resource_monitor()

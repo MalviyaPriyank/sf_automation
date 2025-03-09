@@ -36,7 +36,8 @@ from valueexception import (
     MustBeSingleByteCharacter,
     StringMustBeOfAllowedLength,
     BaseValueMustBeLessThanOrEqualReferenceValue,
-    CannotSetBothParameters
+    CannotSetBothParameters,
+    MustBeOfLength
 )
 
 class ValidateValue:
@@ -187,16 +188,24 @@ class ValidateValue:
                 raise MustBeValidCRON(object_type,attr_name)
 
     @staticmethod
-    def is_list(value,object_type,attr_name,*largs):
+    def is_list(value,object_type,attr_name,*largs,**kwargs):
         if isinstance(value,list):
             if len(largs) != 0:
                 list_len = len(value)
-                if list_len < largs[0]:
+                if list_len < largs[0]: 
                     return True 
                 else:
                     raise MustBeWithinLimit(object_type,attr_name,largs[0])
             elif len(largs) == 0:
                 return True
+            
+            if len(kwargs)!=0:
+                if "MUST_BE_OF_LENGTH" in kwargs.keys():
+                    if len(value) == kwargs["MUST_BE_OF_LENGTH"]:
+                        return True
+                    else:
+                        raise MustBeOfLength(object_type,attr_name,kwargs['MUST_BE_OF_LENGTH'])
+
         else:
             raise MustBeAList(object_type,attr_name)
 

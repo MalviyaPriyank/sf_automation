@@ -64,9 +64,11 @@ class ResourceMonitor:
     _start_timestamp_tag = "START_TIMESTAMP"
     _end_timestamp_tag = "END_TIMESTAMP"
     _notify_users_tag = "NOTIFY_USERS"
-    _triggers_on_tag = "TRIGGERS ON"
-    _do_tag = "DO"
-    _allowed_values_do = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
+    _triggers_tag= "TRIGGERS"
+    _threshold_tag="THRESHOLD"
+    _action_tag="ACTION"
+    _allowed_values_triggers=["SINGLE","MULTIPLE"]
+    _allowed_values_action = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
 
 class Schema:
     def __init__(self):
