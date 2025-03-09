@@ -45,6 +45,8 @@ else:
 
 if ss.CHAT_HISTORY not in st.session_state:
     st.session_state[ss.CHAT_HISTORY] = []
+    for message in lcs.SYSTEM_PROMPTS:
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=message, prompt=lcs.SYSTEM_PROMPTS[message]))
 
 if ss.INITIALIZED not in st.session_state:
     st.session_state[ss.INITIALIZED] = False
@@ -59,8 +61,8 @@ if not st.session_state[ss.INITIALIZED]:
     st.session_state.bedrock_obj = Bedrock()
     retrieval_workflow = st.session_state.bedrock_obj.get_retriever_obj()
     st.session_state[ss.TOOLS] = LLMTools(sf_session=st.session_state.session,retrieval_workflow = retrieval_workflow,root = root, logger=logger)
-    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=lcs.SYSTEM_PROMPT_USER))
-    st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.SYSTEM_PROMPT_ASST))
+    #st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=lcs.SYSTEM_PROMPT_USER))
+    #st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.SYSTEM_PROMPT_ASST))
     st.session_state[ss.INITIALIZED] = True
 
 if st.session_state[ss.INITIALIZED]:

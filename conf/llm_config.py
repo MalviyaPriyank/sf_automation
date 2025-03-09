@@ -19,30 +19,6 @@ tools = {
     "tools": [
         {
             "toolSpec": {
-                "name":"addition",
-                "description":"perform addition of two numbers",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "num1": {
-                                "type":"string",
-                                "description":"User to provide value for first number"
-                            },
-                            "num2": {
-                                "type":"string",
-                                "description":"User to provide value for second number"
-                            }
-                        },
-                        "required":[
-                            "num1","num2"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
                 "name":"create_database_object",
                 "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
                 "inputSchema": {
@@ -1126,26 +1102,6 @@ tools = {
                             },
                         "required":[
                             "DATABASE","SCHEMA","NAME","SQL","WAREHOUSE"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
-                "name":"get_workflow",
-                "description":"retrieves the workflow setup instructions",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "query": {
-                                "type":"string",
-                                "description":"user query"
-                            }
-                        },
-                        "required":[
-                            "query"
                         ]
                     }
                 }

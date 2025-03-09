@@ -325,7 +325,7 @@ class LLMTools:
                             database,
                             schema):
         self.logger.info(f'creating {ss.TABLE_OBJ} object with database={database} and schema={schema}')
-        table_list = self.obj_class_mapping['table'].create_table_using_files_from_stage(database,schema)
+        table_list = self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
         self.logger.info(f"table list returned {table_list}")
         return f'Here is the list of tables created : [{table_list}]'
 
@@ -367,7 +367,7 @@ class LLMTools:
             self.logger.info(f'Creating copyinto query for table {value}')
             data_dict['TABLE'] = value.replace('[','').replace(']','').replace('"','')
             self.logger.info(data_dict)
-            copyinto_queries.append(self.obj_class_mapping['copyinto'].create_query(**data_dict))
+            copyinto_queries.append(self.obj_class_mapping[ss.COPYINTO_OBJ].create_query(**data_dict))
         return f'COPYINTO queries created successfully. Heres the table-query mapping: {copyinto_queries}'
 
 
@@ -396,8 +396,7 @@ class LLMTools:
             data_dict['TABLE'] = table_values[value].replace('[','').replace(']','').replace('"','')
             data_dict['NAME'] = f"PIPE_{data_dict['TABLE']}"
             data_dict['COPYINTO_QUERY'] = copyinto_values[value]
-            #self.logger.info(f"Creating snowpipe object for table {data_dict['TABLE']}")
-            snowpipe_obj = self.obj_class_mapping['snowpipe'].create_object(**data_dict)
+            snowpipe_obj = self.obj_class_mapping[ss.SNOWPIPE_OBJ].create_object(**data_dict)
         return f'SNOWPIPE object created successfully for all tables'
 
 
@@ -470,7 +469,7 @@ class LLMTools:
                              pipe_schema,
                              pipe_name):
         self.logger.info(f'Getting copyhistory for pipe')
-        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_pipe(pipe_db=pipe_db,
+        return self.obj_class_mapping[ss.COPY_HISTORY_OBJ].get_load_history_for_a_pipe(pipe_db=pipe_db,
                                                         pipe_schema=pipe_schema,
                                                         pipe_name=pipe_name)
 
@@ -480,7 +479,7 @@ class LLMTools:
                              table_schema,
                              table_name):
         self.logger.info(f'Getting copyhistory for table')
-        return self.obj_class_mapping['copyhistory'].get_load_history_for_a_table(table_db=table_db,
+        return self.obj_class_mapping[ss.COPY_HISTORY_OBJ].get_load_history_for_a_table(table_db=table_db,
                                                         table_schema=table_schema,
                                                         table_name=table_name)
 
