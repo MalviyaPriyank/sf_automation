@@ -99,20 +99,19 @@ class ValidateObject:
         df=session.sql("SHOW WAREHOUSES")
         df=df.select(col("*")).collect()
         wh_df=session.create_dataframe(df)
-        wh_count=wh_df.filter(col("NAME")==f'{warehouse_name}').count()
-        if wh_count!=0:
+        wh_count=wh_df.filter(col("NAME")==warehouse_name.upper()).count()
+        if wh_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type='WAREHOUSE',object_name=warehouse_name)
         
     @staticmethod
     def role_exist(session,role_name):
-        df=session.sql("SHOW ROLES").collect()
-        role_list = []
-        for role in df:
-            role_list.append(role[1])
-        
-        if role_name in role_list:
+        df=session.sql("SHOW ROLES")
+        df=df.select(col("*")).collect()
+        role_df=session.create_dataframe(df)
+        role_count=role_df.filter(col("NAME")==role_name.upper()).count()
+        if role_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type='ROLE',object_name=role_name)
@@ -129,12 +128,11 @@ class ValidateObject:
     def task_exist(session,database,schema,task):
         session.sql(f"USE DATABASE {database}").collect()
         session.sql(f"USE SCHEMA {schema}").collect()
-        df=session.sql(f"SHOW TASKS").collect()
-        task_list = []
-        for task in df:
-            task_list.append(task[1])
-
-        if task in task_list:
+        df=session.sql(f"SHOW TASKS")
+        df=df.select(col("*")).collect()
+        task_df=session.create_dataframe(df)
+        task_count=task_df.filter((col("NAME")==task.upper()) & ( col("DATABASE_NAME")==database.upper() )& (col("SCHEMA_NAME")==schema.upper()) ).count()
+        if task_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type='TASK',object_name=task)
@@ -145,7 +143,7 @@ class ValidateObject:
         df=df.select(col("*")).collect()
         df=session.create_dataframe(df)
         df_users=df.select(col("NAME"),col("EMAIL"))
-        exist_count=df_users.filter(col("NAME")==user_email).union(df_users.filter(col("EMAIL")== user_email)).count()
+        exist_count=df_users.filter(col("NAME")==user_email.upper()).union(df_users.filter(col("EMAIL")== user_email.upper())).count()
         if exist_count==0:
                 raise ObjectDoesNotExist(object_type='USER',object_name=user_email)
         return True
@@ -161,12 +159,11 @@ class ValidateObject:
     
     @staticmethod
     def is_valid_catalog(session,catalog_identifier,object_type):
-        df=session.sql(f"SHOW INTEGRATIONS").collect()
-        catalog_lst=[]
-        for internal_lst in df:
-            if 'CATALOG' in internal_lst[1]:
-                catalog_lst.append(internal_lst[0].upper())
-        if catalog_identifier in catalog_lst:
+        df=session.sql(f"SHOW INTEGRATIONS")
+        df=df.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        catalog_count=df.filter((col("TYPE")=="CATALOG") & (col("NAME")==catalog_identifier.upper()) ).count()
+        if catalog_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type=object_type,object_name=catalog_identifier)
@@ -197,7 +194,7 @@ class ValidateObject:
         df=df.select(col("*")).collect()
         int_df=session.create_dataframe(df)
         int_count=int_df.filter(col("NAME") ==f'{integration_name.upper()}').count()        
-        if int_count > 0:
+        if int_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type="INTEGRATION",object_name=integration_name)
@@ -208,7 +205,7 @@ class ValidateObject:
         df=df.select(col("*")).collect()
         rm_df=session.create_dataframe(df)
         rm_count=rm_df.filter(col("NAME") ==f'{resource_monitor_name.upper()}').count()        
-        if rm_count > 0:
+        if rm_count:
             return True
         else:
             raise ObjectDoesNotExist(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
@@ -253,7 +250,7 @@ class ValidateObject:
         df=session.sql('SHOW USERS')
         user_df=df.select(col("*")).collect()
         df=session.create_dataframe(user_df)
-        user_exist=df.select(col("name")).filter(col("name")== user_name).count()
+        user_exist=df.filter(col("name")== user_name.upper()).count()
         if user_exist:
             return True
         else:
