@@ -51,6 +51,9 @@ if ss.CHAT_HISTORY not in st.session_state:
 if ss.INITIALIZED not in st.session_state:
     st.session_state[ss.INITIALIZED] = False
 
+def disable_chat():
+    st.session_state[ss.CHAT_DISABLED] = True
+
 if not st.session_state[ss.INITIALIZED]:
     session_inst = session.Session()
     session_inst.set_user('RAJU')
@@ -68,23 +71,17 @@ if not st.session_state[ss.INITIALIZED]:
 if st.session_state[ss.INITIALIZED]:
     logger.info('session started')
             
-    if prompt := st.chat_input("What's on your mind?"):
-        if st.session_state[ss.CHAT_DISABLED] == False:
-            with st.chat_message(ss.USER):
-                st.markdown(prompt)
-            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=prompt))
-            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))                                         
-    
-            with st.chat_message(ss.ASSISTANT):
-                response = st.write_stream(helper.response_generator([ss.SHOVELING]))
-        else:
-            with st.chat_message(ss.USER):
-                st.markdown(prompt)
-            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))
-            with st.chat_message(ss.ASSISTANT):
-                response = st.write_stream(helper.response_generator(['Please wait while I complete the process.']))
+    if prompt := st.chat_input("What's on your mind?", disabled=st.session_state[ss.CHAT_DISABLED], on_submit=disable_chat):
+        
+        with st.chat_message(ss.USER):
+            st.markdown(prompt)
+        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, prompt=prompt))
+        st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt=prompt))                                         
+
+        with st.chat_message(ss.ASSISTANT):
+            st.write_stream(helper.response_generator([ss.SHOVELING]))
+        
         try: 
-            st.session_state[ss.CHAT_DISABLED] = True
             response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
             st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
             logger.info(f'response: {response}')
@@ -137,6 +134,7 @@ if st.session_state[ss.INITIALIZED]:
                     break 
 
             st.session_state[ss.CHAT_DISABLED] = False
+            st.rerun()
             
         except Exception as e:
             logger.info('app-error')
@@ -146,3 +144,4 @@ if st.session_state[ss.INITIALIZED]:
             with st.chat_message(ss.ASSISTANT):
                 st.markdown('Looks like I dont have the tools to help with this request right now. Apologies :(')
             st.session_state[ss.CHAT_DISABLED] = False
+            st.rerun()
