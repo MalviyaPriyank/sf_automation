@@ -5,6 +5,7 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+from datetime import datetime
 from valueexception import ( 
     MustStartWithAlphabet,
     MustNotHaveSpace,
@@ -38,7 +39,8 @@ from valueexception import (
     BaseValueMustBeLessThanOrEqualReferenceValue,
     CannotSetBothParameters,
     MustBeOfLength,
-    MustBeATuple
+    MustBeATuple,
+    InvalidTimestamp
 )
 
 class ValidateValue:
@@ -113,9 +115,9 @@ class ValidateValue:
 
         
     @staticmethod
-    def required_attribute_check(value,object_type,attr_name):
+    def required_attribute_check(value,object_type,attr_name,*largs):
         if value == "NONE":
-            raise IsARequiredAttribute(object_type,attr_name)
+            raise IsARequiredAttribute(object_type,attr_name,largs)
         
     @staticmethod
     def is_enclosed_in_single_quotes(value,object_type,attr_name):
@@ -306,5 +308,19 @@ class ValidateValue:
             raise CannotSetBothParameters(original_parameter,conflicting_parameter,object_type)
         elif conflicting_parameter_val=="NONE":
             return True
+        
+    @staticmethod
+    def is_valid_timestamp(object_name,attribute_name,value):
+        formats = [
+            "%Y-%m-%d %H:%M:%S.%f",       # Without timezone
+            "%Y-%m-%d %H:%M:%S.%f %z"     # With timezone
+        ]
+        
+        for fmt in formats:
+            try:
+                datetime.strptime(value, fmt)
+                return True
+            except ValueError:
+                raise InvalidTimestamp(object_name,attribute_name,value)
         
     

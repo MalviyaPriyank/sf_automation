@@ -37,6 +37,18 @@ class Schema:
     def __del__(self,instance):
         del instance._schema
 
+class ObjectType:
+    def __get__(self,instance,owner):
+        return instance._object_type
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_object_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._object_type = value
+    
+    def __delete__(self,instance):
+        del instance._object_type
+
 class Name:
     def __get__(self,instance,owner):
         return instance._name
@@ -52,42 +64,93 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
+
 class TableName:
     def __get__(self,instance,owner):
         return instance._table_name
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        if instance._object_type != 'STAGE':
+            vo.table_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,table_name=value)
+        elif instance._object_type=='STAGE':
+            vo.stage_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,stage_name=value)
         instance._table_name = value
     
     def __delete__(self,instance):
         del instance._table_name
 
-class Tag:
-    def __get__(self,instance,owner):
-        return instance._tag
-    
-    def __set__(self,instance,value):
-        instance._tag = value
-    
-    def __delete__(self,instance):
-        del instance._tag
 
 class At:
     def __get__(self,instance,owner):
         return instance._at
     
     def __set__(self,instance,value):
-        instance._at = value
+        if value=="NONE":
+            instance._at=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._at = value
     
     def __delete__(self,instance):
         del instance._at
+
+class Before:
+    def __get__(self,instance,owner):
+        return instance._before
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._before=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._before = value
+    
+    def __delete__(self,instance):
+        del instance._before
+
+class Timestamp:
+    def __get__(self,instance,owner):
+        return instance._timestamp
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._timestamp=value
+        else:
+            vv.is_valid_timestamp(object_name=instance.parent.__class__.__name__,attribute_name=self.__class__.__name__,value=value)
+            instance._timestamp = f"'{value}'"
+    
+    def __delete__(self,instance):
+        del instance._timestamp
+
+class Offset:
+    def __get__(self,instance,owner):
+        return instance._offset
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._offset=value
+        else:
+            vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._offset = 60*value
+    
+    def __delete__(self,instance):
+        del instance._timestamp
 
 class AppendOnly:
     def __get__(self,instance,owner):
         return instance._append_only
     
     def __set__(self,instance,value):
-        instance._append_only = value
+        if value=="NONE":
+            instance._append_only=value
+        else:
+            if (instance._object_type=="TABLE" 
+                or instance._object_type=="VIEW"):
+                vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._append_only = value
+            else:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for streams not on STANDARD TABLEs or VIEWs")
     
     def __delete__(self,instance):
         del instance._append_only
@@ -97,7 +160,13 @@ class InsertOnly:
         return instance._insert_only
     
     def __set__(self,instance,value):
-        instance._insert_only = value
+        if instance._object_type=="EXTERNAL TABLE":
+            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*['if stream is created on EXTERNAL TABLE'])
+            instance._insert_only=value
+        elif value=="NONE":
+            instance._insert_only=value
+        else:
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for streams that are not on EXTERNAL TABLEs")
 
     def __delete__(self,instance):
         del instance._insert_only
@@ -107,7 +176,11 @@ class ShowInitialRows:
         return instance._show_initial_rows
     
     def __set__(self,instance,value):
-        instance._show_initial_rows = value
+        if value=="NONE":
+            instance._show_initial_rows=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._show_initial_rows = value
 
     def __delete__(self,instance):
         del instance._show_initial_rows
@@ -117,7 +190,11 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        if value=="NONE":
+            instance._comment = value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._comment=f"'{value}'"
 
     def __delete__(self,instance):
         del instance._comment
@@ -130,9 +207,12 @@ class StreamAttrs:
     database=Database()
     schema=Schema()   
     name=Name()
+    object_type=ObjectType()
     table_name=TableName()
-    tag=Tag()
     at=At()
+    offset=Offset()
+    before=Before()
+    timestamp=Timestamp()
     append_only=AppendOnly()
     insert_only=InsertOnly()
     show_initial_rows=ShowInitialRows()
@@ -156,6 +236,9 @@ class Stream:
     def set_name(self, value):
         self.attr.name = value
 
+    def set_object_type(self, value):
+        self.attr.object_type = value
+
     def set_table_name(self, value):
         self.attr.table_name = value
 
@@ -164,6 +247,15 @@ class Stream:
 
     def set_at(self, value):
         self.attr.at = value
+
+    def set_before(self, value):
+        self.attr.before = value
+
+    def set_timestamp(self, value):
+        self.attr.timestamp = value
+
+    def set_offset(self, value):
+        self.attr.offset = value
 
     def set_append_only(self, value):
         self.attr.append_only = value
@@ -189,6 +281,9 @@ class Stream:
 
         set_flag(gv._tag_tag,"_tag")
         set_flag(gv._at_tag,"_at")
+        set_flag(gv._before_tag,"_before")
+        set_flag(gv._timestamp_tag,"_timestamp")
+        set_flag(gv._offset_tag,"_offset")
         set_flag(gv._append_only_tag,"_append_only")
         set_flag(gv._insert_only_tag,"_insert_only")
         set_flag(gv._show_initial_rows_tag,"_show_initial_rows")
@@ -201,15 +296,31 @@ class Stream:
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+        if self.attr.object_type.upper()=="TABLE":
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+        elif self.attr.object_type.upper()=="EXTERNAL TABLE":
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON EXTERNAL TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+        elif self.attr.object_type.upper()=="STAGE":
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON STAGE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+        elif self.attr.object_type.upper()=="VIEW":
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON VIEW {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._tag_tag:
-                    self.qry = f" {self.qry} {gv._tag_tag} = {self.attr.tag} "
-                if prop == gv._at_tag:
-                    self.qry = f" {self.qry} {gv._at_tag} = {self.attr.at} "
+                if gv._at_tag in self.property_lst:
+                    self.qry = f" {self.qry} {gv._at_tag} ("
+                    if gv._timestamp_tag in self.property_lst:
+                        self.qry=f" {gv._timestamp_tag} => {self.attr.timestamp}) "
+                    elif gv._offset_tag in self.property_lst:
+                        self.qry=f" {gv._offset_tag} => {self.attr.offset}) "
+                elif gv._before_tag in self.property_lst:
+                    self.qry = f" {self.qry} {gv._before_tag} ("
+                    if gv._timestamp_tag in self.property_lst:
+                        self.qry=f" {gv._timestamp_tag} => {self.attr.timestamp}) "
+                    elif gv._offset_tag in self.property_lst:
+                        self.qry=f" {gv._offset_tag} => {self.attr.offset} "
                 if prop == gv._append_only_tag:
                     self.qry = f" {self.qry} {gv._append_only_tag} = {self.attr.append_only} "
                 if prop == gv._insert_only_tag:

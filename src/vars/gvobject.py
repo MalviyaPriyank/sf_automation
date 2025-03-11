@@ -245,6 +245,11 @@ class Stream:
     _insert_only_tag="INSERT_ONLY"
     _show_initial_rows_tag="SHOW_INITIAL_ROWS"
     _comment_tag="COMMENT"
+    _object_type_tag="OBJECT_TYPE"
+    _before_tag="BEFORE"
+    _timestamp_tag="TIMESTAMP"
+    _offset_tag="OFFSET"
+    _allowed_values_object_type=["TABLE","EXTERNAL TABLE","STAGE","VIEW"]
 
 class User:
     def __init__(self):

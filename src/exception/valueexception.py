@@ -47,8 +47,12 @@ class MustBeBetween(AttributeValidationError):
         super().__init__(object_type, attr_name,f"must be between {val1} and {val2}")
 
 class IsARequiredAttribute(AttributeValidationError):
-    def __init__(self,object_type,attr_name):
-        super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL")
+    def __init__(self,object_type,attr_name,*largs):
+        if len(largs)==0:
+            super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL")
+        else:
+            for stmt in largs:
+                super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL,{stmt}")
 
 class MustBeJSON(AttributeValidationError):
     def __init__(self, object_type, attr_name, message):
@@ -165,6 +169,11 @@ class MustBeOfLength(AttributeValidationError):
 class MustBeATuple(AttributeValidationError):
     def __init__(self, object_type, attr_name):
         message="must be a Tuple"
+        super().__init__(object_type, attr_name, message)
+
+class InvalidTimestamp(AttributeValidationError):
+    def __init__(self, object_type, attr_name, value):
+        message=f" is not a valid timestamp. Use TIMESTAMP_TZ('{value}'), or TIMESTAMP_NTZ('{value}') to convert it to a valid timestamp"
         super().__init__(object_type, attr_name, message)
 
     
