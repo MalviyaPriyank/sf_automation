@@ -6,6 +6,8 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from datetime import datetime
+from croniter import croniter
+
 from valueexception import ( 
     MustStartWithAlphabet,
     MustNotHaveSpace,
@@ -40,7 +42,10 @@ from valueexception import (
     CannotSetBothParameters,
     MustBeOfLength,
     MustBeATuple,
-    InvalidTimestamp
+    InvalidTimestamp,
+    InvalidSchedule,
+    InvalidCron,
+    CustomErrorMessage
 )
 
 class ValidateValue:
@@ -164,13 +169,17 @@ class ValidateValue:
             raise MustBePositiveNumber(object_type,attr_name)
         
     @staticmethod
-    def is_between(value,num1,num2,object_type,attr_name):
+    def is_between(value,num1,num2,object_type,attr_name,**kwargs):
         try:
             num = float(value)
             if num1 <= num <= num2:
                 return True
             else:
-                raise MustBeBetween(object_type,attr_name,num1,num2)
+                if len(kwargs)!=0:
+                    raise MustBeBetween(object_type,attr_name,num1,num2)
+                else:
+                    raise CustomErrorMessage(object_type,attr_name,value,kwargs)
+                        
         except ValueError:
             raise MustBeValidNumber(object_type,attr_name)
 
@@ -322,5 +331,38 @@ class ValidateValue:
                 return True
             except ValueError:
                 raise InvalidTimestamp(object_name,attribute_name,value)
+            
+    @staticmethod
+    def is_valid_schedule(schedule,object_name,attribute_name):
+        split_schedule=schedule.split(' ')
+        if split_schedule[0] == 'USING' and split_schedule[1] == 'CRON':
+            return True,'CRON','NA'
+        elif (split_schedule[-1] == 'M' 
+              or split_schedule[-1]=='MINUTES'
+              or split_schedule[-1]=='MINUTE'):
+            return True,'MINUTE',split_schedule[0]
+        elif (split_schedule[-1] == 'H' 
+              or split_schedule[-1]=='HOURS'
+              or split_schedule[-1]=='HOUR'):
+            return True,'HOUR',split_schedule[0]
+        elif (split_schedule[-1] == 'S' 
+              or split_schedule[-1]=='SECONDS'
+              or split_schedule[-1]=='SECOND'):
+            return True,'SECOND',split_schedule[0]
+        else:
+            raise InvalidSchedule(object_name,attribute_name,['CRON','HOUR','MINUTE','SECOND'])
+    
+    @staticmethod
+    def is_valid_cron(value,object_name,attr_name):
+        try:
+            croniter(value, datetime.now())  
+            return True
+        except:
+            raise InvalidCron(object_name,attr_name)
+        
+
+
+        
+
         
     

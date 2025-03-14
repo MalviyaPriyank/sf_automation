@@ -71,8 +71,11 @@ class Warehouse:
         return instance._warehouse
     
     def __set__(self,instance,value):
-        vo.warehouse_exist(session=instance.parent.session, warehouse_name=value)
-        instance._warehouse = value
+        if value=="NONE":
+            instance._warehouse=value
+        else:
+            vo.warehouse_exist(session=instance.parent.session, warehouse_name=value)
+            instance._warehouse = value
 
     def __delete__(self,instance):
         del instance._warehouse
@@ -85,6 +88,7 @@ class UserTaskManagedInitialWarehouseSize:
         if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
         else:
+            vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._user_task_managed_initial_warehouse_size = value
 
     def __delete__(self,instance):
@@ -99,8 +103,22 @@ class Schedule:
         if value == 'NONE':
             instance._schedule = value
         else:
-            #vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._schedule = f"'{value}'"
+            ret,type,num=vv.is_valid_schedule(schedule=value,object_name=instance.parent.__class__.__name__,attribute_name=self.__class__.__name__)
+            if ret:
+                if type=='CRON':
+                    vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                    instance._schedule = f"'{value}'"
+                else:
+                    vv.is_positive_number(value=int(num),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                    if type=='SECOND':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_seconds,num2=gvtask._allowed_max_value_seconds,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        instance._schedule=f"'{value}'"
+                    elif type=='MINUTE':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_minute,num2=gvtask._allowed_max_value_minute,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        instance._schedule=f"'{value}'"
+                    elif type=='HOUR':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_hour,num2=gvtask._allowed_max_value_hour,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        instance._schedule=f"'{value}'"
 
     def __delete__(self,instance):
         del instance._schedule
@@ -173,7 +191,8 @@ class ErrorIntegration:
         if value == 'NONE':
             instance._error_integration = value
         else:
-            instance._error_integration = value
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
+            instance._error_integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._error_integration
@@ -187,10 +206,25 @@ class SuccessIntegration:
         if value == 'NONE':
             instance._success_integration = value
         else:
-            instance._success_integration = value
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
+            instance._success_integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._success_integration
+
+class LogLevel:
+    def __get__(self,instance,owner):
+        return instance._log_level
+    
+    def __set__(self,instance,value):
+        if value == 'NONE':
+            instance._log_level = value
+        else:
+            vv.is_allowed_value(gvtask._allowed_values_log_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._log_level = f"'{value}'"
+    
+    def __delete__(self,instance):
+        del instance._log_level
 
 class Comment:
     def __get__(self,instance,owner):
@@ -200,7 +234,7 @@ class Comment:
         if value == 'NONE':
             instance._comment = value
         else:
-            instance._comment = value
+            instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
@@ -226,10 +260,7 @@ class When:
         return instance._when
     
     def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._when = value
-        else:
-            instance._when = value
+        instance._when="NONE"
     
     def __delete__(self,instance):
         del instance._when
@@ -254,10 +285,7 @@ class Finalize:
         return instance._finalize
     
     def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._finalize = value
-        else:
-            instance._finalize = value
+        instance._finalize="NONE"
     
     def __delete__(self,instance):
         del instance._finalize
@@ -270,6 +298,7 @@ class TaskAutoRetryAttempts:
         if value == 'NONE':
             instance._task_auto_retry_attempts = value
         else:
+            vv.is_between(value=value,num1=gvtask._allowed_min_value_task_auto_retry_attempts,num2=gvtask._allowed_max_value_task_auto_retry_attempts,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._task_auto_retry_attempts = value
     
     def __delete__(self,instance):
@@ -283,6 +312,7 @@ class UserTaskMinimumTriggerIntervalInSeconds:
         if value == 'NONE':
             instance._user_task_minimum_trigger_interval_in_seconds = value
         else:
+            vv.is_between(value=value,num1=gvtask._allowed_min_value_user_task_minimum_trigger_interval_in_seconds,num2=gvtask._allowed_max_value_user_task_minimum_trigger_interval_in_seconds,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._user_task_minimum_trigger_interval_in_seconds = value
     
     def __delete__(self,instance):
@@ -293,24 +323,49 @@ class TargetCompletionInterval:
         return instance._target_completion_interval
     
     def __set__(self,instance,value):
+        object_type=instance.parent.__class__.__name__
+        attr_name=self.__class__.__name__
         if value == 'NONE':
             instance._target_completion_interval = value
         else:
-            instance._target_completion_interval = value
-    
+            if instance._user_task_managed_initial_warehouse_size!="NONE":
+                ret,type,num=vv.is_valid_schedule(schedule=value,object_name=instance.parent.__class__.__name__,attribute_name=self.__class__.__name__)
+                if ret:
+                    vv.is_positive_number(value=int(num),object_type=object_type,attr_name=attr_name)
+                    if type=='SECOND':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_seconds_task_comletion_interval,num2=gvtask._allowed_max_value_seconds_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                    elif type=='MINUTE':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_minutes_task_comletion_interval,num2=gvtask._allowed_max_value_minutes_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                    elif type=='HOUR':
+                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_hours_task_comletion_interval, num2=gvtask._allowed_max_value_hours_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                    instance._target_completion_interval = f"'{value}'"
+            else:
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for tasks with dedicated warehouse.Only needed for serverless tasks")
+
     def __delete__(self,instance):
         del instance._target_completion_interval
 
 class ServerlessTaskMinStatementSize:
+
     def __get__(self,instance,owner):
         return instance._serverless_task_min_statement_size
     
     def __set__(self,instance,value):
+        object_type=instance.parent.__class__.__name__
+        attr_name=self.__class__.__name__
         if value == 'NONE':
             instance._serverless_task_min_statement_size = value
         else:
-            instance._serverless_task_min_statement_size = value
-    
+            if instance._user_task_managed_initial_warehouse_size!="NONE":
+                vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name)
+                index_user_task_managed_initial_warehouse_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._user_task_managed_initial_warehouse_size)
+                index_serverless_task_min_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(value)
+                vv.is_between(value=index_serverless_task_min_statement_size,num1=0,num2=index_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Min_Statement_Size":"must be smaller than User_Task_Managed_Initial_Warehouse_Size"})
+                instance._serverless_task_min_statement_size=value
+            elif instance._user_task_managed_initial_warehouse_size=="NONE":
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for tasks with dedicated warehouse.Only needed for serverless tasks")
+
+
     def __delete__(self,instance):
         del instance._serverless_task_min_statement_size
 
@@ -320,10 +375,22 @@ class ServerlessTaskMaxStatementSize:
         return instance._serverless_task_max_statement_size
     
     def __set__(self,instance,value):
+        object_type=instance.parent.__class__.__name__
+        attr_name=self.__class__.__name__
         if value == 'NONE':
             instance._serverless_task_max_statement_size = value
         else:
-            instance._serverless_task_max_statement_size = value
+            if instance._user_task_managed_initial_warehouse_size!="NONE":
+                vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name)
+                index_user_task_managed_initial_warehouse_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._user_task_managed_initial_warehouse_size)
+                index_serverless_task_min_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._serverless_task_min_statement_size)
+                index_serverless_task_max_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(value)
+                vv.is_between(value=index_serverless_task_min_statement_size,num1=0,num2=index_serverless_task_max_statement_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Max_Statement_Size":"must be greater than or equal to Serverless_Task_Min_Statement_Size"})
+                vv.is_between(value=index_user_task_managed_initial_warehouse_size,num1=0,num2=index_serverless_task_max_statement_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Max_Statement_Size":"must be greater than or equal to USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"})
+                instance._serverless_task_max_statement_size=value
+            elif instance._user_task_managed_initial_warehouse_size=="NONE":
+                vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for tasks with dedicated warehouse.Only needed for serverless tasks")
+
     
     def __delete__(self,instance):
         del instance._serverless_task_max_statement_size

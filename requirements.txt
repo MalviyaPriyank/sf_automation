@@ -8,3 +8,4 @@ langchain_community
 snowflake-snowpark-python
 snowflake
 datetime
+croniter

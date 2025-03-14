@@ -117,6 +117,16 @@ class Deploy:
     def set_deployment_id(self,value):
         self.attr.deployment_id = value
 
+    def create_entry(self,deploy_obj):
+        self.set_object_type(deploy_obj.__class__.__name__)
+        self.set_object_database(deploy_obj.attr.database)
+        self.set_object_schema(deploy_obj.attr.schema)
+        self.set_object_name(deploy_obj.attr.name)
+        self.set_modified_by(deploy_obj.user_id)
+        self.set_deployment_status(cfg._deployment_status_in_development)
+        self.set_deployment_id('NA')
+        self.insert_into_deploy_control_table()
+
     def get_ddl(self):
         if self.attr.object_type.upper() == 'DATABASE':
             ddl_qry = f""" select get_ddl('{self.attr.object_type}.upper()','{self.attr.object_name}')"""

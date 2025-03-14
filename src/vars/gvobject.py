@@ -280,6 +280,16 @@ class User:
     _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
     _allowed_values_default_secondary_roles = ['ALL']
 
+class StoredProcedure:
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
+    _name_tag="NAME"
+    _logic_tag="LOGIC"
+    _language_tag="LANGUAGE"
+    _return_tag="RETURNS"
+    _package_tag="PACKAGES"
+    _handler_tag="HANDLER"
+    _allowed_value_language=["JAVA","PYTHON","JAVASCRIPT","SCALA","SQL"]
 
 class Task:
     def __init__(self):
@@ -290,6 +300,7 @@ class Task:
     _sql_tag="SQL"
     _warehouse_tag="WAREHOUSE"
     _user_task_managed_initial_warehouse_size_tag="USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"
+    _allowed_values_user_task_managed_initial_warehouse_size=["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE"]
     _schedule_tag="SCHEDULE"
     _config_tag="CONFIG"
     _allow_overlapping_execution_tag="ALLOW_OVERLAPPING_EXECUTION"
@@ -309,6 +320,24 @@ class Task:
     _serverless_task_max_statement_size_tag="SERVERLESS_TASK_MAX_STATEMENT_SIZE"
     _allowed_min_user_task_timeout_ms=0
     _allowed_max_user_task_timeout_ms=604800000
+    _allowed_min_value_seconds=10
+    _allowed_max_value_seconds=691200
+    _allowed_min_value_minute=1
+    _allowed_max_value_minute=11520
+    _allowed_min_value_hour=1
+    _allowed_max_value_hour=192
+    _allowed_values_log_level=["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
+    _allowed_min_value_task_auto_retry_attempts=0
+    _allowed_max_value_task_auto_retry_attempts=30
+    _allowed_min_value_user_task_minimum_trigger_interval_in_seconds=10
+    _allowed_max_value_user_task_minimum_trigger_interval_in_seconds=604800
+    _allowed_min_value_seconds_task_comletion_interval=10
+    _allowed_max_value_seconds_task_comletion_interval=86400
+    _allowed_min_value_minutes_task_comletion_interval=1
+    _allowed_max_value_minutes_task_comletion_interval=1440
+    _allowed_min_value_hours_task_comletion_interval=1
+    _allowed_max_value_hours_task_comletion_interval=24
+
 
 
 class Warehouse:

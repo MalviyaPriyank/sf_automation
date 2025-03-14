@@ -7,11 +7,15 @@ from snowchainexception import SnowchainException
 
 class AttributeValidationError(SnowchainException):
     """Base class for attribute validation exceptions"""
-    def __init__(self, object_type, attr_name, message):
+    def __init__(self, object_type, attr_name, message,**kwargs):
         self.object_type = object_type
         self.attr_name = attr_name
         self.message = message
-        self.error_message = f" Attribute {self.attr_name} of {self.object_type} {self.message}. Please provide different value."
+        if len(kwargs)==0:
+            self.error_message = f" Attribute {self.attr_name} of {self.object_type} {self.message}. Please provide different value."
+        else:
+            for key,value in kwargs.items():
+                self.error_message=f"Attribute {key} {value}. Please provide different value."
         super().__init__(self.error_message)
 
 class MustStartWithAlphabet(AttributeValidationError):
@@ -175,5 +179,19 @@ class InvalidTimestamp(AttributeValidationError):
     def __init__(self, object_type, attr_name, value):
         message=f" is not a valid timestamp. Use TIMESTAMP_TZ('{value}'), or TIMESTAMP_NTZ('{value}') to convert it to a valid timestamp"
         super().__init__(object_type, attr_name, message)
+
+class InvalidSchedule(AttributeValidationError):
+    def __init__(self, object_type, attr_name, valid_schedule):
+        message=f"must have schedule specified one of the following : {valid_schedule}"
+        super().__init__(object_type, attr_name, message)
+
+class InvalidCron(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f"must be a valid CRON syntax"
+        super().__init__(object_type, attr_name, message)
+
+class CustomErrorMessage(AttributeNotRequired):
+    def __init__(self, object_type, attr_name, condition,**kwargs):
+        super().__init__(object_type, attr_name, condition,**kwargs)
 
     
