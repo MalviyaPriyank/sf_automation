@@ -1,7 +1,7 @@
+from enum import Enum
 
 
-
-class Account:
+class Account(Enum):
     def __init__(self):
         pass
 
@@ -23,7 +23,7 @@ class Account:
     _polaris_tag = "POLARIS"
     _allowed_values_polaris = ["TRUE","FALSE"]
 
-class Database:
+class Database(Enum):
     def __init__(self):
         pass
 
@@ -47,13 +47,13 @@ class Database:
     _allowed_values_trace_level=['ALWAYS','ON_EVENT','OFF']
     _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
-class Role:
+class Role(Enum):
     def __init__(self):
         pass
     _name_tag = "NAME"
     _comment_tag = "COMMENT"
 
-class ResourceMonitor:
+class ResourceMonitor(Enum):
     def __init__(self):
         pass
 
@@ -70,7 +70,7 @@ class ResourceMonitor:
     _allowed_values_triggers=["SINGLE","MULTIPLE"]
     _allowed_values_action = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
 
-class Schema:
+class Schema(Enum):
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -98,7 +98,7 @@ class Schema:
     _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
 
-class Share:
+class Share(Enum):
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -120,7 +120,7 @@ class Share:
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
 
 
-class InternalStage:
+class InternalStage(Enum):
     def __init__(self):
         pass
 
@@ -135,7 +135,7 @@ class InternalStage:
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
 
-class ExternalStage:
+class ExternalStage(Enum):
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -167,7 +167,7 @@ class ExternalStage:
     _allowed_values_azure_encyption_type=['AZURE_CSE']
 
 
-class FileFormat:
+class FileFormat(Enum):
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -218,7 +218,7 @@ class FileFormat:
     _allowed_values_compression_for_xml=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
     _allowed_values_encoding=["BIG5","EUCJP","EUCKR","GB18030","IBM420","IBM424","IBM949","ISO2022CN","ISO2022JP","ISO2022KR","ISO88591","ISO88592","ISO88595","ISO88596","ISO88597","ISO88598","ISO88599","ISO885915","KOI8R","SHIFTJIS","UTF8","UTF16","UTF16BE","UTF16LE","UTF32","UTF32BE","UTF32LE","WINDOWS874","WINDOWS949","WINDOWS1250","WINDOWS1251","WINDOWS1252","WINDOWS1253","WINDOWS1254","WINDOWS1255","WINDOWS1256"]
 
-class Snowpipe:
+class Snowpipe(Enum):
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -232,7 +232,7 @@ class Snowpipe:
     _file_type_tag = "FILE_TYPE"
     _copyinto_query_tag = "COPYINTO_QUERY"
 
-class Stream:
+class Stream(Enum):
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -251,7 +251,7 @@ class Stream:
     _offset_tag="OFFSET"
     _allowed_values_object_type=["TABLE","EXTERNAL TABLE","STAGE","VIEW"]
 
-class User:
+class User(Enum):
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -280,7 +280,7 @@ class User:
     _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
     _allowed_values_default_secondary_roles = ['ALL']
 
-class StoredProcedure:
+class StoredProcedure(Enum):
     _database_tag="DATABASE"
     _schema_tag="SCHEMA"
     _name_tag="NAME"
@@ -291,7 +291,7 @@ class StoredProcedure:
     _handler_tag="HANDLER"
     _allowed_value_language=["JAVA","PYTHON","JAVASCRIPT","SCALA","SQL"]
 
-class Task:
+class Task(Enum):
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -340,7 +340,7 @@ class Task:
 
 
 
-class Warehouse:
+class Warehouse(Enum):
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -382,7 +382,7 @@ class Warehouse:
         "6XLARGE":10
     }
 
-class CopyInto:
+class CopyInto(Enum):
     _table_tag = "TABLE"
     _schema_tag = "SCHEMA"
     _db_tag = "DATABASE"
@@ -409,7 +409,7 @@ class CopyInto:
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
     _allowed_values_scanner=['document_ai']
 
-class NotificationIntegrationEmail:
+class NotificationIntegrationEmail(Enum):
     _name_tag = "NAME"
     _enabled_tag = "ENABLED"
     _type_tag = "TYPE"
@@ -422,7 +422,7 @@ class NotificationIntegrationEmail:
     _max_allowed_recepients=50
     _allowed_length_subject=256
 
-class Alert:
+class Alert(Enum):
     _database_tag="DATABASE"
     _schema_tag="SCHEMA"
     _name_tag="NAME"
@@ -437,7 +437,7 @@ class Alert:
     _email_subject_tag="EMAIL_SUBJECT"
 
 
-class StorageIntegration:
+class StorageIntegration(Enum):
     _name_tag="NAME"
     _type_tag="TYPE"
     _enabled_tag="ENABLED"
@@ -453,7 +453,7 @@ class StorageIntegration:
     _azure_tenant_id_tag="AZURE_TENANT_ID"
     _use_private_link_endpoint_tag="USE_PRIVATELINK_ENDPOINT"
 
-class Privilege:
+class Privilege(Enum):
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE","STREAM"]
     _allowed_privileges = {
         "USER": ["MONITOR","OWNERSHIP","ALL"],
@@ -476,7 +476,7 @@ class Privilege:
     }
 
 
-class Config:
+class Config(Enum):
     def __init__(self):
         pass
     _config_database = "DB_CONFIG"
