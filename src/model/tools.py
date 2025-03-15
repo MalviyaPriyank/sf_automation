@@ -507,7 +507,12 @@ class LLMTools:
                             APPEND_ONLY="NONE",
                             INSERT_ONLY="NONE",
                             SHOW_INITIAL_ROWS="NONE",
-                            COMMENT="NONE"):
+                            COMMENT="NONE",
+                            BEFORE="NONE",
+                            TIMESTAMP="NONE",
+                            OFFSET="NONE",
+                            STATEMENT="NONE",
+                            OBJECT_TYPE="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}

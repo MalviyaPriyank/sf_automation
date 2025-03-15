@@ -1245,7 +1245,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_stream_object",
-                "description":"creates snowflake stream object for the user. DATABSE, SCHEMA, NAME, and TABLE_NAME are the required parameters",
+                "description":"creates snowflake stream object for the user. Streams can only be created for one of the following objects: Table, External Table, Views, DIRECTORY TABLE/Stage. DATABASE, SCHEMA, NAME, and TABLE_NAME are the required parameters. Inform user that Streams by default would start CDC from the moment they are created OR AT a specific point in time if they want OR BEFORE a specific point in time.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1272,7 +1272,7 @@ tools = {
                             },
                             "AT": {
                                 "type":"string",
-                                "description":"AT value for stream object"
+                                "description":"AT value for stream object. User can provide any one of the following: TIMESTAMP (timestamp at which they want it to start CDC), OFFSET (time difference from the current time at which they want CDC to start, the user should tell us how many minutes ago from now.), STATEMENT (query id of the query they want to use as a starting point not supported by SNOWCHAIN for now), STREAM (name of the stream NOT SUPPORTED by Snowchain right now)."
                             },
                             "APPEND_ONLY": {
                                 "type":"string",
@@ -1289,7 +1289,27 @@ tools = {
                             "COMMENT": {
                                 "type":"string",
                                 "description":"COMMENT for stream object"
-                            }
+                            },
+                            "BEFORE": {
+                                "type":"string",
+                                "description":"BEFORE for stream object. Allowed values are TIMESTAMP (timestamp at which they want it to start CDC), OFFSET (time difference from the current time at which they want CDC to start the user should tell us how many minutes ago from now.), STATEMENT (query id of the query they want to use as a starting point)"
+                            },
+                            "TIMESTAMP": {
+                                "type":"string",
+                                "description":"TIMESTAMP for stream object"
+                            },
+                            "OFFSET": {
+                                "type":"string",
+                                "description":"OFFSET for stream object"
+                            },
+                            "STATEMENT": {
+                                "type":"string",
+                                "description":"STATEMENT for stream object"
+                            },
+                            "OBJECT_TYPE": {
+                                "type":"string",
+                                "description":"OBJECT TYPE for stream object. Possible values: TABLE, EXTERNAL TABLE, STAGE (If user says Directory table OR Stage, STAGE to be passed in both cases.), and VIEW"
+                            },
                         },
                         "required":[
                             "DATABSE","SCHEMA","NAME","TABLE_NAME"
