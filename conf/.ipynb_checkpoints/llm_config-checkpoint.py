@@ -1045,7 +1045,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_task_object",
-                "description":"creates a snowflake task object for the user. DATABASE, SCHEMA, NAME, SQL, WAREHOUSE are required parameters. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE. Recommend to create notification integration to alert if the task fails.",
+                "description":"creates a snowflake task object for the user. DATABASE, SCHEMA, NAME, SQL, WAREHOUSE are required parameters. ask user if they want to leverage the serverless compute of snowflake or they want to go with an existing warehouse. If they say existing warehouse then pass WAREHOUSE name else pass set WAREHOUSE to NONE. Recommend to create notification integration to alert if the task fails. While creating a task we need to know if the task is going to be using a WAREHOUSE or SERVERLESS COMPUTE (USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE parameter) of Snowflake.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1072,7 +1072,7 @@ tools = {
                             },
 			"USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE": {
                                 "type":"string",
-                                "description":"user provided value for USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE for task object"
+                                "description":"user provided value for USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE for task object. Specifies the size of the compute resources to provision for the first run of the task, before a task history is available for Snowflake to determine an ideal size. Once a task has successfully completed a few runs, Snowflake ignores this parameter setting. Snowchain for now will use MEDIUM by default for this param."
                             },
 			"SCHEDULE": {
                                 "type":"string",
