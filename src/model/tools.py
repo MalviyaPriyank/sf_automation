@@ -364,7 +364,8 @@ class LLMTools:
     def create_single_table_object(self,
                                    database,
                                    schema):
-        stage = Stage(root=self.root, database=database, schema=schema)
+        stage = Stage(self.root,cfg._config_database,cfg._config_schema)
+        stage.set_stage(cfg._config_stage)
         stage.set_stage_reference()
         for file in os.listdir('tmp/'):
             stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
