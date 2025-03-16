@@ -104,6 +104,7 @@ if st.session_state[ss.INITIALIZED]:
                         done_tool_call = True
                         break
                     if lcs.TOOL_USE in content:
+                        
                         try:
                             tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
                         except SnowchainException as e:
