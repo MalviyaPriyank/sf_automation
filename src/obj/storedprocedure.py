@@ -142,7 +142,7 @@ class StoredProcedure:
         self.session=session
         self.user_id=user_id
         self.logger=logger
-        self.attr=StoredProcedureAttrs()
+        self.attr=StoredProcedureAttrs(self)
 
     def set_database(self,value):
         self.attr.database=value
