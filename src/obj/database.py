@@ -15,6 +15,7 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep import deploy
 from setup import privilege 
+from .baseobj import BaseObject 
 
 
 class Name:
@@ -305,12 +306,9 @@ class DatabaseAttrs:
     comment_tag = CommentTag()
 
 
-class Database:
+class Database(BaseObject):
     def __init__(self,session,user_id,logger):
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
-        self.logger = logger
+        super().__init__(session, user_id, logger)
         self.attr = DatabaseAttrs(self)
 
     def set_name(self, value):
@@ -456,7 +454,7 @@ class Database:
 
 
     def create_database(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_object(self,*largs,**kwargs):
         if len(largs) != 0:
