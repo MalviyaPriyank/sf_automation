@@ -365,6 +365,7 @@ class LLMTools:
                                    database,
                                    schema):
         stage = Stage(root=self.root, database=database, schema=schema)
+        stage.set_stage_reference()
         for file in os.listdir('tmp/'):
             stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
 
