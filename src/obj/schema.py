@@ -390,7 +390,6 @@ class Schema(BaseObject):
         super().__init__(session, user_id, logger)
         self.attr = SchemaAttrs(self)
 
-
     def set_database(self, value):
         self.attr.database = value
 
