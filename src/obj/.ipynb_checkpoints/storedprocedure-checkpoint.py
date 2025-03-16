@@ -203,7 +203,7 @@ class StoredProcedure:
                 if prop == gv._package_tag:
                     self.qry = f" {self.qry} {gv._package_tag} = {self.attr.packages} "
 
-        self.qry= self.qry + " AS $$ " + self.attr.logic = " $$;"
+        self.qry= self.qry + " AS $$ " + self.attr.logic + " $$;"
 
     def create_stored_procedure(self):
         self.session.sql(self.qry).collect()

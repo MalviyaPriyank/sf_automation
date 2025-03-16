@@ -1,7 +1,7 @@
+from enum import Enum
 
 
-
-class Account:
+class Account():
     def __init__(self):
         pass
 
@@ -23,7 +23,7 @@ class Account:
     _polaris_tag = "POLARIS"
     _allowed_values_polaris = ["TRUE","FALSE"]
 
-class Database:
+class Database():
     def __init__(self):
         pass
 
@@ -47,13 +47,13 @@ class Database:
     _allowed_values_trace_level=['ALWAYS','ON_EVENT','OFF']
     _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
-class Role:
+class Role():
     def __init__(self):
         pass
     _name_tag = "NAME"
     _comment_tag = "COMMENT"
 
-class ResourceMonitor:
+class ResourceMonitor():
     def __init__(self):
         pass
 
@@ -64,11 +64,13 @@ class ResourceMonitor:
     _start_timestamp_tag = "START_TIMESTAMP"
     _end_timestamp_tag = "END_TIMESTAMP"
     _notify_users_tag = "NOTIFY_USERS"
-    _triggers_on_tag = "TRIGGERS ON"
-    _do_tag = "DO"
-    _allowed_values_do = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
+    _triggers_tag= "TRIGGERS"
+    _threshold_tag="THRESHOLD"
+    _action_tag="ACTION"
+    _allowed_values_triggers=["SINGLE","MULTIPLE"]
+    _allowed_values_action = ["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
 
-class Schema:
+class Schema():
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -96,7 +98,7 @@ class Schema:
     _allowed_collation_specifiers=['de','ci','pi','en','en_US','fr','fr_CA','cs','ci','as','ai','ps','pi','fl','fu','upper','lower','trim','ltrim','rtrim']
 
 
-class Share:
+class Share():
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -118,7 +120,7 @@ class Share:
     _allowed_values_storage_serialization_policy = ["COMPATIBLE","OPTIMIZED"]
 
 
-class InternalStage:
+class InternalStage():
     def __init__(self):
         pass
 
@@ -133,7 +135,7 @@ class InternalStage:
     _refresh_on_create_tag = "REFRESH_ON_CREATE"
     _allowed_values_encryption = ["SNOWFLAKE_FULL","SNOWFLAKE_SSE"]
 
-class ExternalStage:
+class ExternalStage():
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -165,7 +167,7 @@ class ExternalStage:
     _allowed_values_azure_encyption_type=['AZURE_CSE']
 
 
-class FileFormat:
+class FileFormat():
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -216,7 +218,7 @@ class FileFormat:
     _allowed_values_compression_for_xml=["AUTO","GZIP","BZ2","BROTLI","ZSTD","DEFLATE","RAW_DEFLATE"]
     _allowed_values_encoding=["BIG5","EUCJP","EUCKR","GB18030","IBM420","IBM424","IBM949","ISO2022CN","ISO2022JP","ISO2022KR","ISO88591","ISO88592","ISO88595","ISO88596","ISO88597","ISO88598","ISO88599","ISO885915","KOI8R","SHIFTJIS","UTF8","UTF16","UTF16BE","UTF16LE","UTF32","UTF32BE","UTF32LE","WINDOWS874","WINDOWS949","WINDOWS1250","WINDOWS1251","WINDOWS1252","WINDOWS1253","WINDOWS1254","WINDOWS1255","WINDOWS1256"]
 
-class Snowpipe:
+class Snowpipe():
     def __init__(self):
         pass
     _database_tag = "DATABASE"
@@ -230,7 +232,7 @@ class Snowpipe:
     _file_type_tag = "FILE_TYPE"
     _copyinto_query_tag = "COPYINTO_QUERY"
 
-class Stream:
+class Stream():
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -243,8 +245,13 @@ class Stream:
     _insert_only_tag="INSERT_ONLY"
     _show_initial_rows_tag="SHOW_INITIAL_ROWS"
     _comment_tag="COMMENT"
+    _object_type_tag="OBJECT_TYPE"
+    _before_tag="BEFORE"
+    _timestamp_tag="TIMESTAMP"
+    _offset_tag="OFFSET"
+    _allowed_values_object_type=["TABLE","EXTERNAL TABLE","STAGE","VIEW"]
 
-class User:
+class User():
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -273,8 +280,18 @@ class User:
     _allowed_values_type = ['PERSON','SERVICE','LEGACY_SERVICE','NULL']
     _allowed_values_default_secondary_roles = ['ALL']
 
+class StoredProcedure():
+    _database_tag="DATABASE"
+    _schema_tag="SCHEMA"
+    _name_tag="NAME"
+    _logic_tag="LOGIC"
+    _language_tag="LANGUAGE"
+    _return_tag="RETURNS"
+    _package_tag="PACKAGES"
+    _handler_tag="HANDLER"
+    _allowed_value_language=["JAVA","PYTHON","JAVASCRIPT","SCALA","SQL"]
 
-class Task:
+class Task():
     def __init__(self):
         pass
     _database_tag="DATABASE"
@@ -283,6 +300,7 @@ class Task:
     _sql_tag="SQL"
     _warehouse_tag="WAREHOUSE"
     _user_task_managed_initial_warehouse_size_tag="USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"
+    _allowed_values_user_task_managed_initial_warehouse_size=["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE"]
     _schedule_tag="SCHEDULE"
     _config_tag="CONFIG"
     _allow_overlapping_execution_tag="ALLOW_OVERLAPPING_EXECUTION"
@@ -302,9 +320,27 @@ class Task:
     _serverless_task_max_statement_size_tag="SERVERLESS_TASK_MAX_STATEMENT_SIZE"
     _allowed_min_user_task_timeout_ms=0
     _allowed_max_user_task_timeout_ms=604800000
+    _allowed_min_value_seconds=10
+    _allowed_max_value_seconds=691200
+    _allowed_min_value_minute=1
+    _allowed_max_value_minute=11520
+    _allowed_min_value_hour=1
+    _allowed_max_value_hour=192
+    _allowed_values_log_level=["TRACE","DEBUG","INFO","WARN","ERROR","FATAL","OFF"]
+    _allowed_min_value_task_auto_retry_attempts=0
+    _allowed_max_value_task_auto_retry_attempts=30
+    _allowed_min_value_user_task_minimum_trigger_interval_in_seconds=10
+    _allowed_max_value_user_task_minimum_trigger_interval_in_seconds=604800
+    _allowed_min_value_seconds_task_comletion_interval=10
+    _allowed_max_value_seconds_task_comletion_interval=86400
+    _allowed_min_value_minutes_task_comletion_interval=1
+    _allowed_max_value_minutes_task_comletion_interval=1440
+    _allowed_min_value_hours_task_comletion_interval=1
+    _allowed_max_value_hours_task_comletion_interval=24
 
 
-class Warehouse:
+
+class Warehouse():
     def __init__(self):
         pass
     _name_tag = "NAME"
@@ -346,7 +382,7 @@ class Warehouse:
         "6XLARGE":10
     }
 
-class CopyInto:
+class CopyInto():
     _table_tag = "TABLE"
     _schema_tag = "SCHEMA"
     _db_tag = "DATABASE"
@@ -363,12 +399,17 @@ class CopyInto:
     _force_tag = "FORCE"
     _load_uncertain_files_tag = "LOAD_UNCERTAIN_FILES"
     _file_processor_tag = "FILE_PROCESSOR"
+    _scanner_tag="SCANNER"
+    _project_name_tag="PROJECT_NAME"
+    _model_name_tag="MODEL_NAME"
+    _model_version_tag="MODEL_VERSION"
     _load_mode_tag = "LOAD_MODE"
     _allowed_values_on_error = ["CONTINUE","SKIP_FILE"]
     _allowed_values_match_by_column_name = ["CASE_SENSITIVE","CASE_INSENSITIVE","NONE"]
     _allowed_values_load_mode = ["FULL_INGEST","ADD_FILES_COPY"]
+    _allowed_values_scanner=['document_ai']
 
-class NotificationIntegrationEmail:
+class NotificationIntegrationEmail():
     _name_tag = "NAME"
     _enabled_tag = "ENABLED"
     _type_tag = "TYPE"
@@ -381,7 +422,7 @@ class NotificationIntegrationEmail:
     _max_allowed_recepients=50
     _allowed_length_subject=256
 
-class Alert:
+class Alert():
     _database_tag="DATABASE"
     _schema_tag="SCHEMA"
     _name_tag="NAME"
@@ -396,7 +437,7 @@ class Alert:
     _email_subject_tag="EMAIL_SUBJECT"
 
 
-class StorageIntegrationAws:
+class StorageIntegration():
     _name_tag="NAME"
     _type_tag="TYPE"
     _enabled_tag="ENABLED"
@@ -407,11 +448,12 @@ class StorageIntegrationAws:
     _storage_aws_external_id_tag="STORAGE_AWS_EXTERNAL_ID"
     _storage_aws_object_acl_tag="STORAGE_AWS_OBJECT_ACL"
     _allowed_value_type="EXTERNAL_STAGE"
-    _allowed_value_storage_provider=['S3','S3CHINA','S3GOV']
+    _allowed_value_storage_provider=['S3','GCS','AZURE','S3CHINA','S3GOV']
     _comment_tag="COMMENT"
+    _azure_tenant_id_tag="AZURE_TENANT_ID"
     _use_private_link_endpoint_tag="USE_PRIVATELINK_ENDPOINT"
 
-class Privilege:
+class Privilege():
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE","STREAM"]
     _allowed_privileges = {
         "USER": ["MONITOR","OWNERSHIP","ALL"],
@@ -434,7 +476,7 @@ class Privilege:
     }
 
 
-class Config:
+class Config():
     def __init__(self):
         pass
     _config_database = "DB_CONFIG"
