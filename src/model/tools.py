@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
@@ -17,6 +18,7 @@ from src.setup.initial import InitialSetup
 from src.dep import deploy
 from src.accountusage import copyhistory
 from src.processing.stage import Stage
+from vars.gvobject import Config as cfg
 
 from valueexception import (
     AttributeValidationError,
@@ -364,11 +366,11 @@ class LLMTools:
     def create_single_table_object(self,
                                    database,
                                    schema):
-        stage = Stage(self.root,cfg._config_database,cfg._config_schema)
+        stage = Stage(root=self.root, database=database, schema=schema)
         stage.set_stage(cfg._config_stage)
         stage.set_stage_reference()
         for file in os.listdir('tmp/'):
-            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
+            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}/')
 
         #self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
         return f'Tables created'
