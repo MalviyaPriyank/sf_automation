@@ -75,8 +75,7 @@ tools = {
                         ]
                     }
                 }
-            }
-        },
+            },
         "toolSpec": {
                 "name":"create_stored_procedure_object",
                 "description":"creates a snowflake stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",

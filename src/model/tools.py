@@ -16,6 +16,7 @@ from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
 from src.accountusage import copyhistory
+from src.processing.stage import Stage
 
 from valueexception import (
     AttributeValidationError,
@@ -361,8 +362,14 @@ class LLMTools:
         return f'Here is the list of tables created : [{table_list}]'
 
     def create_single_table_object(self,
-                                   name):
-        return f'Table {name} created'
+                                   database,
+                                   schema):
+        stage = Stage(root=self.root, database=database, schema=schema)
+        for file in os.listdir(directory_path):
+            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
+
+        self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
+        return f'Tables created'
 
 
     def create_copyinto_object(self,

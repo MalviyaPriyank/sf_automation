@@ -3,6 +3,7 @@ import sys
 import json
 import time
 import logging
+import pandas as pd
 import streamlit as st
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
@@ -20,6 +21,7 @@ from schema import llm_chat_schema as lcs
 from snowchainexception import (
     SnowchainException
 )
+
 
 
 
@@ -104,7 +106,17 @@ if st.session_state[ss.INITIALIZED]:
                         done_tool_call = True
                         break
                     if lcs.TOOL_USE in content:
-                        
+                        stage = Stage()
+                        if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
+                             csv_upload = st.file_uploader(
+                                 'Please upload data dictionary for tables',
+                                 accept_multiple_files=True,
+                                 type='csv'
+                             )
+                             if csv_upload is not None:
+                                 for file in csv_upload:
+                                     pd.to_csv(f'tmp/{uploaded_file.name}')
+     
                         try:
                             tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
                         except SnowchainException as e:
