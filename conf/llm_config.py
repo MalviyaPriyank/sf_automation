@@ -77,6 +77,53 @@ tools = {
                 }
             }
         },
+        "toolSpec": {
+                "name":"create_stored_procedure_object",
+                "description":"creates a snowflake stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{   
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user to provide value for DATABASE for stored procedure object."
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for stored procedure object"
+                            },
+                        "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for stored procedure object"
+                            },
+                        "LOGIC": {
+                                "type":"string",
+                                "description":"user provided value for LOGIC for stored procedure object. This would be the script that user wants to be executed inside the sproc."
+                            },
+                        "RETURN_TYPE": {
+                                "type":"string",
+                                "description":"user provided value for RETURN_TYPE for stored procedure object. This would be the return type of the value that sproc would return"
+                            },
+                        "LANGUAGE": {
+                                "type":"string",
+                                "description":"user provided value for LANGUAGE for stored procedure object. This would be the language that the sproc would be in. Pytho,Java,Javascript,Scala or SQL"
+                            },
+                        "HANDLER": {
+                                "type":"string",
+                                "description":"user provided value for HANDLER for stored procedure object. This would be the entry point of sproc."
+                            },
+                        "PACKAGES": {
+                                "type":"string",
+                                "description":"user provided value for PACKAGES for stored procedure object. This would be packages to be imported if any.(Should be passed as a tuple each value enclosed in single quotes and separated by comma)"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA","NAME","LOGIC","RETURN_TYPE","LANGUAGE","HANDLER","PACKAGES"
+                        ]
+                    }
+                }
+            }
+        },
         {
             "toolSpec": {
                 "name":"create_account_object",

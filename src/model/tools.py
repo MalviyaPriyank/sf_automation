@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -64,6 +64,7 @@ class LLMTools:
                                   ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id),
                                   ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id),
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -95,6 +96,22 @@ class LLMTools:
         data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.DATABASE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.DATABASE_OBJ, data_dict)
+
+
+    def create_stored_procedure_object(self, 
+                                        DATABASE,
+                                        SCHEMA,
+                                        NAME,
+                                        LOGIC,
+                                        RETURN_TYPE,
+                                        LANGUAGE,
+                                        HANDLER,
+                                        PACKAGES):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.STORED_PROCEDURE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.STORED_PROCEDURE_OBJ, data_dict)
 
 
     def create_account_object(self,
