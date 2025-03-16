@@ -106,7 +106,6 @@ if st.session_state[ss.INITIALIZED]:
                         done_tool_call = True
                         break
                     if lcs.TOOL_USE in content:
-                        stage = Stage()
                         if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
                              csv_upload = st.file_uploader(
                                  'Please upload data dictionary for tables',
