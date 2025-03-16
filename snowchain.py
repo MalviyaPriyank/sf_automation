@@ -58,8 +58,31 @@ if ss.INITIALIZED not in st.session_state:
 if 'create_table' not in st.session_state:
     st.session_state['create_table'] = False
 
+if 'database' not in st.session_state:
+    st.session_state['database'] = None
+    
+if 'schema' not in st.session_state:
+    st.session_state['schema'] = None
+
 def disable_chat():
     st.session_state[ss.CHAT_DISABLED] = True
+
+if st.session_state['create_table']:
+     csv_upload = st.file_uploader(
+         'Please upload data dictionary for tables',
+         accept_multiple_files=True,
+         type='csv',
+         key=f'fileuploader'
+     )
+     if csv_upload is not None:
+         logger.info('here2')
+         for file in csv_upload:
+             logger.info('here3')
+             df = pd.read_csv(file)
+             df.to_csv(f'tmp/{file.name}')
+             logger.info(os.listdir('tmp/'))
+         st.session_state[ss.TOOLS].create_single_table_object(database=st.session_state['database'], schema=st.session_state['schema'])
+
 
 if not st.session_state[ss.INITIALIZED]:
     session_inst = session.Session()
@@ -75,7 +98,7 @@ if not st.session_state[ss.INITIALIZED]:
     #st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(prompt=lcs.SYSTEM_PROMPT_ASST))
     st.session_state[ss.INITIALIZED] = True
 
-if st.session_state[ss.INITIALIZED]:
+if (st.session_state[ss.INITIALIZED]) and (st.session_state['create_table']==False):
     logger.info('session started')
             
     if prompt := st.chat_input("What's on your mind?", disabled=st.session_state[ss.CHAT_DISABLED], on_submit=disable_chat):
@@ -112,45 +135,36 @@ if st.session_state[ss.INITIALIZED]:
                         break
                     if lcs.TOOL_USE in content:
                         if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
-                             st.session_state['create_table'] = True
-                        if st.session_state['create_table']:
-                             st.session_state['count'] += 1
-                             csv_upload = st.file_uploader(
-                                 'Please upload data dictionary for tables',
-                                 accept_multiple_files=True,
-                                 type='csv',
-                                 key=f'fileuploader{st.session_state["count"]}'
-                             )
-                             if csv_upload is not None:
-                                 for file in csv_upload:
-                                     pd.to_csv(f'tmp/{uploaded_file.name}')
-                             if os.path.isdir('tmp'):
-                                 st.session_state['create_table'] = False
-                        else:
-                            try:
-                                tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                            except SnowchainException as e:
-                                logger.info('attr-error')
-                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
-                                with st.chat_message(ss.ASSISTANT):
-                                    st.markdown(e)
-                                tool_result.append({lcs.TOOL_RESULT:{
-                                    lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
-                                    lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
-                                }})
-                                st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                                done_tool_call=True
-                                break
+                            print('here')
+                            st.session_state['database'] = content[lcs.TOOL_USE]['input']['database']
+                            st.session_state['schema'] = content[lcs.TOOL_USE]['input']['schema']
+                            st.session_state['create_table'] = True
+                            done_tool_call = True
+                            break
+                        try:
+                            tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
+                        except SnowchainException as e:
+                            logger.info('attr-error')
+                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
+                            with st.chat_message(ss.ASSISTANT):
+                                st.markdown(e)
+                            tool_result.append({lcs.TOOL_RESULT:{
+                                lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
+                                lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
+                            }})
                             st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                        
-                            response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
-                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-                            for content in response:
-                                if ss.TEXT in content:
-                                    st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
-                                    
-                                    with st.chat_message(ss.ASSISTANT):
-                                        st.markdown(content[ss.TEXT])
+                            done_tool_call=True
+                            break
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                    
+                        response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                        for content in response:
+                            if ss.TEXT in content:
+                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                                
+                                with st.chat_message(ss.ASSISTANT):
+                                    st.markdown(content[ss.TEXT])
     
     
                 if done_tool_call: 

@@ -368,7 +368,7 @@ class LLMTools:
         for file in os.listdir('tmp/'):
             stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
 
-        self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
+        #self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
         return f'Tables created'
 
 

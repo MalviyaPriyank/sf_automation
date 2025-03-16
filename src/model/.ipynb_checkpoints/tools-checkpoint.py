@@ -49,7 +49,7 @@ class LLMTools:
                                   ss.DATABASE_OBJ: database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.EXTERNAL_STAGE_OBJ: externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
                                   ss.ROLE_OBJ: role.Role(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, logger=self.logger),
+                                  ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.SNOWPIPE_OBJ: snowpipe.Snowpipe(self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
@@ -59,11 +59,11 @@ class LLMTools:
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
                                   ss.TABLE_OBJ: table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
                                   ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id),
+                                  ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id,logger=self.logger),
                                   ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
                                   ss.STREAM_OBJ: stream.Stream(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id),
-                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id),
+                                  ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
@@ -368,7 +368,7 @@ class LLMTools:
         for file in os.listdir('tmp/'):
             stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}')
 
-        self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
+        #self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
         return f'Tables created'
 
 
