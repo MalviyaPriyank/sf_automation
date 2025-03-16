@@ -12,7 +12,7 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-
+from .baseobj import BaseObject 
 
 
 
@@ -140,11 +140,9 @@ class SnowpipeAttrs:
     integration = Integration()
     comment = Comment()
 
-class Snowpipe:
-    def __init__(self,session,user_id,logger):
-        self.user_id = user_id
-        self.session = session
-        self.logger = logger
+class Snowpipe(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = SnowpipeAttrs(self)
 
     def set_database(self,value):
@@ -225,9 +223,7 @@ class Snowpipe:
         self.session.sql(f"ALTER PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} SET PIPE_EXECUTION_PAUSED=true").collect()
 
     def create_snowpipe(self):
-        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
-        self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
         self.pause_snowpipe()
 
 

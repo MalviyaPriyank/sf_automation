@@ -16,6 +16,7 @@ from validation.validateobject import ValidateObject as vo
 from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
+from .baseobj import BaseObject 
 
 class Database:
     def __get__(self,instance,owner):
@@ -181,12 +182,10 @@ class AlertAttrs:
     warehouse=Warehouse()
 
 
-class Alerts:
-    def __init__(self,session,user_id):
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
-        self.attr = AlertAttrs(self)
+class Alerts(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
+        self.attr=AlertAttrs(self)
 
     def set_database(self, value):
         self.attr.database = value
@@ -245,7 +244,7 @@ class Alerts:
             self.qry=self.qry + f""" THEN CALL SYSTEM$SEND_EMAIL({self.attr.integration_name},{self.attr.email_address},{self.attr.email_subject},{self.attr.email_content} ) ;"""
     
     def prepare_query(self):
-        self.set_create_alert_qry()
+        self.execute_final_query()
 
 
     def create_deployment_entry(self):

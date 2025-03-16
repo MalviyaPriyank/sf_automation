@@ -11,7 +11,7 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -205,12 +205,9 @@ class StorageIntegrationAttrs:
     storage_blocked_locations=StorageBlockedLocations()
     comment=Comment()
 
-class StorageIntegration:
-    def __init__(self,session,user_id,logger):
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
-        self.logger = logger
+class StorageIntegration(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = StorageIntegrationAttrs(self)
 
 
@@ -312,7 +309,7 @@ class StorageIntegration:
         self.add_properties_to_query()
 
     def create_storage_integration(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 from vars.gvobject import Share as gv
 from validation.validatevalue import ValidateValue as vv
-
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -70,12 +70,10 @@ class ShareAttrs:
     comment_tag = CommentTag()
 
 
-class Share:
-    def __init__(self,logger):
+class Share(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = ShareAttrs(self)
-        self.session = 'session'
-        self.qry = ""
-        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val

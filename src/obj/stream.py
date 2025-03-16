@@ -11,7 +11,7 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-
+from .baseobj import BaseObject 
 
 class Database:
     def __get__(self,instance,owner):
@@ -218,12 +218,9 @@ class StreamAttrs:
     show_initial_rows=ShowInitialRows()
     comment=Comment()
 
-class Stream:
-    def __init__(self,session,user_id,logger):
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
-        self.logger = logger
+class Stream(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = StreamAttrs(self)
 
 
@@ -337,7 +334,7 @@ class Stream:
         self.add_properties_to_query()
 
     def create_stream(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session)

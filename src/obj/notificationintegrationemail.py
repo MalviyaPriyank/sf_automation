@@ -16,6 +16,7 @@ from validation.validateobject import ValidateObject as vo
 from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -144,11 +145,9 @@ class NotificationIntegrationEmailAttr:
     comment = Comment()
 
 
-class NotificationIntegrationEmail:
-    def __init__(self,session,user_id):
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
+class NotificationIntegrationEmail(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = NotificationIntegrationEmailAttr(self)
 
     def set_name(self, value):
@@ -231,7 +230,7 @@ class NotificationIntegrationEmail:
 
 
     def create_notification_integration(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_object(self,*largs,**kwargs):
 

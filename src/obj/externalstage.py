@@ -10,6 +10,7 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep.deploy import Deploy
 from setup import privilege
+from .baseobj import BaseObject 
 
 
 class Database:
@@ -284,13 +285,10 @@ class ExternalStageAttrs:
     auto_refresh = AutoRefresh()
     notification_integration = NotificationIntegration()
 
-class ExternalStage:
-    def __init__(self,session,user_id,logger):
-        self.session = session
+class ExternalStage(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.sf_object_tag = "STAGE"
-        self.qry = ""
-        self.logger = logger
-        self.user_id=user_id
         self.attr = ExternalStageAttrs(self)
 
     def set_database(self,val):
@@ -433,7 +431,7 @@ class ExternalStage:
         deploy_inst.insert_into_deploy_control_table()
 
     def create_external_stage(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_object(self,**kwargs):
 

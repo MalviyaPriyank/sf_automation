@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 from vars.gvobject import ResourceMonitor as gv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
-
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -157,12 +157,9 @@ class ResourceMonitorAttrs:
     action=Action()
 
 
-class ResourceMonitor:
-    def __init__(self,session,user_id,logger):
-        self.session = session
-        self.qry = ""
-        self.user_id=user_id
-        self.logger=logger
+class ResourceMonitor(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = ResourceMonitorAttrs(self)
     
     def validate_user(self):
@@ -250,7 +247,7 @@ class ResourceMonitor:
         self.add_properties_to_query()
 
     def create_resource_monitor(self):
-        self.session.sql(self.qry)
+        self.execute_final_query()
 
 
     def create_object(session,**kwargs):

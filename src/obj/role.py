@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from vars.gvobject import Role as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
-
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -43,13 +43,10 @@ class RoleAttrs:
     name = Name()
     comment = Comment()
 
-class Role:
-    def __init__(self,session,user_id,logger):
+class Role(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = RoleAttrs(self)
-        self.session = session
-        self.user_id = user_id
-        self.qry = ""
-        self.logger = logger
 
     def set_name(self,val):
         self.attr.name = val

@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from vars.gvobject import CopyInto as gv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
+from .baseobj import BaseObject 
 
 
 
@@ -346,12 +347,10 @@ class CopyIntoAttrs:
     model_version=ModelVersion()
     load_mode = LoadMode()
 
-class CopyInto:
-    def __init__(self, session,logger):
-        self.logger = logger
-        self.session = session
+class CopyInto(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = CopyIntoAttrs(self)
-
 
     def set_table(self,value):
         self.attr.table = value

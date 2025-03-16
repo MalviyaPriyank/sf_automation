@@ -12,7 +12,7 @@ from vars.gvobject import User as gv,Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep.deploy import Deploy
-
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -364,11 +364,9 @@ class UserAttrs:
     comment = Comment()
     enable_unredacted_query_syntax_error = EnableUnredactedQuerySyntaxError()
 
-class User:
-    def __init__(self,session,user_id):
-        self.session = session
-        self.qry = ""
-        self.user_id = user_id
+class User(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = UserAttrs(self)
 
     def set_name(self, value):
@@ -529,7 +527,7 @@ class User:
         self.add_properties_to_query()
 
     def create_user(self):
-        self.attr.session.sql(self.qry).collect()
+        self.execute_final_query()
 
 
     def create_object(self,**kwargs):

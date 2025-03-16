@@ -17,6 +17,7 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from exception.valueexception import InvalidParamForObject
 from dep.deploy import Deploy
+from .baseobj import BaseObject 
 
 class Name:
     def __get__(self,instance,owner):
@@ -283,13 +284,10 @@ class WarehouseAttrs:
     statement_queued_timeout_in_seconds = StatementQueuedTimeoutInSeconds()
     statement_timeout_in_seconds = StatementTimeoutInSeconds()
 
-class Warehouse:
-    def __init__(self,session,user_id,logger):
+class Warehouse(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = WarehouseAttrs(self)
-        self.session =  session
-        self.qry = ""
-        self.user_id = user_id
-        self.logger = logger
 
     def set_name(self, value):
         self.attr.name = value
@@ -422,7 +420,7 @@ class Warehouse:
         self.add_properties_to_query()
     
     def create_warehouse(self,*largs):
-        self.attr.session.sql(self.qry).collect()          
+        self.execute_final_query()         
 
     def create_object(self,*largs,**kwargs):
         self.set_name(kwargs[gv._name_tag])

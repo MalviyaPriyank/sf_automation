@@ -12,7 +12,7 @@ from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-
+from .baseobj import BaseObject 
 
 class Database:
     def __get__(self,instance,owner):
@@ -424,10 +424,9 @@ class TaskAttrs:
     serverless_task_min_statement_size = ServerlessTaskMinStatementSize()
     serverless_task_max_statement_size = ServerlessTaskMaxStatementSize()
 
-class Task:
-    def __init__(self,session,user_id):
-        self.session = session
-        self.user_id = user_id
+class Task(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = TaskAttrs(self)
 
 
@@ -591,7 +590,7 @@ class Task:
         self.add_properties_to_query()
 
     def create_task(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_object(self,**kwargs):
         self.set_database(kwargs[gvtask._database_tag])

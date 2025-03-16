@@ -16,6 +16,7 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep.deploy import Deploy
 from setup import privilege 
+from .baseobj import BaseObject 
 
 
 class Database:
@@ -137,11 +138,9 @@ class StoredProcedureAttrs:
     handler=Handler()
     packages=Packages()
 
-class StoredProcedure:
-    def __init__(self,session,user_id,logger):
-        self.session=session
-        self.user_id=user_id
-        self.logger=logger
+class StoredProcedure(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr=StoredProcedureAttrs(self)
 
     def set_database(self,value):
@@ -206,7 +205,7 @@ class StoredProcedure:
         self.qry= self.qry + " AS $$ " + self.attr.logic + " $$;"
 
     def create_stored_procedure(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def prepare_query(self):
         self.set_object_properties_flag()
