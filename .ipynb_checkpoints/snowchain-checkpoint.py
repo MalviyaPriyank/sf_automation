@@ -75,6 +75,7 @@ if st.session_state['create_table']:
          key=f'fileuploader'
      )
      if csv_upload is not None:
+         if not os.path.isdir('tmp'): os.mkdir('tmp')
          logger.info('here2')
          for file in csv_upload:
              logger.info('here3')
