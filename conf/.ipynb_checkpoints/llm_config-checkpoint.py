@@ -855,18 +855,22 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_single_table_object",
-                "description":"create one snowflake table object for the user. name is a required input from user.",
+                "description":"create one snowflake table object for the user. database and schema are required inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "name": {
+                            "database": {
                                 "type":"string",
-                                "description":"user provided name for table object"
+                                "description":"database name for table object"
+                            },
+                            "schema": {
+                                "type":"string",
+                                "description":"schema name for table object"
                             }
                         },
                         "required":[
-                            "name"
+                            "database","schema"
                         ]
                     }
                 }

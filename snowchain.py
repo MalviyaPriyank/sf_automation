@@ -32,6 +32,8 @@ logger = logging.getLogger('snowchain_logs')
 st.title('Snowchain')
 #tools = LLMTools()
 
+if 'count' not in st.session_state:
+    st.session_state['count'] = 0
 
 if ss.CHAT_DISABLED not in st.session_state:
     st.session_state[ss.CHAT_DISABLED] = False
@@ -52,6 +54,9 @@ if ss.CHAT_HISTORY not in st.session_state:
 
 if ss.INITIALIZED not in st.session_state:
     st.session_state[ss.INITIALIZED] = False
+
+if 'create_table' not in st.session_state:
+    st.session_state['create_table'] = False
 
 def disable_chat():
     st.session_state[ss.CHAT_DISABLED] = True
@@ -107,39 +112,45 @@ if st.session_state[ss.INITIALIZED]:
                         break
                     if lcs.TOOL_USE in content:
                         if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
+                             st.session_state['create_table'] = True
+                        if st.session_state['create_table']:
+                             st.session_state['count'] += 1
                              csv_upload = st.file_uploader(
                                  'Please upload data dictionary for tables',
                                  accept_multiple_files=True,
-                                 type='csv'
+                                 type='csv',
+                                 key=f'fileuploader{st.session_state["count"]}'
                              )
                              if csv_upload is not None:
                                  for file in csv_upload:
                                      pd.to_csv(f'tmp/{uploaded_file.name}')
-     
-                        try:
-                            tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
-                        except SnowchainException as e:
-                            logger.info('attr-error')
-                            st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
-                            with st.chat_message(ss.ASSISTANT):
-                                st.markdown(e)
-                            tool_result.append({lcs.TOOL_RESULT:{
-                                lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
-                                lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
-                            }})
-                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                            done_tool_call=True
-                            break
-                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
-                    
-                        response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
-                        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
-                        for content in response:
-                            if ss.TEXT in content:
-                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
-                                
+                             if os.path.isdir('tmp'):
+                                 st.session_state['create_table'] = False
+                        else:
+                            try:
+                                tool_result = st.session_state[ss.TOOLS].tool_call(content, tool_result)
+                            except SnowchainException as e:
+                                logger.info('attr-error')
+                                st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=e))
                                 with st.chat_message(ss.ASSISTANT):
-                                    st.markdown(content[ss.TEXT])
+                                    st.markdown(e)
+                                tool_result.append({lcs.TOOL_RESULT:{
+                                    lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
+                                    lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
+                                }})
+                                st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                                done_tool_call=True
+                                break
+                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                        
+                            response = st.session_state.bedrock_obj.converse(messages=st.session_state[ss.CHAT_HISTORY])
+                            st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(is_text=False, prompt=response))
+                            for content in response:
+                                if ss.TEXT in content:
+                                    st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.ASSISTANT, prompt=content[ss.TEXT]))
+                                    
+                                    with st.chat_message(ss.ASSISTANT):
+                                        st.markdown(content[ss.TEXT])
     
     
                 if done_tool_call: 
