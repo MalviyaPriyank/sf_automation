@@ -41,8 +41,8 @@ class Stage:
         #self.stage_reference.put("/sf_automation/" + file_name,'DB', auto_compress=True)
 
 
-    def upload_file_to_stage(self,file_name,upload_path,auto_compress,overwrite):
-        self.stage_reference.put(file_name,upload_path,auto_compress = auto_compress, overwrite = overwrite)
+    def upload_file_to_stage(self,file_path,upload_path,auto_compress,overwrite):
+        self.stage_reference.put(file_path,upload_path,auto_compress = auto_compress, overwrite = overwrite)
 
 
 
