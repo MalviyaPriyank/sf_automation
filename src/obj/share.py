@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 from vars.gvobject import Share as gv
 from validation.validatevalue import ValidateValue as vv
 from .baseobj import BaseObject 
+from vars.obj.share.gvshare import ShareTag as tags
 
 class Name:
     def __get__(self,instance,owner):
@@ -29,16 +30,6 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-    
-    def __delete__(self,instance):
-        del instance._name_tag
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -49,25 +40,12 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-    
-    def __delete__(self,instance):
-        del instance._comment_tag
-
 class ShareAttrs:
     def __init__(self,parent):
         self.parent = parent
 
     name = Name()
-    name_tag = NameTag()
-
     comment = Comment()
-    comment_tag = CommentTag()
 
 
 class Share(BaseObject):
@@ -78,13 +56,13 @@ class Share(BaseObject):
     def set_name(self,val):
         self.attr.name = val
 
-    def set_name_tag(self,val):
+    def setNAME(self,val):
         self.attr.name_tag = val
 
     def set_comment(self,val):
         self.attr.comment = val
 
-    def set_comment_tag(self,val):
+    def setCOMMENT(self,val):
         self.attr.comment_tag = val
 
     def set_object_properties_flag(self):
@@ -93,8 +71,8 @@ class Share(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._comment_tag,"_comment")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.COMMENT,"_comment")
 
 
     def check_properties_to_set(self): 
@@ -109,8 +87,8 @@ class Share(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {self.attr.comment_tag} = {self.attr.comment} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -124,11 +102,8 @@ class Share(BaseObject):
     def create_object(session,**kwargs):
         share = Share(session)
 
-        share.set_name(kwargs[gv._name_tag])
-        share.set_name_tag(gv._name_tag)
-
-        share.set_comment(kwargs[gv._comment_tag])
-        share.set_comment_tag(gv._comment_tag)
+        share.set_name(kwargs[tags.NAME])
+        share.set_comment(kwargs[tags.COMMENT])
 
         share.prepare_query()
         share.create_share()
