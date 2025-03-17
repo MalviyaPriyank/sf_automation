@@ -1,7 +1,8 @@
-from enum import Enum
+from dataclasses import dataclass
 from abc import ABC,abstractmethod
 
-class BaseTag(Enum):
+@dataclass(frozen=True)
+class BaseTag:
     DATABASE="DATABASE"
     SCHEMA="SCHEMA"
     NAME="NAME"

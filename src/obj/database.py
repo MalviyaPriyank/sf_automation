@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 from vars.gvobject import Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
-from vars.obj.database.gvdatabase import DatabaseTag as tags, DatabaseMethod as methods
+from vars.obj.database.gvdatabase import DatabaseTag as tags
 from dep import deploy
 from setup import privilege 
 from .baseobj import BaseObject 
@@ -55,7 +55,7 @@ class DataRetentionTimeInDays:
             instance._data_retention_time_in_days = value
         else:
             vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_between(value,methods.min_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),methods.max_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_between(value,tags.min_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),tags.max_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)
             instance._data_retention_time_in_days = value
 
     
@@ -81,7 +81,7 @@ class MaxDataExtensionTimeInDays:
             instance._max_data_extension_time_in_days = value
         else:
             vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            vv.is_between(value,methods.min_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),methods.max_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)    
+            vv.is_between(value,tags.min_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),tags.max_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)    
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -178,7 +178,7 @@ class DefaultDdlCollation:
         if value=="NONE":
             instance._default_ddl_collation=value
         else:
-            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=methods.allowed_value_list().get(tags.DEFAULT_DDL_COLLATION))
+            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=tags.allowed_value_list().get(tags.DEFAULT_DDL_COLLATION))
             instance._default_ddl_collation = f"'{value}'"
 
     def __delete__(self,instance):
@@ -203,7 +203,7 @@ class LogLevel:
             instance._log_level=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.LOG_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.LOG_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._log_level = f"'{value}'"
 
     def __delete__(self,instance):
@@ -218,7 +218,7 @@ class TraceLevel:
             instance._trace_level=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.TRACE_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.TRACE_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._trace_level = f"'{value}'"
 
     def __delete__(self,instance):
@@ -233,7 +233,7 @@ class StorageSerializationPolicy:
             instance._storage_serialization_policy = value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.STORAGE_SERIALIZATION_POLICY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.STORAGE_SERIALIZATION_POLICY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
