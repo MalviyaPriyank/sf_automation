@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag
+from base.basetag import BaseTag,BaseMethod
 
-class ExternalStageTag(BaseTag):
+class ExternalStageTag(BaseTag,BaseMethod):
     FILE_FORMAT="FILE_FORMAT"
     URL="URL"
     AWS_ACCESS_POINT_ARN="AWS_ACCESS_POINT_ARN"

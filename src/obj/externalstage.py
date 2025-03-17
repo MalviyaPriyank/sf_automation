@@ -5,9 +5,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
 
-from vars.gvobject import ExternalStage as gvextstg,Config as cfg,Privilege as gv_priv
+from vars.gvobject import Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
+from vars.obj.externalstage.gvexternalstage import ExternalStageTag as tags
 from dep.deploy import Deploy
 from setup import privilege
 from .baseobj import BaseObject 
@@ -92,7 +93,7 @@ class Url:
         if value == 'NONE':
             instance._url = value
         else:
-            vv.is_valid_url(value=value,allowed_protocols=gvextstg._allowed_values_protocols,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_valid_url(value=value,allowed_protocols=tags.allowed_value_list().get(tags.PROTOCOLS),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._url = f"'{value}'"
 
     def __del__(self,instance):
@@ -135,13 +136,13 @@ class EncryptionType:
             instance._encryption_type=value
         else:
             if 's3' in instance._url.split(":")[0]:
-                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_s3_encryption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.S3_ENCRYPTION_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                 instance._encryption_type = value
             elif 'gcs' in instance._url.split(":")[0]:
-                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_gcs_encyption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.GCS_ENCRYPTION_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                 instance._encryption_type=value
             elif 'azure' in instance._url.split(":")[0]:
-                vv.is_allowed_value(value=value,allowed_list=gvextstg._allowed_values_azure_encyption_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.AZURE_ENCRYPTION_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                 instance._encryption_type=value
 
     def __del__(self,instance):
@@ -348,20 +349,20 @@ class ExternalStage(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gvextstg._name_tag,"_name")
-        set_flag(gvextstg._file_format_tag,"_file_format")
-        set_flag(gvextstg._comment_tag,"_comment")
-        set_flag(gvextstg._url_tag,"_url")
-        set_flag(gvextstg._aws_access_point_arn_tag,"_aws_access_point_arn")
-        set_flag(gvextstg._storage_integration_tag,"_storage_integration")
-        set_flag(gvextstg._encryption_type_tag,"_encryption_type")
-        set_flag(gvextstg._encryption_master_key_tag,"_encryption_master_key")
-        set_flag(gvextstg._encryption_kms_key_id_tag,"_encryption_kms_key_id")
-        set_flag(gvextstg._use_privatelink_endpoint_tag,"_use_privatelink_endpoint")
-        set_flag(gvextstg._enable_tag,"_enable")
-        set_flag(gvextstg._refresh_on_create_tag,"_refresh_on_create")
-        set_flag(gvextstg._auto_refresh_tag,"_auto_refresh")
-        set_flag(gvextstg._notification_integration_tag,"_notification_integration")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.FILE_FORMAT,"_file_format")
+        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.URL,"_url")
+        set_flag(tags.AWS_ACCESS_POINT_ARN,"_aws_access_point_arn")
+        set_flag(tags.STORAGE_INTEGRATION,"_storage_integration")
+        set_flag(tags.ENCRYPTION,"_encryption_type")
+        set_flag(tags.ENCRYPTION_MASTER_KEY,"_encryption_master_key")
+        set_flag(tags.ENCRYPTION_KMS_KEY_ID,"_encryption_kms_key_id")
+        set_flag(tags.USE_PRIVATELINK_ENDPOINT,"_use_privatelink_endpoint")
+        set_flag(tags.ENABLE,"_enable")
+        set_flag(tags.REFRESH_ON_CREATE,"_refresh_on_create")
+        set_flag(tags.AUTO_REFRESH,"_auto_refresh")
+        set_flag(tags.NOTIFICATION_INTEGRATION,"_notification_integration")
 
 
     def check_properties_to_set(self): 
@@ -376,32 +377,32 @@ class ExternalStage(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gvextstg._file_format_tag:
-                    self.qry = f" {self.qry} {gvextstg._file_format_tag} = {self.attr.file_format} "
-                if prop == gvextstg._comment_tag:
-                    self.qry = f" {self.qry} {gvextstg._comment_tag} = {self.attr.comment} "
-                if prop == gvextstg._url_tag:
-                    self.qry = f" {self.qry} {gvextstg._url_tag} = {self.attr.url} "
-                if prop == gvextstg._aws_access_point_arn_tag:
-                    self.qry = f" {self.qry} {gvextstg._aws_access_point_arn_tag} = {self.attr.aws_access_point_arn} "
-                if prop == gvextstg._storage_integration_tag:
-                    self.qry = f" {self.qry} {gvextstg._storage_integration_tag} = {self.attr.storage_integration} "
-                if prop == gvextstg._encryption_type_tag:
-                    self.qry = f" {self.qry} {gvextstg._encryption_type_tag} = {self.attr.encryption_type} "
-                if prop == gvextstg._encryption_master_key_tag:
-                    self.qry = f" {self.qry} {gvextstg._encryption_master_key_tag} = {self.attr.encryption_master_key} "
-                if prop == gvextstg._encryption_kms_key_id_tag:
-                    self.qry = f" {self.qry} {gvextstg._encryption_kms_key_id_tag} = {self.attr.encryption_kms_key_id} "
-                if prop == gvextstg._use_privatelink_endpoint_tag:
-                    self.qry = f" {self.qry} {gvextstg._use_privatelink_endpoint_tag} = {self.attr.use_privatelink_endpoint} "
-                if prop == gvextstg._enable_tag:
-                    self.qry = f" {self.qry} DIRECTORY = ( {gvextstg._enable_tag} = {self.attr.enable} "
-                    if gvextstg._refresh_on_create_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gvextstg._refresh_on_create_tag} = {self.attr.refresh_on_create}"
-                    if gvextstg._auto_refresh_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gvextstg._auto_refresh_tag} = {self.attr.auto_refresh}"
-                    if gvextstg._notification_integration_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gvextstg._notification_integration_tag} = {self.attr.notification_integration}"
+                if prop == tags.FILE_FORMAT:
+                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.file_format} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                if prop == tags.URL:
+                    self.qry = f" {self.qry} {tags.URL} = {self.attr.url} "
+                if prop == tags.AWS_ACCESS_POINT_ARN:
+                    self.qry = f" {self.qry} {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn} "
+                if prop == tags.STORAGE_INTEGRATION:
+                    self.qry = f" {self.qry} {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration} "
+                if prop == tags.ENCRYPTION:
+                    self.qry = f" {self.qry} {tags.ENCRYPTION} = {self.attr.encryption_type} "
+                if prop == tags.ENCRYPTION_MASTER_KEY:
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key} "
+                if prop == tags.ENCRYPTION_KMS_KEY_ID:
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id} "
+                if prop == tags.USE_PRIVATELINK_ENDPOINT:
+                    self.qry = f" {self.qry} {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint} "
+                if prop == tags.ENABLE:
+                    self.qry = f" {self.qry} DIRECTORY = ( {tags.ENABLE} = {self.attr.enable} "
+                    if tags.REFRESH_ON_CREATE in self.property_lst:
+                        self.qry=f" {self.qry} {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
+                    if tags.AUTO_REFRESH in self.property_lst:
+                        self.qry=f" {self.qry} {tags.AUTO_REFRESH} = {self.attr.auto_refresh}"
+                    if tags.NOTIFICATION_INTEGRATION in self.property_lst:
+                        self.qry=f" {self.qry} {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration}"
                     self.qry=f" {self.qry} )"
 
     def prepare_query(self):
@@ -435,23 +436,23 @@ class ExternalStage(BaseObject):
 
     def create_object(self,**kwargs):
 
-        self.set_database(kwargs[gvextstg._database_tag])
-        self.set_schema(kwargs[gvextstg._schema_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
         
-        self.set_name(kwargs[gvextstg._name_tag])
-        self.set_file_format(kwargs[gvextstg._file_format_tag])
-        self.set_comment(kwargs[gvextstg._comment_tag])
-        self.set_url(kwargs[gvextstg._url_tag])
-        self.set_aws_access_point_arn(kwargs[gvextstg._aws_access_point_arn_tag])
-        self.set_storage_integration(kwargs[gvextstg._storage_integration_tag])
-        self.set_encryption_type(kwargs[gvextstg._encryption_type_tag])
-        self.set_encryption_master_key(kwargs[gvextstg._encryption_master_key_tag])
-        self.set_encryption_kms_key_id(kwargs[gvextstg._encryption_kms_key_id_tag])
-        self.set_use_privatelink_endpoint(kwargs[gvextstg._use_privatelink_endpoint_tag])
-        self.set_enable(kwargs[gvextstg._enable_tag])
-        self.set_refresh_on_create(kwargs[gvextstg._refresh_on_create_tag])
-        self.set_auto_refresh(kwargs[gvextstg._auto_refresh_tag])
-        self.set_notification_integration(kwargs[gvextstg._notification_integration_tag])
+        self.set_name(kwargs[tags.NAME])
+        self.set_file_format(kwargs[tags.FILE_FORMAT])
+        self.set_comment(kwargs[tags.COMMENT])
+        self.set_url(kwargs[tags.URL])
+        self.set_aws_access_point_arn(kwargs[tags.AWS_ACCESS_POINT_ARN])
+        self.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
+        self.set_encryption_type(kwargs[tags.ENCRYPTION])
+        self.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
+        self.set_encryption_kms_key_id(kwargs[tags.ENCRYPTION_KMS_KEY_ID])
+        self.set_use_privatelink_endpoint(kwargs[tags.USE_PRIVATELINK_ENDPOINT])
+        self.set_enable(kwargs[tags.ENABLE])
+        self.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
+        self.set_auto_refresh(kwargs[tags.AUTO_REFRESH])
+        self.set_notification_integration(kwargs[tags.NOTIFICATION_INTEGRATION])
         self.set_qualified_name()
         self.prepare_query()
         self.create_external_stage()

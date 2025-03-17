@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag
+from base.basetag import BaseTag,BaseMethod
 
-class FileFormatTag(BaseTag):
+class FileFormatTag(BaseTag,BaseMethod):
     TYPE="TYPE"
     COMPRESSION="COMPRESSION"
     RECORD_DELIMITER="RECORD_DELIMITER"

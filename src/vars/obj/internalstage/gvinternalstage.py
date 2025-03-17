@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag
+from base.basetag import BaseTag,BaseMethod
 
-class InternalStageTag(BaseTag):
+class InternalStageTag(BaseTag,BaseMethod):
     FILE_FORMAT="FILE_FORMAT"
     ENCRYPTION="ENCRYPTION"
     ENABLE="ENABLE"

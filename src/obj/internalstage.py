@@ -6,8 +6,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import InternalStage as gv, Config as cfg,Privilege as gv_priv
+from vars.gvobject import Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
+from vars.obj.internalstage.gvinternalstage import InternalStageTag as tags
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
@@ -92,7 +93,7 @@ class Encryption:
         if value == "NONE":
             instance._encryption = value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_encryption,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.ENCRYPTION) ,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._encryption = value
 
     def __del__(self,instance):
@@ -187,12 +188,12 @@ class InternalStage(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._file_format_tag,"_file_format")
-        set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._encryption_tag,"_encryption")
-        set_flag(gv._enable_tag,"_enable")
-        set_flag(gv._refresh_on_create_tag,"_refresh_on_create")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.FILE_FORMAT,"_file_format")
+        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.ENCRYPTION,"_encryption")
+        set_flag(tags.ENABLE,"_enable")
+        set_flag(tags.REFRESH_ON_CREATE,"_refresh_on_create")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -206,16 +207,16 @@ class InternalStage(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._file_format_tag:
-                    self.qry = f" {self.qry} {gv._file_format_tag} = {self.attr.file_format} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
-                if prop == gv._encryption_tag:
-                    self.qry = f" {self.qry} {gv._encryption_tag} = {self.attr.encryption} "
-                if prop == gv._enable_tag:
-                    self.qry = f" {self.qry} DIRECTORY = ( {gv._enable_tag} = {self.attr.enable} "
-                    if prop == gv._refresh_on_create_tag:
-                        self.qry = f" {self.qry} {gv._refresh_on_create_tag} = {self.attr.refresh_on_create} "
+                if prop == tags.FILE_FORMAT:
+                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.file_format} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                if prop == tags.ENCRYPTION:
+                    self.qry = f" {self.qry} {tags.ENCRYPTION} = {self.attr.encryption} "
+                if prop == tags.ENABLE:
+                    self.qry = f" {self.qry} DIRECTORY = ( {tags.ENABLE} = {self.attr.enable} "
+                    if prop == tags.REFRESH_ON_CREATE:
+                        self.qry = f" {self.qry} {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create} "
                     
                     self.qry=f" {self.qry} )"
 
@@ -249,14 +250,14 @@ class InternalStage(BaseObject):
 
     def create_object(self,*largs,**kwargs):
 
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_file_format(kwargs[gv._file_format_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_encryption(kwargs[gv._encryption_tag])
-        self.set_enable(kwargs[gv._enable_tag])
-        self.set_refresh_on_create(kwargs[gv._refresh_on_create_tag])  
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_file_format(kwargs[tags.FILE_FORMAT])
+        self.set_comment(kwargs[tags.COMMENT])
+        self.set_encryption(kwargs[tags.ENCRYPTION])
+        self.set_enable(kwargs[tags.ENABLE])
+        self.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])  
         self.set_qualified_name()
         self.prepare_query()
         self.logger.info(f"creating internal stage {self.attr.name}")
