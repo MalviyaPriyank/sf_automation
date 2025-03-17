@@ -10,10 +10,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
 
-from vars.gvobject import Database as gv, Config as cfg , Privilege as gv_priv
+from vars.gvobject import Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
-from vars.obj.database.gvdatabase import DatabaseTag as dbt
+from vars.obj.database.gvdatabase import DatabaseTag as tags, DatabaseMethod as methods
 from dep import deploy
 from setup import privilege 
 from .baseobj import BaseObject 
@@ -55,7 +55,7 @@ class DataRetentionTimeInDays:
             instance._data_retention_time_in_days = value
         else:
             vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_between(value,dbt.min_allowed_value().get(dbt.DATA_RETENTION_TIME_IN_DAYS),dbt.max_allowed_value().get(dbt.DATA_RETENTION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_between(value,methods.min_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),methods.max_allowed_value().get(tags.DATA_RETENTION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)
             instance._data_retention_time_in_days = value
 
     
@@ -81,7 +81,7 @@ class MaxDataExtensionTimeInDays:
             instance._max_data_extension_time_in_days = value
         else:
             vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            vv.is_between(value,dbt.min_allowed_value().get(dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS),dbt.max_allowed_value().get(dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)    
+            vv.is_between(value,methods.min_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),methods.max_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)    
             instance._max_data_extension_time_in_days = value
 
     def __delete__(self,instance):
@@ -178,7 +178,7 @@ class DefaultDdlCollation:
         if value=="NONE":
             instance._default_ddl_collation=value
         else:
-            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=dbt.allowed_value_list().get(dbt.DEFAULT_DDL_COLLATION))
+            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=methods.allowed_value_list().get(tags.DEFAULT_DDL_COLLATION))
             instance._default_ddl_collation = f"'{value}'"
 
     def __delete__(self,instance):
@@ -203,7 +203,7 @@ class LogLevel:
             instance._log_level=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=dbt.allowed_value_list().get(dbt.LOG_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.LOG_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._log_level = f"'{value}'"
 
     def __delete__(self,instance):
@@ -218,7 +218,7 @@ class TraceLevel:
             instance._trace_level=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=dbt.allowed_value_list().get(dbt.TRACE_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.TRACE_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._trace_level = f"'{value}'"
 
     def __delete__(self,instance):
@@ -233,7 +233,7 @@ class StorageSerializationPolicy:
             instance._storage_serialization_policy = value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=dbt.allowed_value_list().get(dbt.STORAGE_SERIALIZATION_POLICY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=methods.allowed_value_list().get(tags.STORAGE_SERIALIZATION_POLICY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._storage_serialization_policy = value
 
     def __delete__(self,instance):
@@ -379,17 +379,17 @@ class Database(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(dbt.NAME,"_name")
-        set_flag(dbt.DATA_RETENTION_TIME_IN_DAYS),"_data_retention_time_in_days")
-        set_flag(dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
-        set_flag(dbt.EXTERNAL_VOLUME,"_external_volume")
-        set_flag(dbt.CATALOG,"_catalog")
-        set_flag(dbt.REPLACE_INVALID_CHARACTERS),"_replace_invalid_characters")
-        set_flag(dbt.DEFAULT_DDL_COLLATION,"_default_ddl_collation")
-        set_flag(dbt.LOG_LEVEL,"_log_level")
-        set_flag(dbt.TRACE_LEVEL,"_trace_level")
-        set_flag(dbt.STORAGE_SERIALIZATION_POLICY,"_storage_serialization_policy")
-        set_flag(dbt.COMMENT,"_comment")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.DATA_RETENTION_TIME_IN_DAYS,"_data_retention_time_in_days")
+        set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
+        set_flag(tags.EXTERNAL_VOLUME,"_external_volume")
+        set_flag(tags.CATALOG,"_catalog")
+        set_flag(tags.REPLACE_INVALID_CHARACTERS,"_replace_invalid_characters")
+        set_flag(tags.DEFAULT_DDL_COLLATION,"_default_ddl_collation")
+        set_flag(tags.LOG_LEVEL,"_log_level")
+        set_flag(tags.TRACE_LEVEL,"_trace_level")
+        set_flag(tags.STORAGE_SERIALIZATION_POLICY,"_storage_serialization_policy")
+        set_flag(tags.COMMENT,"_comment")
 
 
     def check_properties_to_set(self): 
@@ -404,26 +404,26 @@ class Database(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == dbt.DATA_RETENTION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {dbt.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} "
-                if prop == dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} "
-                if prop == dbt.EXTERNAL_VOLUME:
-                    self.qry = f" {self.qry} {dbt.EXTERNAL_VOLUME} = {self.attr.external_volume} "
-                if prop == dbt.CATALOG:
-                    self.qry = f" {self.qry} {dbt.CATALOG} = {self.attr.catalog} "
-                if prop == dbt.REPLACE_INVALID_CHARACTERS:
-                    self.qry = f" {self.qry} {dbt.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} "
-                if prop == dbt.DEFAULT_DDL_COLLATION:
-                    self.qry = f" {self.qry} {dbt.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation} "
-                if prop == dbt.LOG_LEVEL:
-                    self.qry = f" {self.qry} {dbt.LOG_LEVEL} = {self.attr.log_level} "
-                if prop == dbt.TRACE_LEVEL:
-                    self.qry = f" {self.qry} {dbt.TRACE_LEVEL} = {self.attr.trace_level} "
-                if prop == dbt.STORAGE_SERIALIZATION_POLICY:
-                    self.qry = f" {self.qry} {dbt.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy} "
-                if prop == dbt.COMMENT:
-                    self.qry = f" {self.qry} {dbt.COMMENT} = {self.attr.comment} "
+                if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
+                    self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} "
+                if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
+                    self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} "
+                if prop == tags.EXTERNAL_VOLUME:
+                    self.qry = f" {self.qry} {tags.EXTERNAL_VOLUME} = {self.attr.external_volume} "
+                if prop == tags.CATALOG:
+                    self.qry = f" {self.qry} {tags.CATALOG} = {self.attr.catalog} "
+                if prop == tags.REPLACE_INVALID_CHARACTERS:
+                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} "
+                if prop == tags.DEFAULT_DDL_COLLATION:
+                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation} "
+                if prop == tags.LOG_LEVEL:
+                    self.qry = f" {self.qry} {tags.LOG_LEVEL} = {self.attr.log_level} "
+                if prop == tags.TRACE_LEVEL:
+                    self.qry = f" {self.qry} {tags.TRACE_LEVEL} = {self.attr.trace_level} "
+                if prop == tags.STORAGE_SERIALIZATION_POLICY:
+                    self.qry = f" {self.qry} {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -459,25 +459,22 @@ class Database(BaseObject):
 
     def create_object(self,*largs,**kwargs):
         if len(largs) != 0:
-            self.qry = f"CREATE DATABASE {kwargs[dbt.NAME]}"
+            self.qry = f"CREATE DATABASE {kwargs[tags.NAME]}"
             self.create_database()
             self.grant_default_privileges(*['initial'])
         else:
-            self.set_name(kwargs[dbt.NAME])
-            self.set_data_retention_time_in_days(kwargs[dbt.DATA_RETENTION_TIME_IN_DAYS])
-            self.set_max_data_extension_time_in_days(kwargs[dbt.MAX_DATA_EXTENSION_TIME_IN_DAYS])
-            self.set_external_volume(kwargs[dbt.EXTERNAL_VOLUME])
-            self.set_catalog(kwargs[dbt.CATALOG])
-            self.set_replace_invalid_characters(kwargs[dbt.REPLACE_INVALID_CHARACTERS])
-            self.set_default_ddl_collation(kwargs[dbt.DEFAULT_DDL_COLLATION])
-            self.set_log_level(kwargs[dbt.LOG_LEVEL])
-            self.set_storage_serialization_policy(kwargs[dbt.STORAGE_SERIALIZATION_POLICY])
-            self.set_comment(kwargs[dbt.COMMENT])
+            self.set_name(kwargs[tags.NAME])
+            self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+            self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+            self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+            self.set_catalog(kwargs[tags.CATALOG])
+            self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+            self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+            self.set_log_level(kwargs[tags.LOG_LEVEL])
+            self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+            self.set_comment(kwargs[tags.COMMENT])
             self.prepare_query()
             self.logger.info(f"creating database {self.attr.name}")
             self.create_database()
             self.grant_default_privileges()
             self.create_deployment_entry()
-
-            
-

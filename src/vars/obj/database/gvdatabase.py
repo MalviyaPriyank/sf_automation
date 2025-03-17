@@ -4,9 +4,10 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag
+from base.basetag import BaseMethod
+from enum import Enum
 
-class DatabaseTag(BaseTag):
+class DatabaseTag(Enum):
     REPLACE_INVALID_CHARACTERS="REPLACE_INVALID_CHARACTERS"
     DATA_RETENTION_TIME_IN_DAYS="DATA_RETENTION_TIME_IN_DAYS"
     MAX_DATA_EXTENSION_TIME_IN_DAYS="MAX_DATA_EXTENSION_TIME_IN_DAYS"
@@ -18,6 +19,7 @@ class DatabaseTag(BaseTag):
     STORAGE_SERIALIZATION_POLICY="STORAGE_SERIALIZATION_POLICY"
     COMMENT="COMMENT"
 
+class DatabaseMethod(BaseMethod):
     @classmethod
     def allowed_value_list(cls):
         return {
