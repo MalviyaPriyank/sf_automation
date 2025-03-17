@@ -8,10 +8,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import Role as gv,Config as cfg
+from vars.gvobject import Config as cfg
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from .baseobj import BaseObject 
+from vars.obj.role.gvrole import RoleTag as tags
 
 class Name:
     def __get__(self,instance,owner):
@@ -61,8 +62,8 @@ class Role(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._comment_tag,"_comment")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.COMMENT,"_comment")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -76,8 +77,8 @@ class Role(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -89,8 +90,8 @@ class Role(BaseObject):
         self.attr.session.sql(self.qry).collect()
 
     def create_object(self,*pargs,**kwargs): 
-        self.set_name(kwargs[gv._name_tag])
-        self.set_comment(kwargs[gv._comment_tag])
+        self.set_name(kwargs[tags.NAME])
+        self.set_comment(kwargs[tags.COMMENT])
         self.prepare_query()
         self.logger.info(f"creating role {self.attr.name}")
         self.create_role()
