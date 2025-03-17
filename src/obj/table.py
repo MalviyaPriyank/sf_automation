@@ -161,14 +161,15 @@ class Table:
         file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
         for files in file_lst:
             files = stg.remove_stage_name_from_file_path(files)
-            stg.download_file_from_stage(files,"./")
+            stg.download_file_from_stage(files,"tmp/")
 
         tbl_lst = []
         for files in file_lst:
+            
             files = files.split("/")[-1]
             tbl_lst.append(files.split('.')[0])
             self.set_name(files.split('.')[0])
-            tbl_ddl_data = pd.read_csv(f"{files}")
+            tbl_ddl_data = pd.read_csv(f"tmp/{files}")
             self.set_column_name_list(tbl_ddl_data)
             self.set_column_type_list(tbl_ddl_data)
             self.logger.info(f"creating table {self.attr.name}")

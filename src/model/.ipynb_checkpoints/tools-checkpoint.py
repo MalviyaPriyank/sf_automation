@@ -366,13 +366,15 @@ class LLMTools:
     def create_single_table_object(self,
                                    database,
                                    schema):
-        stage = Stage(root=self.root, database=database, schema=schema)
+        stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
         stage.set_stage(cfg._config_stage)
         stage.set_stage_reference()
+        self.logger.info('listing_files')
         for file in os.listdir('tmp/'):
-            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path=f'{database}/{schema}/')
+            self.logger.info(file)
+            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path='/')#f'/{database}/{schema}/')
 
-        #self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
+        self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema)
         return f'Tables created'
 
 

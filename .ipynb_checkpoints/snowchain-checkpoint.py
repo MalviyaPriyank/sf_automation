@@ -78,10 +78,9 @@ if st.session_state['create_table']:
          if not os.path.isdir('tmp'): os.mkdir('tmp')
          logger.info('here2')
          for file in csv_upload:
-             logger.info('here3')
              df = pd.read_csv(file)
              df.to_csv(f'tmp/{file.name}')
-             logger.info(os.listdir('tmp/'))
+         logger.info(os.listdir('tmp/'))
          st.session_state[ss.TOOLS].create_single_table_object(database=st.session_state['database'], schema=st.session_state['schema'])
 
 
