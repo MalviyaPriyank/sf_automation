@@ -7,12 +7,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import Snowpipe as gv,Config as cfg, Privilege as gv_priv
+from vars.gvobject import Config as cfg, Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
+from vars.obj.snowpipe.gvsnowpipe import SnowpipeTag as tags
 
 
 
@@ -181,12 +182,12 @@ class Snowpipe(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._auto_ingest_tag,"_auto_ingest")
-        set_flag(gv._error_integration_tag,"_error_integration")
-        set_flag(gv._aws_sns_topic_tag,"_aws_sns_topic")
-        set_flag(gv._integration_tag,"_integration")
-        set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._file_type_tag,"_file_type")
+        set_flag(tags.AUTO_INGEST,"_auto_ingest")
+        set_flag(tags.ERROR_INTEGRATION,"_error_integration")
+        set_flag(tags.AWS_SNS_TOPIC,"_aws_sns_topic")
+        set_flag(tags.INTEGRATION,"_integration")
+        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.FILE_TYPE,"_file_type")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -201,16 +202,16 @@ class Snowpipe(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._auto_ingest_tag:
-                    self.qry = f" {self.qry} {gv._auto_ingest_tag} = {self.attr.auto_ingest} "
-                if prop == gv._error_integration_tag:
-                    self.qry = f" {self.qry} {gv._error_integration_tag} = {self.attr.error_integration} "
-                if prop == gv._aws_sns_topic_tag:
-                    self.qry = f" {self.qry} {gv._aws_sns_topic_tag} = {self.attr.aws_sns_topic} "
-                if prop == gv._integration_tag:
-                    self.qry = f" {self.qry} {gv._integration_tag} = {self.attr.integration} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
+                if prop == tags.AUTO_INGEST:
+                    self.qry = f" {self.qry} {tags.AUTO_INGEST} = {self.attr.auto_ingest} "
+                if prop == tags.ERROR_INTEGRATION:
+                    self.qry = f" {self.qry} {tags.ERROR_INTEGRATION} = {self.attr.error_integration} "
+                if prop == tags.AWS_SNS_TOPIC:
+                    self.qry = f" {self.qry} {tags.AWS_SNS_TOPIC} = {self.attr.aws_sns_topic} "
+                if prop == tags.INTEGRATION:
+                    self.qry = f" {self.qry} {tags.INTEGRATION} = {self.attr.integration} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
         self.qry= self.qry + f" AS {self.copy_into}"
 
     def prepare_query(self):
@@ -248,15 +249,15 @@ class Snowpipe(BaseObject):
 
 
     def create_object(self,*largs,**kwargs):
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_copy_into(kwargs[gv._copyinto_query_tag])
-        self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
-        self.set_error_integration(kwargs[gv._error_integration_tag])
-        self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])
-        self.set_integration(kwargs[gv._integration_tag])
-        self.set_comment(kwargs[gv._comment_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_copy_into(kwargs[tags.COPYINTO_QUERY])
+        self.set_auto_ingest(kwargs[tags.AUTO_INGEST])
+        self.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
+        self.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
+        self.set_integration(kwargs[tags.INTEGRATION])
+        self.set_comment(kwargs[tags.COMMENT])
         self.set_qualified_name()
         self.prepare_query()
         self.logger.info(f"creating snowpipe : {self.attr.name}")
