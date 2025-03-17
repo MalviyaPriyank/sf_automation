@@ -4,9 +4,9 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 
-from vars.gvobject import ResourceMonitor as gv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
+from vars.obj.resourcemonitor.gvresourcemonitor import ResourceMonitorTag as tags
 from .baseobj import BaseObject 
 
 class Name:
@@ -47,7 +47,7 @@ class Frequency:
         if value=="NONE":
             instance._frequency=value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_frequency,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.FREQUENCY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._frequency=value
 
     def __delete__(self,instance):
@@ -97,7 +97,7 @@ class Triggers:
         if value=="NONE":
             instance._triggers=value
         else:
-            vv.is_allowed_value(value=value.upper(),allowed_list=gv._allowed_values_triggers,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value.upper(),allowed_list=tags.allowed_value_list().get(tags.TRIGGERS),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._triggers=value
         
     def __delete__(self,instance):
@@ -198,15 +198,15 @@ class ResourceMonitor(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._credit_quota_tag,"_credit_quota")
-        set_flag(gv._frequency_tag,"_frequency")
-        set_flag(gv._start_timestamp_tag,"_start_timestamp")
-        set_flag(gv._end_timestamp_tag,"_end_timestamp")
-        set_flag(gv._notify_users_tag,"_notify_users")
-        set_flag(gv._triggers_tag,"_triggers")
-        set_flag(gv._threshold_tag,"_threshold")
-        set_flag(gv._action_tag,"_action")
+        set_flag(tags.NAME,"_name")
+        set_flag(tags.CREDIT_QUOTA,"_credit_quota")
+        set_flag(tags.FREQUENCY,"_frequency")
+        set_flag(tags.START_TIMESTAMP,"_start_timestamp")
+        set_flag(tags.END_TIMESTAMP,"_end_timestamp")
+        set_flag(tags.NOTIFY_USERS,"_notify_users")
+        set_flag(tags.TRIGGERS,"_triggers")
+        set_flag(tags.THRESHOLD,"_threshold")
+        set_flag(tags.ACTION,"_action")
 
 
     def check_properties_to_set(self): 
@@ -222,21 +222,21 @@ class ResourceMonitor(BaseObject):
         if len(self.property_lst) != 0 :
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
-                if prop == gv._credit_quota_tag:
-                    self.qry = f" {self.qry} {gv._credit_quota_tag}  = {self.attr.credit_quota} "
-                if prop == gv._frequency_tag:
-                    self.qry = f" {self.qry} {gv._frequency_tag} = {self.attr.frequency} "
-                if prop == gv._start_timestamp_tag:
-                    self.qry = f" {self.qry} {gv._start_timestamp_tag} = {self.attr.start_timestamp} "
-                if prop == gv._end_timestamp_tag:
-                    self.qry = f" {self.qry} {gv._end_timestamp_tag} = {self.attr.end_timestamp} "
-                if prop == gv._notify_users_tag:
-                    self.qry = f" {self.qry} {gv._notify_users_tag} = {self.attr.notify_users} "
-                if prop == gv._triggers_tag:
+                if prop == tags.CREDIT_QUOTA:
+                    self.qry = f" {self.qry} {tags.CREDIT_QUOTA}  = {self.attr.credit_quota} "
+                if prop == tags.FREQUENCY:
+                    self.qry = f" {self.qry} {tags.FREQUENCY} = {self.attr.frequency} "
+                if prop == tags.START_TIMESTAMP:
+                    self.qry = f" {self.qry} {tags.START_TIMESTAMP} = {self.attr.start_timestamp} "
+                if prop == tags.END_TIMESTAMP:
+                    self.qry = f" {self.qry} {tags.END_TIMESTAMP} = {self.attr.end_timestamp} "
+                if prop == tags.NOTIFY_USERS:
+                    self.qry = f" {self.qry} {tags.NOTIFY_USERS} = {self.attr.notify_users} "
+                if prop == tags.TRIGGERS:
                     self.qry=f" {self.qry} TRIGGERS "
-                    if gv._triggers_tag.upper()=="SINGLE":
+                    if tags.TRIGGERS.upper()=="SINGLE":
                         self.qry = f" {self.qry} ON {self.attr.threshold} DO {self.attr.action} "
-                    if gv._triggers_tag.upper()=="MULTIPLE":
+                    if tags.TRIGGERS.upper()=="MULTIPLE":
                         for i in range(0,len(self.attr.threshold)):
                             self.qry=f" {self.qry} ON {self.attr.threshold[i]} DO {self.attr.action[i]} "
 
@@ -253,14 +253,14 @@ class ResourceMonitor(BaseObject):
     def create_object(session,**kwargs):
         rm = ResourceMonitor(session) 
         rm.validate_user()
-        rm.set_name(kwargs[gv._name_tag])
-        rm.set_credit_quota(kwargs[gv._credit_quota_tag])
-        rm.set_frequency(kwargs[gv._frequency_tag])
-        rm.set_start_timestmap(kwargs[gv._start_timestamp_tag])
-        rm.set_end_timestamp(kwargs[gv._end_timestamp_tag])
-        rm.set_notify_users(kwargs[gv._notify_users_tag])
-        rm.set_triggers(kwargs[gv._triggers_tag])
-        rm.set_threshold(kwargs[gv._threshold_tag])
-        rm.set_action(kwargs[gv._action_tag])
+        rm.set_name(kwargs[tags.NAME])
+        rm.set_credit_quota(kwargs[tags.CREDIT_QUOTA])
+        rm.set_frequency(kwargs[tags.FREQUENCY])
+        rm.set_start_timestmap(kwargs[tags.START_TIMESTAMP])
+        rm.set_end_timestamp(kwargs[tags.END_TIMESTAMP])
+        rm.set_notify_users(kwargs[tags.NOTIFY_USERS])
+        rm.set_triggers(kwargs[tags.TRIGGERS])
+        rm.set_threshold(kwargs[tags.THRESHOLD])
+        rm.set_action(kwargs[tags.ACTION])
         rm.prepare_query()
         rm.create_resource_monitor()
