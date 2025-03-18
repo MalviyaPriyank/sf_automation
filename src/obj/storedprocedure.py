@@ -17,6 +17,7 @@ from validation.validateobject import ValidateObject as vo
 from dep.deploy import Deploy
 from setup import privilege 
 from .baseobj import BaseObject 
+from vars.obj.storedprocedure.gvstoredprocedure import StoredProcedureTag as tags
 
 
 class Database:
@@ -80,7 +81,7 @@ class Language:
         if value == 'NONE':
             instance._language = value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_value_language,object_type=object_type,attr_name=attr_name)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.LANGUAGE),object_type=object_type,attr_name=attr_name)
             instance._language = value
     
     def __delete__(self,instance):
@@ -176,10 +177,10 @@ class StoredProcedure(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._return_tag,"_return_type")
-        set_flag(gv._language_tag,"_language")
-        set_flag(gv._handler_tag,"_handler")
-        set_flag(gv._package_tag,"_packages")
+        set_flag(tags.RETURNS,"_return_type")
+        set_flag(tags.LANGUAGE,"_language")
+        set_flag(tags.HANDLER,"_handler")
+        set_flag(tags.PACKAGES,"_packages")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -193,14 +194,14 @@ class StoredProcedure(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._return_tag:
-                    self.qry = f" {self.qry} {gv._return_tag} = {self.attr.return_type} "
-                if prop == gv._language_tag:
-                    self.qry = f" {self.qry} {gv._language_tag} = {self.attr.language} "
-                if prop == gv._handler_tag:
-                    self.qry = f" {self.qry} {gv._handler_tag} = {self.attr.handler} "
-                if prop == gv._package_tag:
-                    self.qry = f" {self.qry} {gv._package_tag} = {self.attr.packages} "
+                if prop == tags.RETURNS:
+                    self.qry = f" {self.qry} {tags.RETURNS} = {self.attr.return_type} "
+                if prop == tags.LANGUAGE:
+                    self.qry = f" {self.qry} {tags.LANGUAGE} = {self.attr.language} "
+                if prop == tags.HANDLER:
+                    self.qry = f" {self.qry} {tags.HANDLER} = {self.attr.handler} "
+                if prop == tags.PACKAGES:
+                    self.qry = f" {self.qry} {tags.PACKAGES} = {self.attr.packages} "
 
         self.qry= self.qry + " AS $$ " + self.attr.logic + " $$;"
 
@@ -225,13 +226,13 @@ class StoredProcedure(BaseObject):
         deploy_inst.insert_into_deploy_control_table()
 
     def create_object(self,*largs,**kwargs):
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_logic(kwargs[gv._logic_tag])
-        self.set_return_type(kwargs[gv._return_tag])
-        self.set_language(kwargs[gv._language_tag])
-        self.set_handler(kwargs[gv._handler_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_logic(kwargs[tags.LOGIC])
+        self.set_return_type(kwargs[tags.RETURNS])
+        self.set_language(kwargs[tags.LANGUAGE])
+        self.set_handler(kwargs[tags.HANDLER])
         self.set_qualified_name()
         self.prepare_query()
         self.logger.info(f"creating store procedure : {self.attr.name}")
