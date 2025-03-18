@@ -13,6 +13,7 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
+from vars.obj.task.gvtask import TaskTag as tags
 
 class Database:
     def __get__(self,instance,owner):
@@ -88,7 +89,7 @@ class UserTaskManagedInitialWarehouseSize:
         if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
         else:
-            vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._user_task_managed_initial_warehouse_size = value
 
     def __delete__(self,instance):
@@ -111,13 +112,13 @@ class Schedule:
                 else:
                     vv.is_positive_number(value=int(num),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                     if type=='SECOND':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_seconds,num2=gvtask._allowed_max_value_seconds,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        vv.is_between(value=int(num),num1=tags.min_allowed_value().get(tags.SCHEDULE[tags.SECONDS]),num2=tags.max_allowed_value().get(tags.SCHEDULE[tags.SECONDS]),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                         instance._schedule=f"'{value}'"
                     elif type=='MINUTE':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_minute,num2=gvtask._allowed_max_value_minute,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        vv.is_between(value=int(num),num1=tags.min_allowed_value().get(tags.SCHEDULE[tags.MINUTE]), num2 = tags.max_allowed_value().get(tags.SCHEDULE[tags.MINUTE]), object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                         instance._schedule=f"'{value}'"
                     elif type=='HOUR':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_hour,num2=gvtask._allowed_max_value_hour,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                        vv.is_between(value=int(num),num1=tags.min_allowed_value().get(tags.SCHEDULE[tags.HOUR]), num2 = tags.max_allowed_value().get(tags.SCHEDULE[tags.HOUR]), object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                         instance._schedule=f"'{value}'"
 
     def __delete__(self,instance):
@@ -163,7 +164,7 @@ class UserTaskTimeoutMs:
             instance._user_task_timeout_ms = value
         else:
             vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_between(value=value,num1=gvtask._allowed_min_user_task_timeout_ms,num2=gvtask._allowed_max_user_task_timeout_ms,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value=value,num1=tags.min_allowed_value().get(tags.USER_TASK_TIMEOUT_MS), num2 = tags.max_allowed_value().get(tags.USER_TASK_TIMEOUT_MS) , object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._user_task_timeout_ms = value
     
     def __delete__(self,instance):
@@ -220,7 +221,7 @@ class LogLevel:
         if value == 'NONE':
             instance._log_level = value
         else:
-            vv.is_allowed_value(gvtask._allowed_values_log_level,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(tags.allowed_value_list().get(tags.LOG_LEVEL) , object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._log_level = f"'{value}'"
     
     def __delete__(self,instance):
@@ -298,7 +299,7 @@ class TaskAutoRetryAttempts:
         if value == 'NONE':
             instance._task_auto_retry_attempts = value
         else:
-            vv.is_between(value=value,num1=gvtask._allowed_min_value_task_auto_retry_attempts,num2=gvtask._allowed_max_value_task_auto_retry_attempts,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value=value, num1 = tags.min_allowed_value().get(tags.TASK_AUTO_RETRY_ATTEMPTS) ,num2 = tags.max_allowed_value().get(tags.TASK_AUTO_RETRY_ATTEMPTS) , object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._task_auto_retry_attempts = value
     
     def __delete__(self,instance):
@@ -312,7 +313,7 @@ class UserTaskMinimumTriggerIntervalInSeconds:
         if value == 'NONE':
             instance._user_task_minimum_trigger_interval_in_seconds = value
         else:
-            vv.is_between(value=value,num1=gvtask._allowed_min_value_user_task_minimum_trigger_interval_in_seconds,num2=gvtask._allowed_max_value_user_task_minimum_trigger_interval_in_seconds,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_between(value=value, num1 = tags.min_allowed_value().get(tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS) , num2 = tags.max_allowed_value().get(tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS) , object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._user_task_minimum_trigger_interval_in_seconds = value
     
     def __delete__(self,instance):
@@ -333,11 +334,11 @@ class TargetCompletionInterval:
                 if ret:
                     vv.is_positive_number(value=int(num),object_type=object_type,attr_name=attr_name)
                     if type=='SECOND':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_seconds_task_comletion_interval,num2=gvtask._allowed_max_value_seconds_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                        vv.is_between(value=int(num), num1 = tags.min_allowed_value().get(tags.TARGET_COMPLETION_INTERVAL[tags.SECONDS]) , num2 = tags.allowed_value_list().get(tags.TARGET_COMPLETION_INTERVAL[tags.SECONDS]) , object_type=object_type,attr_name=attr_name)
                     elif type=='MINUTE':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_minutes_task_comletion_interval,num2=gvtask._allowed_max_value_minutes_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                        vv.is_between(value=int(num), num1 = tags.min_allowed_value().get(tags.TARGET_COMPLETION_INTERVAL[tags.MINUTE]) , num2 = tags.max_allowed_value().get(tags.TARGET_COMPLETION_INTERVAL[tags.MINUTE]) , object_type=object_type,attr_name=attr_name)
                     elif type=='HOUR':
-                        vv.is_between(value=int(num),num1=gvtask._allowed_min_value_hours_task_comletion_interval, num2=gvtask._allowed_max_value_hours_task_comletion_interval,object_type=object_type,attr_name=attr_name)
+                        vv.is_between(value=int(num), num1 = tags.min_allowed_value().get(tags.TARGET_COMPLETION_INTERVAL[tags.HOUR]) , num2 = tags.max_allowed_value().get(tags.TARGET_COMPLETION_INTERVAL[tags.HOUR]) , object_type=object_type,attr_name=attr_name)
                     instance._target_completion_interval = f"'{value}'"
             else:
                 vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f"for tasks with dedicated warehouse.Only needed for serverless tasks")
@@ -357,9 +358,9 @@ class ServerlessTaskMinStatementSize:
             instance._serverless_task_min_statement_size = value
         else:
             if instance._user_task_managed_initial_warehouse_size!="NONE":
-                vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name)
-                index_user_task_managed_initial_warehouse_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._user_task_managed_initial_warehouse_size)
-                index_serverless_task_min_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(value)
+                vv.is_allowed_value(value=value, allowed_list=tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE) ,object_type=object_type,attr_name=attr_name)
+                index_user_task_managed_initial_warehouse_size = tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE).index(instance._user_task_managed_initial_warehouse_size)
+                index_serverless_task_min_statement_size = tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE).index(value)
                 vv.is_between(value=index_serverless_task_min_statement_size,num1=0,num2=index_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Min_Statement_Size":"must be smaller than User_Task_Managed_Initial_Warehouse_Size"})
                 instance._serverless_task_min_statement_size=value
             elif instance._user_task_managed_initial_warehouse_size=="NONE":
@@ -381,10 +382,10 @@ class ServerlessTaskMaxStatementSize:
             instance._serverless_task_max_statement_size = value
         else:
             if instance._user_task_managed_initial_warehouse_size!="NONE":
-                vv.is_allowed_value(value=value,allowed_list=gvtask._allowed_values_user_task_managed_initial_warehouse_size,object_type=object_type,attr_name=attr_name)
-                index_user_task_managed_initial_warehouse_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._user_task_managed_initial_warehouse_size)
-                index_serverless_task_min_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(instance._serverless_task_min_statement_size)
-                index_serverless_task_max_statement_size = gvtask._allowed_values_user_task_managed_initial_warehouse_size.index(value)
+                vv.is_allowed_value(value=value, allowed_list=tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE),object_type=object_type,attr_name=attr_name)
+                index_user_task_managed_initial_warehouse_size = tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE).index(instance._user_task_managed_initial_warehouse_size)
+                index_serverless_task_min_statement_size = tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE).index(instance._serverless_task_min_statement_size)
+                index_serverless_task_max_statement_size = tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE).index(value)
                 vv.is_between(value=index_serverless_task_min_statement_size,num1=0,num2=index_serverless_task_max_statement_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Max_Statement_Size":"must be greater than or equal to Serverless_Task_Min_Statement_Size"})
                 vv.is_between(value=index_user_task_managed_initial_warehouse_size,num1=0,num2=index_serverless_task_max_statement_size,object_type=object_type,attr_name=attr_name,kwargs={"Serverless_Task_Max_Statement_Size":"must be greater than or equal to USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"})
                 instance._serverless_task_max_statement_size=value
@@ -511,23 +512,24 @@ class Task(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gvtask._warehouse_tag,"_warehouse")
-        set_flag(gvtask._user_task_managed_initial_warehouse_size_tag,"_user_task_managed_initial_warehouse_size")
-        set_flag(gvtask._schedule_tag,"_schedule")
-        set_flag(gvtask._config_tag,"_config")
-        set_flag(gvtask._allow_overlapping_execution_tag,"_allow_overlapping_execution")
-        set_flag(gvtask._user_task_timeout_ms_tag,"_user_task_timeout_ms")
-        set_flag(gvtask._suspend_task_after_num_failures_tag,"_suspend_task_after_num_failures")
-        set_flag(gvtask._error_integration_tag,"_error_integration")
-        set_flag(gvtask._success_integration_tag,"_success_integration")
-        set_flag(gvtask._comment_tag,"_comment")
-        set_flag(gvtask._after_tag,"_after")
-        set_flag(gvtask._when_tag,"_when")
-        set_flag(gvtask._tag_tag,"_tag")
-        set_flag(gvtask._finalize_tag,"_finalize")
-        set_flag(gvtask._user_task_minimum_trigger_interval_in_seconds_tag,"_user_task_minimum_trigger_interval_in_seconds")
-        set_flag(gvtask._serverless_task_min_statement_size_tag,"_serverless_task_min_statement_size")
-        set_flag(gvtask._serverless_task_max_statement_size_tag,"_serverless_task_max_statement_size")
+        set_flag(tags.WAREHOUSE,"_warehouse")
+        set_flag(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE,"_user_task_managed_initial_warehouse_size")
+        set_flag(tags.SCHEDULE,"_schedule")
+        set_flag(tags.CONFIG,"_config")
+        set_flag(tags.ALLOW_OVERLAPPING_EXECUTION,"_allow_overlapping_execution")
+        set_flag(tags.USER_TASK_TIMEOUT_MS,"_user_task_timeout_ms")
+        set_flag(tags.SUSPEND_TASK_AFTER_NUM_FAILURES,"_suspend_task_after_num_failures")
+        set_flag(tags.ERROR_INTEGRATION,"_error_integration")
+        set_flag(tags.SUCCESS_INTEGRATION,"_success_integration")
+        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.AFTER,"_after")
+        set_flag(tags.WHEN,"_when")
+        set_flag(tags.FINALIZE,"_finalize")
+        set_flag(tags.TASK_AUTO_RETRY_ATTEMPTS,"_task_auto_retry_attempts")
+        set_flag(tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS,"_user_task_minimum_trigger_interval_in_seconds")
+        set_flag(tags.TARGET_COMPLETION_INTERVAL,"_target_completion_interval")
+        set_flag(tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE,"_serverless_task_min_statement_size")
+        set_flag(tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE,"_serverless_task_max_statement_size")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -541,44 +543,42 @@ class Task(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gvtask._warehouse_tag:
-                    self.qry = f" {self.qry} {gvtask._warehouse_tag} = {self.attr.warehouse} "
-                if prop == gvtask._user_task_managed_initial_warehouse_size_tag:
-                    self.qry = f" {self.qry} {gvtask._user_task_managed_initial_warehouse_size_tag } = {self.attr.user_task_managed_initial_warehouse_size} "
-                if prop == gvtask._schedule_tag:
-                    self.qry = f" {self.qry} {gvtask._schedule_tag} = {self.attr.schedule} "
-                if prop == gvtask._config_tag:
-                    self.qry = f" {self.qry} {gvtask._config_tag} = {self.attr.config} "
-                if prop == gvtask._allow_overlapping_execution_tag:
-                    self.qry = f" {self.qry} {gvtask._allow_overlapping_execution_tag} = {self.attr.allow_overlapping_execution} "
-                if prop == gvtask._user_task_timeout_ms_tag:
-                    self.qry = f" {self.qry} {gvtask._user_task_timeout_ms_tag} = {self.attr.user_task_timeout_ms} "
-                if prop == gvtask._suspend_task_after_num_failures_tag:
-                    self.qry = f" {self.qry} {gvtask._suspend_task_after_num_failures_tag} = {self.attr.suspend_task_after_num_failures} "
-                if prop == gvtask._error_integration_tag:
-                    self.qry = f" {self.qry} {gvtask._error_integration_tag} = {self.attr.error_integration} "
-                if prop == gvtask._success_integration_tag:
-                    self.qry = f" {self.qry} {gvtask._success_integration_tag} = {self.attr.success_integration} "
-                if prop == gvtask._comment_tag:
-                    self.qry = f" {self.qry} {gvtask._comment_tag} = {self.attr.comment} "
-                if prop == gvtask._after_tag:
-                    self.qry = f" {self.qry} {gvtask._after_tag} = {self.attr.after} "
-                if prop == gvtask._when_tag:
-                    self.qry = f" {self.qry} {gvtask._when_tag} = {self.attr.when} "
-                if prop == gvtask._tag_tag:
-                    self.qry = f" {self.qry} {gvtask._tag_tag} = {self.attr.tag} "
-                if prop == gvtask._finalize_tag:
-                    self.qry = f" {self.qry} {gvtask._finalize_tag} = {self.attr.finalize} "
-                if prop == gvtask._task_auto_retry_attempts_tag:
-                    self.qry = f" {self.qry} {gvtask._task_auto_retry_attempts_tag} = {self.attr.task_auto_retry_attempts} "
-                if prop == gvtask._user_task_minimum_trigger_interval_in_seconds_tag:
-                    self.qry = f" {self.qry} {gvtask._user_task_minimum_trigger_interval_in_seconds_tag} = {self.attr.user_task_minimum_trigger_interval_in_seconds} "
-                if prop == gvtask._target_completion_interval_tag:
-                    self.qry = f" {self.qry} {gvtask._target_completion_interval_tag} = {self.attr.target_completion_interval} "
-                if prop == gvtask._serverless_task_min_statement_size_tag:
-                    self.qry = f" {self.qry} {gvtask._serverless_task_min_statement_size_tag} = {self.attr.serverless_task_min_statement_size} "
-                if prop == gvtask._serverless_task_min_statement_size_tag:
-                    self.qry = f" {self.qry} {gvtask._serverless_task_min_statement_size_tag} = {self.attr.serverless_task_min_statement_size} "
+                if prop == tags.WAREHOUSE:
+                    self.qry = f" {self.qry} {tags.WAREHOUSE} = {self.attr.warehouse} "
+                if prop == tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE:
+                    self.qry = f" {self.qry} {tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE } = {self.attr.user_task_managed_initial_warehouse_size} "
+                if prop == tags.SCHEDULE:
+                    self.qry = f" {self.qry} {tags.SCHEDULE} = {self.attr.schedule} "
+                if prop == tags.CONFIG:
+                    self.qry = f" {self.qry} {tags.CONFIG} = {self.attr.config} "
+                if prop == tags.ALLOW_OVERLAPPING_EXECUTION:
+                    self.qry = f" {self.qry} {tags.ALLOW_OVERLAPPING_EXECUTION} = {self.attr.allow_overlapping_execution} "
+                if prop == tags.USER_TASK_TIMEOUT_MS:
+                    self.qry = f" {self.qry} {tags.USER_TASK_TIMEOUT_MS} = {self.attr.user_task_timeout_ms} "
+                if prop == tags.SUSPEND_TASK_AFTER_NUM_FAILURES:
+                    self.qry = f" {self.qry} {tags.SUSPEND_TASK_AFTER_NUM_FAILURES} = {self.attr.suspend_task_after_num_failures} "
+                if prop == tags.ERROR_INTEGRATION:
+                    self.qry = f" {self.qry} {tags.ERROR_INTEGRATION} = {self.attr.error_integration} "
+                if prop == tags.SUCCESS_INTEGRATION:
+                    self.qry = f" {self.qry} {tags.SUCCESS_INTEGRATION} = {self.attr.success_integration} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                if prop == tags.AFTER:
+                    self.qry = f" {self.qry} {tags.AFTER} = {self.attr.after} "
+                if prop == tags.WHEN:
+                    self.qry = f" {self.qry} {tags.WHEN} = {self.attr.when} "
+                if prop == tags.FINALIZE:
+                    self.qry = f" {self.qry} {tags.FINALIZE} = {self.attr.finalize} "
+                if prop == tags.TASK_AUTO_RETRY_ATTEMPTS:
+                    self.qry = f" {self.qry} {tags.TASK_AUTO_RETRY_ATTEMPTS} = {self.attr.task_auto_retry_attempts} "
+                if prop == tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS:
+                    self.qry = f" {self.qry} {tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS} = {self.attr.user_task_minimum_trigger_interval_in_seconds} "
+                if prop == tags.TARGET_COMPLETION_INTERVAL:
+                    self.qry = f" {self.qry} {tags.TARGET_COMPLETION_INTERVAL} = {self.attr.target_completion_interval} "
+                if prop == tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE:
+                    self.qry = f" {self.qry} {tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE} = {self.attr.serverless_task_min_statement_size} "
+                if prop == tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE:
+                    self.qry = f" {self.qry} {tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE} = {self.attr.serverless_task_min_statement_size} "
 
         self.qry = self.qry + f" AS  {self.attr.definition} "    
         
@@ -593,29 +593,29 @@ class Task(BaseObject):
         self.execute_final_query()
 
     def create_object(self,**kwargs):
-        self.set_database(kwargs[gvtask._database_tag])
-        self.set_schema(kwargs[gvtask._schema_tag])
-        self.set_name(kwargs[gvtask._name_tag])
-        self.set_definition(kwargs[gvtask._sql_tag])
-        self.set_warehouse(kwargs[gvtask._warehouse_tag])
-        self.set_user_task_managed_initial_warehouse_size(kwargs[gvtask._user_task_managed_initial_warehouse_size_tag])
-        self.set_schedule(kwargs[gvtask._schedule_tag])
-        self.set_config(kwargs[gvtask._config_tag])
-        self.set_allow_overlapping_execution(kwargs[gvtask._allow_overlapping_execution_tag])
-        self.set_user_task_timeout_ms(kwargs[gvtask._user_task_timeout_ms_tag])
-        self.set_suspend_task_after_num_failures(kwargs[gvtask._suspend_task_after_num_failures_tag])
-        self.set_error_integration(kwargs[gvtask._error_integration_tag])
-        self.set_success_integration(kwargs[gvtask._success_integration_tag])
-        self.set_comment(kwargs[gvtask._comment_tag])
-        self.set_after(kwargs[gvtask._after_tag])
-        self.set_when(kwargs[gvtask._when_tag])
-        self.set_tag(kwargs[gvtask._tag_tag])
-        self.set_finalize(kwargs[gvtask._finalize_tag])
-        self.set_task_auto_retry_attempts(kwargs[gvtask._task_auto_retry_attempts_tag])
-        self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[gvtask._user_task_minimum_trigger_interval_in_seconds_tag])
-        self.set_target_completion_interval(kwargs[gvtask._target_completion_interval_tag])
-        self.set_serverless_task_min_statement_size(kwargs[gvtask._serverless_task_min_statement_size_tag])
-        self.set_serverless_task_max_statement_size(kwargs[gvtask._serverless_task_max_statement_size_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_definition(kwargs[tags.SQL])
+        self.set_warehouse(kwargs[tags.WAREHOUSE])
+        self.set_user_task_managed_initial_warehouse_size(kwargs[tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE])
+        self.set_schedule(kwargs[tags.SCHEDULE])
+        self.set_config(kwargs[tags.CONFIG])
+        self.set_allow_overlapping_execution(kwargs[tags.ALLOW_OVERLAPPING_EXECUTION])
+        self.set_user_task_timeout_ms(kwargs[tags.USER_TASK_TIMEOUT_MS])
+        self.set_suspend_task_after_num_failures(kwargs[tags.SUSPEND_TASK_AFTER_NUM_FAILURES])
+        self.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
+        self.set_success_integration(kwargs[tags.SUCCESS_INTEGRATION])
+        self.set_comment(kwargs[tags.COMMENT])
+        self.set_after(kwargs[tags.AFTER])
+        self.set_when(kwargs[tags.WHEN])
+        self.set_tag(kwargs[tags._tag_tag])
+        self.set_finalize(kwargs[tags.FINALIZE])
+        self.set_task_auto_retry_attempts(kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS])
+        self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS])
+        self.set_target_completion_interval(kwargs[tags.TARGET_COMPLETION_INTERVAL])
+        self.set_serverless_task_min_statement_size(kwargs[tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE])
+        self.set_serverless_task_max_statement_size(kwargs[tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE])
         self.set_qualified_name()
 
         self.prepare_query()
