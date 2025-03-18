@@ -12,6 +12,7 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
+from vars.obj.stream.gvstream import StreamTag as tags
 
 class Database:
     def __get__(self,instance,owner):
@@ -43,7 +44,7 @@ class ObjectType:
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-        vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_object_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.OBJECT_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._object_type = value
     
     def __delete__(self,instance):
@@ -239,9 +240,6 @@ class Stream(BaseObject):
     def set_table_name(self, value):
         self.attr.table_name = value
 
-    def set_tag(self, value):
-        self.attr.tag = value
-
     def set_at(self, value):
         self.attr.at = value
 
@@ -276,15 +274,14 @@ class Stream(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._tag_tag,"_tag")
-        set_flag(gv._at_tag,"_at")
-        set_flag(gv._before_tag,"_before")
-        set_flag(gv._timestamp_tag,"_timestamp")
-        set_flag(gv._offset_tag,"_offset")
-        set_flag(gv._append_only_tag,"_append_only")
-        set_flag(gv._insert_only_tag,"_insert_only")
-        set_flag(gv._show_initial_rows_tag,"_show_initial_rows")
-        set_flag(gv._comment_tag,"_comment")
+        set_flag(tags.AT,"_at")
+        set_flag(tags.BEFORE,"_before")
+        set_flag(tags.TIMESTAMP,"_timestamp")
+        set_flag(tags.OFFSET,"_offset")
+        set_flag(tags.APPEND_ONLY,"_append_only")
+        set_flag(tags.INSERT_ONLY,"_insert_only")
+        set_flag(tags.SHOW_INITIAL_ROWS,"_show_initial_rows")
+        set_flag(tags.COMMENT,"_comment")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -306,26 +303,26 @@ class Stream(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if gv._at_tag in self.property_lst:
-                    self.qry = f" {self.qry} {gv._at_tag} ("
-                    if gv._timestamp_tag in self.property_lst:
-                        self.qry=f" {gv._timestamp_tag} => {self.attr.timestamp}) "
-                    elif gv._offset_tag in self.property_lst:
-                        self.qry=f" {gv._offset_tag} => {self.attr.offset}) "
-                elif gv._before_tag in self.property_lst:
-                    self.qry = f" {self.qry} {gv._before_tag} ("
-                    if gv._timestamp_tag in self.property_lst:
-                        self.qry=f" {gv._timestamp_tag} => {self.attr.timestamp}) "
-                    elif gv._offset_tag in self.property_lst:
-                        self.qry=f" {gv._offset_tag} => {self.attr.offset} "
-                if prop == gv._append_only_tag:
-                    self.qry = f" {self.qry} {gv._append_only_tag} = {self.attr.append_only} "
-                if prop == gv._insert_only_tag:
-                    self.qry = f" {self.qry} {gv._insert_only_tag} = {self.attr.insert_only} "
-                if prop == gv._show_initial_rows_tag:
-                    self.qry = f" {self.qry} {gv._show_initial_rows_tag} = {self.attr.show_initial_rows} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
+                if tags.AT in self.property_lst:
+                    self.qry = f" {self.qry} {tags.AT} ("
+                    if tags.TIMESTAMP in self.property_lst:
+                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) "
+                    elif tags.OFFSET in self.property_lst:
+                        self.qry=f" {tags.OFFSET} => {self.attr.offset}) "
+                elif tags.BEFORE in self.property_lst:
+                    self.qry = f" {self.qry} {tags.BEFORE} ("
+                    if tags.TIMESTAMP in self.property_lst:
+                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) "
+                    elif tags.OFFSET in self.property_lst:
+                        self.qry=f" {tags.OFFSET} => {self.attr.offset} "
+                if prop == tags.APPEND_ONLY:
+                    self.qry = f" {self.qry} {tags.APPEND_ONLY} = {self.attr.append_only} "
+                if prop == tags.INSERT_ONLY:
+                    self.qry = f" {self.qry} {tags.INSERT_ONLY} = {self.attr.insert_only} "
+                if prop == tags.SHOW_INITIAL_ROWS:
+                    self.qry = f" {self.qry} {tags.SHOW_INITIAL_ROWS} = {self.attr.show_initial_rows} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -358,16 +355,15 @@ class Stream(BaseObject):
 
     def create_object(self,*largs,**kwargs):
 
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_table_name(kwargs[gv._table_name_tag])
-        self.set_tag(kwargs[gv._tag_tag])
-        self.set_at(kwargs[gv._at_tag])
-        self.set_append_only(kwargs[gv._append_only_tag])
-        self.set_insert_only(kwargs[gv._insert_only_tag])
-        self.set_show_initial_rows(kwargs[gv._show_initial_rows_tag])
-        self.set_comment(kwargs[gv._comment_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_table_name(kwargs[tags.TABLE_NAME])
+        self.set_at(kwargs[tags.AT])
+        self.set_append_only(kwargs[tags.APPEND_ONLY])
+        self.set_insert_only(kwargs[tags.INSERT_ONLY])
+        self.set_show_initial_rows(kwargs[tags.SHOW_INITIAL_ROWS])
+        self.set_comment(kwargs[tags.COMMENT])
         self.set_qualified_name()
         self.prepare_query()
         self.create_stream()
