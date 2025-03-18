@@ -151,14 +151,22 @@ class Table:
             if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
-    def create_table_using_files_from_stage(self,database,schema):
+    def create_table_using_files_from_stage(self,database,schema,filelist=[]):
         self.set_database(database)
         self.set_schema(schema)
         stg = Stage(self.root,cfg._config_database,cfg._config_schema)
         stg.set_stage(cfg._config_stage)
         stg.set_stage_reference()
+        self.logger.info('inside function')
         file_lst = stg.get_list_of_files_from_stage()
-        file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
+        self.logger.info(f'filelist received: {filelist}')
+        if filelist != []: 
+            file_lst = [file for file in file_lst if any(file.endswith(f"{self.attr.database}/{self.attr.schema}/{inputs}") for inputs in filelist)]
+            self.logger.info(f'filelist provided, postprocess: {file_lst}')
+        else: 
+            file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
+            self.logger.info(f'filelist not provided, postprocess: {file_lst}')
+            
         for files in file_lst:
             files = stg.remove_stage_name_from_file_path(files)
             stg.download_file_from_stage(files,"tmp/")

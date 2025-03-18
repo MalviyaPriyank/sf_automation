@@ -64,6 +64,9 @@ if 'database' not in st.session_state:
 if 'schema' not in st.session_state:
     st.session_state['schema'] = None
 
+if 'tool_id' not in st.session_state:
+    st.session_state['tool_id'] = None
+
 def disable_chat():
     st.session_state[ss.CHAT_DISABLED] = True
 
@@ -77,11 +80,32 @@ if st.session_state['create_table']:
      if csv_upload is not None:
          if not os.path.isdir('tmp'): os.mkdir('tmp')
          logger.info('here2')
+         filelist = []
          for file in csv_upload:
              df = pd.read_csv(file)
              df.to_csv(f'tmp/{file.name}')
-         logger.info(os.listdir('tmp/'))
-         st.session_state[ss.TOOLS].create_single_table_object(database=st.session_state['database'], schema=st.session_state['schema'])
+             filelist.append(file.name)
+         if len(filelist)==len(csv_upload):
+             logger.info(os.listdir('tmp/'))
+             logger.info(filelist)
+             _, upload_complete = st.session_state[ss.TOOLS].create_single_table_object(database=st.session_state['database'], 
+                                                               schema=st.session_state['schema'],
+                                                               filelist=filelist)
+             
+             if upload_complete:
+                 logger.info('upload complete')
+                 tool_result = []
+                 tool_result.append({lcs.TOOL_RESULT:{
+                                lcs.TOOL_USE_ID: st.session_state['tool_id'],
+                                lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: f"Tables created = {filelist}"}}]
+                            }})
+                 st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                 st.session_state[ss.MESSAGES].append(helper.msg_template(role=ss.USER, prompt='Tables created successfully'))
+                 st.session_state[ss.CHAT_DISABLED] = False
+                 st.session_state['tool_id'] = None
+                 st.session_state['create_table'] = False
+                 st.rerun()
+                 
 
 
 if not st.session_state[ss.INITIALIZED]:
@@ -138,6 +162,8 @@ if (st.session_state[ss.INITIALIZED]) and (st.session_state['create_table']==Fal
                             print('here')
                             st.session_state['database'] = content[lcs.TOOL_USE]['input']['database']
                             st.session_state['schema'] = content[lcs.TOOL_USE]['input']['schema']
+                            response = None
+                            st.session_state['tool_id'] = content[lcs.TOOL_USE][lcs.TOOL_USE_ID]
                             st.session_state['create_table'] = True
                             done_tool_call = True
                             break
