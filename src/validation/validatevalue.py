@@ -45,7 +45,8 @@ from valueexception import (
     InvalidTimestamp,
     InvalidSchedule,
     InvalidCron,
-    CustomErrorMessage
+    CustomErrorMessage,
+    InvalidDataType
 )
 
 class ValidateValue:
@@ -359,6 +360,14 @@ class ValidateValue:
             return True
         except:
             raise InvalidCron(object_name,attr_name)
+        
+    @staticmethod
+    def is_valid_column_types(object_name,attribute_name,tbl_data_typ_lst,allowed_data_type_lst):
+        invalid_data_typ_lst=list(set(tbl_data_typ_lst) - set(allowed_data_type_lst))
+        if len(invalid_data_typ_lst) !=0:
+            raise InvalidDataType(object_name,attribute_name,invalid_data_typ_lst)
+        else:
+            return True
         
 
 

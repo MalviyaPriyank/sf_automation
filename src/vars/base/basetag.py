@@ -8,6 +8,7 @@ class BaseTag:
     NAME="NAME"
     COMMENT="COMMENT"
 
+@dataclass(frozen=True)
 class BaseMethod(ABC):
     @classmethod
     @abstractmethod

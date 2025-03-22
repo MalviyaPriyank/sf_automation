@@ -471,6 +471,7 @@ class Database(BaseObject):
             self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
             self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
             self.set_log_level(kwargs[tags.LOG_LEVEL])
+            self.set_trace_level(kwargs[tags.TRACE_LEVEL])
             self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
             self.set_comment(kwargs[tags.COMMENT])
             self.prepare_query()

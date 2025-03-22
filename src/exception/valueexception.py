@@ -190,8 +190,14 @@ class InvalidCron(AttributeValidationError):
         message=f"must be a valid CRON syntax"
         super().__init__(object_type, attr_name, message)
 
-class CustomErrorMessage(AttributeNotRequired):
+class CustomErrorMessage(AttributeValidationError):
     def __init__(self, object_type, attr_name, condition,**kwargs):
         super().__init__(object_type, attr_name, condition,**kwargs)
+
+class InvalidDataType(AttributeValidationError):
+    def __init__(self, object_type, attr_name, invalid_data_typ_list):
+        message = f" cannot have following invalid data types {invalid_data_typ_list}"
+        super().__init__(object_type, attr_name, message)
+
 
     
