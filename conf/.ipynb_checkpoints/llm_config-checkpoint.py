@@ -1471,6 +1471,46 @@ tools = {
                     }
                 }
             }
+        },
+        {
+            "toolSpec": {
+                "name":"get_table_definitions_from_stage",
+                "description":"this is a prerequisite for when user would like to execute sql queries to pull data from tables. this tool creates pulls table definitions so you can understand attributes to formulate a query. executing actual queries is through retrieve_data_from_table tool.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "TABLE": {
+                                "type":"string",
+                                "description":"list of tables to pull data from"
+                            }
+                        },
+                        "required":[
+                            "TABLE"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"retrieve_data_from_table",
+                "description":"execute sql query to retrieve data from tables.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "SQL_QUERY": {
+                                "type":"string",
+                                "description":"sql query to retrieve data"
+                            }
+                        },
+                        "required":[
+                            "SQL_QUERY"
+                        ]
+                    }
+                }
+            }
         }
     ]
 }

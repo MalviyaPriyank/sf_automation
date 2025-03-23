@@ -3,6 +3,7 @@ import sys
 import time
 import shutil
 import inspect
+import pandas as pd
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
 
@@ -587,6 +588,24 @@ class LLMTools:
         data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.NOTIFICATION_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.NOTIFICATION_OBJ, data_dict)
+
+
+    def get_table_definitions_from_stage(self,
+                                         TABLE):
+        stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
+        stage.set_stage(cfg._config_stage)
+        stage.set_stage_reference()
+        ddl = []
+        for table in TABLE: 
+            stage.download_file_from_stage(table,"tmp/")
+            ddl.append(pd.read_csv(f'tmp/{table}.csv'))
+        return str(ddl)
+
+
+    def create_cortex_object(self,
+                             SQL_QUERY):
+        
+        return None
 
 
     def tool_call(self, content, tool_result):
