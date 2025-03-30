@@ -18,6 +18,7 @@ class SchemaTag(BaseTag):
     TRACE_LEVEL="TRACE_LEVEL"
     STORAGE_SERIALIZATION_POLICY="STORAGE_SERIALIZATION_POLICY"
     CLASSIFICATION_PROFILE="CLASSIFICATION_PROFILE"
+    
 
     @classmethod
     def allowed_value_list(cls):
