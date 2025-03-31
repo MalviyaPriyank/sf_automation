@@ -4,9 +4,8 @@
     "NAME" : "MySTAGE",
     "FILE_FORMAT" : "NONE",
     "COMMENT" : "NONE",
-    "TAG" : "NONE",
     "ENCRYPTION" : "NONE",
-    "DIRECTORY" : "NONE",
+    "ENABLE" : "NONE",
     "REFRESH_ON_CREATE" : "NONE"
 }
 

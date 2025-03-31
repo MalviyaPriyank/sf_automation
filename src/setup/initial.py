@@ -84,13 +84,13 @@ class InitialSetup:
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["STAGE"]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=f'{cfg._config_database}.{cfg._config_schema}.{cfg._config_stage}',role = role)
 
         data_dict["NAME"] = cfg._deployment_stage
         stg_inst.create_object(*['initial'],**data_dict)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["STAGE"]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=cfg._config_stage,role = role)
+                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "STAGE",object_identifier=f'{cfg._config_database}.{cfg._config_schema}.{cfg._deployment_stage}',role = role)
 
     def create_deployment_tables(self):
         deploy_inst = Deploy(self.session)
@@ -128,7 +128,7 @@ class InitialSetup:
         self.logger.info("after role setup")
         #self.create_default_warehouse()
         #self.create_config_database()
-        self.create_config_schema()
+        #self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_tables()
 
