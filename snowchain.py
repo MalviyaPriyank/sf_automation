@@ -110,9 +110,9 @@ if st.session_state['create_table']:
 
 if not st.session_state[ss.INITIALIZED]:
     session_inst = session.Session()
-    session_inst.set_user('RAJU')
-    session_inst.set_password('Hellosnowflake@123')
-    session_inst.set_account('CHBQBTW-RC94301')
+    session_inst.set_user('jjkennedy')
+    session_inst.set_password('JJ_get_rich_12345')
+    session_inst.set_account('QYMNFNW-FDB17384')
     st.session_state.session = session_inst.get_session()
     root = session_inst.get_root_object()
     st.session_state.bedrock_obj = Bedrock()

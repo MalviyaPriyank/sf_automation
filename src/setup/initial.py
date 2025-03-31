@@ -24,8 +24,11 @@ class InitialSetup:
         
     def create_default_role(self):
         for rl,description in cfg._default_role.items():
+            self.logger.info(f"creatin role {rl} for {description}")
             role_inst = role.Role(session= self.session,user_id=self.user_id,logger=self.logger)
+            self.logger.info("before create object")
             role_inst.create_object(*['initial'],**{"NAME":rl,"COMMENT":description})
+            self.logger.info("after create object")
             priv_inst = privilege.Privilege(self.session)
             priv_inst.grant_role_to_role(rl,"ACCOUNTADMIN")
             priv_inst.grant_role_to_role(rl,"SECURITYADMIN")
@@ -59,8 +62,11 @@ class InitialSetup:
         data_dict = readconf.main("schema")
         data_dict["DATABASE"] = cfg._config_database
         data_dict["NAME"] = cfg._config_schema
-        sch_inst = schema.Schema(session= self.session, user_id=self.user_id,logger=self.logger)
+        self.logger.info('getting schema instance')
+        sch_inst = schema.Schema(session= self.session, user_id=self.user_id, logger=self.logger)
+        self.logger.info('calling create object for schema')
         sch_inst.create_object(*['initial'],**data_dict)
+        self.logger.info('after creating schema')
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
             if privileges in gv_priv._allowed_privileges["SCHEMA"]:
@@ -117,10 +123,12 @@ class InitialSetup:
 
 
     def perform_initial_setup(self):
+        self.logger.info("before role setup")
         #self.create_default_role()
+        self.logger.info("after role setup")
         #self.create_default_warehouse()
         #self.create_config_database()
-        #self.create_config_schema()
+        self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_tables()
 

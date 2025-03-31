@@ -87,7 +87,7 @@ class Role(BaseObject):
         self.add_properties_to_query()
         
     def create_role(self):
-        self.attr.session.sql(self.qry).collect()
+        self.session.sql(self.qry).collect()
 
     def create_object(self,*pargs,**kwargs): 
         self.set_name(kwargs[tags.NAME])
@@ -99,7 +99,7 @@ class Role(BaseObject):
             self.create_deployment_entry()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.attr.session)
+        deploy_inst = Deploy(self.session)
         self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)

@@ -498,8 +498,8 @@ class Config():
         "WH_XXLARGE" : "XXLARGE"
     }
     _default_role = {
-        "RL_DEV_OWNER_EVERY_OBJ" : "'Default role to be the owner of all the objects within account'",
-        "RL_DEV_ALL_EVERY_OBJ" : "'Default role to have all allowed privileges on all objects except ownership'",
+        "RL_DEV_OWNER_EVERY_OBJ" : "Default role to be the owner of all the objects within account",
+        "RL_DEV_ALL_EVERY_OBJ" : "Default role to have all allowed privileges on all objects except ownership"
     }
 
     _default_role_privilege_set = {

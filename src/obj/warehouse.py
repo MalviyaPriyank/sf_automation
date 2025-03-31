@@ -323,7 +323,7 @@ class Warehouse(BaseObject):
         self.attr.resource_monitor = value
 
     def set_comment(self, value):
-        self.attr.comment = f"'{value}'" 
+        self.attr.comment = value
 
     def set_enable_query_acceleration(self, value):
         self.attr.enable_query_acceleration = value
@@ -358,7 +358,6 @@ class Warehouse(BaseObject):
         set_flag(gv._initially_suspended_tag,"_initially_suspended")
         set_flag(gv._resource_monitor_tag,"_resource_monitor")
         set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._tag_tag,"_tag")
         set_flag(gv._enable_query_acceleration_tag,"_enable_query_acceleration")
         set_flag(gv._query_acceleration_max_scale_factor_tag,"_query_acceleration_max_scale_factor")
         set_flag(gv._max_concurrency_level_tag,"_max_concurrency_level")

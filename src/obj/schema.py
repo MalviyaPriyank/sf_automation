@@ -77,9 +77,12 @@ class MaxDataExtensionTimeInDays:
     
     def __set__(self,instance,value):
         if value == "NONE":
+            instance.parent.logger.info("setting as none") 
             instance._max_data_extension_time_in_days = value
-        else: 
+        else:
+            instance.parent.logger.info("checking for positive number") 
             vv.is_positive_number(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance.parent.logger.info("checking for range number") 
             vv.is_between(value,tags.min_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),tags.max_allowed_value().get(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS),instance.parent.__class__.__name__,self.__class__.__name__)
             instance._max_data_extension_time_in_days = value
 
@@ -368,26 +371,43 @@ class Schema(BaseObject):
 
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
 
-        self.set_database(kwargs[tags._database_tag])
-
+        self.logger.info('set database')
+        self.set_database(kwargs[tags.DATABASE])
+        self.logger.info('set name')
         self.set_name(kwargs[tags.NAME])
+        self.logger.info('set with managed access')
         self.set_with_managed_access(kwargs[tags.WITH_MANAGED_ACCESS])
+        self.logger.info('set data retention time in days')
         self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+        self.logger.info('set max data extension time in days')
         self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+        self.logger.info('set external volume')
         self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+        self.logger.info('set catalog')
         self.set_catalog(kwargs[tags.CATALOG])
+        self.logger.info('set replace invalid characters')
         self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+        self.logger.info('set default ddl collation')
         self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+        self.logger.info('set log level')
         self.set_log_level(kwargs[tags.LOG_LEVEL])
+        self.logger.info('set trace level')
         self.set_trace_level(kwargs[tags.TRACE_LEVEL])
+        self.logger.info('set storage serialization policy')
         self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+        self.logger.info('set classification profile')
         self.set_classification_profile(kwargs[tags.CLASSIFICATION_PROFILE])
+        self.logger.info('set comment')
         self.set_comment(kwargs[tags.COMMENT])
+        self.logger.info('set qualified name')
         self.set_qualified_name()
+        self.logger.info('pepaer query')
         self.prepare_query()
+        self.logger.info('call create schema')
         self.create_schema()
-        self.logger.info(f"creating schema {self.attr.name}")
+        self.logger.info(f'schema {self.attr.name} created successfully')
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

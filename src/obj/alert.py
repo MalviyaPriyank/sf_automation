@@ -270,17 +270,46 @@ class Alerts(BaseObject):
         self.session.sql(self.qry).collect()
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
+
+        self.logger.info('set database')
         self.set_database(kwargs[gv._database_tag])
+
+        self.logger.info('set schema')
         self.set_schema(kwargs[gv._schema_tag])
+
+        self.logger.info('set name')
         self.set_name(kwargs[gv._name_tag])
+
+        self.logger.info('set schedule')
         self.set_schedule(kwargs[gv._schedule_tag])
+
+        self.logger.info('set _if_tag')
         self.set_iff(kwargs[gv._if_tag])
+
+        self.logger.info('set _action_type')
         self.set_action_type(kwargs[gv._action_type_tag])
+
+        self.logger.info('set _action_sql')
         self.set_action_sql(kwargs[gv._action_sql_tag])
+
+        self.logger.info('set _integration_name')
         self.set_integration_name(kwargs[gv._integration_name_tag])
+
+        self.logger.info('set _email_address')
         self.set_email_address(kwargs[gv._email_address_tag])
+
+        self.logger.info('set _email_subject')
         self.set_email_subject(kwargs[gv._email_subject_tag])
+
+        self.logger.info('set _email_content')
         self.set_email_content(kwargs[gv._email_content_tag])
+
+        self.logger.info('prepare query')
         self.prepare_query()
+        
+        self.logger.info('execute query')
         self.create_alert()
+
+        self.logger.info('create deployment entry')
         self.create_deployment_entry()

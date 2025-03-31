@@ -492,27 +492,71 @@ class CopyInto(BaseObject):
         self.add_properties_to_query()
 
     def create_query(self,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
+
+        self.logger.info('set database')
         self.set_database(kwargs[gv._db_tag])
+
+        self.logger.info('set _schema')
         self.set_schema(kwargs[gv._schema_tag])
+
+        self.logger.info('set _table')
         self.set_table(kwargs[gv._table_tag])
+
+        self.logger.info('set _stage')
         self.set_stage(kwargs[gv._stage_tag])
+
+        self.logger.info('set _file_format')
         self.set_file_format(kwargs[gv._file_format_tag])
+
+        self.logger.info('set _on_error')
         self.set_on_error(kwargs[gv._on_error_tag])
+
+        self.logger.info('set _size_limit')
         self.set_size_limit(kwargs[gv._size_limit_tag])
+
+        self.logger.info('set _purge')
         self.set_purge(kwargs[gv._purge_tag])
+
+        self.logger.info('set _return_failed_only')
         self.set_return_failed_only(kwargs[gv._return_failed_only_tag])
+
+        self.logger.info('set _match_by_column_name')
         self.set_match_by_column_name(kwargs[gv._match_by_column_name_tag])
+
+        self.logger.info('set _include_metadata')
         self.set_include_metadata(kwargs[gv._include_metadata_tag])
+
+        self.logger.info('set _enforce_length')
         self.set_enforce_length(kwargs[gv._enforce_length_tag])
+
+        self.logger.info('set _truncatecolumns')
         self.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
+
+        self.logger.info('set _force')
         self.set_force(kwargs[gv._force_tag])
+
+        self.logger.info('set _load_uncertain_files')
         self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
+
+        self.logger.info('set _file_processor')
         self.set_file_processor(kwargs[gv._file_processor_tag])
+
+        self.logger.info('set _scanner')
         self.set_scanner(kwargs[gv._scanner_tag])
+
+        self.logger.info('set _project_name')
         self.set_project_name(kwargs[gv._project_name_tag])
+
+        self.logger.info('set _model_name')
         self.set_model_name(kwargs[gv._model_name_tag])
+
+        self.logger.info('set _model_version')
         self.set_model_version(kwargs[gv._model_version_tag])
+
+        self.logger.info('set _load_mode')
         self.set_load_mode(kwargs[gv._load_mode_tag])
+
         self.logger.info(f"preparing copy into for {self.attr.table}")
         self.prepare_query()
         return self.qry

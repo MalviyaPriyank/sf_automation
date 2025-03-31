@@ -1192,52 +1192,138 @@ class FileFormat(BaseObject):
 
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
 
-        self.set_database(kwargs[tags._database_tag])
-        self.set_schema(kwargs[tags._schema_tag])
-        self.set_name(kwargs[tags._name_tag])
+        self.logger.info('set database')
+        self.set_database(kwargs[tags.DATABASE])
+
+        self.logger.info('set SCHEMA')
+        self.set_schema(kwargs[tags.SCHEMA])
+
+        self.logger.info('set NAME')
+        self.set_name(kwargs[tags.NAME])
+
+        self.logger.info('set TYPE')
         self.set_type(kwargs[tags.TYPE])
+
+        self.logger.info('set COMPRESSION')
         self.set_compression(kwargs[tags.COMPRESSION])
+
+        self.logger.info('set RECORD_DELIMITER')
         self.set_record_delimiter(kwargs[tags.RECORD_DELIMITER])
+
+        self.logger.info('set FIELD_DELIMITER')
         self.set_field_delimiter(kwargs[tags.FIELD_DELIMITER])
+
+        self.logger.info('set MULTI_LINE')
         self.set_multi_line(kwargs[tags.MULTI_LINE])
+
+        self.logger.info('set FILE_EXTENSION')
         self.set_file_extension(kwargs[tags.FILE_EXTENSION])
+
+        self.logger.info('set PARSE_HEADER')
         self.set_parse_header(kwargs[tags.PARSE_HEADER])
+
+        self.logger.info('set SKIP_HEADER')
         self.set_skip_header(kwargs[tags.SKIP_HEADER])
+
+        self.logger.info('set SKIP_BLANK_LINES')
         self.set_skip_blank_lines(kwargs[tags.SKIP_BLANK_LINES])
+
+        self.logger.info('set DATE_FORMAT')
         self.set_date_format(kwargs[tags.DATE_FORMAT])
+
+        self.logger.info('set TIME_FORMAT')
         self.set_time_format(kwargs[tags.TIME_FORMAT])
+
+        self.logger.info('set TIMESTAMP_FORMAT')
         self.set_timestamp_format(kwargs[tags.TIMESTAMP_FORMAT])
+
+        self.logger.info('set BINARY_FORMAT')
         self.set_binary_format(kwargs[tags.BINARY_FORMAT])
+
+        self.logger.info('set ESCAPE')
         self.set_escape(kwargs[tags.ESCAPE])
+
+        self.logger.info('set ESCAPE_UNENCLOSED_FIELD')
         self.set_escape_unenclosed_field(kwargs[tags.ESCAPE_UNENCLOSED_FIELD])
+
+        self.logger.info('set TRIM_SPACE')
         self.set_trim_space(kwargs[tags.TRIM_SPACE])
+
+        self.logger.info('set FIELD_OPTIONALLY_ENCLOSED_BY')
         self.set_field_optionally_enclosed_by(kwargs[tags.FIELD_OPTIONALLY_ENCLOSED_BY])
+
+        self.logger.info('set NULL_IF')
         self.set_null_if(kwargs[tags.NULL_IF])
+
+        self.logger.info('set ERROR_ON_COLUMN_COUNT_MISMATCH')
         self.set_error_on_column_count_mismatch(kwargs[tags.ERROR_ON_COLUMN_COUNT_MISMATCH])
+
+        self.logger.info('set REPLACE_INVALID_CHARACTERS')
         self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+
+        self.logger.info('set EMPTY_FIELD_AS_NULL')
         self.set_empty_field_as_null(kwargs[tags.EMPTY_FIELD_AS_NULL])
+
+        self.logger.info('set SKIP_BYTE_ORDER_MARK')
         self.set_skip_byte_order_mark(kwargs[tags.SKIP_BYTE_ORDER_MARK])
+
+        self.logger.info('set ENCODING')
         self.set_encoding(kwargs[tags.ENCODING])
+
+        self.logger.info('set ENABLE_OCTAL')
         self.set_enable_octal(kwargs[tags.ENABLE_OCTAL])
+
+        self.logger.info('set ALLOW_DUPLICATE')
         self.set_allow_duplicate(kwargs[tags.ALLOW_DUPLICATE])
+
+        self.logger.info('set STRIP_OUTER_ARRAY')
         self.set_strip_outer_array(kwargs[tags.STRIP_OUTER_ARRAY])
+
+        self.logger.info('set STRIP_NULL_VALUES')
         self.set_strip_null_values(kwargs[tags.STRIP_NULL_VALUES])
+
+        self.logger.info('set IGNORE_UTF8_ERRORS')
         self.set_ignore_utf8_errors(kwargs[tags.IGNORE_UTF8_ERRORS])
+
+        self.logger.info('set SNAPPY_COMPRESSION')
         self.set_snappy_compression(kwargs[tags.SNAPPY_COMPRESSION])
+
+        self.logger.info('set BINARY_AS_TEXT')
         self.set_binary_as_text(kwargs[tags.BINARY_AS_TEXT])
+
+        self.logger.info('set USE_LOGICAL_TYPE')
         self.set_use_logical_type(kwargs[tags.USE_LOGICAL_TYPE])
+
+        self.logger.info('set USE_VECTORIZED_SCANNER')
         self.set_use_vectorized_scanner(kwargs[tags.USE_VECTORIZED_SCANNER])
+
+        self.logger.info('set PRESERVE_SPACE')
         self.set_preserve_space(kwargs[tags.PRESERVE_SPACE])
+
+        self.logger.info('set STRIP_OUTER_ELEMENT')
         self.set_strip_outer_element(kwargs[tags.STRIP_OUTER_ELEMENT])
+
+        self.logger.info('set DISABLE_SNOWFLAKE_DATA')
         self.set_disable_snowflake_data(kwargs[tags.DISABLE_SNOWFLAKE_DATA])
+
+        self.logger.info('set DISABLE_AUTO_CONVERT')
         self.set_disable_auto_convert(kwargs[tags.DISABLE_AUTO_CONVERT])
+
+        self.logger.info('set qualified name')
         self.set_qualified_name()
+
+        self.logger.info('prepare query')
         self.prepare_query()
-        self.logger.info(f"creating file format : {self.attr.name}")
+
+        self.logger.info(f"execute query")
         self.create_file_format()
+
+        self.logger.info('grant default priv')
         self.grant_default_privileges()
         if len(largs) == 0:
+            self.logger.info('create deployment entry')
             self.create_deployment_entry()
 
 

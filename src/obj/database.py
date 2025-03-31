@@ -458,24 +458,57 @@ class Database(BaseObject):
         self.execute_final_query()
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
+
         if len(largs) != 0:
+            self.logger.info(' list args passed')
             self.qry = f"CREATE DATABASE {kwargs[tags.NAME]}"
+            self.logger.info('calling create database')
             self.create_database()
+            self.logger.info('granting default privileges')
             self.grant_default_privileges(*['initial'])
         else:
+            self.logger.info('set name')
             self.set_name(kwargs[tags.NAME])
+
+            self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
             self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+
+            self.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
             self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+
+            self.logger.info('set EXTERNAL_VOLUME')
             self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+
+            self.logger.info('set CATALOG')
             self.set_catalog(kwargs[tags.CATALOG])
+
+            self.logger.info('set REPLACE_INVALID_CHARACTERS')
             self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+
+            self.logger.info('set DEFAULT_DDL_COLLATION')
             self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+
+            self.logger.info('set LOG_LEVEL')
             self.set_log_level(kwargs[tags.LOG_LEVEL])
+
+            self.logger.info('set TRACE_LEVEL')
             self.set_trace_level(kwargs[tags.TRACE_LEVEL])
+
+            self.logger.info('set STORAGE_SERIALIZATION_POLICY')
             self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+
+            self.logger.info('set COMMENT')
             self.set_comment(kwargs[tags.COMMENT])
+
+            self.logger.info('preapare query')
             self.prepare_query()
-            self.logger.info(f"creating database {self.attr.name}")
+
+            self.logger.info('execute query')
             self.create_database()
+
+            self.logger.info('grant default priv')
             self.grant_default_privileges()
+            
+            self.logger.info('create deployment entry')
             self.create_deployment_entry()

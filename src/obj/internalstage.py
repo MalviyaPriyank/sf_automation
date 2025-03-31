@@ -249,20 +249,42 @@ class InternalStage(BaseObject):
         deploy_inst.insert_into_deploy_control_table()
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
 
+        self.logger.info('set DATABASE')
         self.set_database(kwargs[tags.DATABASE])
+
+        self.logger.info('set SCHEMA')
         self.set_schema(kwargs[tags.SCHEMA])
+
+        self.logger.info('set NAME')
         self.set_name(kwargs[tags.NAME])
+
+        self.logger.info('set FILE_FORMAT')
         self.set_file_format(kwargs[tags.FILE_FORMAT])
+
+        self.logger.info('set COMMENT')
         self.set_comment(kwargs[tags.COMMENT])
+
+        self.logger.info('set ENCRYPTION')
         self.set_encryption(kwargs[tags.ENCRYPTION])
+
+        self.logger.info('set ENABLE')
         self.set_enable(kwargs[tags.ENABLE])
+
+        self.logger.info('set REFRESH_ON_CREATE')
         self.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])  
+
+        self.logger.info('set qualified name')
         self.set_qualified_name()
+
+        self.logger.info('prepare query')
         self.prepare_query()
-        self.logger.info(f"creating internal stage {self.attr.name}")
+        
+        self.logger.info(f"execute query")
         self.create_internal_stage()
         if len(largs) == 0:
+            self.logger.info('deployment entry')
             self.create_deployment_entry()
 
 

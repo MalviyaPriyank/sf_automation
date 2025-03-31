@@ -435,28 +435,69 @@ class ExternalStage(BaseObject):
         self.execute_final_query()
 
     def create_object(self,**kwargs):
+        self.logger.info(f'dictionary passed {kwargs}')
 
+        self.logger.info('set DATABASE')
         self.set_database(kwargs[tags.DATABASE])
+
+        self.logger.info('set SCHEMA')
         self.set_schema(kwargs[tags.SCHEMA])
         
+        self.logger.info('set NAME')
         self.set_name(kwargs[tags.NAME])
+
+        self.logger.info('set FILE_FORMAT')
         self.set_file_format(kwargs[tags.FILE_FORMAT])
+
+        self.logger.info('set COMMENT')
         self.set_comment(kwargs[tags.COMMENT])
+
+        self.logger.info('set URL')
         self.set_url(kwargs[tags.URL])
+
+        self.logger.info('set AWS_ACCESS_POINT_ARN')
         self.set_aws_access_point_arn(kwargs[tags.AWS_ACCESS_POINT_ARN])
+
+        self.logger.info('set STORAGE_INTEGRATION')
         self.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
+
+        self.logger.info('set ENCRYPTION')
         self.set_encryption_type(kwargs[tags.ENCRYPTION])
+
+        self.logger.info('set ENCRYPTION_MASTER_KEY')
         self.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
+
+        self.logger.info('set ENCRYPTION_KMS_KEY_ID')
         self.set_encryption_kms_key_id(kwargs[tags.ENCRYPTION_KMS_KEY_ID])
+
+        self.logger.info('set USE_PRIVATELINK_ENDPOINT')
         self.set_use_privatelink_endpoint(kwargs[tags.USE_PRIVATELINK_ENDPOINT])
+
+        self.logger.info('set ENABLE')
         self.set_enable(kwargs[tags.ENABLE])
+
+        self.logger.info('set REFRESH_ON_CREATE')
         self.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
+
+        self.logger.info('set AUTO_REFRESH')
         self.set_auto_refresh(kwargs[tags.AUTO_REFRESH])
+
+        self.logger.info('set NOTIFICATION_INTEGRATION')
         self.set_notification_integration(kwargs[tags.NOTIFICATION_INTEGRATION])
+
+        self.logger.info('set qualified name')
         self.set_qualified_name()
+
+        self.logger.info('prepare query')
         self.prepare_query()
+
+        self.logger.info('execute query')
         self.create_external_stage()
+
+        self.logger.info('grant default priv')
         self.grant_default_privileges()
+
+        self.logger.info('create deployment entry')
         self.create_deployment_entry()
 
         
