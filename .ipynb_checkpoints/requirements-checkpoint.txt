@@ -6,3 +6,7 @@ snowflake
 langchain_aws
 langchain_community
 snowflake-snowpark-python
+snowflake
+datetime
+croniter
+slack_bolt

@@ -126,9 +126,9 @@ class InitialSetup:
         self.logger.info("before role setup")
         #self.create_default_role()
         self.logger.info("after role setup")
-        #self.create_default_warehouse()
-        #self.create_config_database()
-        #self.create_config_schema()
+        self.create_default_warehouse()
+        self.create_config_database()
+        self.create_config_schema()
         self.create_config_stage()
         self.create_deployment_tables()
 

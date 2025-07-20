@@ -22,50 +22,6 @@ from snowchainexception import (
     SnowchainException
 )
 
-import os
-from slack_bolt import App
-from slack_bolt.adapter.socket_mode import SocketModeHandler
-
-# Initializes your app with your bot token and socket mode handler
-app = App(token="xoxb-9208561529233-9197498838290-zf4Agy7eak9f3rF6bIDLJBbD")
-
-
-@app.event("message")
-def handle_message_events(body, say):
-    print(body)
-    #say(f"Hey there <@{body['event']['user']}>!")
-    run()
-
-@app.event("app_mention")
-def message_hello(body, say):
-    # say() sends a message to the channel where the event was triggered
-    #say(f"Hey there <@{body['event']['user']}>!")
-    run()
-
-SocketModeHandler(app, "xapp-1-A095SRHCLJZ-9196877250133-bbac21ac7e626fedc0734a6dc3bf027c79eed9b43d1ef70fc3c392cbadde797d").start()
-
-
-def run(body, say):
-    session_inst = session.Session()
-
-    session_inst.set_user('pehlaadmi')
-    session_inst.set_password('Hellopehlaadmi@24')
-    session_inst.set_account('QYMNFNW-FDB17384')
-
-    session_state = session_inst.get_session()
-    root = session_inst.get_root_object()
-    bedrock_obj = Bedrock()
-    retrieval_workflow = session_state.bedrock_obj.get_retriever_obj()
-    tools = LLMTools(sf_session=session_state.session,retrieval_workflow = retrieval_workflow,root = root, logger=logger)
-    say('Logged in to snowflake')
-
-'''
-@app.event("message")
-def handle_message_events(body, logger):
-    say(f"Hey there <@{body['event']['user']}>!")
-
-
-
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger('snowchain_logs').setLevel(logging.INFO)
 logger = logging.getLogger('snowchain_logs')

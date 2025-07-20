@@ -9,3 +9,4 @@ snowflake-snowpark-python
 snowflake
 datetime
 croniter
+slack_bolt

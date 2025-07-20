@@ -3,8 +3,8 @@ import sys
 import json
 import time
 import logging
+import requests
 import pandas as pd
-import streamlit as st
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
@@ -29,88 +29,127 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 # Initializes your app with your bot token and socket mode handler
 app = App(token="xoxb-9208561529233-9197498838290-zf4Agy7eak9f3rF6bIDLJBbD")
 
+chat_history = []
+
+def run(body, say):
+    try:
+        session_inst = session.Session()
+    
+        session_inst.set_user('pehlaadmi')
+        session_inst.set_password('Hellopehlaadmi@24')
+        session_inst.set_account('kzekzkb-pm40264')
+
+        logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        logging.getLogger('snowchain_logs').setLevel(logging.INFO)
+        logger = logging.getLogger('snowchain_logs')
+        
+        logger.info('session started')
+    
+        session_state = session_inst.get_session()
+        root = session_inst.get_root_object()
+        bedrock_obj = Bedrock()
+        retrieval_workflow = bedrock_obj.get_retriever_obj()
+        tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger)
+        # say('Logged in to snowflake')
+        print(body)
+        if 'files' in body['event']:
+            for file_info in body['event']['files']:
+                file_id = file_info['id']
+                file_name = file_info['name']
+                file_url = file_info['url_private_download']
+
+                print(f'Detected file upload: {file_name} ID: {file_id}')
+
+                try:
+                    headers = {'Authorization':f'Bearer xoxb-9208561529233-9197498838290-zf4Agy7eak9f3rF6bIDLJBbD'}
+                    doc_response = requests.get(file_url, headers=headers)
+                    doc_response.raise_for_status()
+                    os.makedirs('tmp', exist_ok=True)
+                    filepath = f'tmp/{file_name}'
+                    with open(filepath, 'wb') as f:
+                        f.write(doc_response.content)
+                    print(f'File {file_name} downloaded successfully')
+                except requests.exceptions.RequestException as e:
+                    print(f'Error downloading file {filename}: {e}')
+                except Exception as e:
+                    print(f'Error processing file {filename}: {e}')
+        
+        prompt = body['event']['text']
+        chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
+        logger.info(chat_history)
+        response = bedrock_obj.converse(messages=chat_history)
+        chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
+        logger.info(f'response: {response}')
+        
+        for content in response:
+            if ss.TEXT in content:
+                say(content[ss.TEXT])
+        
+        while len(response)>0:
+            tool_result = []
+            done_tool_call = False
+            for content in response:
+                if (ss.TEXT in content) and (len(response)==1): 
+                    done_tool_call = True
+                    break
+                if lcs.TOOL_USE in content:
+                    if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
+                        database = content[lcs.TOOL_USE]['input']['database']
+                        schema = content[lcs.TOOL_USE]['input']['schema']
+                        response = None
+                        tool_id = content[lcs.TOOL_USE][lcs.TOOL_USE_ID]
+                        create_table = True
+                        done_tool_call = True
+                        break
+                    try:
+                        tool_result = tools.tool_call(content, tool_result)
+                    except SnowchainException as e:
+                        logger.info('attr-error')
+                        say(str(e))
+                        tool_result.append({lcs.TOOL_RESULT:{
+                            lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
+                            lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
+                        }})
+                        chat_history.append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                        done_tool_call=True
+                        break
+                    chat_history.append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                
+                    response = bedrock_obj.converse(messages=chat_history)
+                    chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
+                    for content in response:
+                        if ss.TEXT in content:
+                            say(content[ss.TEXT])
+        
+        
+            if done_tool_call: 
+                break 
+
+
+        
+    except Exception as e:
+        logger.info(e)
+        say(str(e))
+
 
 @app.event("message")
 def handle_message_events(body, say):
     print(body)
     #say(f"Hey there <@{body['event']['user']}>!")
-    run()
+    run(body, say)
 
 @app.event("app_mention")
 def message_hello(body, say):
     # say() sends a message to the channel where the event was triggered
     #say(f"Hey there <@{body['event']['user']}>!")
-    run()
+    run(body, say)
 
 SocketModeHandler(app, "xapp-1-A095SRHCLJZ-9196877250133-bbac21ac7e626fedc0734a6dc3bf027c79eed9b43d1ef70fc3c392cbadde797d").start()
 
 
-def run(body, say):
-    session_inst = session.Session()
 
-    session_inst.set_user('pehlaadmi')
-    session_inst.set_password('Hellopehlaadmi@24')
-    session_inst.set_account('QYMNFNW-FDB17384')
-
-    session_state = session_inst.get_session()
-    root = session_inst.get_root_object()
-    bedrock_obj = Bedrock()
-    retrieval_workflow = session_state.bedrock_obj.get_retriever_obj()
-    tools = LLMTools(sf_session=session_state.session,retrieval_workflow = retrieval_workflow,root = root, logger=logger)
-    say('Logged in to snowflake')
 
 '''
-@app.event("message")
-def handle_message_events(body, logger):
-    say(f"Hey there <@{body['event']['user']}>!")
-
-
-
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logging.getLogger('snowchain_logs').setLevel(logging.INFO)
-logger = logging.getLogger('snowchain_logs')
-
-st.title('Snowchain')
-#tools = LLMTools()
-
-if 'count' not in st.session_state:
-    st.session_state['count'] = 0
-
-if ss.CHAT_DISABLED not in st.session_state:
-    st.session_state[ss.CHAT_DISABLED] = False
-
-if ss.MESSAGES not in st.session_state:
-    st.session_state[ss.MESSAGES] = []
-    with st.chat_message(ss.ASSISTANT):
-        st.write("Hi this is Frosty, your AI Assistant for Snowflake. How may I assist you today?")
-else:
-    for message in st.session_state[ss.MESSAGES]:
-        with st.chat_message(message[ss.ROLE]):
-            st.markdown(message[ss.CONTENT])
-
-if ss.CHAT_HISTORY not in st.session_state:
-    st.session_state[ss.CHAT_HISTORY] = []
-    for message in lcs.SYSTEM_PROMPTS:
-        st.session_state[ss.CHAT_HISTORY].append(helper.append_chat_history(role=message, prompt=lcs.SYSTEM_PROMPTS[message]))
-
-if ss.INITIALIZED not in st.session_state:
-    st.session_state[ss.INITIALIZED] = False
-
-if 'create_table' not in st.session_state:
-    st.session_state['create_table'] = False
-
-if 'database' not in st.session_state:
-    st.session_state['database'] = None
-    
-if 'schema' not in st.session_state:
-    st.session_state['schema'] = None
-
-if 'tool_id' not in st.session_state:
-    st.session_state['tool_id'] = None
-
-def disable_chat():
-    st.session_state[ss.CHAT_DISABLED] = True
-
 if st.session_state['create_table']:
      csv_upload = st.file_uploader(
          'Please upload data dictionary for tables',
@@ -241,8 +280,7 @@ if (st.session_state[ss.INITIALIZED]) and (st.session_state['create_table']==Fal
 
         st.session_state[ss.CHAT_DISABLED] = False
         st.rerun()
-'''
-'''
+
         except Exception as e:
             logger.info('app-error')
             logger.info(e)

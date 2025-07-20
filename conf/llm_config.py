@@ -3,8 +3,8 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 from src.utils import helper
 
-ACCESS_KEY = 'AKIAUMYCH7Z6CF4OQXJT'
-SECRET_KEY = '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'
+ACCESS_KEY = 'AKIARSK3TK3YS2J5WLVZ' #'AKIAUMYCH7Z6CF4OQXJT'
+SECRET_KEY = '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' #'ys7JM4BClYXWTpjzOv1C2aGZbIMltlHu9UJsq/oY'
 
 TEMPERATURE = 0
 REGION = 'us-west-2'

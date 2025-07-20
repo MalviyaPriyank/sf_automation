@@ -159,21 +159,21 @@ class Table:
         stg.set_stage(cfg._config_stage)
         stg.set_stage_reference()
         self.logger.info('inside function')
-        file_lst = stg.get_list_of_files_from_stage()
-        self.logger.info(f'filelist received: {filelist}')
-        if filelist != []: 
-            file_lst = [file for file in file_lst if any(file.endswith(f"{self.attr.database}/{self.attr.schema}/{inputs}") for inputs in filelist)]
-            self.logger.info(f'filelist provided, postprocess: {file_lst}')
-        else: 
-            file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
-            self.logger.info(f'filelist not provided, postprocess: {file_lst}')
+        # file_lst = stg.get_list_of_files_from_stage()
+        # self.logger.info(f'filelist received: {filelist}')
+        # if filelist != []: 
+        #    file_lst = [file for file in file_lst if any(file.endswith(f"{self.attr.database}/{self.attr.schema}/{inputs}") for inputs in filelist)]
+        #    self.logger.info(f'filelist provided, postprocess: {file_lst}')
+        # else: 
+        #    file_lst = [file for file in file_lst if f"{self.attr.database}/{self.attr.schema}" in file]
+        #    self.logger.info(f'filelist not provided, postprocess: {file_lst}')
             
-        for files in file_lst:
-            files = stg.remove_stage_name_from_file_path(files)
-            stg.download_file_from_stage(files,"tmp/")
+        # for files in file_lst:
+        #    files = stg.remove_stage_name_from_file_path(files)
+        #    stg.download_file_from_stage(files,"tmp/")
 
         tbl_lst = []
-        for files in file_lst:
+        for files in os.listdir('tmp/'): #file_lst:
             
             files = files.split("/")[-1]
             tbl_lst.append(files.split('.')[0])
