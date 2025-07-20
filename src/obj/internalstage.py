@@ -236,7 +236,7 @@ class InternalStage(BaseObject):
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.sf_object_tag,object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.session,self.logger)
         self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
