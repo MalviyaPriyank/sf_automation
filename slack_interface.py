@@ -93,6 +93,7 @@ def run(body, say):
                     done_tool_call = True
                     break
                 if lcs.TOOL_USE in content:
+                    '''
                     if content[lcs.TOOL_USE][lcs.NAME] == 'create_single_table_object':
                         database = content[lcs.TOOL_USE]['input']['database']
                         schema = content[lcs.TOOL_USE]['input']['schema']
@@ -101,6 +102,7 @@ def run(body, say):
                         create_table = True
                         done_tool_call = True
                         break
+                    '''
                     try:
                         tool_result = tools.tool_call(content, tool_result)
                     except SnowchainException as e:

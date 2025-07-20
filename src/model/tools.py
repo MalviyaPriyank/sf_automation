@@ -371,17 +371,17 @@ class LLMTools:
                                    database,
                                    schema,
                                    filelist=[]):
-        stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
-        stage.set_stage(cfg._config_stage)
-        stage.set_stage_reference()
+        #stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
+        #stage.set_stage(cfg._config_stage)
+        #stage.set_stage_reference()
         self.logger.info('listing_files')
-        for file in filelist: #os.listdir('tmp/'):
-            self.logger.info(file)
-            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path='/')#f'/{database}/{schema}/')
+        #for file in filelist: #os.listdir('tmp/'):
+            #self.logger.info(file)
+            #stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path='/')#f'/{database}/{schema}/')
 
         self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema,filelist)
         shutil.rmtree('tmp', ignore_errors=True)
-        return f'Tables created', True
+        return 'Tables created successfully'
 
 
     def create_copyinto_object(self,
