@@ -254,7 +254,9 @@ class Deploy:
     def deploy_from_dev_to_test(self):
         dev_db = self.get_db_name_of_environment(_dev_env)
         test_db = self.get_db_name_of_environment(_test_env)
+        self.logger.info("before getting scripts to deploy")
         sql_lst = self.get_scripts_to_deploy()
+        self.logger.info(f"after getting scripts: {sql_lst}")
         for qry in sql_lst:
             qry = qry.replace(dev_db,test_db)
             self.session.sql(qry).collect()
