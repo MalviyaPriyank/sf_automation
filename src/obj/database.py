@@ -462,7 +462,7 @@ class Database(BaseObject):
 
         if len(largs) != 0:
             self.logger.info(' list args passed')
-            self.qry = f"CREATE DATABASE {kwargs[tags.NAME]}"
+            self.qry = f"CREATE OR REPLACE DATABASE {kwargs[tags.NAME]}"
             self.logger.info('calling create database')
             self.create_database()
             self.logger.info('granting default privileges')

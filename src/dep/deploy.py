@@ -92,9 +92,10 @@ class DeployAttr:
     deployment_id = DeploymentID()
 
 class Deploy:
-    def __init__(self,session):
+    def __init__(self,session,logger):
         self.attr = DeployAttr()
         self.session = session
+        self.logger = logger
 
     def set_object_type(self,value):
         self.attr.object_type = value
