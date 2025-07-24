@@ -229,7 +229,6 @@ class Snowpipe():
     _aws_sns_topic_tag = "AWS_SNS_TOPIC"
     _integration_tag =  "INTEGRATION"
     _comment_tag = "COMMENT"
-    _file_type_tag = "FILE_TYPE"
     _copyinto_query_tag = "COPYINTO_QUERY"
 
 class Stream():

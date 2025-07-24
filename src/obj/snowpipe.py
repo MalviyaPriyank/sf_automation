@@ -187,7 +187,7 @@ class Snowpipe(BaseObject):
         set_flag(tags.AWS_SNS_TOPIC,"_aws_sns_topic")
         set_flag(tags.INTEGRATION,"_integration")
         set_flag(tags.COMMENT,"_comment")
-        set_flag(tags.FILE_TYPE,"_file_type")
+
 
     def check_properties_to_set(self): 
         self.property_lst = []
