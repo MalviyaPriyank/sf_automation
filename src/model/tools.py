@@ -7,6 +7,12 @@ import pandas as pd
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
 
+import re
+import contextlib
+import io
+import boto3
+import traceback
+
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
@@ -33,6 +39,7 @@ class LLMTools:
                     logger,
                     sf_session,
                     root,
+                    bedrock_obj,
                     retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
@@ -41,9 +48,11 @@ class LLMTools:
         self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
         self.root = root
+        self.chat_model_id = chat_model_id
         self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
         self.logger = logger
+        self.bedrock_obj = bedrock_obj
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
                                     aws_access_key_id=llm_config.ACCESS_KEY,
@@ -356,7 +365,7 @@ class LLMTools:
         self.logger.info(f'creating {ss.WAREHOUSE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
-
+    '''
     def create_multiple_table_object(self,
                             database,
                             schema):
@@ -366,11 +375,12 @@ class LLMTools:
         self.logger.info(f"table list returned {table_list}")
         shutil.rmtree('tmp', ignore_errors=True)
         return f'Here is the list of tables created : [{table_list}]'
-
-    def create_single_table_object(self,
-                                   database,
-                                   schema,
-                                   filelist=[]):
+    '''
+    
+    def create_table_object(self,
+                           database,
+                           schema,
+                           filelist=[]):
         #stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
         #stage.set_stage(cfg._config_stage)
         #stage.set_stage_reference()
@@ -611,6 +621,56 @@ class LLMTools:
         #return str(result)
         return 
 
+
+    def extract_python_code(self, xml_response):
+        match = re.search(r"<python>(.*?)</python>", xml_response, re.DOTALL)
+        return match.group(1).strip() if match else None
+    
+    def execute_python_code(self, code, global_vars=None):
+        global_vars = global_vars or {}
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            try:
+                exec(code, global_vars)
+            except Exception as e:
+                return f"Error:\n{traceback.format_exc()}"
+        return output.getvalue()
+    
+
+    def perform_data_analysis(self, query, table_name='Customer_Loyalty_History'):
+            table_name = (table_name.replace(' ', '_')).upper()
+            self.logger.info(f'table_name: {table_name}')
+            table_data = pd.read_csv(f'tmp/{table_name.upper()}.csv')
+    
+            prompt = f"""The customer loyalty history table has columns: {list(table_data.columns)}.
+            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('tmp/{table_name.upper()}.csv').
+            Write a Python script for: {query}. Only return code inside <python></python> tags.
+            if creating any visualizations or output csv, save them inside 'tmp' folder.
+            """
+
+            client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
+                                   aws_access_key_id=llm_config.ACCESS_KEY,
+                                   aws_secret_access_key=llm_config.SECRET_KEY, 
+                                   region_name=self.region)
+            response = client.converse(
+                modelId=self.chat_model_id,
+                messages=[{"role": "user", "content": [{ss.TEXT: prompt}]}]
+            )
+            output_message = response[ss.OUTPUT][ss.MESSAGE]
+            content = output_message[ss.CONTENT]
+            self.logger.info('content',content)
+            xml_code_response = content[0][ss.TEXT]
+            self.logger.info(f'code:\n {xml_code_response}')
+            code = self.extract_python_code(xml_code_response)
+            if code is None:
+                raise SnowchainException("Claude did not return code inside <python> tags.")
+            
+            self.logger.info(f"Generated code:\n{code}")
+            
+            result = self.execute_python_code(code, {"pd": pd, "table_data": table_data})
+            self.logger.info(f'\n\n result: {result}')
+            return result
+        
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

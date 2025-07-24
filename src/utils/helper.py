@@ -3,6 +3,7 @@ import sys
 import glob
 import json
 import time
+from pathlib import Path
 path_global_var = 'sf_automation/vars/global'
 path_validation_func = 'sf_automation/src/validation'
 

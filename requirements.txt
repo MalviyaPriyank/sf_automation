@@ -10,3 +10,5 @@ snowflake
 datetime
 croniter
 slack_bolt
+matplotlib
+seaborn

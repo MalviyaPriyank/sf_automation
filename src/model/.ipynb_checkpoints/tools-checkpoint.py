@@ -7,6 +7,12 @@ import pandas as pd
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
 
+import re
+import contextlib
+import io
+import boto3
+import traceback
+
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
@@ -33,6 +39,7 @@ class LLMTools:
                     logger,
                     sf_session,
                     root,
+                    bedrock_obj,
                     retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
@@ -41,9 +48,11 @@ class LLMTools:
         self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
         self.root = root
+        self.chat_model_id = chat_model_id
         self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
         self.logger = logger
+        self.bedrock_obj = bedrock_obj
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
                                     aws_access_key_id=llm_config.ACCESS_KEY,
@@ -219,7 +228,7 @@ class LLMTools:
                                     COMMENT="NONE",
                                     TAG="NONE",
                                     ENCRYPTION="NONE",
-                                    DIRECTORY="NONE",
+                                    ENABLE="NONE",
                                     REFRESH_ON_CREATE="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
@@ -277,8 +286,8 @@ class LLMTools:
                             DATABASE,
                             NAME,
                             WITH_MANAGED_ACCESS="NONE",
-                            DATA_RETENTION_TIME_IN_DAYS="1",
-                            MAX_DATA_EXTENSION_TIME_IN_DAYS="10",
+                            DATA_RETENTION_TIME_IN_DAYS="NONE",
+                            MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE",
                             EXTERNAL_VOLUME="NONE",
                             CATALOG="NONE",
                             REPLACE_INVALID_CHARACTERS="NONE",
@@ -356,7 +365,7 @@ class LLMTools:
         self.logger.info(f'creating {ss.WAREHOUSE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
-
+    '''
     def create_multiple_table_object(self,
                             database,
                             schema):
@@ -366,22 +375,23 @@ class LLMTools:
         self.logger.info(f"table list returned {table_list}")
         shutil.rmtree('tmp', ignore_errors=True)
         return f'Here is the list of tables created : [{table_list}]'
-
-    def create_single_table_object(self,
-                                   database,
-                                   schema,
-                                   filelist=[]):
-        stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
-        stage.set_stage(cfg._config_stage)
-        stage.set_stage_reference()
+    '''
+    
+    def create_table_object(self,
+                           database,
+                           schema,
+                           filelist=[]):
+        #stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
+        #stage.set_stage(cfg._config_stage)
+        #stage.set_stage_reference()
         self.logger.info('listing_files')
-        for file in filelist: #os.listdir('tmp/'):
-            self.logger.info(file)
-            stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path='/')#f'/{database}/{schema}/')
+        #for file in filelist: #os.listdir('tmp/'):
+            #self.logger.info(file)
+            #stage.upload_file_to_stage(file_path=f'tmp/{file}',upload_path='/')#f'/{database}/{schema}/')
 
         self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_files_from_stage(database,schema,filelist)
         shutil.rmtree('tmp', ignore_errors=True)
-        return f'Tables created', True
+        return 'Tables created successfully'
 
 
     def create_copyinto_object(self,
@@ -508,7 +518,7 @@ class LLMTools:
 
 
     def deploy_all_dev_to_test(self, query):
-        deploy_obj = deploy.Deploy(session=self.sf_session)
+        deploy_obj = deploy.Deploy(session=self.sf_session,logger=self.logger)
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
@@ -595,18 +605,72 @@ class LLMTools:
         stage = Stage(root=self.root, database=cfg._config_database, schema=cfg._config_schema)
         stage.set_stage(cfg._config_stage)
         stage.set_stage_reference()
-        ddl = []
-        for table in TABLE: 
-            stage.download_file_from_stage(table,"tmp/")
-            ddl.append(pd.read_csv(f'tmp/{table}.csv'))
-        return str(ddl)
+        data_dict = []
+        table_list = [file for file in TABLE if any(file.endswith(f"{self.attr.database}/{self.attr.schema}/{table_name}.csv") for table_name in TABLE)]
+            
+        for table_name in table_list: 
+            stage.download_file_from_stage(table_name,"tmp/")
+            data_dict.append(pd.read_csv(f'tmp/{table_name}.csv'))
+        return str(data_dict)
 
 
-    def create_cortex_object(self,
-                             SQL_QUERY):
+    def retrieve_data_from_table(self,
+                                 SQL_QUERY):
+        #add code for function call to execute query and return results
+        #result = func_call()
+        #return str(result)
+        return 
+
+
+    def extract_python_code(self, xml_response):
+        match = re.search(r"<python>(.*?)</python>", xml_response, re.DOTALL)
+        return match.group(1).strip() if match else None
+    
+    def execute_python_code(self, code, global_vars=None):
+        global_vars = global_vars or {}
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            try:
+                exec(code, global_vars)
+            except Exception as e:
+                return f"Error:\n{traceback.format_exc()}"
+        return output.getvalue()
+    
+
+    def perform_data_analysis(self, query, table_name='Customer_Loyalty_History'):
+            table_name = (table_name.replace(' ', '_')).upper()
+            self.logger.info(f'table_name: {table_name}')
+            table_data = pd.read_csv(f'tmp/{table_name.upper()}.csv')
+    
+            prompt = f"""The customer loyalty history table has columns: {list(table_data.columns)}.
+            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('tmp/{table_name.upper()}.csv').
+            Write a Python script for: {query}. Only return code inside <python></python> tags.
+            if creating any visualizations or output csv, save them inside 'tmp' folder.
+            """
+
+            client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
+                                   aws_access_key_id=llm_config.ACCESS_KEY,
+                                   aws_secret_access_key=llm_config.SECRET_KEY, 
+                                   region_name=self.region)
+            response = client.converse(
+                modelId=self.chat_model_id,
+                messages=[{"role": "user", "content": [{ss.TEXT: prompt}]}]
+            )
+            output_message = response[ss.OUTPUT][ss.MESSAGE]
+            content = output_message[ss.CONTENT]
+            self.logger.info('content',content)
+            xml_code_response = content[0][ss.TEXT]
+            self.logger.info(f'code:\n {xml_code_response}')
+            code = self.extract_python_code(xml_code_response)
+            if code is None:
+                raise SnowchainException("Claude did not return code inside <python> tags.")
+            
+            self.logger.info(f"Generated code:\n{code}")
+            
+            result = self.execute_python_code(code, {"pd": pd, "table_data": table_data})
+            self.logger.info(f'\n\n result: {result}')
+            return result
         
-        return None
-
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

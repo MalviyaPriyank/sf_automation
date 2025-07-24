@@ -9,8 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
-KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
+CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -830,32 +830,8 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"create_multiple_table_object",
-                "description":"creates multiple snowflake table objects in bulk for the user. DATABASE and SCHEMA are required inputs from user. this function already has the table names, so user does not have to provide it.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "database": {
-                                "type":"string",
-                                "description":"database object name"
-                            },
-                        "schema": {
-                                "type":"string",
-                                "description":"schema object name"
-                            },
-                        },
-                        "required":[
-                            "database","schema"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
-                "name":"create_single_table_object",
-                "description":"create one snowflake table object for the user. database and schema are required inputs",
+                "name":"create_table_object",
+                "description":"creates snowflake table object for the user. database and schema are required inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1474,43 +1450,27 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"get_table_definitions_from_stage",
-                "description":"this is a prerequisite for when user would like to execute sql queries to pull data from tables. this tool creates pulls table definitions so you can understand attributes to formulate a query. executing actual queries is through retrieve_data_from_table tool.",
+                "name":"perform_data_analysis",
+                "description":"this tool executes python code extract insights from table. it has the data definitions, sample data, among other details of the table. you need not ask them to the user. use this tools for any analysis to be performed on the data. you dont need the database and schema for this. This tool takes a while for completion, please let the user know.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "TABLE": {
+                            "table_name": {
                                 "type":"string",
-                                "description":"list of tables to pull data from"
-                            }
+                                "description":"table name to retrieve data"
+                            },
+                            "query": {
+                                "type":"string",
+                                "description":"user question about the data to extract insights"
+                            },
                         },
                         "required":[
-                            "TABLE"
+                            "query"
                         ]
                     }
                 }
             }
         },
-        {
-            "toolSpec": {
-                "name":"retrieve_data_from_table",
-                "description":"execute sql query to retrieve data from tables.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "SQL_QUERY": {
-                                "type":"string",
-                                "description":"sql query to retrieve data"
-                            }
-                        },
-                        "required":[
-                            "SQL_QUERY"
-                        ]
-                    }
-                }
-            }
-        }
     ]
 }
