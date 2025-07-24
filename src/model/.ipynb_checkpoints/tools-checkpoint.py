@@ -174,7 +174,7 @@ class LLMTools:
 
 
     def create_fileformat_object(self,
-                                FILE_FORMAT,
+                                NAME,
                                 DATABASE,
                                 SCHEMA,
                                 TYPE="CSV",

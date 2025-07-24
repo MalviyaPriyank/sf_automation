@@ -66,7 +66,7 @@ class FileFormat:
             instance._file_format=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=value)
+            vo.file_format_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=value)
             instance._file_format = value
 
     def __del__(self,instance):

@@ -275,7 +275,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_fileformat_object",
-                "description":"creates a snowflake fileformat object for the user. DATABASE, SCHEMA, FILE_FORMAT is a required input to be taken from user. Only use user provided inputs. Do not refer snowflake documentation for attributes.",
+                "description":"creates a snowflake fileformat object for the user. DATABASE, SCHEMA, NAME is a required input to be taken from user. Only use user provided inputs. Do not refer snowflake documentation for attributes.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -288,9 +288,9 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for SCHEMA for file format object"
                             },
-                            "FILE_FORMAT": {
+                            "NAME": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for file format object"
+                                "description":"user provided name for FILE_FORMAT for file format object"
                             },
                             "MULTI_LINE": {
                                 "type":"string",
