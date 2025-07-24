@@ -926,7 +926,6 @@ class FileFormat(BaseObject):
         super().__init__(session, user_id, logger)
         self.attr = FileFormatAttrs(self)
 
-
     def set_name(self,val):
         self.attr.name = val
     

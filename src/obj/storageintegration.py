@@ -210,7 +210,6 @@ class StorageIntegration(BaseObject):
         super().__init__(session, user_id, logger)
         self.attr = StorageIntegrationAttrs(self)
 
-
     def set_name(self, value):
         self.attr.name = value
 
@@ -237,7 +236,8 @@ class StorageIntegration(BaseObject):
 
     def set_azure_tenant_id(self,value):
         self.attr.azure_tenant_id=value
-
+    
+    
     def set_storage_allowed_locations(self, value):
         self.attr.storage_allowed_locations = value
 
@@ -332,22 +332,34 @@ class StorageIntegration(BaseObject):
 
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Dictionary passed {kwargs}")
+        self.logger.info("before setting name")
         self.set_name(kwargs[gv_stgint._name_tag])
+        self.logger.info("before setting type")
         self.set_type(kwargs[gv_stgint._type_tag])
+        self.logger.info("before setting storage provider tag")
         self.set_storage_provider(kwargs[gv_stgint._storage_provider_tag])
+        self.logger.info("before setting aws role arn")
         self.set_storage_aws_role_arn(kwargs[gv_stgint._storage_aws_role_arn_tag])
+        self.logger.info("before setting aws external id tag")
         self.set_storage_aws_external_id(kwargs[gv_stgint._storage_aws_external_id_tag])
+        self.logger.info("before setting _storage_aws_object_acl_tag")
         self.set_storage_aws_object_acl(kwargs[gv_stgint._storage_aws_object_acl_tag])
+        self.logger.info("before setting _azure_tenant_id_tag")
         self.set_azure_tenant_id(kwargs[gv_stgint._azure_tenant_id_tag])
+        self.logger.info("before setting _use_private_link_endpoint_tag")
         self.set_use_private_link_end_point(kwargs[gv_stgint._use_private_link_endpoint_tag])
+        self.logger.info("before setting type")
         self.set_enabled(kwargs[gv_stgint._enabled_tag])
+        self.logger.info("before setting storage allowed location")
         self.set_storage_allowed_locations(kwargs[gv_stgint._storage_allowed_locations_tag])
+        self.logger.info("after setting storage allowed location")
         self.set_storage_blocked_locations(kwargs[gv_stgint._storage_blocked_locations_tag])
         self.set_comment(kwargs[gv_stgint._comment_tag])
         self.set_qualified_name()
         self.prepare_query()
         self.create_storage_integration()
-        self.logger.info(f"creating schema {self.attr.name}")
+        self.logger.info(f"creating integration {self.attr.name}")
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()

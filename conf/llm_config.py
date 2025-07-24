@@ -878,7 +878,7 @@ tools = {
                             },
                             "STORAGE_ALLOWED_LOCATIONS": {
                                 "type":"string",
-                                "description":"user provided STORAGE_ALLOWED_LOCATIONS for storage integration object. should be passed as a tuple with each value enclosed in single quote, example: STORAGE_ALLOWED_LOCATIONS=('val1','val2')"
+                                "description":"user provided STORAGE_ALLOWED_LOCATIONS for storage integration object. should be passed as a list with each value enclosed in single quote, example: STORAGE_ALLOWED_LOCATIONS=['val1','val2']"
                             },
                             "STORAGE_BLOCKED_LOCATIONS": {
                                 "type":"string",

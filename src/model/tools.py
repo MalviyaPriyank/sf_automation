@@ -278,6 +278,7 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict['STORAGE_ALLOWED_LOCATIONS'] = tuple(eval(data_dict['STORAGE_ALLOWED_LOCATIONS']))
         self.logger.info(f'creating {ss.STORAGE_INTEGRATION_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.STORAGE_INTEGRATION_OBJ, data_dict)
 
