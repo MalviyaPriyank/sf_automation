@@ -1,0 +1,13 @@
+Column_Name,Column_Type
+ID,VARCHAR
+date,VARCHAR
+client_id,VARCHAR
+card_id,VARCHAR
+amount,VARCHAR
+use_chip,VARCHAR
+merchant_id,VARCHAR
+merchant_city,VARCHAR
+merchant_state,VARCHAR
+zip,VARCHAR
+mcc,VARCHAR
+errors,VARCHAR

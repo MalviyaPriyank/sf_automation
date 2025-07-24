@@ -175,20 +175,21 @@ class Table:
         tbl_lst = []
         self.logger.info(f"following files in tmp {os.listdir('tmp/')}")
         for files in os.listdir('tmp/'): #file_lst:
-            self.logger.info(f"inside file iteration for {files}")            
-            #files = files.split("/")[-1]
-            tbl_lst.append(files.split('.')[0])
-            self.set_name(files.split('.')[0])
-            tbl_ddl_data = pd.read_csv(f"tmp/{files}")
-            self.logger.info("after reading file")
-            self.set_column_name_list(tbl_ddl_data)
-            self.set_column_type_list(tbl_ddl_data)
-            #vv.is_valid_column_types(object_name=self.__class__.__name__,attribute_name='Column Type',tbl_data_typ_lst=self.attr.column_type_list,allowed_data_type_lst=DataTypes.get_allowed_data_types())
-            self.logger.info(f"creating table {self.attr.name}")
-            self.set_qualified_name()
-            self.create_table()
-            self.grant_default_privileges()
-            self.create_deployment_entry()
+            if files.endswith('.csv'):
+                self.logger.info(f"inside file iteration for {files}")            
+                #files = files.split("/")[-1]
+                tbl_lst.append(files.split('.')[0])
+                self.set_name(files.split('.')[0])
+                tbl_ddl_data = pd.read_csv(f"tmp/{files}")
+                self.logger.info("after reading file")
+                self.set_column_name_list(tbl_ddl_data)
+                self.set_column_type_list(tbl_ddl_data)
+                #vv.is_valid_column_types(object_name=self.__class__.__name__,attribute_name='Column Type',tbl_data_typ_lst=self.attr.column_type_list,allowed_data_type_lst=DataTypes.get_allowed_data_types())
+                self.logger.info(f"creating table {self.attr.name}")
+                self.set_qualified_name()
+                self.create_table()
+                self.grant_default_privileges()
+                self.create_deployment_entry()
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session,logger=self.logger)

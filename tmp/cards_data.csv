@@ -1,0 +1,14 @@
+Column_Name,Column_Type
+ID,VARCHAR
+Client_ID,VARCHAR
+card_brand,VARCHAR
+card_type,VARCHAR
+card_number,VARCHAR
+expires,VARCHAR
+cvv,VARCHAR
+has_chip,VARCHAR
+num_cards_issued,VARCHAR
+credit_limit,VARCHAR
+acct_open_date,VARCHAR
+year_pin_last_changed,VARCHAR
+card_on_dark_web,VARCHAR

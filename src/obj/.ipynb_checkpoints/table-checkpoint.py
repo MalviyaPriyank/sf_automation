@@ -155,9 +155,9 @@ class Table:
     def create_table_using_files_from_stage(self,database,schema,filelist=[]):
         self.set_database(database)
         self.set_schema(schema)
-        stg = Stage(self.root,cfg._config_database,cfg._config_schema)
-        stg.set_stage(cfg._config_stage)
-        stg.set_stage_reference()
+        #stg = Stage(self.root,cfg._config_database,cfg._config_schema)
+        #stg.set_stage(cfg._config_stage)
+        #stg.set_stage_reference()
         self.logger.info('inside function')
         # file_lst = stg.get_list_of_files_from_stage()
         # self.logger.info(f'filelist received: {filelist}')
@@ -173,24 +173,26 @@ class Table:
         #    stg.download_file_from_stage(files,"tmp/")
 
         tbl_lst = []
+        self.logger.info(f"following files in tmp {os.listdir('tmp/')}")
         for files in os.listdir('tmp/'): #file_lst:
-            
-            files = files.split("/")[-1]
-            tbl_lst.append(files.split('.')[0])
-            self.set_name(files.split('.')[0])
-            tbl_ddl_data = pd.read_csv(f"tmp/{files}")
-            self.set_column_name_list(tbl_ddl_data)
-            self.set_column_type_list(tbl_ddl_data)
-            vv.is_valid_column_types(object_name=self.__class__.__name__,attribute_name='Column Type',tbl_data_typ_lst=self.attr.column_type_list,allowed_data_type_lst=DataTypes.get_allowed_data_types())
-            self.logger.info(f"creating table {self.attr.name}")
-            self.set_qualified_name()
-            self.create_table()
-            self.grant_default_privileges()
-            self.create_deployment_entry()
-        return tbl_lst
+            if files.endswith('.csv'):
+                self.logger.info(f"inside file iteration for {files}")            
+                #files = files.split("/")[-1]
+                tbl_lst.append(files.split('.')[0])
+                self.set_name(files.split('.')[0])
+                tbl_ddl_data = pd.read_csv(f"tmp/{files}")
+                self.logger.info("after reading file")
+                self.set_column_name_list(tbl_ddl_data)
+                self.set_column_type_list(tbl_ddl_data)
+                #vv.is_valid_column_types(object_name=self.__class__.__name__,attribute_name='Column Type',tbl_data_typ_lst=self.attr.column_type_list,allowed_data_type_lst=DataTypes.get_allowed_data_types())
+                self.logger.info(f"creating table {self.attr.name}")
+                self.set_qualified_name()
+                self.create_table()
+                self.grant_default_privileges()
+                self.create_deployment_entry()
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment table object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(self.qry,self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
