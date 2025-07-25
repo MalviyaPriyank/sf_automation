@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
 from vars.gvobject import CopyInto as gv
+from vars.obj.copyinto.gvcopyinto import CopyIntoTag as tags
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
@@ -85,7 +86,7 @@ class OnError:
         if value=="NONE":
             instance._on_error=value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_on_error,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.ON_ERROR),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._on_error = value
 
     def __delete__(self,instance):
@@ -144,7 +145,7 @@ class MatchByColumnName:
         if value == "NONE":
             instance._match_by_column_name = value
         else:
-            vv.allowed_value_check(value,gv._allowed_values_match_by_column_name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.allowed_value_check(value,tags.allowed_value_list().get(tags.MATCH_BY_COLUMN_NAME),instance.parent.__class__.__name__,self.__class__.__name__)
             instance._match_by_column_name = value
 
     def __delete__(self,instance):
@@ -247,7 +248,7 @@ class Scanner:
         else:
             vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,parent_attribute="ON_ERROR",compatible_value_lst_parent_attribute=["ABORT_STATEMENT"])
             vv.is_conflicting_parameter_null(original_parameter_val=value,conflicting_parameter_val=instance._match_by_column_name,original_parameter=self.__class__.__name__,conflicting_parameter="MATCH_BY_COLUMN_NAME",object_type=instance.parent.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_scanner,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.SCANNER),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._scanner = f"'{value}'"
 
     def __delete__(self,instance):
@@ -314,7 +315,7 @@ class LoadMode:
         if value == "NONE":
             instance._load_mode = value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_load_mode,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.LOAD_MODE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._load_mode = value
 
     def __delete__(self,instance):
@@ -424,22 +425,22 @@ class CopyInto(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._on_error_tag,"_on_error")
-        set_flag(gv._size_limit_tag,"_size_limit")
-        set_flag(gv._purge_tag,"_purge")
-        set_flag(gv._return_failed_only_tag,"_return_failed_only")
-        set_flag(gv._match_by_column_name_tag,"_match_by_column_name")
-        set_flag(gv._include_metadata_tag,"_include_metadata")
-        set_flag(gv._enforce_length_tag,"_enforce_length")
-        set_flag(gv._truncatecolumns_tag,"_truncatecolumns")
-        set_flag(gv._force_tag,"_force")
-        set_flag(gv._load_uncertain_files_tag,"_load_uncertain_files")
-        set_flag(gv._file_processor_tag,"_file_processor")
-        set_flag(gv._scanner_tag,"_scanner")
-        set_flag(gv._project_name_tag,"_project_name")
-        set_flag(gv._model_name_tag,"_model_name")
-        set_flag(gv._model_version_tag,"_model_version")
-        set_flag(gv._load_mode_tag,"_load_mode")
+        set_flag(tags.ON_ERROR,"_on_error")
+        set_flag(tags.SIZE_LIMIT,"_size_limit")
+        set_flag(tags.PURGE,"_purge")
+        set_flag(tags.RETURN_FAILED_ONLY,"_return_failed_only")
+        set_flag(tags.MATCH_BY_COLUMN_NAME,"_match_by_column_name")
+        set_flag(tags.INCLUDE_METADATA,"_include_metadata")
+        set_flag(tags.ENFORCE_LENGTH,"_enforce_length")
+        set_flag(tags.TRUNCATECOLUMNS,"_truncatecolumns")
+        set_flag(tags.FORCE,"_force")
+        set_flag(tags.LOAD_UNCERTAIN_FILES,"_load_uncertain_files")
+        set_flag(tags.FILE_PROCESSOR,"_file_processor")
+        set_flag(tags.SCANNER,"_scanner")
+        set_flag(tags.PROJECT_NAME,"_project_name")
+        set_flag(tags.MODEL_NAME,"_model_name")
+        set_flag(tags.MODEL_VERSION,"_model_version")
+        set_flag(tags.LOAD_MODE,"_load_mode")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -453,37 +454,37 @@ class CopyInto(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._on_error_tag:
-                    self.qry = f" {self.qry} {gv._on_error_tag} = {self.attr.on_error} "
-                if prop == gv._size_limit_tag:
-                    self.qry = f" {self.qry} {gv._size_limit_tag} = {self.attr.size_limit} "
-                if prop == gv._purge_tag:
-                    self.qry = f" {self.qry} {gv._purge_tag} = {self.attr.purge} "
-                if prop == gv._return_failed_only_tag:
-                    self.qry = f" {self.qry} {gv._return_failed_only_tag} = {self.attr.return_failed_only} "
-                if prop == gv._match_by_column_name_tag:
-                    self.qry = f" {self.qry} {gv._match_by_column_name_tag} = {self.attr.match_by_column_name} "
-                if prop == gv._include_metadata_tag:
-                    self.qry = f" {self.qry} {gv._include_metadata_tag} = {self.attr.include_metadata} "
-                if prop == gv._enforce_length_tag:
-                    self.qry = f" {self.qry} {gv._enforce_length_tag} = {self.attr.enforce_length} "
-                if prop == gv._truncatecolumns_tag:
-                    self.qry = f" {self.qry} {gv._truncatecolumns_tag} = {self.attr.truncatecolumns} "
-                if prop == gv._force_tag:
-                    self.qry = f" {self.qry} {gv._force_tag} = {self.attr.force} "
-                if prop == gv._load_uncertain_files_tag:
-                    self.qry = f" {self.qry} {gv._load_uncertain_files_tag} = {self.attr.load_uncertain_files} "
-                if prop == gv._scanner_tag:
-                    self.qry = f" {self.qry} {gv._file_processor_tag} = ( {gv._scanner_tag} = {self.attr.scanner} SCANNER_OPTIONS=("
-                    if gv._project_name_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gv._project_name_tag} = {self.attr.project_name}"
-                    if gv._model_name_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gv._model_name_tag} = {self.attr.model_name}"
-                    if gv._model_version_tag in self.property_lst:
-                        self.qry=f" {self.qry} {gv._model_version_tag} = {self.attr.model_version}"
+                if prop == tags.ON_ERROR:
+                    self.qry = f" {self.qry} {tags.ON_ERROR} = {self.attr.on_error} "
+                if prop == tags.SIZE_LIMIT:
+                    self.qry = f" {self.qry} {tags.SIZE_LIMIT} = {self.attr.size_limit} "
+                if prop == tags.PURGE:
+                    self.qry = f" {self.qry} {tags.PURGE} = {self.attr.purge} "
+                if prop == tags.RETURN_FAILED_ONLY:
+                    self.qry = f" {self.qry} {tags.RETURN_FAILED_ONLY} = {self.attr.return_failed_only} "
+                if prop == tags.MATCH_BY_COLUMN_NAME:
+                    self.qry = f" {self.qry} {tags.MATCH_BY_COLUMN_NAME} = {self.attr.match_by_column_name} "
+                if prop == tags.INCLUDE_METADATA:
+                    self.qry = f" {self.qry} {tags.INCLUDE_METADATA} = {self.attr.include_metadata} "
+                if prop == tags.ENFORCE_LENGTH:
+                    self.qry = f" {self.qry} {tags.ENFORCE_LENGTH} = {self.attr.enforce_length} "
+                if prop == tags.TRUNCATECOLUMNS:
+                    self.qry = f" {self.qry} {tags.TRUNCATECOLUMNS} = {self.attr.truncatecolumns} "
+                if prop == tags.FORCE:
+                    self.qry = f" {self.qry} {tags.FORCE} = {self.attr.force} "
+                if prop == tags.LOAD_UNCERTAIN_FILES:
+                    self.qry = f" {self.qry} {tags.LOAD_UNCERTAIN_FILES} = {self.attr.load_uncertain_files} "
+                if prop == tags.SCANNER:
+                    self.qry = f" {self.qry} {tags.FILE_PROCESSOR} = ( {tags.SCANNER} = {self.attr.scanner} SCANNER_OPTIONS=("
+                    if tags.PROJECT_NAME in self.property_lst:
+                        self.qry=f" {self.qry} {tags.PROJECT_NAME} = {self.attr.project_name}"
+                    if tags.MODEL_NAME in self.property_lst:
+                        self.qry=f" {self.qry} {tags.MODEL_NAME} = {self.attr.model_name}"
+                    if tags.MODEL_VERSION in self.property_lst:
+                        self.qry=f" {self.qry} {tags.MODEL_VERSION} = {self.attr.model_version}"
                     self.qry=f"{self.qry} ))"
-                if prop == gv._load_mode_tag:
-                    self.qry = f" {self.qry} {gv._load_mode_tag} = {self.attr.load_mode} "
+                if prop == tags.LOAD_MODE:
+                    self.qry = f" {self.qry} {tags.LOAD_MODE} = {self.attr.load_mode} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -495,67 +496,67 @@ class CopyInto(BaseObject):
         self.logger.info(f'dictionary passed {kwargs}')
 
         self.logger.info('set database')
-        self.set_database(kwargs[gv._db_tag])
+        self.set_database(kwargs[tags.DATABASE])
 
         self.logger.info('set _schema')
-        self.set_schema(kwargs[gv._schema_tag])
+        self.set_schema(kwargs[tags.SCHEMA])
 
         self.logger.info('set _table')
-        self.set_table(kwargs[gv._table_tag])
+        self.set_table(kwargs[tags.TABLE])
 
         self.logger.info('set _stage')
-        self.set_stage(kwargs[gv._stage_tag])
+        self.set_stage(kwargs[tags.STAGE])
 
         self.logger.info('set _file_format')
-        self.set_file_format(kwargs[gv._file_format_tag])
+        self.set_file_format(kwargs[tags.FILE_FORMAT])
 
         self.logger.info('set _on_error')
-        self.set_on_error(kwargs[gv._on_error_tag])
+        self.set_on_error(kwargs[tags.ON_ERROR])
 
         self.logger.info('set _size_limit')
-        self.set_size_limit(kwargs[gv._size_limit_tag])
+        self.set_size_limit(kwargs[tags.SIZE_LIMIT])
 
         self.logger.info('set _purge')
-        self.set_purge(kwargs[gv._purge_tag])
+        self.set_purge(kwargs[tags.PURGE])
 
         self.logger.info('set _return_failed_only')
-        self.set_return_failed_only(kwargs[gv._return_failed_only_tag])
+        self.set_return_failed_only(kwargs[tags.RETURN_FAILED_ONLY])
 
         self.logger.info('set _match_by_column_name')
-        self.set_match_by_column_name(kwargs[gv._match_by_column_name_tag])
+        self.set_match_by_column_name(kwargs[tags.MATCH_BY_COLUMN_NAME])
 
         self.logger.info('set _include_metadata')
-        self.set_include_metadata(kwargs[gv._include_metadata_tag])
+        self.set_include_metadata(kwargs[tags.INCLUDE_METADATA])
 
         self.logger.info('set _enforce_length')
-        self.set_enforce_length(kwargs[gv._enforce_length_tag])
+        self.set_enforce_length(kwargs[tags.ENFORCE_LENGTH])
 
         self.logger.info('set _truncatecolumns')
-        self.set_truncatecolumns(kwargs[gv._truncatecolumns_tag])
+        self.set_truncatecolumns(kwargs[tags.TRUNCATECOLUMNS])
 
         self.logger.info('set _force')
-        self.set_force(kwargs[gv._force_tag])
+        self.set_force(kwargs[tags.FORCE])
 
         self.logger.info('set _load_uncertain_files')
-        self.set_load_uncertain_files(kwargs[gv._load_uncertain_files_tag])
+        self.set_load_uncertain_files(kwargs[tags.LOAD_UNCERTAIN_FILES])
 
         self.logger.info('set _file_processor')
-        self.set_file_processor(kwargs[gv._file_processor_tag])
+        self.set_file_processor(kwargs[tags.FILE_PROCESSOR])
 
         self.logger.info('set _scanner')
-        self.set_scanner(kwargs[gv._scanner_tag])
+        self.set_scanner(kwargs[tags.SCANNER])
 
         self.logger.info('set _project_name')
-        self.set_project_name(kwargs[gv._project_name_tag])
+        self.set_project_name(kwargs[tags.PROJECT_NAME])
 
         self.logger.info('set _model_name')
-        self.set_model_name(kwargs[gv._model_name_tag])
+        self.set_model_name(kwargs[tags.MODEL_NAME])
 
         self.logger.info('set _model_version')
-        self.set_model_version(kwargs[gv._model_version_tag])
+        self.set_model_version(kwargs[tags.MODEL_VERSION])
 
         self.logger.info('set _load_mode')
-        self.set_load_mode(kwargs[gv._load_mode_tag])
+        self.set_load_mode(kwargs[tags.LOAD_MODE])
 
         self.logger.info(f"preparing copy into for {self.attr.table}")
         self.prepare_query()
