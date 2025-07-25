@@ -10,12 +10,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
 
 
-from vars.gvobject import Alert as gv, Config as cfg , Privilege as gv_priv
+from vars.gvobject import Config as cfg 
+from vars.obj.alert.gvalert import AlertTag as tags
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep import deploy
-from setup import privilege 
-from processing.stage import Stage
 from .baseobj import BaseObject 
 
 class Database:
@@ -273,37 +272,37 @@ class Alerts(BaseObject):
         self.logger.info(f'dictionary passed {kwargs}')
 
         self.logger.info('set database')
-        self.set_database(kwargs[gv._database_tag])
+        self.set_database(kwargs[tags.DATABASE])
 
         self.logger.info('set schema')
-        self.set_schema(kwargs[gv._schema_tag])
+        self.set_schema(kwargs[tags.SCHEMA])
 
         self.logger.info('set name')
-        self.set_name(kwargs[gv._name_tag])
+        self.set_name(kwargs[tags.NAME])
 
         self.logger.info('set schedule')
-        self.set_schedule(kwargs[gv._schedule_tag])
+        self.set_schedule(kwargs[tags.SCHEDULE])
 
         self.logger.info('set _if_tag')
-        self.set_iff(kwargs[gv._if_tag])
+        self.set_iff(kwargs[tags.IF])
 
         self.logger.info('set _action_type')
-        self.set_action_type(kwargs[gv._action_type_tag])
+        self.set_action_type(kwargs[tags.ACTION_TYPE])
 
         self.logger.info('set _action_sql')
-        self.set_action_sql(kwargs[gv._action_sql_tag])
+        self.set_action_sql(kwargs[tags.ACTION_SQL])
 
         self.logger.info('set _integration_name')
-        self.set_integration_name(kwargs[gv._integration_name_tag])
+        self.set_integration_name(kwargs[tags.INTEGRATION_NAME])
 
         self.logger.info('set _email_address')
-        self.set_email_address(kwargs[gv._email_address_tag])
+        self.set_email_address(kwargs[tags.EMAIL_ADDRESS])
 
         self.logger.info('set _email_subject')
-        self.set_email_subject(kwargs[gv._email_subject_tag])
+        self.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
 
         self.logger.info('set _email_content')
-        self.set_email_content(kwargs[gv._email_content_tag])
+        self.set_email_content(kwargs[tags.EMAIL_CONTENT])
 
         self.logger.info('prepare query')
         self.prepare_query()
