@@ -9,7 +9,7 @@ from vars.gvobject import Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from vars.obj.externalstage.gvexternalstage import ExternalStageTag as tags
-from dep.deploy import Deploy
+from dep import deploy
 from setup import privilege
 from .baseobj import BaseObject 
 
@@ -355,7 +355,7 @@ class ExternalStage(BaseObject):
         set_flag(tags.URL,"_url")
         set_flag(tags.AWS_ACCESS_POINT_ARN,"_aws_access_point_arn")
         set_flag(tags.STORAGE_INTEGRATION,"_storage_integration")
-        set_flag(tags.ENCRYPTION,"_encryption_type")
+        set_flag(tags.ENCRYPTION_TYPE,"_encryption_type")
         set_flag(tags.ENCRYPTION_MASTER_KEY,"_encryption_master_key")
         set_flag(tags.ENCRYPTION_KMS_KEY_ID,"_encryption_kms_key_id")
         set_flag(tags.USE_PRIVATELINK_ENDPOINT,"_use_privatelink_endpoint")
@@ -387,8 +387,8 @@ class ExternalStage(BaseObject):
                     self.qry = f" {self.qry} {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn} "
                 if prop == tags.STORAGE_INTEGRATION:
                     self.qry = f" {self.qry} {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration} "
-                if prop == tags.ENCRYPTION:
-                    self.qry = f" {self.qry} {tags.ENCRYPTION} = {self.attr.encryption_type} "
+                if prop == tags.ENCRYPTION_TYPE:
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type} "
                 if prop == tags.ENCRYPTION_MASTER_KEY:
                     self.qry = f" {self.qry} {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key} "
                 if prop == tags.ENCRYPTION_KMS_KEY_ID:
@@ -419,7 +419,7 @@ class ExternalStage(BaseObject):
 
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = deploy.Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
@@ -461,8 +461,8 @@ class ExternalStage(BaseObject):
         self.logger.info('set STORAGE_INTEGRATION')
         self.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
 
-        self.logger.info('set ENCRYPTION')
-        self.set_encryption_type(kwargs[tags.ENCRYPTION])
+        self.logger.info('set ENCRYPTION TYPE')
+        self.set_encryption_type(kwargs[tags.ENCRYPTION_TYPE])
 
         self.logger.info('set ENCRYPTION_MASTER_KEY')
         self.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
