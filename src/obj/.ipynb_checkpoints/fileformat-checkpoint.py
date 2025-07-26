@@ -13,6 +13,7 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
+from dep import deploy
 
 
 class Database:

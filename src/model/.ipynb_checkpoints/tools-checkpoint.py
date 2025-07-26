@@ -12,6 +12,7 @@ import contextlib
 import io
 import boto3
 import traceback
+from snowflake.snowpark.functions import col
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
@@ -83,6 +84,19 @@ class LLMTools:
                                   }
 
 
+    def get_list_of_tables(self, database, schema):
+        table_list = []
+        self.sf_session.sql(f'USE DATABASE {database}').collect()
+        
+        table_list_df = self.sf_session.table('information_schema.tables')
+        table_list_df = table_list_df.filter((col('TABLE_SCHEMA')==schema.upper()) & (col('TABLE_CATALOG')==database.upper())).select(col('TABLE_NAME'))
+        for row in table_list_df.to_local_iterator():
+            table_list.append(row[0])
+        # table_list_df = table_list_df.sort('ORDINAL_POSITION').select('column_name','data_type')
+        self.logger.info(f'database {database} and schema {schema} contain following tables: {table_list}')
+        return f'database {database} and schema {schema} contain following tables: {table_list}'
+        
+    
     def create_sf_object(self, obj_name, data_dict):
         #try:
         qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
@@ -278,6 +292,8 @@ class LLMTools:
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict['STORAGE_ALLOWED_LOCATIONS'] = tuple(eval(data_dict['STORAGE_ALLOWED_LOCATIONS']))
+        data_dict['STORAGE_BLOCKED_LOCATIONS'] = tuple(eval(data_dict['STORAGE_BLOCKED_LOCATIONS']))
         self.logger.info(f'creating {ss.STORAGE_INTEGRATION_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.STORAGE_INTEGRATION_OBJ, data_dict)
 

@@ -878,11 +878,11 @@ tools = {
                             },
                             "STORAGE_ALLOWED_LOCATIONS": {
                                 "type":"string",
-                                "description":"user provided STORAGE_ALLOWED_LOCATIONS for storage integration object. should be passed as a tuple with each value enclosed in single quote, example: STORAGE_ALLOWED_LOCATIONS=('val1','val2')"
+                                "description":"user provided STORAGE_ALLOWED_LOCATIONS for storage integration object. should be passed as a list with each value enclosed in single quote, example: STORAGE_ALLOWED_LOCATIONS=['val1','val2']"
                             },
                             "STORAGE_BLOCKED_LOCATIONS": {
                                 "type":"string",
-                                "description":"user provided STORAGE_BLOCKED_LOCATIONS for storage integration object. should be passed as a tuple with each value enclosed in single quote, example: STORAGE_BLOCKED_LOCATIONS=('val1','val2')"
+                                "description":"user provided STORAGE_BLOCKED_LOCATIONS for storage integration object. should be passed as a list with each value enclosed in single quote, example: STORAGE_BLOCKED_LOCATIONS=['val1','val2']"
                             },
                             "STORAGE_AWS_ROLE_ARN": {
                                 "type":"string",
@@ -1467,6 +1467,30 @@ tools = {
                         },
                         "required":[
                             "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"get_list_of_tables",
+                "description":"retrieves list of onboarded tables for a given database and schema",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "database": {
+                                "type":"string",
+                                "description":"database name to retrieve list of tables"
+                            },
+                            "schema": {
+                                "type":"string",
+                                "description":"schema name to retrieve list of tables"
+                            },
+                        },
+                        "required":[
+                            "database","schema"
                         ]
                     }
                 }
