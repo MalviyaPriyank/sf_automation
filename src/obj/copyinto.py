@@ -449,7 +449,7 @@ class CopyInto(BaseObject):
                 self.property_lst.append(prop)
 
     def set_copy_into_qry(self):
-        self.qry = f"COPY INTO {self.attr.database}.{self.attr.schema}.{self.attr.table} FROM @{self.attr.database}.{self.attr.schema}.{self.attr.stage}/{self.attr.table} FILE_FORMAT = {self.attr.file_format} "
+        self.qry = f"COPY INTO {self.attr.database}.{self.attr.schema}.{self.attr.table} FROM @{self.attr.database}.{self.attr.schema}.{self.attr.stage}/{self.attr.table} FILE_FORMAT = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
