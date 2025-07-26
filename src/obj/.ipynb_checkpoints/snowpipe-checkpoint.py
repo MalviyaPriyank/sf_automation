@@ -7,12 +7,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import Snowpipe as gv,Config as cfg, Privilege as gv_priv
+from vars.gvobject import Config as cfg, Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
-
+from .baseobj import BaseObject 
+from vars.obj.snowpipe.gvsnowpipe import SnowpipeTag as tags
 
 
 
@@ -23,7 +24,6 @@ class Database:
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.database_exist(session=instance.parent.session, database_name=value)
-        #if vo.database_exist(value):
         instance._database = value
     
     def __delete__(self,instance):
@@ -36,7 +36,6 @@ class Schema:
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        #if vo.schema_exist(instance._database,value):
         instance._schema = value
     
     def __delete__(self,instance):
@@ -62,7 +61,11 @@ class AutoIngest:
         return instance._auto_ingest
     
     def __set__(self,instance,value):
-        instance._auto_ingest = value
+        if value=="NONE":
+            instance._auto_ingest=value
+        else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._auto_ingest = value
     
     def __delete__(self,instance):
         del instance._auto_ingest
@@ -72,7 +75,11 @@ class ErrorIntegration:
         return instance._error_integration
     
     def __set__(self,instance,value):
-        instance._error_integration = value
+        if value=="NONE":
+            instance._error_integration=value
+        else:
+            vo.integration_exist(session=instance.parent.session,integration_name=value)
+            instance._error_integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._error_integration
@@ -82,7 +89,11 @@ class AwsSnsTopic:
         return instance._aws_sns_topic
     
     def __set__(self,instance,value):
-        instance._aws_sns_topic = value
+        if value=="NONE":
+            instance._aws_sns_topic=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._aws_sns_topic = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._aws_sns_topic
@@ -92,7 +103,11 @@ class Integration:
         return instance._integration
     
     def __set__(self,instance,value):
-        instance._integration = value
+        if value=="NONE":
+            instance._integration=value
+        else:
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._integration = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._integration
@@ -103,20 +118,13 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        if value=="NONE":
+            instance._comment=value
+        else:
+            instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
-
-class FileType:
-    def __get__(self,instance,owner):
-        return instance._file_type
-    
-    def __set__(self,instance,value):
-        instance._file_type = value
-    
-    def __delete__(self,instance):
-        del instance._file_type
 
 
 
@@ -132,13 +140,10 @@ class SnowpipeAttrs:
     aws_sns_topic = AwsSnsTopic()
     integration = Integration()
     comment = Comment()
-    file_type = FileType()
 
-class Snowpipe:
-    def __init__(self,session,user_id,logger):
-        self.user_id = user_id
-        self.session = session
-        self.logger = logger
+class Snowpipe(BaseObject):
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = SnowpipeAttrs(self)
 
     def set_database(self,value):
@@ -168,9 +173,6 @@ class Snowpipe:
     def set_comment(self,comment):
         self.attr.comment = comment
 
-    def set_file_type(self,file_type):
-        self.attr.file_type = file_type
-
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
 
@@ -180,12 +182,12 @@ class Snowpipe:
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._auto_ingest_tag,"_auto_ingest")
-        set_flag(gv._error_integration_tag,"_error_integration")
-        set_flag(gv._aws_sns_topic_tag,"_aws_sns_topic")
-        set_flag(gv._integration_tag,"_integration")
-        set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._file_type_tag,"_file_type")
+        set_flag(tags.AUTO_INGEST,"_auto_ingest")
+        set_flag(tags.ERROR_INTEGRATION,"_error_integration")
+        set_flag(tags.AWS_SNS_TOPIC,"_aws_sns_topic")
+        set_flag(tags.INTEGRATION,"_integration")
+        set_flag(tags.COMMENT,"_comment")
+
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -194,24 +196,23 @@ class Snowpipe:
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  AS {self.copy_into} '
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  '
 
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._auto_ingest_tag:
-                    self.qry = f" {self.qry} {gv._auto_ingest_tag} = {self.attr.auto_ingest} "
-                if prop == gv._error_integration_tag:
-                    self.qry = f" {self.qry} {gv._error_integration_tag} = {self.attr.error_integration} "
-                if prop == gv._aws_sns_topic_tag:
-                    self.qry = f" {self.qry} {gv._aws_sns_topic_tag} = {self.attr.aws_sns_topic} "
-                if prop == gv._integration_tag:
-                    self.qry = f" {self.qry} {gv._integration_tag} = {self.attr.integration} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
-                if prop == gv._file_type_tag:
-                    self.qry = f" {self.qry} {gv._file_type_tag} = {self.attr.file_type} "
+                if prop == tags.AUTO_INGEST:
+                    self.qry = f" {self.qry} {tags.AUTO_INGEST} = {self.attr.auto_ingest} "
+                if prop == tags.ERROR_INTEGRATION:
+                    self.qry = f" {self.qry} {tags.ERROR_INTEGRATION} = {self.attr.error_integration} "
+                if prop == tags.AWS_SNS_TOPIC:
+                    self.qry = f" {self.qry} {tags.AWS_SNS_TOPIC} = {self.attr.aws_sns_topic} "
+                if prop == tags.INTEGRATION:
+                    self.qry = f" {self.qry} {tags.INTEGRATION} = {self.attr.integration} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+        self.qry= self.qry + f" AS {self.copy_into}"
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -223,9 +224,7 @@ class Snowpipe:
         self.session.sql(f"ALTER PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} SET PIPE_EXECUTION_PAUSED=true").collect()
 
     def create_snowpipe(self):
-        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
-        self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
         self.pause_snowpipe()
 
 
@@ -236,7 +235,7 @@ class Snowpipe:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "PIPE",object_identifier=self.qualified_name,role = role)
 
     def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
+        deploy_inst = Deploy(self.session, self.logger)
         self.logger.info(f"Tracking for deployment snowpipe object : {self.attr.name}")
         deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
         deploy_inst.set_object_type(self.__class__.__name__)
@@ -250,16 +249,15 @@ class Snowpipe:
 
 
     def create_object(self,*largs,**kwargs):
-        self.set_database(kwargs[gv._database_tag])
-        self.set_schema(kwargs[gv._schema_tag])
-        self.set_name(kwargs[gv._name_tag])
-        self.set_copy_into(kwargs[gv._copyinto_query_tag])
-        self.set_auto_ingest(kwargs[gv._auto_ingest_tag])
-        self.set_error_integration(kwargs[gv._error_integration_tag])
-        self.set_aws_sns_topic(kwargs[gv._aws_sns_topic_tag])
-        self.set_integration(kwargs[gv._integration_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_file_type(kwargs[gv._file_type_tag])
+        self.set_database(kwargs[tags.DATABASE])
+        self.set_schema(kwargs[tags.SCHEMA])
+        self.set_name(kwargs[tags.NAME])
+        self.set_copy_into(kwargs[tags.COPYINTO_QUERY])
+        self.set_auto_ingest(kwargs[tags.AUTO_INGEST])
+        self.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
+        self.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
+        self.set_integration(kwargs[tags.INTEGRATION])
+        self.set_comment(kwargs[tags.COMMENT])
         self.set_qualified_name()
         self.prepare_query()
         self.logger.info(f"creating snowpipe : {self.attr.name}")
