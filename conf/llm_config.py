@@ -954,7 +954,7 @@ tools = {
                             },
                 			"INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for INTEGRATION for snowpipe object"
+                                "description":"user provided value for INTEGRATION for snowpipe object. If user does not provide a value then default value is 'NONE'."
                             },
                 			"COMMENT": {
                                 "type":"string",
