@@ -451,8 +451,8 @@ class FieldOptionallyEnclosedBy:
         if value == "NONE":
             instance._field_optionally_enclosed_by = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
-            vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._field_optionally_enclosed_by = value
+            #vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._field_optionally_enclosed_by = 'NONE'
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
             vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
