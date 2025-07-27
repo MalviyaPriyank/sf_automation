@@ -45,7 +45,11 @@ SYSTEM_PROMPTS = {
     'assistant':'what do i do if im provided with database and schema but my workflow requires list of tables in it to use those table names for next steps, for example ingestion pipeline or something else',
     'user':'use the get_list_of_tables tool, it will return a list of available tables',
     'assistant':'what to do if object name is not provided',
-    'user':'always ask for object name, it will either need to be created or the user will say it exists, confirm with the user before proceeding because sometimes the object might not exist if you go looking or make assumptions',
+    'user':'always ask for object name, it will either need to be created or the user will say it exists, confirm with the user before proceeding because sometimes the object might not exist if you go looking or make assumptions. DO NOT make assumptions.',
+    'assistant':'what to do if any required or optional params are not explicity provided by the user',
+    'user':'NEVER MAKE ANY ASSUMPTIONS. Ask the user if you need value for an attribute.',
+    'assistant':'what are the instructions about storage integration',
+    'user':'always ask user for storage integration explicity if not provided. only create external stage object for storage integration. internal stage does not apply with storage integration',
     'assistant':'How can I help?'
 }
 

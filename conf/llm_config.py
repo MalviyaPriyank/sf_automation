@@ -20,7 +20,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_database_object",
-                "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{   
                         "type":"object",
@@ -31,43 +31,43 @@ tools = {
                             },
                             "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
-                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object"
+                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DATA_RETENTION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object"
+                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MAX_DATA_EXTENSION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object"
+                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "EXTERNAL_VOLUME": {
                                 "type":"string",
-                                "description":"user provided value for EXTERNAL_VOLUME for database object"
+                                "description":"user provided value for EXTERNAL_VOLUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "CATALOG": {
                                 "type":"string",
-                                "description":"user provided value for CATALOG for database object"
+                                "description":"user provided value for CATALOG for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DEFAULT_DDL_COLLATION": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_DDL_COLLATION for database object"
+                                "description":"user provided value for DEFAULT_DDL_COLLATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STORAGE_SERIALIZATION_POLICY": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object"
+                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "LOG_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for LOG_LEVEL for database object"
+                                "description":"user provided value for LOG_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "TRACE_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for TRACE_LEVEL for database object"
+                                "description":"user provided value for TRACE_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             }
                         },
                         "required":[
@@ -161,27 +161,27 @@ tools = {
                             },
                         "MUST_CHANGE_PASSWORD": {
                                 "type":"string",
-                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object"
+                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object.. if value is not provided by user, DEFAULT value is set to TRUE"
                             },
                         "EDITION": {
                                 "type":"string",
-                                "description":"user provided value for EDITION for database object"
+                                "description":"user provided value for EDITION for database object. if value is not provided by user, DEFAULT value is set to STANDARD"
                             },
                         "REGION_GROUP": {
                                 "type":"string",
-                                "description":"user provided value for REGION_GROUP for database object"
+                                "description":"user provided value for REGION_GROUP for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REGION": {
                                 "type":"string",
-                                "description":"user provided value for REGION for database object"
+                                "description":"user provided value for REGION for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "POLARIS": {
                                 "type":"string",
-                                "description":"user provided value for POLARIS for database object"
+                                "description":"user provided value for POLARIS for database object. if value is not provided by user, DEFAULT value is set to TRUE"
                             },
                         },
                         "required":[
@@ -213,60 +213,60 @@ tools = {
                             },
                             "FILE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for external stage object"
+                                "description":"user provided value for FILE_FORMAT for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "URL": {
                                 "type":"string",
-                                "description":"user provided value for URL for external stage object"
+                                "description":"user provided value for URL for external stage object."
                             },
                         "AWS_ACCESS_POINT_ARN": {
                                 "type":"string",
-                                "description":"user provided value for AWS ACCESS POINT ARN for external stage object"
+                                "description":"user provided value for AWS ACCESS POINT ARN for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STORAGE_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_INTEGRATION for external stage object"
+                                "description":"user provided value for STORAGE_INTEGRATION for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for external stage object"
+                                "description":"user provided value for COMMENT for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENCRYPTION_TYPE": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_TYPE for external stage object"
+                                "description":"user provided value for ENCRYPTION_TYPE for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENCRYPTION_MASTER_KEY": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_MASTER_KEY for external stage object"
+                                "description":"user provided value for ENCRYPTION_MASTER_KEY for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENCRYPTION_KMS_KEY_ID": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION_KMS_KEY_ID for external stage object"
+                                "description":"user provided value for ENCRYPTION_KMS_KEY_ID for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "USE_PRIVATELINK_ENDPOINT": {
                                 "type":"string",
-                                "description":"user provided value for USE_PRIVATELINK_ENDPOINT for external stage object"
+                                "description":"user provided value for USE_PRIVATELINK_ENDPOINT for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENABLE": {
                                 "type":"string",
-                                "description":"user provided value for DIRECTORY for external stage object"
+                                "description":"user provided value for DIRECTORY for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REFRESH_ON_CREATE": {
                                 "type":"string",
-                                "description":"user provided value for REFRESH_ON_CREATE for external stage object"
+                                "description":"user provided value for REFRESH_ON_CREATE for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "AUTO_REFRESH": {
                                 "type":"string",
-                                "description":"user provided value for AUTO_REFRESH for external stage object"
+                                "description":"user provided value for AUTO_REFRESH for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "NOTIFICATION_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for NOTIFICATION_INTEGRATION for external stage object"
+                                "description":"user provided value for NOTIFICATION_INTEGRATION for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "required":[
-                            "NAME","DATABASE","SCHEMA"
+                            "NAME","DATABASE","SCHEMA","URL"
                         ]
                     }
                 }
@@ -294,131 +294,131 @@ tools = {
                             },
                             "MULTI_LINE": {
                                 "type":"string",
-                                "description":"user provided value for MULTI_LINE for file format object"
+                                "description":"user provided value for MULTI_LINE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TYPE": {
                                 "type":"string",
-                                "description":"user provided value for TYPE for file format object"
+                                "description":"user provided value for TYPE for file format object. if value is not provided by user, DEFAULT value is set to CSV"
                             },
                         "PARSE_HEADER": {
                                 "type":"string",
-                                "description":"user provided value for PARSE_HEADER for file format object"
+                                "description":"user provided value for PARSE_HEADER for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SKIP_HEADER": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_HEADER for file format object"
+                                "description":"user provided value for SKIP_HEADER for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SKIP_BLANK_LINES": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_BLANK_LINES for file format object"
+                                "description":"user provided value for SKIP_BLANK_LINES for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DATE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for DATE_FORMAT for file format object"
+                                "description":"user provided value for DATE_FORMAT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TIME_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for TIME_FORMAT for file format object"
+                                "description":"user provided value for TIME_FORMAT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TIMESTAMP_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for TIMESTAMP_FORMAT for file format object"
+                                "description":"user provided value for TIMESTAMP_FORMAT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "BINARY_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for BINARY_FORMAT for file format object"
+                                "description":"user provided value for BINARY_FORMAT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ESCAPE": {
                                 "type":"string",
-                                "description":"user provided value for ESCAPE for file format object"
+                                "description":"user provided value for ESCAPE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ESCAPE_UNENCLOSED_FIELD": {
                                 "type":"string",
-                                "description":"user provided value for ESCAPE_UNENCLOSED_FIELD for file format object"
+                                "description":"user provided value for ESCAPE_UNENCLOSED_FIELD for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TRIM_SPACE": {
                                 "type":"string",
-                                "description":"user provided value for TRIM_SPACE for file format object"
+                                "description":"user provided value for TRIM_SPACE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "FIELD_OPTIONALLY_ENCLOSED_BY": {
                                 "type":"string",
-                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for file format object.If user does not provide a value then default value is NONE"
+                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for file format object.If user does not provide a value then default value is NONE. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "NULL_IF": {
                                 "type":"string",
-                                "description":"user provided value for NULL_IF for file format object"
+                                "description":"user provided value for NULL_IF for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ERROR_ON_COLUMN_COUNT_MISMATCH": {
                                 "type":"string",
-                                "description":"user provided value for ERROR_ON_COLUMN_COUNT_MISMATCH for file format object"
+                                "description":"user provided value for ERROR_ON_COLUMN_COUNT_MISMATCH for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
-                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for file format object"
+                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "EMPTY_FIELD_AS_NULL": {
                                 "type":"string",
-                                "description":"user provided value for EMPTY_FIELD_AS_NULL for file format object"
+                                "description":"user provided value for EMPTY_FIELD_AS_NULL for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SKIP_BYTE_ORDER_MARK": {
                                 "type":"string",
-                                "description":"user provided value for SKIP_BYTE_ORDER_MARK for file format object"
+                                "description":"user provided value for SKIP_BYTE_ORDER_MARK for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENCODING": {
                                 "type":"string",
-                                "description":"user provided value for ENCODING for file format object"
+                                "description":"user provided value for ENCODING for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENABLE_OCTAL": {
                                 "type":"string",
-                                "description":"user provided value for ENABLE_OCTAL for file format object"
+                                "description":"user provided value for ENABLE_OCTAL for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ALLOW_DUPLICATE": {
                                 "type":"string",
-                                "description":"user provided value for ALLOW_DUPLICATE for file format object"
+                                "description":"user provided value for ALLOW_DUPLICATE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STRIP_OUTER_ARRAY": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_OUTER_ARRAY for file format object"
+                                "description":"user provided value for STRIP_OUTER_ARRAY for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STRIP_NULL_VALUES": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_NULL_VALUES for file format object"
+                                "description":"user provided value for STRIP_NULL_VALUES for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "IGNORE_UTF8_ERRORS": {
                                 "type":"string",
-                                "description":"user provided value for IGNORE_UTF8_ERRORS for file format object"
+                                "description":"user provided value for IGNORE_UTF8_ERRORS for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SNAPPY_COMPRESSION": {
                                 "type":"string",
-                                "description":"user provided value for SNAPPY_COMPRESSION for file format object"
+                                "description":"user provided value for SNAPPY_COMPRESSION for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "BINARY_AS_TEXT": {
                                 "type":"string",
-                                "description":"user provided value for BINARY_AS_TEXT for file format object"
+                                "description":"user provided value for BINARY_AS_TEXT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "USE_LOGICAL_TYPE": {
                                 "type":"string",
-                                "description":"user provided value for USE_LOGICAL_TYPE for file format object"
+                                "description":"user provided value for USE_LOGICAL_TYPE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "USE_VECTORIZED_SCANNER": {
                                 "type":"string",
-                                "description":"user provided value for USE_VECTORIZED_SCANNER for file format object"
+                                "description":"user provided value for USE_VECTORIZED_SCANNER for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "PRESERVE_SPACE": {
                                 "type":"string",
-                                "description":"user provided value for PRESERVE_SPACE for file format object"
+                                "description":"user provided value for PRESERVE_SPACE for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STRIP_OUTER_ELEMENT": {
                                 "type":"string",
-                                "description":"user provided value for STRIP_OUTER_ELEMENT for file format object"
+                                "description":"user provided value for STRIP_OUTER_ELEMENT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DISABLE_SNOWFLAKE_DATA": {
                                 "type":"string",
-                                "description":"user provided value for DISABLE_SNOWFLAKE_DATA for file format object"
+                                "description":"user provided value for DISABLE_SNOWFLAKE_DATA for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DISABLE_AUTO_CONVERT": {
                                 "type":"string",
-                                "description":"user provided value for DISABLE_AUTO_CONVERT for file format object"
+                                "description":"user provided value for DISABLE_AUTO_CONVERT for file format object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             
                         },
@@ -443,35 +443,35 @@ tools = {
                             },
                         "SCHEMA": {
                                 "type":"string",
-                                "description":"user provided value for SCHEMA for database object"
+                                "description":"user provided value for SCHEMA for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "NAME": {
                                 "type":"string",
-                                "description":"user provided value for NAME for database object"
+                                "description":"user provided value for NAME for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "FILE_FORMAT": {
                                 "type":"string",
-                                "description":"user provided value for FILE_FORMAT for database object"
+                                "description":"user provided value for FILE_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TAG": {
                                 "type":"string",
-                                "description":"user provided value for TAG for database object"
+                                "description":"user provided value for TAG for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENCRYPTION": {
                                 "type":"string",
-                                "description":"user provided value for ENCRYPTION for database object"
+                                "description":"user provided value for ENCRYPTION for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DIRECTORY": {
                                 "type":"string",
-                                "description":"user provided value for DIRECTORY for database object"
+                                "description":"user provided value for DIRECTORY for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REFRESH_ON_CREATE": {
                                 "type":"string",
-                                "description":"user provided value for REFRESH_ON_CREATE for database object"
+                                "description":"user provided value for REFRESH_ON_CREATE for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             
                         },
@@ -498,23 +498,23 @@ tools = {
                             },
                         "CREDIT_QUOTA": {
                                 "type":"string",
-                                "description":"user provided value for CREDIT_QOUTA for resource monitor object"
+                                "description":"user provided value for CREDIT_QOUTA for resource monitor object. if value is not provided by user, DEFAULT value is set to 75"
                             },
                         "FREQUENCY": {
                                 "type":"string",
-                                "description":"user provided value for FREQUENCY for resource monitor object"
+                                "description":"user provided value for FREQUENCY for resource monitor object. if value is not provided by user, DEFAULT value is set to DAILY"
                             },
                         "START_TIMESTAMP": {
                                 "type":"string",
-                                "description":"user provided value for START_TIMESTAMP for resource monitor object"
+                                "description":"user provided value for START_TIMESTAMP for resource monitor object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "END_TIMESTAMP": {
                                 "type":"string",
-                                "description":"user provided value for END_TIMESTAMP for resource monitor object"
+                                "description":"user provided value for END_TIMESTAMP for resource monitor object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "NOTIFY_USERS": {
                                 "type":"string",
-                                "description":"user provided value for NOTIFY_USERS for resource monitor object"
+                                "description":"user provided value for NOTIFY_USERS for resource monitor object. if value is not provided by user, DEFAULT value is set to ADMIN"
                             },
                         "TRIGGERS": {
                                 "type":"string",
@@ -522,7 +522,7 @@ tools = {
                             },
                         "THRESHOLD": {
                                 "type":"string",
-                                "description":"user provided value for THRESHOLD for resource monitor object. If TRIGGERS parameter value is 'MULTIPLE', sets list of numbers having threshold values for each action"
+                                "description":"user provided value for THRESHOLD for resource monitor object. If TRIGGERS parameter value is 'MULTIPLE', sets list of numbers having threshold values for each action. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "ACTION": {
                                 "type":"string",
@@ -551,7 +551,7 @@ tools = {
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             
                         },
@@ -580,51 +580,51 @@ tools = {
                             },
                         "WITH_MANAGED_ACCESS": {
                                 "type":"string",
-                                "description":"user provided value for WITH_MANAGED_ACCESS for database object"
+                                "description":"user provided value for WITH_MANAGED_ACCESS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DATA_RETENTION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object"
+                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MAX_DATA_EXTENSION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object"
+                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "EXTERNAL_VOLUME": {
                                 "type":"string",
-                                "description":"user provided value for EXTERNAL_VOLUME for database object"
+                                "description":"user provided value for EXTERNAL_VOLUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "CATALOG": {
                                 "type":"string",
-                                "description":"user provided value for CATALOG for database object"
+                                "description":"user provided value for CATALOG for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
-                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object"
+                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DEFAULT_DDL_COLLATION": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_DDL_COLLATION for database object"
+                                "description":"user provided value for DEFAULT_DDL_COLLATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "LOG_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for LOG_LEVEL for database object"
+                                "description":"user provided value for LOG_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TRACE_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for TRACE_LEVEL for database object"
+                                "description":"user provided value for TRACE_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STORAGE_SERIALIZATION_POLICY": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object"
+                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "CLASSIFICATION_PROFILE": {
                                 "type":"string",
-                                "description":"user provided value for CLASSIFICATION_PROFILE for database object"
+                                "description":"user provided value for CLASSIFICATION_PROFILE for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             
                         },
@@ -653,83 +653,83 @@ tools = {
                             },
                         "LOGIN_NAME": {
                                 "type":"string",
-                                "description":"user provided value for LOGIN_NAME for database object"
+                                "description":"user provided value for LOGIN_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "DISPLAY_NAME": {
                                 "type":"string",
-                                "description":"user provided value for DISPLAY_NAME for database object"
+                                "description":"user provided value for DISPLAY_NAME for database object. if value is not provided by user, DEFAULT value is set to PERSON"
                             },
                         "FIRST_NAME": {
                                 "type":"string",
-                                "description":"user provided value for FIRST_NAME for database object"
+                                "description":"user provided value for FIRST_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "LAST_NAME": {
                                 "type":"string",
-                                "description":"user provided value for LAST_NAME for database object"
+                                "description":"user provided value for LAST_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "EMAIL": {
                                 "type":"string",
-                                "description":"user provided value for EMAIL for database object"
+                                "description":"user provided value for EMAIL for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "MUST_CHANGE_PASSWORD": {
                                 "type":"string",
-                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object"
+                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object. if value is not provided by user, DEFAULT value is set to TRUE"
                             },
                         "DISABLED": {
                                 "type":"string",
-                                "description":"user provided value for DISABLED for database object"
+                                "description":"user provided value for DISABLED for database object. if value is not provided by user, DEFAULT value is set to FALSE"
                             },
                         "DAYS_TO_EXPIRY": {
                                 "type":"string",
-                                "description":"user provided value for DAYS_TO_EXPIRY for database object"
+                                "description":"user provided value for DAYS_TO_EXPIRY for database object. if value is not provided by user, DEFAULT value is set to 20"
                             },
                         "MINS_TO_UNLOCK": {
                                 "type":"string",
-                                "description":"user provided value for MINS_TO_UNLOCK for database object"
+                                "description":"user provided value for MINS_TO_UNLOCK for database object. if value is not provided by user, DEFAULT value is set to 20"
                             },
                         "DEFAULT_WAREHOUSE": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_WAREHOUSE for database object"
+                                "description":"user provided value for DEFAULT_WAREHOUSE for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "DEAFULT_ROLE": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_ROLE for database object"
+                                "description":"user provided value for DEFAULT_ROLE for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "DEFAULT_SECONDARY_ROLES": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_SECONDARY_ROLES for database object"
+                                "description":"user provided value for DEFAULT_SECONDARY_ROLES for database object. if value is not provided by user, DEFAULT value is set to ALL"
                             },
                         "MINS_TO_BY_PASS_MFA": {
                                 "type":"string",
-                                "description":"user provided value for MINS_TO_BY_PASS_MFA for database object"
+                                "description":"user provided value for MINS_TO_BY_PASS_MFA for database object. if value is not provided by user, DEFAULT value is set to 20"
                             },
                         "RSA_PUBLIC_KEY": {
                                 "type":"string",
-                                "description":"user provided value for RSA_PUBLIC_KEY for database object"
+                                "description":"user provided value for RSA_PUBLIC_KEY for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "RSA_PUBLIC_KEY_FP": {
                                 "type":"string",
-                                "description":"user provided value for RSA_PUBLIC_KEY_FP for database object"
+                                "description":"user provided value for RSA_PUBLIC_KEY_FP for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "RSA_PUBLIC_KEY_2": {
                                 "type":"string",
-                                "description":"user provided value for RSA_PUBLIC_KEY_2 for database object"
+                                "description":"user provided value for RSA_PUBLIC_KEY_2 for database object. if value is not provided by user, DEFAULT value is set to KEY2"
                             },
                         "RSA_PUBLIC_KEY_2_FP": {
                                 "type":"string",
-                                "description":"user provided value for RSA_PUBLIC_KEY_2_FP for database object"
+                                "description":"user provided value for RSA_PUBLIC_KEY_2_FP for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "TYPE": {
                                 "type":"string",
-                                "description":"user provided value for TYPE for database object"
+                                "description":"user provided value for TYPE for database object. if value is not provided by user, DEFAULT value is set to PERSON"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
                             },
                         "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR": {
                                 "type":"string",
-                                "description":"user provided value for ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR for database object"
+                                "description":"user provided value for ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR for database object. if value is not provided by user, DEFAULT value is set to TRUE"
                             },
                             
                         },
@@ -754,71 +754,71 @@ tools = {
                             },
                         "WAREHOUSE_SIZE": {
                                 "type":"string",
-                                "description":"user provided value for WAREHOUSE_SIZE for database object"
+                                "description":"user provided value for WAREHOUSE_SIZE for database object. if value is not provided by user, DEFAULT value is set to SMALL"
                             },
                         "WAREHOUSE_TYPE": {
                                 "type":"string",
-                                "description":"user provided value for WAREHOUSE_TYPE for database object"
+                                "description":"user provided value for WAREHOUSE_TYPE for database object. if value is not provided by user, DEFAULT value is set to STANDARD"
                             },
                         "RESOURCE_CONSTRAINT": {
                                 "type":"string",
-                                "description":"user provided value for RESOURCE_CONSTRAINT for database object"
+                                "description":"user provided value for RESOURCE_CONSTRAINT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MAX_CLUSTER_COUNT": {
                                 "type":"string",
-                                "description":"user provided value for MAX_CLUSTER_COUNT for database object"
+                                "description":"user provided value for MAX_CLUSTER_COUNT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MIN_CLUSTER_COUNT": {
                                 "type":"string",
-                                "description":"user provided value for MIN_CLUSTER_COUNT for database object"
+                                "description":"user provided value for MIN_CLUSTER_COUNT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SCALING_POLICY": {
                                 "type":"string",
-                                "description":"user provided value for SCALING_POLICY for database object"
+                                "description":"user provided value for SCALING_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "AUTO_SUSPEND": {
                                 "type":"string",
-                                "description":"user provided value for AUTO_SUSPEND for database object"
+                                "description":"user provided value for AUTO_SUSPEND for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "AUTO_RESUME": {
                                 "type":"string",
-                                "description":"user provided value for AUTO_RESUME for database object"
+                                "description":"user provided value for AUTO_RESUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "INITIALLY_SUSPENDED": {
                                 "type":"string",
-                                "description":"user provided value for INTITIALLY_SUSPENDED for database object"
+                                "description":"user provided value for INTITIALLY_SUSPENDED for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "RESOURCE_MONITOR": {
                                 "type":"string",
-                                "description":"user provided value for RESOURCE_MONITOR for database object"
+                                "description":"user provided value for RESOURCE_MONITOR for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object"
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TAG": {
                                 "type":"string",
-                                "description":"user provided value for TAG for database object"
+                                "description":"user provided value for TAG for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "ENABLE_QUERY_ACCELERATION": {
                                 "type":"string",
-                                "description":"user provided value for ENABLE_QUERY_ACCELERATION for database object"
+                                "description":"user provided value for ENABLE_QUERY_ACCELERATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "QUERY_ACCELERATION_MAX_SCALE_FACTOR": {
                                 "type":"string",
-                                "description":"user provided value for QUERY_ACCELERATION_MAX_SCALE_FACTOR for database object"
+                                "description":"user provided value for QUERY_ACCELERATION_MAX_SCALE_FACTOR for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MAX_CONCURRENCY_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for MAX_CONCURRENCY_LEVEL for database object"
+                                "description":"user provided value for MAX_CONCURRENCY_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STATEMENT_QUEUED_TIMEOUT_IN_SECONDS": {
                                 "type":"string",
-                                "description":"user provided value for STATEMENT_QUEUED_TIMEOUT_IN_SECONDS for database object"
+                                "description":"user provided value for STATEMENT_QUEUED_TIMEOUT_IN_SECONDS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STATEMENT_TIMEOUT_IN_SECONDS": {
                                 "type":"string",
-                                "description":"user provided value for STATEMENT_TIMEOUT_IN_SECONDS for database object"
+                                "description":"user provided value for STATEMENT_TIMEOUT_IN_SECONDS for database object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "required":[
@@ -874,7 +874,7 @@ tools = {
                             },
                             "TYPE": {
                                 "type":"string",
-                                "description":"user provided TYPE for storage integration object"
+                                "description":"user provided TYPE for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "STORAGE_ALLOWED_LOCATIONS": {
                                 "type":"string",
@@ -886,27 +886,27 @@ tools = {
                             },
                             "STORAGE_AWS_ROLE_ARN": {
                                 "type":"string",
-                                "description":"user provided STORAGE_AWS_ROLE_ARN for storage integration object"
+                                "description":"user provided STORAGE_AWS_ROLE_ARN for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "STORAGE_AWS_EXTERNAL_ID": {
                                 "type":"string",
-                                "description":"user provided STORAGE_AWS_EXTERNAL_ID for storage integration object"
+                                "description":"user provided STORAGE_AWS_EXTERNAL_ID for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "STORAGE_AWS_OBJECT_ACL": {
                                 "type":"string",
-                                "description":"user provided STORAGE_AWS_OBJECT_ACL for storage integration object"
+                                "description":"user provided STORAGE_AWS_OBJECT_ACL for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "COMMENT": {
                                 "type":"string",
-                                "description":"user provided COMMENT for storage integration object"
+                                "description":"user provided COMMENT for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "AZURE_TENANT_ID": {
                                 "type":"string",
-                                "description":"user provided AZURE_TENANT_ID for storage integration object"
+                                "description":"user provided AZURE_TENANT_ID for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "USE_PRIVATELINK_ENDPOINT": {
                                 "type":"string",
-                                "description":"user provided USE_PRIVATELINK_ENDPOINT for storage integration object"
+                                "description":"user provided USE_PRIVATELINK_ENDPOINT for storage integration object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "required":[
@@ -942,15 +942,15 @@ tools = {
                             },
                 			"AUTO_INGEST": {
                                 "type":"string",
-                                "description":"user provided value for AUTO_INGEST for snowpipe object"
+                                "description":"user provided value for AUTO_INGEST for snowpipe object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                 			"ERROR_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for ERROR_INTEGRATION for snowpipe object"
+                                "description":"user provided value for ERROR_INTEGRATION for snowpipe object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                 			"AWS_SNS_TOPIC": {
                                 "type":"string",
-                                "description":"user provided value for AWS_SNS_TOPIC for snowpipe object"
+                                "description":"user provided value for AWS_SNS_TOPIC for snowpipe object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                 			"INTEGRATION": {
                                 "type":"string",
@@ -958,7 +958,7 @@ tools = {
                             },
                 			"COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for copyinto object"
+                                "description":"user provided value for COMMENT for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "required":[
@@ -978,19 +978,19 @@ tools = {
                         "properties": {
                             "SCANNER": {
                                 "type":"string",
-                                "description":"user provided value for SCANNER for copyinto object"
+                                "description":"user provided value for SCANNER for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "PROJECT_NAME": {
                                 "type":"string",
-                                "description":"user provided value for PROJECT_NAME for copyinto object"
+                                "description":"user provided value for PROJECT_NAME for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "MODEL_NAME": {
                                 "type":"string",
-                                "description":"user provided value for MODEL_NAME for copyinto object"
+                                "description":"user provided value for MODEL_NAME for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "MODEL_VERSION": {
                                 "type":"string",
-                                "description":"user provided value for MODEL_VERSION for copyinto object"
+                                "description":"user provided value for MODEL_VERSION for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "DATABASE": {
                                 "type":"string",
@@ -1014,51 +1014,51 @@ tools = {
                             },
 			"ON_ERROR": {
                                 "type":"string",
-                                "description":"user provided value for ON_ERROR for copyinto object"
+                                "description":"user provided value for ON_ERROR for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"SIZE_LIMIT": {
                                 "type":"string",
-                                "description":"user provided value for SIZE_LIMIT for copyinto object"
+                                "description":"user provided value for SIZE_LIMIT for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"PURGE": {
                                 "type":"string",
-                                "description":"user provided value for PURGE for copyinto object"
+                                "description":"user provided value for PURGE for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"RETURN_FAILED_ONLY": {
                                 "type":"string",
-                                "description":"user provided value for RETURN_FAILED_ONLY for copyinto object"
+                                "description":"user provided value for RETURN_FAILED_ONLY for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"MATCH_BY_COLUMN_NAME": {
                                 "type":"string",
-                                "description":"user provided value for MATCH_BY_COLUMN_NAME for copyinto object"
+                                "description":"user provided value for MATCH_BY_COLUMN_NAME for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"INCLUDE_METADATA": {
                                 "type":"string",
-                                "description":"user provided value for INCLUDE_METADATA for copyinto object"
+                                "description":"user provided value for INCLUDE_METADATA for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"ENFORCE_LENGTH": {
                                 "type":"string",
-                                "description":"user provided value for ENFORCE_LENGTH for copyinto object"
+                                "description":"user provided value for ENFORCE_LENGTH for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"TRUNCATECOLUMNS": {
                                 "type":"string",
-                                "description":"user provided value for TRUNCATECOLUMNS for copyinto object"
+                                "description":"user provided value for TRUNCATECOLUMNS for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"FORCE": {
                                 "type":"string",
-                                "description":"user provided value for FORCE for copyinto object"
+                                "description":"user provided value for FORCE for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"LOAD_UNCERTAIN_FILES": {
                                 "type":"string",
-                                "description":"user provided value for LOAD_UNCERTAIN_FILES for copyinto object"
+                                "description":"user provided value for LOAD_UNCERTAIN_FILES for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"FILE_PROCESSOR": {
                                 "type":"string",
-                                "description":"user provided value for FILE_PROCESSOR for copyinto object"
+                                "description":"user provided value for FILE_PROCESSOR for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"LOAD_MODE": {
                                 "type":"string",
-                                "description":"user provided value for LOAD_MODE for copyinto object"
+                                "description":"user provided value for LOAD_MODE for copyinto object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "required":[
@@ -1102,68 +1102,68 @@ tools = {
                             },
 			"SCHEDULE": {
                                 "type":"string",
-                                "description":"user provided value for SCHEDULE for task object"
+                                "description":"user provided value for SCHEDULE for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"CONFIG": {
                                 "type":"string",
-                                "description":"user provided value for CONFIG for task object"
+                                "description":"user provided value for CONFIG for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"ALLOW_OVERLAPPING_EXECUTION": {
                                 "type":"string",
-                                "description":"user provided value for ALLOW_OVERLAPPING_EXECUTION for task object"
+                                "description":"user provided value for ALLOW_OVERLAPPING_EXECUTION for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"USER_TASK_TIMEOUT_MS": {
                                 "type":"string",
-                                "description":"user provided value for USER_TASK_TIMEOUT_MS for task object"
+                                "description":"user provided value for USER_TASK_TIMEOUT_MS for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"SUSPEND_TASK_AFTER_NUM_FAILURES": {
                                 "type":"string",
-                                "description":"user provided value for SUSPEND_TASK_AFTER_NUM_FAILURES for task object"
+                                "description":"user provided value for SUSPEND_TASK_AFTER_NUM_FAILURES for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"ERROR_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for ERROR_INTEGRATION for task object"
+                                "description":"user provided value for ERROR_INTEGRATION for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"SUCCESS_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for SUCCESS_INTEGRATION for task object"
+                                "description":"user provided value for SUCCESS_INTEGRATION for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for task object"
+                                "description":"user provided value for COMMENT for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"AFTER": {
                                 "type":"string",
-                                "description":"user provided value for AFTER for task object"
+                                "description":"user provided value for AFTER for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"WHEN": {
                                 "type":"string",
-                                "description":"user provided value for WHEN for task object"
+                                "description":"user provided value for WHEN for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
 			"TAG": {
                                 "type":"string",
-                                "description":"user provided value for TAG for task object"
+                                "description":"user provided value for TAG for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         },
                         "FINALIZE": {
                                 "type":"string",
-                                "description":"user provided value for FINALIZE for task object"
+                                "description":"user provided value for FINALIZE for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TASK_AUTO_RETRY_ATTEMPTS": {
                                 "type":"string",
-                                "description":"user provided value for TASK_AUTO_RETRY_ATTEMPTS for task object"
+                                "description":"user provided value for TASK_AUTO_RETRY_ATTEMPTS for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS": {
                                 "type":"string",
-                                "description":"user provided value for USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS for task object"
+                                "description":"user provided value for USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SERVERLESS_TASK_MIN_STATEMENT_SIZE": {
                                 "type":"string",
-                                "description":"user provided value for SERVERLESS_TASK_MIN_STATEMENT_SIZE for task object"
+                                "description":"user provided value for SERVERLESS_TASK_MIN_STATEMENT_SIZE for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "SERVERLESS_TASK_MAX_STATEMENT_SIZE": {
                                 "type":"string",
-                                "description":"user provided value for SERVERLESS_TASK_MAX_STATEMENT_SIZE for task object"
+                                "description":"user provided value for SERVERLESS_TASK_MAX_STATEMENT_SIZE for task object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "required":[
                             "DATABASE","SCHEMA","NAME","SQL","WAREHOUSE"
@@ -1294,7 +1294,7 @@ tools = {
                             },
                             "TAG": {
                                 "type":"string",
-                                "description":"TAG for stream object"
+                                "description":"TAG for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "AT": {
                                 "type":"string",
@@ -1302,19 +1302,19 @@ tools = {
                             },
                             "APPEND_ONLY": {
                                 "type":"string",
-                                "description":"APPEND_ONLY value for stream object"
+                                "description":"APPEND_ONLY value for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "INSERT_ONLY": {
                                 "type":"string",
-                                "description":"INSERT_ONLY value for stream object"
+                                "description":"INSERT_ONLY value for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "SHOW_INITIAL_ROWS": {
                                 "type":"string",
-                                "description":"SHOW_INITIAL_ROWS for stream object"
+                                "description":"SHOW_INITIAL_ROWS for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "COMMENT": {
                                 "type":"string",
-                                "description":"COMMENT for stream object"
+                                "description":"COMMENT for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "BEFORE": {
                                 "type":"string",
@@ -1322,15 +1322,15 @@ tools = {
                             },
                             "TIMESTAMP": {
                                 "type":"string",
-                                "description":"TIMESTAMP for stream object"
+                                "description":"TIMESTAMP for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "OFFSET": {
                                 "type":"string",
-                                "description":"OFFSET for stream object"
+                                "description":"OFFSET for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "STATEMENT": {
                                 "type":"string",
-                                "description":"STATEMENT for stream object"
+                                "description":"STATEMENT for stream object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "OBJECT_TYPE": {
                                 "type":"string",
@@ -1382,19 +1382,19 @@ tools = {
                             },
                             "IF": {
                                 "type":"string",
-                                "description":"SQL query for alert object"
+                                "description":"SQL query for alert object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "THEN": {
                                 "type":"string",
-                                "description":"NOTIFICATION object name for alert object"
+                                "description":"NOTIFICATION object name for alert object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "WAREHOUSE": {
                                 "type":"string",
-                                "description":"WAREHOUSE for alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized."
+                                "description":"WAREHOUSE for alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "COMMENT": {
                                 "type":"string",
-                                "description":"COMMENT for alert object"
+                                "description":"COMMENT for alert object. if value is not provided by user, DEFAULT value is set to NONE"
                             }
                         },
                         "required":[
@@ -1422,23 +1422,23 @@ tools = {
                             },
                             "TYPE": {
                                 "type":"string",
-                                "description":"TYPE value for notification object"
+                                "description":"TYPE value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "ALLOWED_RECIPIENTS": {
                                 "type":"string",
-                                "description":"ALLOWED_RECIPIENTS value for notification object"
+                                "description":"ALLOWED_RECIPIENTS value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "DEFAULT_RECIPIENTS": {
                                 "type":"string",
-                                "description":"DEFAULT_RECIPIENTS value for notification object"
+                                "description":"DEFAULT_RECIPIENTS value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "DEFAULT_SUBJECT": {
                                 "type":"string",
-                                "description":"DEFAULT_SUBJECT value for notification object"
+                                "description":"DEFAULT_SUBJECT value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             "COMMENT": {
                                 "type":"string",
-                                "description":"COMMENT for notification object"
+                                "description":"COMMENT for notification object. if value is not provided by user, DEFAULT value is set to NONE"
                             }
                         },
                         "required":[
