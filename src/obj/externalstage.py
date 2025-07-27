@@ -372,7 +372,7 @@ class ExternalStage(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+        self.qry = f"CREATE OR REPLACE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :

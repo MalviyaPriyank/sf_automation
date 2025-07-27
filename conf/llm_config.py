@@ -342,7 +342,7 @@ tools = {
                             },
                         "FIELD_OPTIONALLY_ENCLOSED_BY": {
                                 "type":"string",
-                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for file format object"
+                                "description":"user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for file format object.If user does not provide a value then default value is NONE"
                             },
                         "NULL_IF": {
                                 "type":"string",
@@ -518,7 +518,7 @@ tools = {
                             },
                         "TRIGGERS": {
                                 "type":"string",
-                                "description":"user provided value for TRIGGERS for resource monitor object.  ask user if they want to setup single action or multiple based on which values passed should be either 'SINGLE' or 'MULTIPLE' or 'NONE'"
+                                "description":"user provided value for TRIGGERS for resource monitor object.  ask user if they want to setup single action or multiple based on which values passed should be either 'SINGLE' or 'MULTIPLE' or NONE"
                             },
                         "THRESHOLD": {
                                 "type":"string",
@@ -954,7 +954,7 @@ tools = {
                             },
                 			"INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for INTEGRATION for snowpipe object. If user does not provide a value then default value is 'NONE'."
+                                "description":"user provided value for INTEGRATION for snowpipe object. If user does not provide a value then default value is NONE."
                             },
                 			"COMMENT": {
                                 "type":"string",
@@ -1362,7 +1362,7 @@ tools = {
                             },
                             "ACTION": {
                                 "type":"string",
-                                "description":"ACTION for alert object. For ACTION, if User wants to provide custom SQL or Wants to send out emails using notification integration email. (If they have existing one use it else follow the flow where we take them to create one.). If they are using notification integration, then we need integration_name, email_addresses, email_subject, email_content. This should be passed as a value to THEN parameter. For custom SQL pass sql: 'custom sql', pass all other params i.e integration_name, email_address, email_subject, email_content as 'NONE'. For notification integration : pass sql:'NONE', and values for integration_name, email_address, email_subject, email_content"
+                                "description":"ACTION for alert object. For ACTION, if User wants to provide custom SQL or Wants to send out emails using notification integration email. (If they have existing one use it else follow the flow where we take them to create one.). If they are using notification integration, then we need integration_name, email_addresses, email_subject, email_content. This should be passed as a value to THEN parameter. For custom SQL pass sql: 'custom sql', pass all other params i.e integration_name, email_address, email_subject, email_content as NONE. For notification integration : pass sql:NONE, and values for integration_name, email_address, email_subject, email_content"
                             },
                             "ACTION_TYPE": {
                                 "type":"string",
