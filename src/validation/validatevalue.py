@@ -257,7 +257,7 @@ class ValidateValue:
         if len(value)==1:
             return True
         else:
-            raise MustBeSingleByteCharacter(object_type,attr_namej)
+            raise MustBeSingleByteCharacter(object_type,attr_name)
     @staticmethod
     def is_valid_url(value,allowed_protocols,object_type,attr_name):
         protocol=value.split(':')[0]
