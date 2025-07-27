@@ -148,7 +148,7 @@ class FieldDelimiter:
             instance._field_delimiter=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._field_delimiter=value
+            instance._field_delimiter=f"'{value}'"
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
             vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
@@ -1097,7 +1097,7 @@ class FileFormat(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE FILE FORMAT  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+        self.qry = f"CREATE OR REPLACE FILE FORMAT  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
