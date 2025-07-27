@@ -378,7 +378,7 @@ class ExternalStage(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.FILE_FORMAT:
-                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.file_format} "
+                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} "
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
                 if prop == tags.URL:
