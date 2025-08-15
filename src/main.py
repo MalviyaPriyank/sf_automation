@@ -34,6 +34,7 @@ supervisor = create_supervisor(
 ).compile()
 
 if __name__ == '__main__':
+    '''
     tools = [basedependency.ObjectDependency().get_dependencies]
     for chunk in supervisor.stream(
     {
@@ -51,3 +52,4 @@ if __name__ == '__main__':
                 content = getattr(msg, "content", None)
                 if content:
                     print(f"[{agent_name}] {content}\n")
+    '''

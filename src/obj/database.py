@@ -36,16 +36,6 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
-class NameTag:
-    def __get__(self,instance,owner):
-        return instance._name_tag
-    
-    def __set__(self,instance,value):
-        instance._name_tag = value
-    
-    def __delete__(self,instance):
-        del instance._name_tag
-
 class DataRetentionTimeInDays:
     def __get__(self,instance,owner):
         return instance._data_retention_time_in_days
@@ -62,16 +52,6 @@ class DataRetentionTimeInDays:
     def __delete__(self,instance):
         del instance._data_retention_time_in_days
 
-class DataRetentionTimeInDaysTag:
-    def __get__(self,instance,owner):
-        return instance._data_retention_time_in_days_tag
-    
-    def __set__(self,instance,value):
-        instance._data_retention_time_in_days_tag = value
-    
-    def __delete__(self,instance):
-        del instance._data_retention_time_in_days_tag
-
 class MaxDataExtensionTimeInDays:
     def __get__(self,instance,owner):
         return instance._max_data_extension_time_in_days
@@ -87,15 +67,6 @@ class MaxDataExtensionTimeInDays:
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
 
-class MaxDataExtensionTimeInDaysTag:
-    def __get__(self,instance,owner):
-        return instance._max_data_extension_time_in_days_tag
-    
-    def __set__(self,instance,value):
-        instance._max_data_extension_time_in_days_tag = value
-
-    def __delete__(self,instance):
-        del instance._max_data_extension_time_in_days_tag
 
 class ExternalVolume:
     def __get__(self,instance,owner):
@@ -110,16 +81,6 @@ class ExternalVolume:
 
     def __delete__(self,instance):
         del instance._external_volume
-
-class ExternalVolumeTag:
-    def __get__(self,instance,owner):
-        return instance._external_volume_tag
-    
-    def __set__(self,instance,value):
-        instance._external_volume_tag = value
-
-    def __delete__(self,instance):
-        del instance._external_volume_tag
 
 class Catalog:
     def __get__(self,instance,owner):
@@ -136,15 +97,6 @@ class Catalog:
     def __delete__(self,instance):
         del instance._catalog
 
-class CatalogTag:
-    def __get__(self,instance,owner):
-        return instance._catalog_tag
-    
-    def __set__(self,instance,value):
-        instance._catalog_tag = value
-
-    def __delete__(self,instance):
-        del instance._catalog_tag
 
 class ReplaceInvalidCharacters:
     def __get__(self,instance,owner):
@@ -158,16 +110,6 @@ class ReplaceInvalidCharacters:
 
     def __delete__(self,instance):
         del instance._replace_invalid_characters
-
-class ReplaceInvalidCharactersTag:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters_tag
-    
-    def __set__(self,instance,value):
-        instance._replace_invalid_characters_tag = value
-
-    def __delete__(self,instance):
-        del instance._replace_invalid_characters_tag
 
 
 class DefaultDdlCollation:
@@ -184,15 +126,6 @@ class DefaultDdlCollation:
     def __delete__(self,instance):
         del instance._default_ddl_collation
 
-class DefaultDdlCollationTag:
-    def __get__(self,instance,owner):
-        return instance._default_ddl_collation_tag
-    
-    def __set__(self,instance,value):
-        instance._default_ddl_collation_tag = value
-
-    def __delete__(self,instance):
-        del instance._default_ddl_collation_tag
 
 class LogLevel:
     def __get__(self,instance,owner):
@@ -239,15 +172,6 @@ class StorageSerializationPolicy:
     def __delete__(self,instance):
         del instance._storage_serialization_policy
 
-class StorageSerializationPolicyTag:
-    def __get__(self,instance,owner):
-        return instance._storage_serialization_policy_tag
-    
-    def __set__(self,instance,value):
-        instance._storage_serialization_policy_tag = value
-
-    def __delete__(self,instance):
-        del instance._storage_serialization_policy_tag
 
 class Comment:
     def __get__(self,instance,owner):
@@ -262,49 +186,30 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class CommentTag:
-    def __get__(self,instance,owner):
-        return instance._comment_tag
-    
-    def __set__(self,instance,value):
-        instance._comment_tag = value
-    
-    def __delete__(self,instance):
-        del instance._comment_tag
-
 class DatabaseAttrs:
     def __init__(self,parent):
         self.parent = parent
 
     name = Name()
-    name_tag = NameTag()
 
     data_retention_time_in_days = DataRetentionTimeInDays()
-    data_retention_time_in_days_tag = DataRetentionTimeInDaysTag()
 
     max_data_extension_time_in_days = MaxDataExtensionTimeInDays()
-    max_data_extension_time_in_days_tag = MaxDataExtensionTimeInDaysTag()
 
     external_volume = ExternalVolume()
-    external_volume_tag = ExternalVolumeTag()
 
     catalog = Catalog()
-    catalog_tag = CatalogTag()
 
     replace_invalid_characters = ReplaceInvalidCharacters()
-    replace_invalid_characters_tag = ReplaceInvalidCharactersTag()
 
     default_ddl_collation = DefaultDdlCollation()
-    default_ddl_collation_tag = DefaultDdlCollationTag()
 
     log_level=LogLevel()
     trace_level=TraceLevel()
 
     storage_serialization_policy = StorageSerializationPolicy()
-    storage_serialization_policy_tag = StorageSerializationPolicyTag()
 
     comment = Comment()
-    comment_tag = CommentTag()
 
 
 class Database(BaseObject):
@@ -321,38 +226,21 @@ class Database(BaseObject):
     def set_data_retention_time_in_days(self, value):
         self.attr.data_retention_time_in_days = value
 
-    def set_data_retention_time_in_days_tag(self, value):
-        self.attr.data_retention_time_in_days_tag = value
-
     def set_max_data_extension_time_in_days(self, value):
         self.attr.max_data_extension_time_in_days = value
-
-    def set_max_data_extension_time_in_days_tag(self, value):
-        self.attr.max_data_extension_time_in_days_tag = value
 
     def set_external_volume(self, value):
         self.attr.external_volume = value
 
-    def set_external_volume_tag(self, value):
-        self.attr.external_volume_tag = value
 
     def set_catalog(self, value):
         self.attr.catalog = value
 
-    def set_catalog_tag(self, value):
-        self.attr.catalog_tag = value
-
     def set_replace_invalid_characters(self, value):
         self.attr.replace_invalid_characters = value
 
-    def set_replace_invalid_characters_tag(self, value):
-        self.attr.replace_invalid_characters_tag = value
-
     def set_default_ddl_collation(self, value):
         self.attr.default_ddl_collation = value
-
-    def set_default_ddl_collation_tag(self, value):
-        self.attr.default_ddl_collation_tag = value
 
     def set_log_level(self, value):
         self.attr.log_level = value
@@ -363,14 +251,8 @@ class Database(BaseObject):
     def set_storage_serialization_policy(self, value):
         self.attr.storage_serialization_policy = value
 
-    def set_storage_serialization_policy_tag(self, value):
-        self.attr.storage_serialization_policy_tag = value
-
     def set_comment(self, value):
         self.attr.comment = value
-
-    def set_comment_tag(self, value):
-        self.attr.comment_tag = value
 
 
     def set_object_properties_flag(self):
