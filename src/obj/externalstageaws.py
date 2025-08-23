@@ -22,7 +22,7 @@ class Database:
         #if vo.database_exist(value):
         instance._database = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._database
 
 class Schema:
@@ -35,7 +35,7 @@ class Schema:
         #if vo.schema_exist(instance._database,value):
         instance._schema = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._schema
 
 
@@ -51,7 +51,7 @@ class Name:
               ):
             instance._name = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._name
 
 
@@ -62,7 +62,7 @@ class FileFormat:
     def __set__(self,instance,value):
         instance._file_format = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._file_format
 
 class Comment:
@@ -73,7 +73,7 @@ class Comment:
         instance._comment = value
 
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._comment
 
 class CommentTag:
@@ -83,7 +83,7 @@ class CommentTag:
     def __set__(self,instance,value):
         instance._comment_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._comment_tag
 
 class Tag:
@@ -94,7 +94,7 @@ class Tag:
         instance._tag = value
 
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._tag
 
 class Url:
@@ -107,7 +107,7 @@ class Url:
         else:
             raise ValueError
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._url
 
 class UrlTag:
@@ -117,7 +117,7 @@ class UrlTag:
     def __set__(self,instance,value):
         instance._url_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._url_tag
 
 class StorageIntegration:
@@ -127,7 +127,7 @@ class StorageIntegration:
     def __set__(self,instance,value):
         instance._storage_integration = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._storage_integration
 
 class StorageIntegrationTag:
@@ -137,7 +137,7 @@ class StorageIntegrationTag:
     def __set__(self,instance,value):
         instance._storage_integration_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._storage_integration_tag
 
 class AwsKeyId:
@@ -147,7 +147,7 @@ class AwsKeyId:
     def __set__(self,instance,value):
         instance._aws_key_id = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_key_id
 
 class AwsKeyIdTag:
@@ -157,7 +157,7 @@ class AwsKeyIdTag:
     def __set__(self,instance,value):
         instance._aws_key_id_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_key_id_tag
 
 class AwsSecretKey:
@@ -167,7 +167,7 @@ class AwsSecretKey:
     def __set__(self,instance,value):
         instance._aws_secret_key = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_secret_key
 
 class AwsSecretKeyTag:
@@ -177,7 +177,7 @@ class AwsSecretKeyTag:
     def __set__(self,instance,value):
         instance._aws_secret_key_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_secret_key_tag
 
 class AwsToken:
@@ -188,7 +188,7 @@ class AwsToken:
         instance._aws_token = value
 
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_token
 
 class AwsTokenTag:
@@ -198,7 +198,7 @@ class AwsTokenTag:
     def __set__(self,instance,value):
         instance._aws_token_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_token_tag
 
 class AzureSasToken:
@@ -208,7 +208,7 @@ class AzureSasToken:
     def __set__(self,instance,value):
         instance._azure_sas_token = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._azure_sas_token
 
 class AzureSasTokenTag:
@@ -218,7 +218,7 @@ class AzureSasTokenTag:
     def __set__(self,instance,value):
         instance._azure_sas_token_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._azure_sas_token_tag
 
 class AwsRole:
@@ -228,7 +228,7 @@ class AwsRole:
     def __set__(self,instance,value):
         instance._aws_role = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_role
 
 class AwsRoleTag:
@@ -238,7 +238,7 @@ class AwsRoleTag:
     def __set__(self,instance,value):
         instance._aws_role_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_role_tag
 
 class Encryption:
@@ -251,7 +251,7 @@ class Encryption:
         else:
             instance._encryption = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption
 
 class EncryptionTag:
@@ -261,7 +261,7 @@ class EncryptionTag:
     def __set__(self,instance,value):
         instance._encryption_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_tag
 
 class EncryptionType:
@@ -271,7 +271,7 @@ class EncryptionType:
     def __set__(self,instance,value):
         instance._encryption_type = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_type
 
 class EncryptionTypeTag:
@@ -281,7 +281,7 @@ class EncryptionTypeTag:
     def __set__(self,instance,value):
         instance._encryption_type_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_type_tag
 
 class EncryptionMasterKey:
@@ -291,7 +291,7 @@ class EncryptionMasterKey:
     def __set__(self,instance,value):
         instance._encryption_master_key = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_master_key
 
 class EncryptionMasterKeyTag:
@@ -301,7 +301,7 @@ class EncryptionMasterKeyTag:
     def __set__(self,instance,value):
         instance._encryption_master_key_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_master_key_tag
 
 class EncryptionKmsKeyId:
@@ -311,7 +311,7 @@ class EncryptionKmsKeyId:
     def __set__(self,instance,value):
         instance._encryption_kms_key_id = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_kms_key_id
 
 class EncryptionKmsKeyIdTag:
@@ -321,7 +321,7 @@ class EncryptionKmsKeyIdTag:
     def __set__(self,instance,value):
         instance._encryption_kms_key_id_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_kms_key_id_tag
 
 class UsePrivatelinkEndpoint:
@@ -331,7 +331,7 @@ class UsePrivatelinkEndpoint:
     def __set__(self,instance,value):
         instance._use_privatelink_endpoint = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._use_privatelink_endpoint
 
 class UsePrivatelinkEndpointTag:
@@ -341,7 +341,7 @@ class UsePrivatelinkEndpointTag:
     def __set__(self,instance,value):
         instance._use_privatelink_endpoint_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._use_privatelink_endpoint_tag
 
 class Directory:
@@ -354,7 +354,7 @@ class Directory:
         else:
             raise ValueError
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._directory
 
 class DirectoryTag:
@@ -364,7 +364,7 @@ class DirectoryTag:
     def __set__(self,instance,value):
         instance._directory_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._directory_tag
 
 class RefreshOnCreate:
@@ -377,7 +377,7 @@ class RefreshOnCreate:
         else:
             raise ValueError
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._refresh_on_create
 
 class RefreshOnCreateTag:
@@ -387,7 +387,7 @@ class RefreshOnCreateTag:
     def __set__(self,instance,value):
         instance._refresh_on_create_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._refresh_on_create_tag
 
 class AutoRefresh:
@@ -398,7 +398,7 @@ class AutoRefresh:
         instance._auto_refresh = value
 
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._auto_refresh
 
 class AutoRefreshTag:
@@ -408,7 +408,7 @@ class AutoRefreshTag:
     def __set__(self,instance,value):
         instance._auto_refresh_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._auto_refresh_tag
 
 class NotificationIntegration:
@@ -418,7 +418,7 @@ class NotificationIntegration:
     def __set__(self,instance,value):
         instance._notification_integration = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._notification_integration
 
 class NotificationIntegrationTag:
@@ -428,7 +428,7 @@ class NotificationIntegrationTag:
     def __set__(self,instance,value):
         instance._notification_integration_tag = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._notification_integration_tag
 
 class ExternalStageAttrs:
