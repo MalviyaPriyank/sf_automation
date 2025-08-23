@@ -24,7 +24,7 @@ class Database:
         #if vo.database_exist(value):
         instance._database = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._database
 
 class Schema:
@@ -37,7 +37,7 @@ class Schema:
         #if vo.schema_exist(instance._database,value):
         instance._schema = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._schema
 
 
@@ -54,7 +54,7 @@ class Name:
               ):
             instance._name = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._name
 
 class FileFormat:   
@@ -69,7 +69,7 @@ class FileFormat:
             vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=value)
             instance._file_format = value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._file_format
 
 class Comment:
@@ -82,7 +82,7 @@ class Comment:
         else:
             instance._comment = f"'{value}'"
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._comment
 
 class Url:
@@ -96,7 +96,7 @@ class Url:
             vv.is_valid_url(value=value,allowed_protocols=tags.allowed_value_list().get(tags.PROTOCOLS),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._url = f"'{value}'"
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._url
 
 class AwsAccessPointArn:
@@ -110,7 +110,7 @@ class AwsAccessPointArn:
             vv.is_s3_alias(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,url=instance._url)
             instance._aws_access_point_arn = f"'{value}'"
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._aws_access_point_arn
 
 class StorageIntegration:
@@ -124,7 +124,7 @@ class StorageIntegration:
             vo.integration_exist(session=instance.parent.session,integration_name=value)
             instance._storage_integration=value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._storage_integration
 
 class EncryptionType:
@@ -145,7 +145,7 @@ class EncryptionType:
                 vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.AZURE_ENCRYPTION_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                 instance._encryption_type=value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_type
 
 class EncryptionMasterKey:
@@ -165,7 +165,7 @@ class EncryptionMasterKey:
                 vv.is_parent_attribute_compatible(value=value,object_type=instance.parent.__class__.__name__, attr_name=self.__class__.__name__,parent_attribute=instance._encryption_type.__class__.__name__,compatible_value_lst_parent_attribute=['AZURE_CSE'])
                 instance._encryption_master_key=value     
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_master_key
 
 class EncryptionKmsKeyId:
@@ -185,7 +185,7 @@ class EncryptionKmsKeyId:
             elif 'azure' in instance._url.split(":")[0]:
                 vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition='AZURE')
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._encryption_kms_key_id
 
 
@@ -203,7 +203,7 @@ class UsePrivatelinkEndpoint:
             else:
                 vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition="GCS")
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._use_privatelink_endpoint
 
 class Enable:
@@ -217,7 +217,7 @@ class Enable:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._enable=value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._enable    
 
 class RefreshOnCreate:
@@ -231,7 +231,7 @@ class RefreshOnCreate:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._refresh_on_create=value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._refresh_on_create
 
 class AutoRefresh:
@@ -245,7 +245,7 @@ class AutoRefresh:
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._auto_refresh=value
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._auto_refresh
 
 class NotificationIntegration:
@@ -262,7 +262,7 @@ class NotificationIntegration:
             else:
                 vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition='S3')
 
-    def __del__(self,instance):
+    def __delete__(self,instance):
         del instance._notification_integration
 
 class ExternalStageAttrs:

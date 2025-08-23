@@ -2,81 +2,62 @@ from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langgraph_supervisor import create_supervisor
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
 import os
 import sys
+from langgraph.checkpoint.memory import InMemorySaver
+import getpass
+import os
+from langchain.chat_models import init_chat_model
+from langgraph.func import entrypoint
 
 repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, repo_root)
+from langgraph.graph import StateGraph, START, END
 
+from model.tool import get_dependencies
+from model.tool import tool_mappings
+from model.prompts import PromptObjectDependency
+from model.agents import *
+from model.state import GraphState,AgentDependencyOutputState
 
 os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model="gpt-4o",api_key = os.environ["OPENAI_API_KEY"])
-
-
-#from obj.table import Table
-from schema import DatabaseAttributes
-
-'''
-object_dependency_assistant = create_react_agent(
-    model="openai:gpt-4o",
-    tools=[basedependency.ObjectDependency().get_dependencies],
-    prompt="You are snowflake object dependency specialist. You know all the prerquisite objects that should be setup before setting any object.",
-    name="object_dependency_assistant"
-)
-
-supervisor = create_supervisor(
-    agents=[object_dependency_assistant],
-    model=ChatOpenAI(model="gpt-4o"),
-    prompt=(
-        "You manage object dependency assistant and assign work to it."
-    )
-).compile()
-'''
-def get_system_prompt():
-    system_prompt = """
-    You are database administrator. You assist user in creating objects.
-    You return the output with values given by user or default values for each parameter. 
-    If there is a required parameter for which user has not provided any value, ask user for it before returning the final output. 
-
-    Example:
-    User : I want to create schema.
-    Answer: Can you specify the name for the schema since its a required parameter ?
-    
-    Do not use any other value.
-    """
-    return system_prompt
-if __name__ == '__main__':
-    '''
-    tools = [basedependency.ObjectDependency().get_dependencies]
-    for chunk in supervisor.stream(
-    {
-        "messages": [
-            {
-                "role": "user",
-                "content": "I want to create Stage object"
-            }
-        ]
-    }
+checkpointer = InMemorySaver()
+from langchain_core.messages import ToolMessage
+import json
+@entrypoint()
+def find_object_dependency(user_question):
+    conversation_history = []
+    """A workflow"""
+    agent_inst = AgentObjectDependency(model=llm)
+    object_dependency_agent = agent_inst.get_react_agent()
+    conversation_history.append(HumanMessage(content=user_question))
+    for stream_mode,chunk in object_dependency_agent.stream(
+    {"messages": [{"role":"user","content":user_question}]},
+    stream_mode=["updates", "messages", "custom"]
     ):
-        for agent_name, data in chunk.items():
-            messages = data.get("messages", [])
-            for msg in messages:
-                content = getattr(msg, "content", None)
-                if content:
-                    print(f"[{agent_name}] {content}\n")
-    '''
-    import getpass
-    import os
+        if 'agent' in chunk:
+            conversation_history.append(AIMessage(content = chunk['agent']['messages'][0].content))
+    
+        
+from langgraph.func import entrypoint
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter API key for OpenAI: ")
+if __name__ == '__main__':
+    find_object_dependency.invoke("I want to create a Table")
+        
+# {'graph_output': 'My name is Lance'}
+'''   
+tools = [get_dependencies]
+prmpt = PromptObjectDependency()
+prmpt.initialize_prompt()
+formatted_prompt = prmpt.get_prompt("I want to create a table")
+llm = init_chat_model("gpt-4o-mini", model_provider="openai")
+llm_with_tools = llm.bind_tools(tools)
+ai_msg = llm_with_tools.invoke(formatted_prompt)
+for tool_call in ai_msg.tool_calls:
+    selected_tool = tool_mappings[tool_call["name"].lower()]
+    tool_msg = selected_tool.invoke(tool_call)
+print(tool_msg.content)
+'''
 
-    from langchain.chat_models import init_chat_model
-    system_prompt = get_system_prompt()
-    system_message = SystemMessage(content=system_prompt)
-    human_message = HumanMessage(content="I want to create a database")
-    prompt = [system_message,human_message]
-    llm = init_chat_model("gpt-4o-mini", model_provider="openai")
-    structured_llm = llm.with_structured_output(DatabaseAttributes)
-    response = structured_llm.invoke(prompt)
-    print(response)

@@ -31,27 +31,27 @@ class CopyInto(DBAndSchemaDependency):
 class ObjectDependency:
     def __init__(self):
         self.registry = {
-            "Table": Table,
-            "Schema": Schema,
-            "Alert":Alert,
-            "Stage":Stage
+            "TABLE": Table,
+            "SCHEMA": Schema,
+            "ALERT":Alert,
+            "STAGE":Stage
         }
 
-    def get_dependencies(self,object_type):
+    def get_dependencies(self,object_type:str):
         """
         Find all the objects that should be set up in order to setup {object_type}.
 
         Args:
-            object_type : The object to be created on snowflake
+            object_type(str) : The object to be created on snowflake
             
         Returns:
             dict which contains as values the name of objects that are prerequisite. Keys of the dictionary tells the order in which it should be created.
         
         """
-        self.cls = self.registry.get(object_type)
+        self.cls = self.registry.get(object_type.upper())
         print(f"inside get dependency for {object_type}")
         print(f"class name {self.cls}")
         if not self.cls:
             raise ValueError(f"No dependencies defined for: {object_type}")
         self._dependency_dict = self.cls._dependency_dict
-        print(f"dictionary {self._dependency_dict}")
+        return self._dependency_dict
