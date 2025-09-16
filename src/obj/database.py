@@ -313,19 +313,6 @@ class Database(BaseObject):
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-    def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment database object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database('NA')
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
-
     def grant_default_privileges(self,*largs):
         priv_inst = privilege.Privilege(self.session)
         for role,privileges in cfg._default_role_privilege_set.items():
@@ -393,4 +380,7 @@ class Database(BaseObject):
             self.grant_default_privileges()
             
             self.logger.info('create deployment entry')
-            self.create_deployment_entry()
+            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.name,object_database='NA',object_schema='NA')
+
+            self.logger.info('writing file to git')
+            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.name,object_database='NA',object_schema='NA')
