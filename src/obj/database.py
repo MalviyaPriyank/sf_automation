@@ -380,7 +380,7 @@ class Database(BaseObject):
             self.grant_default_privileges()
             
             self.logger.info('create deployment entry')
-            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.name,object_database='NA',object_schema='NA')
+            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
 
             self.logger.info('writing file to git')
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.name,object_database='NA',object_schema='NA')
+            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')

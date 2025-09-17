@@ -286,6 +286,7 @@ class InternalStage(BaseObject):
         if len(largs) == 0:
             self.logger.info('deployment entry')
             self.create_deployment_entry()
+            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 
 
 

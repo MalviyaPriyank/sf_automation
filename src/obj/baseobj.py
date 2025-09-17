@@ -42,24 +42,36 @@ class BaseObject(AbstractObject):
 
     def write_file_to_git(self,object_name,object_type,object_database,object_schema):
         commit_msg=f"Modify {object_type} {object_name} by {self.user_id}"
+        self.logger.info(f"{commit_msg}")
         if object_database != 'NA' and object_schema != 'NA':
-            filepath=f"{object_database}/{object_schema}/{object_type}/{object_name}.sql"
+            filepath=f"Database/{object_database}/Schemas/{object_schema}/{object_type}/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} and schema {object_schema} to repo")
+            self.logger.info("Before cloning")
+            repo.clone_repo()
+            self.logger.info("After cloning")
             repo.instantiate_repo()
             repo.write_file_to_local(filepath=filepath,content=self.qry)
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
+            repo.push_file_to_remote()
         elif object_database !='NA' and object_schema == 'NA':
-            filepath=f"{object_database}/{object_name}.sql"
+            filepath=f"Database/{object_database}/Schemas/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} to repo")
+            self.logger.info("Before cloning")
+            repo.clone_repo()
+            self.logger.info("After cloning")
             repo.instantiate_repo()
             repo.write_file_to_local(filepath=filepath,content=self.qry)
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
+            repo.push_file_to_remote()
         elif object_database =='NA':
-            filepath=f"Database/{object_name}.sql"
+            filepath=f"Database/{object_name}/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} to repo")
+            self.logger.info("Before cloning")
+            repo.clone_repo()
+            self.logger.info("After cloning")
             repo.instantiate_repo()
             repo.write_file_to_local(filepath=filepath,content=self.qry)
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)

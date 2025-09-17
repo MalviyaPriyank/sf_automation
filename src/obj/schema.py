@@ -411,3 +411,5 @@ class Schema(BaseObject):
         self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()
+            self.logger.info('writing file to git')
+            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema='NA')
