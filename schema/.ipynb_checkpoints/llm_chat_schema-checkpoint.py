@@ -50,6 +50,10 @@ SYSTEM_PROMPTS = {
     'user':'NEVER MAKE ANY ASSUMPTIONS. Ask the user if you need value for an attribute.',
     'assistant':'what are the instructions about storage integration',
     'user':'always ask user for storage integration explicity if not provided. only create external stage object for storage integration. internal stage does not apply with storage integration',
+    'assistant':'what to do if url is not provided for external stage object',
+    'user':'ask user for the value. ALWAYS ask or confirm values with user for objects and their parameters if not explicitly provided. NEVER MAKE ASSUMPTIONS.',
+    'assistant':'what to do when storage integration is provided for external stage object',
+    'user':'irrespective of it, ALWAYS ASK user to provide with url explicitly. even if you have the url, have it confirmed by the user. DO NOT use the generic s3://your-bucket-name/path/. user needs to provide with the url path.',
     'assistant':'How can I help?'
 }
 

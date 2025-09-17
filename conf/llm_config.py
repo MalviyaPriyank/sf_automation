@@ -9,8 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0'
-KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0'
+CHAT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -125,76 +125,8 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"create_account_object",
-                "description":"creates a snowflake account admin object for the user. ACCOUNT, ADMIN_NAME, and ADMIN_PASSWORD are required inputs to be taken from user. Only use user provided inputs",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "ACCOUNT": {
-                                "type":"string",
-                                "description":"user to provide value for ACCOUNT for database object. This is to be taken as input from user. do not assume a value."
-                            },
-                            "ADMIN_NAME": {
-                                "type":"string",
-                                "description":"user provided value for ADMIN_NAME for database object"
-                            },
-                        "ADMIN_PASSWORD": {
-                                "type":"string",
-                                "description":"user provided value for ADMIN_PASSWORD for database object"
-                            },
-                        "ADMIN_USER_TYPE": {
-                                "type":"string",
-                                "description":"user provided value for ADMIN_USER_TYPE for database object"
-                            },
-                        "FIRST_NAME": {
-                                "type":"string",
-                                "description":"user provided value for FIRST_NAME for database object"
-                            },
-                        "LAST_NAME": {
-                                "type":"string",
-                                "description":"user provided value for LAST_NAME for database object"
-                            },
-                        "EMAIL": {
-                                "type":"string",
-                                "description":"user provided value for EMAIL for database object"
-                            },
-                        "MUST_CHANGE_PASSWORD": {
-                                "type":"string",
-                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object.. if value is not provided by user, DEFAULT value is set to TRUE"
-                            },
-                        "EDITION": {
-                                "type":"string",
-                                "description":"user provided value for EDITION for database object. if value is not provided by user, DEFAULT value is set to STANDARD"
-                            },
-                        "REGION_GROUP": {
-                                "type":"string",
-                                "description":"user provided value for REGION_GROUP for database object. if value is not provided by user, DEFAULT value is set to NONE"
-                            },
-                        "REGION": {
-                                "type":"string",
-                                "description":"user provided value for REGION for database object. if value is not provided by user, DEFAULT value is set to NONE"
-                            },
-                        "COMMENT": {
-                                "type":"string",
-                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
-                            },
-                        "POLARIS": {
-                                "type":"string",
-                                "description":"user provided value for POLARIS for database object. if value is not provided by user, DEFAULT value is set to TRUE"
-                            },
-                        },
-                        "required":[
-                            "ACCOUNT","ADMIN_NAME","ADMIN_PASSWORD"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
                 "name":"create_externalstage_object",
-                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA are required inputs to be taken from user. Only use user provided inputs. While fileformat is not required, recommend creating file format to save rework in the future.",
+                "description":"creates a snowflake external stage object for the user. NAME, DATABASE, SCHEMA, URL, STORAGE_INTEGRATION are required inputs to be taken from user. Only use user provided inputs, DO NOT assume values.  DO NOT use the generic s3://your-bucket-name/path/. user needs to provide with the url path. While fileformat is not required, recommend creating file format to save rework in the future.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -217,7 +149,7 @@ tools = {
                             },
                         "URL": {
                                 "type":"string",
-                                "description":"user provided value for URL for external stage object."
+                                "description":"user provided value for URL for external stage object. DO NOT ASSUME VALUE. ask user explicitly for the URL. DO NOT use the generic s3://your-bucket-name/path/. user needs to provide with the url path."
                             },
                         "AWS_ACCESS_POINT_ARN": {
                                 "type":"string",
@@ -225,7 +157,7 @@ tools = {
                             },
                         "STORAGE_INTEGRATION": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_INTEGRATION for external stage object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for STORAGE_INTEGRATION for external stage object.E"
                             },
                         
                         "COMMENT": {
@@ -266,7 +198,7 @@ tools = {
                             },
                         },
                         "required":[
-                            "NAME","DATABASE","SCHEMA","URL"
+                            "NAME","DATABASE","SCHEMA","URL","STORAGE_INTEGRATION"
                         ]
                     }
                 }
