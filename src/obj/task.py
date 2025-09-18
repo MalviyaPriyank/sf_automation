@@ -621,6 +621,8 @@ class Task(BaseObject):
         self.prepare_query()
         self.create_task()
         self.create_deployment_entry()
+        self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
+
 
     def grant_default_privileges(self):
         priv_inst = privilege.Privilege(self.session)
