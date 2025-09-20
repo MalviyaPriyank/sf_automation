@@ -28,10 +28,11 @@ class FullLoad:
         return append_strng
     
     def get_append_string_for_select(self,src_col_lst):
+        self.logger.info(f"src col lst :{src_col_lst}")
         append_strng= " SELECT "
         for i in range(0,len(src_col_lst)):
             if i != len(src_col_lst)-1:
-                append_strng = append_strng + src_col_lst[i] =", "
+                append_strng = append_strng + src_col_lst[i] + ", "
             elif i==len(src_col_lst)-1:
                 append_strng = append_strng + src_col_lst[i] +" FROM " 
         return append_strng

@@ -560,6 +560,7 @@ class CopyInto(BaseObject):
 
         self.logger.info(f"preparing copy into for {self.attr.table}")
         self.prepare_query()
+        self.logger.info(f"Copy into query : {self.qry}")
         return self.qry
 
     

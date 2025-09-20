@@ -81,8 +81,8 @@ class LLMTools:
                                   ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.session,logger=self.logger),
-                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortextSearch(session=self.session,logger=self.logger)
+                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
+                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,logger=self.logger)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -101,7 +101,7 @@ class LLMTools:
 
 
     def transfer_tables_across_stage(self,
-                                      SRC_DATABSE,
+                                      SRC_DATABASE,
                                       SRC_SCHEMA,
                                       SRC_TABLE,
                                       TGT_DATABASE,

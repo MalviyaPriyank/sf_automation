@@ -20,9 +20,9 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_database_object",
-                "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
+                "description":"Use this tool to create a database. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
                 "inputSchema": {
-                    "json":{   
+                    "json":{ 
                         "type":"object",
                         "properties": {
                             "NAME": {
@@ -78,7 +78,7 @@ tools = {
             },
         "toolSpec": {
                 "name":"create_stored_procedure_object",
-                "description":"creates a snowflake stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a  stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{   
                         "type":"object",
@@ -587,7 +587,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_schema_object",
-                "description":"creates a snowflake schema object for the user. DATABASE and NAME are required inputs to be taken from user. Only use user provided inputs",
+                "description":"Use this tool to create Schema.DATABASE and NAME are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
