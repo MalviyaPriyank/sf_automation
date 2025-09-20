@@ -10,10 +10,9 @@ from vars.obj.cortexsearch.gvcortexsearch import CortexSearchTag as tags
 class ServiceName:
     def __get__(self,instance,owner):
         return instance.__service_name
-    
+
     def __set__(self,instance,value):
         instance.__service_name = value
-
 
     def __delete__(self,instance):
         del instance.__service_name
