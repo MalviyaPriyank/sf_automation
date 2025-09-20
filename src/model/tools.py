@@ -160,7 +160,8 @@ class LLMTools:
                                REPLACE_INVALID_CHARACTERS="NONE",
                                DATA_RETENTION_TIME_IN_DAYS="NONE",
                                STORAGE_SERIALIZATION_POLICY="NONE",
-                               MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE"):
+                               MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE",
+                               **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -176,7 +177,8 @@ class LLMTools:
                                         RETURN_TYPE,
                                         LANGUAGE,
                                         HANDLER,
-                                        PACKAGES):
+                                        PACKAGES,
+                                        **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -197,7 +199,8 @@ class LLMTools:
                               REGION_GROUP="NONE",
                               REGION="NONE",
                               COMMENT="NONE",
-                              POLARIS="TRUE"):
+                              POLARIS="TRUE",
+                              **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -221,7 +224,8 @@ class LLMTools:
                                     ENABLE="NONE",
                                     REFRESH_ON_CREATE="NONE",
                                     AUTO_REFRESH="NONE",
-                                    NOTIFICATION_INTEGRATION="NONE"):
+                                    NOTIFICATION_INTEGRATION="NONE",
+                                    **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -268,7 +272,8 @@ class LLMTools:
                                 PRESERVE_SPACE="NONE",
                                 STRIP_OUTER_ELEMENT="NONE",
                                 DISABLE_SNOWFLAKE_DATA="NONE",
-                                DISABLE_AUTO_CONVERT="NONE"):
+                                DISABLE_AUTO_CONVERT="NONE",
+                                **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -285,7 +290,8 @@ class LLMTools:
                                     TAG="NONE",
                                     ENCRYPTION="NONE",
                                     ENABLE="NONE",
-                                    REFRESH_ON_CREATE="NONE"):
+                                    REFRESH_ON_CREATE="NONE",
+                                    **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -302,7 +308,8 @@ class LLMTools:
                                     NOTIFY_USERS="ADMIN",
                                     TRIGGERS_ON="75",
                                     THRESHOLD="NONE",
-                                    ACTION="NONE"):
+                                    ACTION="NONE",
+                                    **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -310,7 +317,7 @@ class LLMTools:
         return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
 
 
-    def create_role_object(self, NAME, COMMENT="NONE"):
+    def create_role_object(self, NAME, COMMENT="NONE",**kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -330,7 +337,8 @@ class LLMTools:
                                             STORAGE_AWS_OBJECT_ACL="NONE",
                                             COMMENT="NONE",
                                             AZURE_TENANT_ID="NONE",
-                                            USE_PRIVATELINK_ENDPOINT="NONE"):
+                                            USE_PRIVATELINK_ENDPOINT="NONE",
+                                            **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -354,7 +362,8 @@ class LLMTools:
                             TRACE_LEVEL="NONE",
                             STORAGE_SERIALIZATION_POLICY="NONE",
                             CLASSIFICATION_PROFILE="NONE",
-                            COMMENT="NONE"):
+                            COMMENT="NONE",
+                            **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {}
@@ -390,7 +399,8 @@ class LLMTools:
                             RSA_PUBLIC_KEY_2_FP="DEFAULT",
                             TYPE="PERSON",
                             COMMENT="DEFAULT",
-                            ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="TRUE"):
+                            ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="TRUE",
+                            **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -416,7 +426,8 @@ class LLMTools:
                                 QUERY_ACCELERATION_MAX_SCALE_FACTOR="NONE",
                                 MAX_CONCURRENCY_LEVEL="NONE",
                                 STATEMENT_QUEUED_TIMEOUT_IN_SECONDS="NONE",
-                                STATEMENT_TIMEOUT_IN_SECONDS="NONE"):
+                                STATEMENT_TIMEOUT_IN_SECONDS="NONE",
+                                **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -475,7 +486,6 @@ class LLMTools:
                                 MODEL_NAME="NONE",
                                 MODEL_VERSION="NONE"
                               ):
-        
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
