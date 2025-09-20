@@ -384,3 +384,4 @@ class Database(BaseObject):
 
             self.logger.info('writing file to git')
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+            

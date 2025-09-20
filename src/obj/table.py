@@ -190,6 +190,7 @@ class Table:
                 self.create_table()
                 self.grant_default_privileges()
                 self.create_deployment_entry()
+       
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session,logger=self.logger)
