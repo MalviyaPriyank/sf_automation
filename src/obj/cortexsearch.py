@@ -237,8 +237,8 @@ class CortexSearch(BaseObject):
         self.logger.info('execute query')
         self.create_search_service()
         
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry(object_name=self.attr.service_name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        #self.logger.info('create deployment entry')
+        #self.create_deployment_entry(object_name=self.attr.service_name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
 
         self.logger.info('writing file to git')
         self.write_file_to_git(object_name=self.attr.service_name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
