@@ -67,9 +67,7 @@ class FullLoad:
                                        tgt_table=tgt_table)
         self.logger.info(f"Script generated :{sql_script}")
         self.logger.info("Going to load data")
-        self.session.sql(sql_script).collect()
-        self.logger.info("Data load successful")
-        return "Success"        
+        return sql_script      
         
             
     
