@@ -9,8 +9,10 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-KB_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+
+CHAT_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+KB_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -489,6 +491,47 @@ tools = {
                         },
                         "required":[
                             "NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"transfer_tables_across_stage",
+                "description":"performs a data load (transfer or deployment) of tables from one stage to another",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "SRC_DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for source database"
+                            },
+                            "SRC_SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for source schema"
+                            },
+                            "SRC_TABLE": {
+                                "type":"string",
+                                "description":"user provided value for source table"
+                            },
+                            "TGT_DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for target database"
+                            },
+                            "TGT_SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for target schema"
+                            },
+                            "TGT_TABLE": {
+                                "type":"string",
+                                "description":"user provided value for target table"
+                            },
+                            
+                        },
+                        "required":[
+                            "SRC_DATABASE", "SRC_SCHEMA", "SRC_TABLE", "TGT_DATABASE", "TGT_SCHEMA", "TGT_TABLE"
                         ]
                     }
                 }

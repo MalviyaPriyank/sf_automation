@@ -27,6 +27,7 @@ from src.setup.initial import InitialSetup
 from src.dep import deploy
 from src.accountusage import copyhistory
 from src.processing.stage import Stage
+from src.pipeline import fullload
 from vars.gvobject import Config as cfg
 
 from valueexception import (
@@ -80,6 +81,7 @@ class LLMTools:
                                   ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.session,logger=self.logger))
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -95,6 +97,23 @@ class LLMTools:
         # table_list_df = table_list_df.sort('ORDINAL_POSITION').select('column_name','data_type')
         self.logger.info(f'database {database} and schema {schema} contain following tables: {table_list}')
         return f'database {database} and schema {schema} contain following tables: {table_list}'
+
+
+    def transfer_tables_across_stage(self,
+                                      SRC_DATABSE,
+                                      SRC_SCHEMA,
+                                      SRC_TABLE,
+                                      TGT_DATABASE,
+                                      TGT_SCHEMA,
+                                      TGT_TABLE):
+        sql_query = self.obj_class_mapping[ss.FULL_LOAD_OBJ].load_data_from_src_to_target(src_database=SRC_DATABASE,
+                                                                                          src_schema=SRC_SCHEMA,
+                                                                                          src_table=SRC_TABLE,
+                                                                                          tgt_database=TGT_DATABASE,
+                                                                                          tgt_schema=TGT_SCHEMA,
+                                                                                          tgt_table=TGT_TABLE)
+        self.obj_class_mapping[ss.TASK_OBJ].create_task(sql_query)
+        return 'Task executed successfully'
         
     
     def create_sf_object(self, obj_name, data_dict):
