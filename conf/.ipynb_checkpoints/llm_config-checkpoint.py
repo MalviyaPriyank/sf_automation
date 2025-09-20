@@ -539,6 +539,55 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_cortex_search_object",
+                "description":"creates a cortex search object for snowflake",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "ON": {
+                                "type":"string",
+                                "description":"user provided value for the base table name that you wish to search on."
+                            },
+                            "ATTRIBUTES": {
+                                "type":"string",
+                                "description":"comma-separated list of columns in the base table that you wish to filter on when issuing queries to the service."
+                            },
+                            "WAREHOUSE": {
+                                "type":"string",
+                                "description":"warehouse to use for running the source query, building the search index, and keeping it refreshed per the TARGET_LAG target."
+                            },
+                            "TARGET_LAG": {
+                                "type":"string",
+                                "description":"Specifies the maximum amount of time that the Cortex Search service content should lag behind updates to the base tables specified in the source query."
+                            },
+                            "EXTERNAL_VOLUME": {
+                                "type":"string",
+                                "description":"user provided value for external volume"
+                            },
+                            "EMBEDDING_MODEL": {
+                                "type":"string",
+                                "description":"user provided value for embedding model"
+                            },
+                            "INITIALIZE": {
+                                "type":"string",
+                                "description":"user provided value for the behavior of the initial refresh of the Cortex Search Service"
+                            },
+                            "QUERY": {
+                                "type":"string",
+                                "description":"user provided value for query"
+                            },
+                            
+                        },
+                        "required":[
+                            "ON","ATTRIBUTES","WAREHOUSE","TARGET_LAG","EXTERNAL_VOLUME","EMBEDDING_MODEL","INITIALIZE","QUERY"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"create_schema_object",
                 "description":"creates a snowflake schema object for the user. DATABASE and NAME are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {

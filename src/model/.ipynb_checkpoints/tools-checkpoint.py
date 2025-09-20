@@ -21,7 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -81,7 +81,8 @@ class LLMTools:
                                   ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.session,logger=self.logger))
+                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.session,logger=self.logger),
+                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortextSearch(session=self.session,logger=self.logger)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -112,8 +113,30 @@ class LLMTools:
                                                                                           tgt_database=TGT_DATABASE,
                                                                                           tgt_schema=TGT_SCHEMA,
                                                                                           tgt_table=TGT_TABLE)
-        self.obj_class_mapping[ss.TASK_OBJ].create_task(sql_query)
+        self.obj_class_mapping[ss.TASK_OBJ].create_object(obj_name=ss.TASK_OBJ,
+                                                          SQL=sql_query,
+                                                          DATABASE=TGT_DATABASE,
+                                                          SCHEMA=TGT_SCHEMA,
+                                                          NAME=f"FULL_LOAD_{TGT_TABLE}"
+                                                         )
         return 'Task executed successfully'
+
+
+    def create_cortex_search_object(self,
+                                    ATTRIBUTES,
+                                    WAREHOUSE,
+                                    ON,
+                                    TARGET_LAG,
+                                    EXTERNAL_VOLUME,
+                                    EMBEDDING_MODEL,
+                                    INITIALIZE,
+                                    QUERY
+                                   ):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.CORTEX_SEARCH_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.CORTEX_SEARCH_OBJ, data_dict)
         
     
     def create_sf_object(self, obj_name, data_dict):
