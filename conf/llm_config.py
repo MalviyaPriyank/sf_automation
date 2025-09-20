@@ -853,7 +853,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_table_object",
-                "description":"creates snowflake table object for the user. database and schema are required inputs. tables csv and names are already provided, you need not ask user for this.",
+                "description":"creates snowflake table object for the user. database and schema are required inputs. no additional details are required from the user. tables csv and names and other details are already configured, you need not ask user for this.",
                 "inputSchema": {
                     "json":{
                         "type":"object",

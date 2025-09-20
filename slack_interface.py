@@ -61,6 +61,8 @@ def run(body, say):
         tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
         # say('Logged in to snowflake')
         # print(body)
+        prompt = body['event']['text']
+        file_upload_prompt = 'Files for tables are already provided. You need not ask user for table names or any other details'
         if 'files' in body['event']:
             for file_info in body['event']['files']:
                 file_id = file_info['id']
@@ -78,6 +80,7 @@ def run(body, say):
                     with open(filepath, 'wb') as f:
                         f.write(doc_response.content)
                     print(f'File {file_name} downloaded successfully')
+                    prompt += file_upload_prompt
                 except requests.exceptions.RequestException as e:
                     print(f'Error downloading file {filename}: {e}')
                 except Exception as e:

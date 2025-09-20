@@ -9,10 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-
-CHAT_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-KB_MODEL_ID = 'global.anthropic.claude-sonnet-4-20250514-v1:0' #'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-
+CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -22,9 +20,9 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_database_object",
-                "description":"creates a snowflake database object for the user. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
+                "description":"Use this tool to create a database. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
                 "inputSchema": {
-                    "json":{   
+                    "json":{ 
                         "type":"object",
                         "properties": {
                             "NAME": {
@@ -80,7 +78,7 @@ tools = {
             },
         "toolSpec": {
                 "name":"create_stored_procedure_object",
-                "description":"creates a snowflake stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
+                "description":"creates a  stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{   
                         "type":"object",
@@ -589,7 +587,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_schema_object",
-                "description":"creates a snowflake schema object for the user. DATABASE and NAME are required inputs to be taken from user. Only use user provided inputs",
+                "description":"Use this tool to create Schema.DATABASE and NAME are required inputs to be taken from user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -855,7 +853,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_table_object",
-                "description":"creates snowflake table object for the user. database and schema are required inputs. tables csv and names are already provided, you need not ask user for this.",
+                "description":"creates snowflake table object for the user. database and schema are required inputs. no additional details are required from the user. tables csv and names and other details are already configured, you need not ask user for this.",
                 "inputSchema": {
                     "json":{
                         "type":"object",

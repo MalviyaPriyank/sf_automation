@@ -6,6 +6,7 @@ import logging
 import requests
 import pandas as pd
 from pathlib import Path
+import traceback
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
@@ -42,7 +43,7 @@ def get_new_files_since(start_time, folder='tmp'):
 def run(body, say):
     try:
         session_inst = session.Session()
-    
+
         session_inst.set_user('pehlaadmi')
         session_inst.set_password('Hellopehlaadmi@24')
         session_inst.set_account('kzekzkb-pm40264')
@@ -52,7 +53,7 @@ def run(body, say):
         logger = logging.getLogger('snowchain_logs')
         
         logger.info('session started')
-    
+
         session_state = session_inst.get_session()
         root = session_inst.get_root_object()
         bedrock_obj = Bedrock()
@@ -60,6 +61,8 @@ def run(body, say):
         tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
         # say('Logged in to snowflake')
         # print(body)
+        prompt = body['event']['text']
+        file_upload_prompt = 'Files for tables are already provided. You need not ask user for table names or any other details'
         if 'files' in body['event']:
             for file_info in body['event']['files']:
                 file_id = file_info['id']
@@ -77,6 +80,7 @@ def run(body, say):
                     with open(filepath, 'wb') as f:
                         f.write(doc_response.content)
                     print(f'File {file_name} downloaded successfully')
+                    prompt += file_upload_prompt
                 except requests.exceptions.RequestException as e:
                     print(f'Error downloading file {filename}: {e}')
                 except Exception as e:
@@ -134,12 +138,11 @@ def run(body, say):
                 channels=body['event']['channel'],
                 file=file_path,
                 title=os.path.basename(file_path)
-            )
-        
+            )   
     except Exception as e:
+        logger.info(f"{traceback.print_exc()}")
         logger.info(e)
         say('There was an issue processing your request, Apologies :(')
-
 
 @app.event("message")
 def handle_message_events(body, say):
