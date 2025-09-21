@@ -29,6 +29,7 @@ from src.accountusage import copyhistory
 from src.processing.stage import Stage
 from src.pipeline import fullload
 from vars.gvobject import Config as cfg
+from snowflake.snowpark.exceptions import SnowparkSQLException
 
 from valueexception import (
     AttributeValidationError,
@@ -146,9 +147,9 @@ class LLMTools:
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
-        except IsARequiredAttribute as e:
+        except (IsARequiredAttribute,SnowparkSQLException) as e:
             self.logger.info(f"inside ")
-            return f"There was an error object creating object: {e}"
+            return f"There was an error  creating object: {e}"
         
 
 

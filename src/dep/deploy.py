@@ -249,13 +249,15 @@ class Deploy:
         for inner_qry in res:
             for qry in inner_qry:
                 qry_lst.append(qry)
+        return qry_lst
+    
+    def clean_deployment_table(self):
         clean_table = f"""
         DELETE FROM 
         {cfg._config_database}.{cfg._config_schema}.{cfg._deployment_scripts_table}
         """
         self.session.sql(clean_table).collect()
-        return qry_lst
-    
+
     def deploy_from_dev_to_test(self):
         dev_db = self.get_db_name_of_environment(_dev_env)
         test_db = self.get_db_name_of_environment(_test_env)
@@ -265,3 +267,6 @@ class Deploy:
         for qry in sql_lst:
             qry = qry.replace(dev_db,test_db)
             self.session.sql(qry).collect()
+        self.logger.info('Deployment complete')
+        self.logger.info('Cleaning the table')
+        self.clean_deployment_table()
