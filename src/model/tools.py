@@ -32,7 +32,8 @@ from vars.gvobject import Config as cfg
 
 from valueexception import (
     AttributeValidationError,
-    InvalidPassword
+    InvalidPassword,
+    IsARequiredAttribute
 )
 
 class LLMTools:
@@ -140,13 +141,15 @@ class LLMTools:
         
     
     def create_sf_object(self, obj_name, data_dict):
-        #try:
-        qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
-        self.logger.info(f"For {obj_name}, query returned: {qry}")
-        self.logger.info(f'Object {obj_name} created successfully')
-        #except AttributeValidationError as e:
-        #    raise (e)
-        return f'Object {obj_name} created successfully'
+        try:
+            qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
+            self.logger.info(f"For {obj_name}, query returned: {qry}")
+            self.logger.info(f'Object {obj_name} created successfully')
+            return f'Object {obj_name} created successfully'
+        except IsARequiredAttribute as e:
+            self.logger.info(f"inside ")
+            return f"There was an error object creating object: {e}"
+        
 
 
     def create_database_object(self, 
@@ -185,27 +188,6 @@ class LLMTools:
         self.logger.info(f'creating {ss.STORED_PROCEDURE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.STORED_PROCEDURE_OBJ, data_dict)
 
-
-    def create_account_object(self,
-                              ACCOUNT,
-                              ADMIN_NAME,
-                              ADMIN_PASSWORD,
-                              ADMIN_USER_TYPE="PERSON",
-                              FIRST_NAME="Priyank",
-                              LAST_NAME="Malviya",
-                              EMAIL="priyankmalviya0@gmail.com",
-                              MUST_CHANGE_PASSWORD="TRUE",
-                              EDITION="STANDARD",
-                              REGION_GROUP="NONE",
-                              REGION="NONE",
-                              COMMENT="NONE",
-                              POLARIS="TRUE",
-                              **kwargs):
-        frame = inspect.currentframe()
-        args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
-        self.logger.info(f'creating {ss.ACCOUNT_OBJ} object with parameters: {data_dict}')
-        return self.create_sf_object(ss.ACCOUNT_OBJ, data_dict)
 
 
     def create_externalstage_object(self,

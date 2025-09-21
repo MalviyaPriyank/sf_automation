@@ -76,6 +76,52 @@ tools = {
                     }
                 }
             },
+        "toolSpec": {
+                "name":"create_stored_procedure_object",
+                "description":"creates a  stored procedure object for the user. DATABASE, SCHEMA, NAME, LOGIC, RETURN_TYPE, LANGUAGE, HANDLER, PACKAGES is a required input to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{   
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user to provide value for DATABASE for stored procedure object."
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for stored procedure object"
+                            },
+                        "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for stored procedure object"
+                            },
+                        "LOGIC": {
+                                "type":"string",
+                                "description":"user provided value for LOGIC for stored procedure object. This would be the script that user wants to be executed inside the sproc."
+                            },
+                        "RETURN_TYPE": {
+                                "type":"string",
+                                "description":"user provided value for RETURN_TYPE for stored procedure object. This would be the return type of the value that sproc would return"
+                            },
+                        "LANGUAGE": {
+                                "type":"string",
+                                "description":"user provided value for LANGUAGE for stored procedure object. This would be the language that the sproc would be in. Pytho,Java,Javascript,Scala or SQL"
+                            },
+                        "HANDLER": {
+                                "type":"string",
+                                "description":"user provided value for HANDLER for stored procedure object. This would be the entry point of sproc."
+                            },
+                        "PACKAGES": {
+                                "type":"string",
+                                "description":"user provided value for PACKAGES for stored procedure object. This would be packages to be imported if any.(Should be passed as a tuple each value enclosed in single quotes and separated by comma)"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA","NAME","LOGIC","RETURN_TYPE","LANGUAGE","HANDLER","PACKAGES"
+                        ]
+                    }
+                }
+            }
         },
         {
             "toolSpec": {
@@ -317,6 +363,139 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_internalstage_object",
+                "description":"creates a snowflake internal stage object for the user. DATABASE is a required input to be taken from user. Only use user provided inputs. While fileformat is not required, recommend creating file format to save rework in the future.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"user provided value for DATABASE for database object"
+                            },
+                        "SCHEMA": {
+                                "type":"string",
+                                "description":"user provided value for SCHEMA for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "FILE_FORMAT": {
+                                "type":"string",
+                                "description":"user provided value for FILE_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "TAG": {
+                                "type":"string",
+                                "description":"user provided value for TAG for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "ENCRYPTION": {
+                                "type":"string",
+                                "description":"user provided value for ENCRYPTION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "DIRECTORY": {
+                                "type":"string",
+                                "description":"user provided value for DIRECTORY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "REFRESH_ON_CREATE": {
+                                "type":"string",
+                                "description":"user provided value for REFRESH_ON_CREATE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            
+                        },
+                        "required":[
+                            "NAME",
+                            "DATABASE",
+                            "SCHEMA"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_resourcemonitor_object",
+                "description":"creates a snowflake resource monitor object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for resource monitor object"
+                            },
+                        "CREDIT_QUOTA": {
+                                "type":"string",
+                                "description":"user provided value for CREDIT_QOUTA for resource monitor object. if value is not provided by user, DEFAULT value is set to 75"
+                            },
+                        "FREQUENCY": {
+                                "type":"string",
+                                "description":"user provided value for FREQUENCY for resource monitor object. if value is not provided by user, DEFAULT value is set to DAILY"
+                            },
+                        "START_TIMESTAMP": {
+                                "type":"string",
+                                "description":"user provided value for START_TIMESTAMP for resource monitor object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "END_TIMESTAMP": {
+                                "type":"string",
+                                "description":"user provided value for END_TIMESTAMP for resource monitor object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "NOTIFY_USERS": {
+                                "type":"string",
+                                "description":"user provided value for NOTIFY_USERS for resource monitor object. if value is not provided by user, DEFAULT value is set to ADMIN"
+                            },
+                        "TRIGGERS": {
+                                "type":"string",
+                                "description":"user provided value for TRIGGERS for resource monitor object.  ask user if they want to setup single action or multiple based on which values passed should be either 'SINGLE' or 'MULTIPLE' or NONE"
+                            },
+                        "THRESHOLD": {
+                                "type":"string",
+                                "description":"user provided value for THRESHOLD for resource monitor object. If TRIGGERS parameter value is 'MULTIPLE', sets list of numbers having threshold values for each action. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "ACTION": {
+                                "type":"string",
+                                "description":"user provided value for ACTION for resource monitor object. list of actions to be taken against each THRESHOLD. List can only be [SUSPEND, SUSPEND_IMMEDIATE, NOTIFY]"
+                            },
+                            
+                        },
+                        "required":[
+                            "NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_role_object",
+                "description":"creates a snowflake role object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for database object"
+                            },
+                        "COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            
+                        },
+                        "required":[
+                            "NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"transfer_tables_across_stage",
                 "description":"performs a data load (transfer or deployment) of tables from one stage to another",
                 "inputSchema": {
@@ -473,6 +652,199 @@ tools = {
                         },
                         "required":[
                             "DATABASE","NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_user_object",
+                "description":"creates a snowflake user object for the user. NAME and PASSWORD are required inputs to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for database object"
+                            },
+                        "PASSWORD": {
+                                "type":"string",
+                                "description":"user provided value for PASSWORD for database object"
+                            },
+                        "LOGIN_NAME": {
+                                "type":"string",
+                                "description":"user provided value for LOGIN_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "DISPLAY_NAME": {
+                                "type":"string",
+                                "description":"user provided value for DISPLAY_NAME for database object. if value is not provided by user, DEFAULT value is set to PERSON"
+                            },
+                        "FIRST_NAME": {
+                                "type":"string",
+                                "description":"user provided value for FIRST_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "LAST_NAME": {
+                                "type":"string",
+                                "description":"user provided value for LAST_NAME for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "EMAIL": {
+                                "type":"string",
+                                "description":"user provided value for EMAIL for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "MUST_CHANGE_PASSWORD": {
+                                "type":"string",
+                                "description":"user provided value for MUST_CHANGE_PASSWORD for database object. if value is not provided by user, DEFAULT value is set to TRUE"
+                            },
+                        "DISABLED": {
+                                "type":"string",
+                                "description":"user provided value for DISABLED for database object. if value is not provided by user, DEFAULT value is set to FALSE"
+                            },
+                        "DAYS_TO_EXPIRY": {
+                                "type":"string",
+                                "description":"user provided value for DAYS_TO_EXPIRY for database object. if value is not provided by user, DEFAULT value is set to 20"
+                            },
+                        "MINS_TO_UNLOCK": {
+                                "type":"string",
+                                "description":"user provided value for MINS_TO_UNLOCK for database object. if value is not provided by user, DEFAULT value is set to 20"
+                            },
+                        "DEFAULT_WAREHOUSE": {
+                                "type":"string",
+                                "description":"user provided value for DEFAULT_WAREHOUSE for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "DEAFULT_ROLE": {
+                                "type":"string",
+                                "description":"user provided value for DEFAULT_ROLE for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "DEFAULT_SECONDARY_ROLES": {
+                                "type":"string",
+                                "description":"user provided value for DEFAULT_SECONDARY_ROLES for database object. if value is not provided by user, DEFAULT value is set to ALL"
+                            },
+                        "MINS_TO_BY_PASS_MFA": {
+                                "type":"string",
+                                "description":"user provided value for MINS_TO_BY_PASS_MFA for database object. if value is not provided by user, DEFAULT value is set to 20"
+                            },
+                        "RSA_PUBLIC_KEY": {
+                                "type":"string",
+                                "description":"user provided value for RSA_PUBLIC_KEY for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "RSA_PUBLIC_KEY_FP": {
+                                "type":"string",
+                                "description":"user provided value for RSA_PUBLIC_KEY_FP for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "RSA_PUBLIC_KEY_2": {
+                                "type":"string",
+                                "description":"user provided value for RSA_PUBLIC_KEY_2 for database object. if value is not provided by user, DEFAULT value is set to KEY2"
+                            },
+                        "RSA_PUBLIC_KEY_2_FP": {
+                                "type":"string",
+                                "description":"user provided value for RSA_PUBLIC_KEY_2_FP for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "TYPE": {
+                                "type":"string",
+                                "description":"user provided value for TYPE for database object. if value is not provided by user, DEFAULT value is set to PERSON"
+                            },
+                        "COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to DEFAULT"
+                            },
+                        "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR": {
+                                "type":"string",
+                                "description":"user provided value for ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR for database object. if value is not provided by user, DEFAULT value is set to TRUE"
+                            },
+                            
+                        },
+                        "required":[
+                            "NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_warehouse_object",
+                "description":"creates a snowflake warehouse object for the user. NAME is a required input to be taken from user. Only use user provided inputs",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"user provided value for NAME for database object"
+                            },
+                        "WAREHOUSE_SIZE": {
+                                "type":"string",
+                                "description":"user provided value for WAREHOUSE_SIZE for database object. if value is not provided by user, DEFAULT value is set to SMALL"
+                            },
+                        "WAREHOUSE_TYPE": {
+                                "type":"string",
+                                "description":"user provided value for WAREHOUSE_TYPE for database object. if value is not provided by user, DEFAULT value is set to STANDARD"
+                            },
+                        "RESOURCE_CONSTRAINT": {
+                                "type":"string",
+                                "description":"user provided value for RESOURCE_CONSTRAINT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "MAX_CLUSTER_COUNT": {
+                                "type":"string",
+                                "description":"user provided value for MAX_CLUSTER_COUNT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "MIN_CLUSTER_COUNT": {
+                                "type":"string",
+                                "description":"user provided value for MIN_CLUSTER_COUNT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "SCALING_POLICY": {
+                                "type":"string",
+                                "description":"user provided value for SCALING_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "AUTO_SUSPEND": {
+                                "type":"string",
+                                "description":"user provided value for AUTO_SUSPEND for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "AUTO_RESUME": {
+                                "type":"string",
+                                "description":"user provided value for AUTO_RESUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "INITIALLY_SUSPENDED": {
+                                "type":"string",
+                                "description":"user provided value for INTITIALLY_SUSPENDED for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "RESOURCE_MONITOR": {
+                                "type":"string",
+                                "description":"user provided value for RESOURCE_MONITOR for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "COMMENT": {
+                                "type":"string",
+                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "TAG": {
+                                "type":"string",
+                                "description":"user provided value for TAG for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "ENABLE_QUERY_ACCELERATION": {
+                                "type":"string",
+                                "description":"user provided value for ENABLE_QUERY_ACCELERATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "QUERY_ACCELERATION_MAX_SCALE_FACTOR": {
+                                "type":"string",
+                                "description":"user provided value for QUERY_ACCELERATION_MAX_SCALE_FACTOR for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "MAX_CONCURRENCY_LEVEL": {
+                                "type":"string",
+                                "description":"user provided value for MAX_CONCURRENCY_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "STATEMENT_QUEUED_TIMEOUT_IN_SECONDS": {
+                                "type":"string",
+                                "description":"user provided value for STATEMENT_QUEUED_TIMEOUT_IN_SECONDS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        "STATEMENT_TIMEOUT_IN_SECONDS": {
+                                "type":"string",
+                                "description":"user provided value for STATEMENT_TIMEOUT_IN_SECONDS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                        },
+                        "required":[
+                            "NAME"
                         ]
                     }
                 }
@@ -844,6 +1216,26 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"sf_setup",
+                "description":"if user explicitly asks for initial setup with snowflake. such that user specifies it is their first time.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"get_history_for_pipe",
                 "description":"If user ask if the data was loaded in the table, or when was the data loaded. user wants to provide details of snowpipe that is linked to the table",
                 "inputSchema": {
@@ -893,6 +1285,186 @@ tools = {
                         },
                         "required":[
                             "table_db","table_schema","table_name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_stream_object",
+                "description":"creates snowflake stream object for the user. Streams can only be created for one of the following objects: Table, External Table, Views, DIRECTORY TABLE/Stage. DATABASE, SCHEMA, NAME, and TABLE_NAME are the required parameters. Inform user that Streams by default would start CDC from the moment they are created OR AT a specific point in time if they want OR BEFORE a specific point in time.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"DATABASE for stream object"
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"SCHEMA for stream object"
+                            },
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for stream object"
+                            },
+                            "TABLE_NAME": {
+                                "type":"string",
+                                "description":"TABLE for stream object"
+                            },
+                            "TAG": {
+                                "type":"string",
+                                "description":"TAG for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "AT": {
+                                "type":"string",
+                                "description":"AT value for stream object. User can provide any one of the following: TIMESTAMP (timestamp at which they want it to start CDC), OFFSET (time difference from the current time at which they want CDC to start, the user should tell us how many minutes ago from now.), STATEMENT (query id of the query they want to use as a starting point not supported by SNOWCHAIN for now), STREAM (name of the stream NOT SUPPORTED by Snowchain right now)."
+                            },
+                            "APPEND_ONLY": {
+                                "type":"string",
+                                "description":"APPEND_ONLY value for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "INSERT_ONLY": {
+                                "type":"string",
+                                "description":"INSERT_ONLY value for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "SHOW_INITIAL_ROWS": {
+                                "type":"string",
+                                "description":"SHOW_INITIAL_ROWS for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "BEFORE": {
+                                "type":"string",
+                                "description":"BEFORE for stream object. Allowed values are TIMESTAMP (timestamp at which they want it to start CDC), OFFSET (time difference from the current time at which they want CDC to start the user should tell us how many minutes ago from now.), STATEMENT (query id of the query they want to use as a starting point)"
+                            },
+                            "TIMESTAMP": {
+                                "type":"string",
+                                "description":"TIMESTAMP for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "OFFSET": {
+                                "type":"string",
+                                "description":"OFFSET for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "STATEMENT": {
+                                "type":"string",
+                                "description":"STATEMENT for stream object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "OBJECT_TYPE": {
+                                "type":"string",
+                                "description":"OBJECT TYPE for stream object. Possible values: TABLE, EXTERNAL TABLE, STAGE (If user says Directory table OR Stage, STAGE to be passed in both cases.), and VIEW"
+                            },
+                        },
+                        "required":[
+                            "DATABSE","SCHEMA","NAME","TABLE_NAME"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_alert_object",
+                "description":"creates snowflake alert object for the user. NAME, SCHEDULE, DATABASE, and SCHEMA are the required parameters. depends on notification object. notification object has to be created before creating alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for alert object"
+                            },
+                            "CONDITION": {
+                                "type":"string",
+                                "description":"CONDITION for alert object. If CONDITION returns one or more rows then ACTION would be taken. Options for CONDITION are: SELECT statement, SHOW Objects, Stored procedure. If user wants a custom stored procedure to be used then they have to provide the definition of stored proc for example SP_CUSTOM_SPROC('VAR1','VAR2'). if they want to use SHOW Objects then they need to specify object name. if they want to use SELECT statement, there are two options Frosty can write a query for them if they describe the problem (and then pass it to create_object), or they can provide the select statement. This should be passed as a value to IF parameter. For select pass the select sql statement 'STATEMENT'. For show objects pass 'SHOW object name', For stored proc pass 'CALL SP_CUSTOM_SPROC('VAR1','VAR2')'"
+                            },
+                            "ACTION": {
+                                "type":"string",
+                                "description":"ACTION for alert object. For ACTION, if User wants to provide custom SQL or Wants to send out emails using notification integration email. (If they have existing one use it else follow the flow where we take them to create one.). If they are using notification integration, then we need integration_name, email_addresses, email_subject, email_content. This should be passed as a value to THEN parameter. For custom SQL pass sql: 'custom sql', pass all other params i.e integration_name, email_address, email_subject, email_content as NONE. For notification integration : pass sql:NONE, and values for integration_name, email_address, email_subject, email_content"
+                            },
+                            "ACTION_TYPE": {
+                                "type":"string",
+                                "description":"ACTION_TYPE for alert object"
+                            },
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"DATABASE for alert object"
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"SCHEMA for alert object"
+                            },
+                            "SCHEDULE": {
+                                "type":"string",
+                                "description":"SCHEDULE for alert object"
+                            },
+                            "IF": {
+                                "type":"string",
+                                "description":"SQL query for alert object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "THEN": {
+                                "type":"string",
+                                "description":"NOTIFICATION object name for alert object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "WAREHOUSE": {
+                                "type":"string",
+                                "description":"WAREHOUSE for alert object. If user does not provide WAREHOUSE, Snowflake's serverless compute would be utilized. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for alert object. if value is not provided by user, DEFAULT value is set to NONE"
+                            }
+                        },
+                        "required":[
+                            "NAME","SCHEDULE","IF","THEN","DATABASE","SCHEMA"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_notification_object",
+                "description":"creates snowflake notification integration object for the user. NAME and ENABLED are the required parameters.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"NAME for notification object"
+                            },
+                            "ENABLED": {
+                                "type":"string",
+                                "description":"ENABLED value for notification object"
+                            },
+                            "TYPE": {
+                                "type":"string",
+                                "description":"TYPE value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "ALLOWED_RECIPIENTS": {
+                                "type":"string",
+                                "description":"ALLOWED_RECIPIENTS value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "DEFAULT_RECIPIENTS": {
+                                "type":"string",
+                                "description":"DEFAULT_RECIPIENTS value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "DEFAULT_SUBJECT": {
+                                "type":"string",
+                                "description":"DEFAULT_SUBJECT value for notification object. if value is not provided by user, DEFAULT value is set to NONE"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"COMMENT for notification object. if value is not provided by user, DEFAULT value is set to NONE"
+                            }
+                        },
+                        "required":[
+                            "NAME","ENABLED"
                         ]
                     }
                 }
