@@ -36,7 +36,9 @@ from valueexception import (
     InvalidPassword,
     IsARequiredAttribute
 )
-
+from snowchainexception import (
+    SnowchainException
+)
 class LLMTools:
     def __init__(
                     self,
@@ -147,7 +149,7 @@ class LLMTools:
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
-        except (IsARequiredAttribute,SnowparkSQLException) as e:
+        except (SnowchainException,SnowparkSQLException) as e:
             self.logger.info(f"inside ")
             return f"There was an error  creating object: {e}"
         
