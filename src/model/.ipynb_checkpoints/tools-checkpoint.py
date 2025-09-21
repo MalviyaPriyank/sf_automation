@@ -29,12 +29,16 @@ from src.accountusage import copyhistory
 from src.processing.stage import Stage
 from src.pipeline import fullload
 from vars.gvobject import Config as cfg
+from snowflake.snowpark.exceptions import SnowparkSQLException
 
 from valueexception import (
     AttributeValidationError,
-    InvalidPassword
+    InvalidPassword,
+    IsARequiredAttribute
 )
-
+from snowchainexception import (
+    SnowchainException
+)
 class LLMTools:
     def __init__(
                     self,
@@ -82,7 +86,7 @@ class LLMTools:
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
-                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,logger=self.logger)
+                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -123,11 +127,11 @@ class LLMTools:
 
 
     def create_cortex_search_object(self,
+                                    NAME,
                                     ATTRIBUTES,
                                     WAREHOUSE,
                                     ON,
                                     TARGET_LAG,
-                                    EXTERNAL_VOLUME,
                                     EMBEDDING_MODEL,
                                     INITIALIZE,
                                     QUERY
@@ -140,13 +144,15 @@ class LLMTools:
         
     
     def create_sf_object(self, obj_name, data_dict):
-        #try:
-        qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
-        self.logger.info(f"For {obj_name}, query returned: {qry}")
-        self.logger.info(f'Object {obj_name} created successfully')
-        #except AttributeValidationError as e:
-        #    raise (e)
-        return f'Object {obj_name} created successfully'
+        try:
+            qry = self.obj_class_mapping[obj_name].create_object(**data_dict)
+            self.logger.info(f"For {obj_name}, query returned: {qry}")
+            self.logger.info(f'Object {obj_name} created successfully')
+            return f'Object {obj_name} created successfully'
+        except (SnowchainException,SnowparkSQLException) as e:
+            self.logger.info(f"inside ")
+            return f"There was an error  creating object: {e}"
+        
 
 
     def create_database_object(self, 
@@ -185,27 +191,6 @@ class LLMTools:
         self.logger.info(f'creating {ss.STORED_PROCEDURE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.STORED_PROCEDURE_OBJ, data_dict)
 
-
-    def create_account_object(self,
-                              ACCOUNT,
-                              ADMIN_NAME,
-                              ADMIN_PASSWORD,
-                              ADMIN_USER_TYPE="PERSON",
-                              FIRST_NAME="Priyank",
-                              LAST_NAME="Malviya",
-                              EMAIL="priyankmalviya0@gmail.com",
-                              MUST_CHANGE_PASSWORD="TRUE",
-                              EDITION="STANDARD",
-                              REGION_GROUP="NONE",
-                              REGION="NONE",
-                              COMMENT="NONE",
-                              POLARIS="TRUE",
-                              **kwargs):
-        frame = inspect.currentframe()
-        args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
-        self.logger.info(f'creating {ss.ACCOUNT_OBJ} object with parameters: {data_dict}')
-        return self.create_sf_object(ss.ACCOUNT_OBJ, data_dict)
 
 
     def create_externalstage_object(self,
@@ -706,14 +691,14 @@ class LLMTools:
     
 
     def perform_data_analysis(self, query, table_name='Customer_Loyalty_History'):
-            table_name = (table_name.replace(' ', '_')).upper()
+            table_name = (table_name.replace(' ', '_')).lower()
             self.logger.info(f'table_name: {table_name}')
-            table_data = pd.read_csv(f'tmp/{table_name.upper()}.csv')
+            table_data = pd.read_csv(f'analysis/{table_name.lower()}.csv')
     
             prompt = f"""The customer loyalty history table has columns: {list(table_data.columns)}.
-            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('tmp/{table_name.upper()}.csv').
+            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('analysis/{table_name.upper()}.csv').
             Write a Python script for: {query}. Only return code inside <python></python> tags.
-            if creating any visualizations or output csv, save them inside 'tmp' folder.
+            if creating any visualizations or output csv, save them inside 'analysis' folder.
             be sure to check for and handle missing data.
             """
 

@@ -691,14 +691,14 @@ class LLMTools:
     
 
     def perform_data_analysis(self, query, table_name='Customer_Loyalty_History'):
-            table_name = (table_name.replace(' ', '_')).upper()
+            table_name = (table_name.replace(' ', '_')).lower()
             self.logger.info(f'table_name: {table_name}')
-            table_data = pd.read_csv(f'tmp/{table_name.upper()}.csv')
+            table_data = pd.read_csv(f'analysis/{table_name.lower()}.csv')
     
             prompt = f"""The customer loyalty history table has columns: {list(table_data.columns)}.
-            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('tmp/{table_name.upper()}.csv').
+            Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('analysis/{table_name.upper()}.csv').
             Write a Python script for: {query}. Only return code inside <python></python> tags.
-            if creating any visualizations or output csv, save them inside 'tmp' folder.
+            if creating any visualizations or output csv, save them inside 'analysis' folder.
             be sure to check for and handle missing data.
             """
 
