@@ -135,7 +135,7 @@ def run(body, say):
         new_files = get_new_files_since(tool_start_time)
         for file_path in new_files:
             app.client.files_upload_v2(
-                channels=body['event']['channel_id'],
+                channel=body['event']['channel_id'],
                 file=file_path,
                 title=os.path.basename(file_path)
             )   
