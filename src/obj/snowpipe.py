@@ -223,6 +223,9 @@ class Snowpipe(BaseObject):
     def pause_snowpipe(self):
         self.session.sql(f"ALTER PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} SET PIPE_EXECUTION_PAUSED=true").collect()
 
+    def resume_snowpipe(self):
+        self.session.sql(f"SELECT SYSTEM$PIPE_FORCE_RESUME('{self.attr.database}.{self.attr.schema}.{self.attr.name}')").collect()
+
     def create_snowpipe(self):
         self.execute_final_query()
         self.pause_snowpipe()
@@ -263,6 +266,7 @@ class Snowpipe(BaseObject):
         self.logger.info(f"creating snowpipe : {self.attr.name}")
         self.create_snowpipe()
         self.grant_default_privileges()
+        self.resume_snowpipe()
         if len(largs) == 0:
             self.create_deployment_entry()
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
