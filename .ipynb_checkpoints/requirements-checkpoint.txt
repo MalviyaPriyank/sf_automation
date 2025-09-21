@@ -12,3 +12,4 @@ croniter
 slack_bolt
 matplotlib
 seaborn
+scikit-learn

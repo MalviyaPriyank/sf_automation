@@ -714,6 +714,7 @@ class LLMTools:
             Here is head of the table: {table_data.head().to_string()}. Please read the entire table with table_data = pd.read_csv('tmp/{table_name.upper()}.csv').
             Write a Python script for: {query}. Only return code inside <python></python> tags.
             if creating any visualizations or output csv, save them inside 'tmp' folder.
+            be sure to check for and handle missing data.
             """
 
             client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
