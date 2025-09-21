@@ -83,7 +83,7 @@ class LLMTools:
                                   ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
-                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,logger=self.logger)
+                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger)
                                   #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
                                   }
 
@@ -124,11 +124,11 @@ class LLMTools:
 
 
     def create_cortex_search_object(self,
+                                    NAME,
                                     ATTRIBUTES,
                                     WAREHOUSE,
                                     ON,
                                     TARGET_LAG,
-                                    EXTERNAL_VOLUME,
                                     EMBEDDING_MODEL,
                                     INITIALIZE,
                                     QUERY

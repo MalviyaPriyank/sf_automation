@@ -9,102 +9,91 @@ from vars.obj.cortexsearch.gvcortexsearch import CortexSearchTag as tags
 
 class ServiceName:
     def __get__(self,instance,owner):
-        return instance.__service_name
+        return instance._service_name
 
     def __set__(self,instance,value):
-        instance.__service_name = value
+        instance._service_name = value
 
     def __delete__(self,instance):
-        del instance.__service_name
+        del instance._service_name
 
 class ServiceAttributes:
     def __get__(self,instance,owner):
-        return instance.__service_attributes
+        return instance._service_attributes
     
     def __set__(self,instance,value):
-        instance.__service_attributes = value
+        instance._service_attributes = value
 
 
     def __delete__(self,instance):
-        del instance.__service_attributes
+        del instance._service_attributes
 
 
 class ServiceWarehouse:
     def __get__(self,instance,owner):
-        return instance.__service_warehouse
+        return instance._service_warehouse
     
     def __set__(self,instance,value):
-        instance.__service_warehouse = value
+        instance._service_warehouse = value
 
 
     def __delete__(self,instance):
-        del instance.__service_warehouse
+        del instance._service_warehouse
 
 class ServiceTargetLag:
     def __get__(self,instance,owner):
-        return instance.__service_target_lag
+        return instance._service_target_lag
     
     def __set__(self,instance,value):
-        instance.__service_target_lag = value
+        instance._service_target_lag = f"'{value}'"
 
 
     def __delete__(self,instance):
-        del instance.__service_target_lag
+        del instance._service_target_lag
 
 class ServiceEmbeddingModel:
     def __get__(self,instance,owner):
-        return instance.__service_embedding_model
+        return instance._service_embedding_model
     
     def __set__(self,instance,value):
-        instance.__service_embedding_model = value
+        instance._service_embedding_model = f"'{value}'"
 
 
     def __delete__(self,instance):
-        del instance.__service_embedding_model
+        del instance._service_embedding_model
 
 class ServiceInitialize:
     def __get__(self,instance,owner):
-        return instance.__service_initialize
+        return instance._service_initialize
     
     def __set__(self,instance,value):
-        instance.__service_initialize = value
+        instance._service_initialize = value
 
 
     def __delete__(self,instance):
-        del instance.__service_initialize
-
-class ServiceComment:
-    def __get__(self,instance,owner):
-        return instance.__service_comment
-    
-    def __set__(self,instance,value):
-        instance.__service_comment = value
-
-
-    def __delete__(self,instance):
-        del instance.__service_comment
+        del instance._service_initialize
 
 class ServiceQuery:
     def __get__(self,instance,owner):
-        return instance.__service_query
+        return instance._service_query
     
     def __set__(self,instance,value):
-        instance.__service_query = value
+        instance._service_query = value
 
 
     def __delete__(self,instance):
-        del instance.__service_query
+        del instance._service_query
 
 class ServiceOn:
     def __get__(self,instance,owner):
-        return instance.__service_on
+        return instance._service_on
     
     def __set__(self,instance,value):
-        instance.__service_on = value
+        instance._service_on = value
 
 
     def __delete__(self,instance):
-        del instance.__service_on
+        del instance._service_on
 
 class CortexSearchAttrs:
     service_name=ServiceName()
@@ -114,14 +103,14 @@ class CortexSearchAttrs:
     service_target_lag=ServiceTargetLag()
     service_embedding_model=ServiceEmbeddingModel()
     service_initialize=ServiceInitialize()
-    service_comment=ServiceComment()
     service_query=ServiceQuery()
 
 class CortexSearch(BaseObject):
-    def __init__(self,session,logger):
+    def __init__(self,session,user_id,logger):
         self.attr=CortexSearchAttrs()
         self.session=session
         self.logger=logger
+        self.user_id=user_id
 
     def set_service_name(self,val=None):
         self.attr.service_name=val
@@ -144,8 +133,6 @@ class CortexSearch(BaseObject):
     def set_service_initialize(self,val=None):
         self.attr.service_initialize=val
 
-    def set_service_comment(self,val=None):
-        self.attr.service_comment=val
 
     def set_service_query(self,val=None):
         self.attr.service_query=val
@@ -156,15 +143,14 @@ class CortexSearch(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.NAME,"__service_name")
-        set_flag(tags.ON,"__service_on")
-        set_flag(tags.ATTRIBUTES,"__service_attributes")
-        set_flag(tags.WAREHOUSE,"__service_warehouse")
-        set_flag(tags.TARGET_LAG,"__service_target_lag")
-        set_flag(tags.EMBEDDING_MODEL,"__service_embedding_model")
-        set_flag(tags.INITIALIZE,"__service_initialize")
-        set_flag(tags.COMMENT,"_comment")
-        set_flag(tags.QUERY,"__service_query")
+        set_flag(tags.NAME,"service_name")
+        set_flag(tags.ON,"service_on")
+        set_flag(tags.ATTRIBUTES,"service_attributes")
+        set_flag(tags.WAREHOUSE,"service_warehouse")
+        set_flag(tags.TARGET_LAG,"service_target_lag")
+        set_flag(tags.EMBEDDING_MODEL,"service_embedding_model")
+        set_flag(tags.INITIALIZE,"service_initialize")
+        set_flag(tags.QUERY,"service_query")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -176,9 +162,9 @@ class CortexSearch(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.ON:
-                    self.qry = f" {self.qry} {tags.ON} = {self.attr.service_on} "
+                    self.qry = f" {self.qry} {tags.ON}  {self.attr.service_on} "
                 if prop == tags.ATTRIBUTES:
-                    self.qry = f" {self.qry} {tags.ATTRIBUTES} = {self.attr.service_attributes} "
+                    self.qry = f" {self.qry} {tags.ATTRIBUTES}  {self.attr.service_attributes} "
                 if prop == tags.WAREHOUSE:
                     self.qry = f" {self.qry} {tags.WAREHOUSE} = {self.attr.service_warehouse} "
                 if prop == tags.TARGET_LAG:
@@ -187,13 +173,11 @@ class CortexSearch(BaseObject):
                     self.qry = f" {self.qry} {tags.EMBEDDING_MODEL} = {self.attr.service_embedding_model} "
                 if prop == tags.INITIALIZE:
                     self.qry = f" {self.qry} {tags.INITIALIZE} = {self.attr.service_initialize} "
-                if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.service_comment} "
                 if prop == tags.QUERY:
-                    self.qry = f" {self.qry} AS {self.attr.service_query} "
+                    self.qry = f" {self.qry} AS ({self.attr.service_query} )"
 
     def set_create_cortex_search_qry(self):
-        self.qry = f"CREATE CORTEX SEARCH SERVICE  {self.attr.service_name} "
+        self.qry = f"CREATE CORTEX SEARCH SERVICE  DEV_DB.STG_SCHEMA.{self.attr.service_name} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -209,6 +193,7 @@ class CortexSearch(BaseObject):
         self.logger.info('set name')
         self.set_service_name(kwargs[tags.NAME])
 
+        self.set_service_on(kwargs[tags.ON])
         self.logger.info('set ATTRIBUTES')
         self.set_service_attributes(kwargs[tags.ATTRIBUTES])
 
@@ -223,9 +208,6 @@ class CortexSearch(BaseObject):
 
         self.logger.info('set INITIALIZE')
         self.set_service_initialize(kwargs[tags.INITIALIZE])
-
-        self.logger.info('set COMMENT')
-        self.set_service_commnet(kwargs[tags.COMMENT])
 
         self.logger.info('set QUERY')
         self.set_service_query(kwargs[tags.QUERY])

@@ -59,9 +59,9 @@ def run(body, say):
         bedrock_obj = Bedrock()
         retrieval_workflow = bedrock_obj.get_retriever_obj()
         tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
-        print("************** TOOL LIST **********************")
-        print(tools)
-        print("************** TOOL LIST **********************")
+        logger.info("************** TOOL LIST **********************")
+        logger.info(tools)
+        logger.info("************** TOOL LIST **********************")
         # say('Logged in to snowflake')
         # print(body)
         prompt = body['event']['text']

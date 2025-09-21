@@ -89,8 +89,11 @@ class UserTaskManagedInitialWarehouseSize:
         if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
         else:
-            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._user_task_managed_initial_warehouse_size = value
+            if value == 'NONE':
+                instance._user_task_managed_initial_warehouse_size = 'NONE'
+            else:
+                vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                instance._user_task_managed_initial_warehouse_size = value
 
     def __delete__(self,instance):
         del instance._user_task_managed_initial_warehouse_size
@@ -609,7 +612,6 @@ class Task(BaseObject):
         self.set_comment(kwargs[tags.COMMENT])
         self.set_after(kwargs[tags.AFTER])
         self.set_when(kwargs[tags.WHEN])
-        self.set_tag(kwargs[tags._tag_tag])
         self.set_finalize(kwargs[tags.FINALIZE])
         self.set_task_auto_retry_attempts(kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS])
         self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS])

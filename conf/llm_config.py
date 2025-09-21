@@ -368,6 +368,10 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for the base table name that you wish to search on."
                             },
+                            "NAME": {
+                                "type":"string",
+                                "description":"name of the service. To be provided by the user."
+                            },
                             "ATTRIBUTES": {
                                 "type":"string",
                                 "description":"comma-separated list of columns in the base table that you wish to filter on when issuing queries to the service."
@@ -379,10 +383,6 @@ tools = {
                             "TARGET_LAG": {
                                 "type":"string",
                                 "description":"Specifies the maximum amount of time that the Cortex Search service content should lag behind updates to the base tables specified in the source query."
-                            },
-                            "EXTERNAL_VOLUME": {
-                                "type":"string",
-                                "description":"user provided value for external volume"
                             },
                             "EMBEDDING_MODEL": {
                                 "type":"string",
@@ -399,7 +399,7 @@ tools = {
                             
                         },
                         "required":[
-                            "ON","ATTRIBUTES","WAREHOUSE","TARGET_LAG","EXTERNAL_VOLUME","EMBEDDING_MODEL","INITIALIZE","QUERY"
+                            "ON","NAME","ATTRIBUTES","WAREHOUSE","TARGET_LAG","EMBEDDING_MODEL","INITIALIZE","QUERY"
                         ]
                     }
                 }
