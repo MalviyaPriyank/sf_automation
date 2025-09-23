@@ -135,9 +135,9 @@ class Table:
 
         for i in range(0,len(self.attr.column_name_list)):
             if i != len(self.attr.column_name_list) -1:
-                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]}, '
+                qry = qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]}, '
             else: 
-                qry = qry + f' "{self.attr.column_name_list[i]}" {self.attr.column_type_list[i]} '
+                qry = qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} '
 
         qry = qry + " ) "
         return qry
@@ -190,6 +190,9 @@ class Table:
                 self.create_table()
                 self.grant_default_privileges()
                 self.create_deployment_entry()
+                shutil.rmtree(file_path)
+        os.makedirs('tmp', exist_ok=True)
+       
 
     def create_deployment_entry(self):
         deploy_inst = Deploy(self.session,logger=self.logger)

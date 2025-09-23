@@ -190,6 +190,8 @@ class Table:
                 self.create_table()
                 self.grant_default_privileges()
                 self.create_deployment_entry()
+                shutil.rmtree(file_path)
+        os.makedirs('tmp', exist_ok=True)
        
 
     def create_deployment_entry(self):

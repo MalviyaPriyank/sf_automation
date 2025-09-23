@@ -33,7 +33,7 @@ app = App(token="xoxb-9208561529233-9197498838290-zf4Agy7eak9f3rF6bIDLJBbD")
 
 chat_history = []
 
-def get_new_files_since(start_time, folder='tmp'):
+def get_new_files_since(start_time, folder='analysis'):
     new_files = []
     for file in Path(folder).glob('*'):
         if file.is_file() and file.stat().st_mtime > start_time:

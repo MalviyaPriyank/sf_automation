@@ -695,7 +695,7 @@ class LLMTools:
             self.logger.info(f'table_name: {table_name}')
             table_data = pd.read_csv(f'analysis/sales_pipeline.csv')
     
-            prompt = f"""Write a Python script for: {query}. table data is in file analysis/sales_pipeline.csv, do not attempt to read from any other file. The columns are opportunity_id, sales_agent, product, account, deal_stage, engage_date, close_date, close_value. Only return code inside <python></python> tags. Handle missing values. if creating any visualizations or output csv, save them inside 'analysis' folder. be sure to check for and handle missing data."""
+            prompt = f"""Write a Python script for: {query.lower()}. table data is in file analysis/sales_pipeline.csv, do not attempt to read from any other file. The columns are opportunity_id, sales_agent, product, account, deal_stage, engage_date, close_date, close_value. Only return code inside <python></python> tags. Handle missing values. if creating any visualizations or output csv, save them inside 'analysis' folder. be sure to check for and handle missing data."""
 
             client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
                                    aws_access_key_id=llm_config.ACCESS_KEY,

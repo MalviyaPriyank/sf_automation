@@ -33,7 +33,7 @@ app = App(token="xoxb-9208561529233-9197498838290-zf4Agy7eak9f3rF6bIDLJBbD")
 
 chat_history = []
 
-def get_new_files_since(start_time, folder='tmp'):
+def get_new_files_since(start_time, folder='analysis'):
     new_files = []
     for file in Path(folder).glob('*'):
         if file.is_file() and file.stat().st_mtime > start_time:
@@ -59,6 +59,9 @@ def run(body, say):
         bedrock_obj = Bedrock()
         retrieval_workflow = bedrock_obj.get_retriever_obj()
         tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
+        logger.info("************** TOOL LIST **********************")
+        logger.info(tools)
+        logger.info("************** TOOL LIST **********************")
         # say('Logged in to snowflake')
         # print(body)
         prompt = body['event']['text']
