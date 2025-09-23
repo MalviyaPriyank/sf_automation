@@ -150,8 +150,13 @@ class LLMTools:
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
         except (SnowchainException,SnowparkSQLException) as e:
-            self.logger.info(f"inside ")
+            self.logger.info(f"inside Snowchainexception")
+            self.logger.info(f"Error : {e}")
             return f"There was an error  creating object: {e}"
+        except Exception as e:
+            self.logger.info("inside generic exception")
+            self.logger.info(f"Error : {e}")
+            return f"There was ab error creating object : {e}"
         
 
 

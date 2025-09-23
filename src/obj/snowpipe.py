@@ -252,6 +252,7 @@ class Snowpipe(BaseObject):
 
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Snowpipe : values passed : {kwargs}")
         self.set_database(kwargs[tags.DATABASE])
         self.set_schema(kwargs[tags.SCHEMA])
         self.set_name(kwargs[tags.NAME])

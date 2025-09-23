@@ -55,7 +55,7 @@ class BaseObject(AbstractObject):
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
             repo.push_file_to_remote()
         elif object_database !='NA' and object_schema == 'NA':
-            filepath=f"Database/{object_database}/Schemas/{object_name}.sql"
+            filepath=f"Database/{object_database}/Schemas/DDL/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} to repo")
             self.logger.info("Before cloning")
@@ -66,7 +66,7 @@ class BaseObject(AbstractObject):
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
             repo.push_file_to_remote()
         elif object_database =='NA':
-            filepath=f"Database/{object_name}/{object_name}.sql"
+            filepath=f"Database/{object_name}/DDL/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} to repo")
             self.logger.info("Before cloning")

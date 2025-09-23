@@ -177,7 +177,7 @@ class CortexSearch(BaseObject):
                     self.qry = f" {self.qry} AS ({self.attr.service_query} )"
 
     def set_create_cortex_search_qry(self):
-        self.qry = f"CREATE CORTEX SEARCH SERVICE  DEV_DB.STG_SCHEMA.{self.attr.service_name} "
+        self.qry = f"CREATE CORTEX SEARCH SERVICE CRM_DEV_DB.SALES.{self.attr.service_name} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
