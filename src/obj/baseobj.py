@@ -26,6 +26,7 @@ class BaseObject(AbstractObject):
     
     def execute_final_query(self):
         self.session.sql(self.qry).collect()
+    
 
     def create_deployment_entry(self,object_name,object_type,object_database,object_schema):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)

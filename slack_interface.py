@@ -145,7 +145,7 @@ def run(body, say):
     except Exception as e:
         logger.info(f"{traceback.print_exc()}")
         logger.info(e)
-        say('There was an issue processing your request, Apologies :(')
+        say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.')
 
 @app.event("message")
 def handle_message_events(body, say):

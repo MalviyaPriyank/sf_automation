@@ -237,18 +237,6 @@ class Snowpipe(BaseObject):
             if privileges in gv_priv._allowed_privileges["PIPE"]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "PIPE",object_identifier=self.qualified_name,role = role)
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session, self.logger)
-        self.logger.info(f"Tracking for deployment snowpipe object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
 
 
     def create_object(self,*largs,**kwargs):
@@ -269,6 +257,6 @@ class Snowpipe(BaseObject):
         self.grant_default_privileges()
         self.resume_snowpipe()
         if len(largs) == 0:
-            self.create_deployment_entry()
+            #self.create_deployment_entry()
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 

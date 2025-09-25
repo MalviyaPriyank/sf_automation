@@ -16,7 +16,7 @@ from processing.stage import Stage
 from dep.deploy import Deploy
 from setup import privilege
 from vars.base.basedatatypes import DataTypes
-
+from .baseobj import BaseObject 
 
 
 class Database:
@@ -96,14 +96,12 @@ class TableAttrs:
 
     column_type_list = ColumnTypeList()
 
-class Table:
+class Table(BaseObject):
 
     def __init__(self,session,root,user_id,logger):
+        super().__init__(session=session,user_id=user_id,logger=logger)
         self.attr = TableAttrs(self)
-        self.session = session 
         self.root = root
-        self.user_id = user_id
-        self.logger = logger
 
     def set_database(self,database):
         self.attr.database = database
@@ -192,17 +190,20 @@ class Table:
                 self.grant_default_privileges()
                 self.create_deployment_entry()
 
-       
+    def create_table_using_query(self,database,schema,qry):
+        self.logger.info("set database")
+        self.set_database(database=database)
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment table object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(self.qry,self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
+        self.logger.info("set schema")
+        self.set_schema(schema=schema)
+        
+        self.logger.info(f"switch to database {self.attr.database}")
+        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
+
+        self.logger.info(f"switch to schema {self.attr.schema}")
+        self.session.sql(f"USE SCHEMA {self.attr.schema}").collect()
+
+        self.logger.info(f" Query : {qry}")
+        self.session.sql(qry).collect()
+        self.create_deployment_entry()
+

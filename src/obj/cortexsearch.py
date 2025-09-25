@@ -67,7 +67,10 @@ class ServiceInitialize:
         return instance._service_initialize
     
     def __set__(self,instance,value):
-        instance._service_initialize = value
+        if value == 'NONE':
+            instance._service_initialize='ON_CREATE'
+        else:
+            instance._service_initialize = value
 
 
     def __delete__(self,instance):
