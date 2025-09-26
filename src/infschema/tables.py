@@ -30,3 +30,8 @@ class Tables:
             return True
         elif len(res) > 0:
             return False
+        
+    def get_all_tables_in_schema(self,db_name,schema_name):
+        self.use_database(db_name=db_name)
+        df = self.session.table(self.col._view).filter((col(self.col._table_catalog)== db_name.upper()) & (col(self.col._table_schema)==schema_name)).select(col(self.col._table_name)).collect()
+        return df
