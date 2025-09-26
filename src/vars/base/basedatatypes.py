@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 dataclass(frozen=True)
 class DataTypes:
-    data_type_dict ={
+    __data_type_dict ={
         'NUMBER':['NUMBER'],
         'DECIMAL':['DECIMAL','DEC','NUMERIC'],
         'INTEGER':['INT','BIGINT','SMALLINT','TINYINT','BYTEINT'],
@@ -22,9 +22,6 @@ class DataTypes:
 
     @classmethod
     def get_allowed_data_types(cls):
-        values_lst=[]
-        for values in cls.data_type_dict.values():
-            values_lst.append(values)
-        return values_lst
+        return cls.__data_type_dict
     
 
