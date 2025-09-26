@@ -188,9 +188,10 @@ class Table(BaseObject):
                 self.set_qualified_name()
                 self.create_table()
                 self.grant_default_privileges()
+                self.write_file_to_git(object_name=files,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
                 self.create_deployment_entry()
 
-    def create_table_using_query(self,database,schema,qry):
+    def create_table_using_query(self,database,schema,table,qry):
         self.logger.info("set database")
         self.set_database(database=database)
 
@@ -206,4 +207,6 @@ class Table(BaseObject):
         self.logger.info(f" Query : {qry}")
         self.session.sql(qry).collect()
         self.create_deployment_entry()
+
+        self.write_file_to_git(object_name=table,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 
