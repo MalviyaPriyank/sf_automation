@@ -22,6 +22,7 @@ from conf import llm_config, readconf
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
+from src.infschema import tables, columns
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
 from src.dep import deploy
@@ -92,6 +93,7 @@ class LLMTools:
 
 
     def get_list_of_tables(self, database, schema):
+        '''
         table_list = []
         self.sf_session.sql(f'USE DATABASE {database}').collect()
         
@@ -100,8 +102,17 @@ class LLMTools:
         for row in table_list_df.to_local_iterator():
             table_list.append(row[0])
         # table_list_df = table_list_df.sort('ORDINAL_POSITION').select('column_name','data_type')
+        '''
+        table_list = tables.Tables(session=self.session).get_all_tables_in_schema(db_name=database,schema_name=schema)
         self.logger.info(f'database {database} and schema {schema} contain following tables: {table_list}')
         return f'database {database} and schema {schema} contain following tables: {table_list}'
+
+
+    def get_list_of_cols(self, DATABASE, SCHEMA, TABLE_LIST):
+        col_list = {}
+        for table in TABLE_LIST:
+            col_list[table] = columns.Columns(session=self.session).get_all_columns_of_a_table(database_name=DATABASE,schema_name=SCHEMA,table_name=TABLE)
+        return f'Heres a table to column mapping: {col_list}'
 
 
     def transfer_tables_across_stage(self,
@@ -150,8 +161,13 @@ class LLMTools:
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
         except (SnowchainException,SnowparkSQLException) as e:
-            self.logger.info(f"inside ")
+            self.logger.info(f"inside Snowchainexception")
+            self.logger.info(f"Error : {e}")
             return f"There was an error  creating object: {e}"
+        except Exception as e:
+            self.logger.info("inside generic exception")
+            self.logger.info(f"Error : {e}")
+            return f"There was ab error creating object : {e}"
         
 
 
@@ -493,23 +509,34 @@ class LLMTools:
                                ERROR_INTEGRATION="NONE",
                                AWS_SNS_TOPIC="NONE",
                                INTEGRATION="NONE",
-                               COMMENT="NONE"):
-        
-        frame = inspect.currentframe()
-        args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
-        self.logger.info(f"Tables provided = {values['TABLE']}")
-        self.logger.info(f"Copyinto provided = {values['COPYINTO_QUERY']}")
-        
-        table_values = values['TABLE'].split(',')
-        copyinto_values = values['COPYINTO_QUERY'].split(',')
-        for value in range(len(table_values)):
-            self.logger.info(f'Creating snowpipe for table {table_values[value]} with copyinto query {copyinto_values[value]}')
-            data_dict['TABLE'] = table_values[value].replace('[','').replace(']','').replace('"','')
-            data_dict['NAME'] = f"PIPE_{data_dict['TABLE']}"
-            data_dict['COPYINTO_QUERY'] = copyinto_values[value].replace('{table}', data_dict['TABLE'])
-            snowpipe_obj = self.obj_class_mapping[ss.SNOWPIPE_OBJ].create_object(**data_dict)
-        return f'SNOWPIPE object created successfully for all tables'
+                               COMMENT="NONE"
+                               ):
+        try:
+            self.logger.info("inside snowpipe")
+            frame = inspect.currentframe()
+            args, _, _, values = inspect.getargvalues(frame)
+            data_dict = {arg: values[arg] for arg in args[1:]}
+            self.logger.info(f"Tables provided = {values['TABLE']}")
+            self.logger.info(f"Copyinto provided = {values['COPYINTO_QUERY']}")
+            
+            table_values = values['TABLE'].split(',')
+            copyinto_values = values['COPYINTO_QUERY'].split(',')
+            for value in range(len(table_values)):
+                self.logger.info(f'Creating snowpipe for table {table_values[value]} with copyinto query {copyinto_values[value]}')
+                data_dict['TABLE'] = table_values[value].replace('[','').replace(']','').replace('"','')
+                data_dict['NAME'] = f"PIPE_{data_dict['TABLE']}"
+                data_dict['COPYINTO_QUERY'] = copyinto_values[value].replace('{table}', data_dict['TABLE'])
+                return f"{self.obj_class_mapping[ss.SNOWPIPE_OBJ].create_object(**data_dict)}"
+                #return self.create_sf_object(ss.TASK_OBJ, data_dict)
+            #return f'SNOWPIPE object created successfully for all tables'
+        except (SnowchainException,SnowparkSQLException) as e:
+            self.logger.warn(f"inside Snowchainexception for snowpipe")
+            self.logger.warn(f"Error : {e}")
+            return f"There was an error  creating object: {e}"
+        except Exception as e:
+            self.logger.warn("inside generic exception for snowpipe")
+            self.logger.warn(f"Error : {e}")
+            return f"There was ab error creating object : {e}"
 
 
     def create_task_object(self,
@@ -719,6 +746,18 @@ class LLMTools:
             result = self.execute_python_code(code, {"pd": pd, "table_data": table_data})
             self.logger.info(f'\n\n result: {result}')
             return result
+
+    
+    def create_role(self, NAME, COMMENT=""):
+        frame = inspect.currentframe()
+        args, _, _, values = inspect.getargvalues(frame)
+        data_dict = {arg: values[arg] for arg in args[1:]}
+        self.logger.info(f'creating {ss.ROLE_OBJ} object with parameters: {data_dict}')
+        return self.create_sf_object(ss.ROLE_OBJ, data_dict)
+
+
+    def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
+        return self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=sql_query)
         
 
     def tool_call(self, content, tool_result):

@@ -946,5 +946,61 @@ tools = {
                 }
             }
         },
+        {
+            "toolSpec": {
+                "name":"create_role_object",
+                "description":"create a role object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"name for the role"
+                            },
+                            "COMMENT": {
+                                "type":"string",
+                                "description":"comment for the role"
+                            },
+                        },
+                        "required":[
+                            "name","comment"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_fact_dimension_table",
+                "description":"creates a fact dimension table object. use the get_list_of_tables tool to get list of tables and get_list_of_columns tool to get all columns for those tables. you then write a SQL query for fact dimension and provide it as an input here.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "DATABASE": {
+                                "type":"string",
+                                "description":"database name for fact dimension table"
+                            },
+                            "SCHEMA": {
+                                "type":"string",
+                                "description":"schema name for fact dimension table"
+                            },
+                            "TABLE": {
+                                "type":"string",
+                                "description":"table name"
+                            },
+                            "SQL_QUERY": {
+                                "type":"string",
+                                "description":"write the sql query to create fact dimension table. DO NOT ask for this query from the user"
+                            },
+                        },
+                        "required":[
+                            "DATABASE","SCHEMA","TABLE","SQL_QUERY"
+                        ]
+                    }
+                }
+            }
+        },
     ]
 }

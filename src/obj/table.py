@@ -121,7 +121,6 @@ class Table(BaseObject):
     def set_column_type_list(self,ddl_df):
         self.attr.column_type_list = ddl_df["Column_Type"].to_list()
 
-
     def read_table_ddl_file(self):
         table_ddl_df = pd.read_csv(self.attr.file_path)
         return table_ddl_df
