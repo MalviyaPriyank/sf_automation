@@ -1,71 +1,61 @@
 from .baseprivilege import BasePrivilege
 
 class DatabasePrivileges(BasePrivilege):
-    def __init__(self):
+    def __init__(self,session,logger,object_identifier):
         super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('DATABASE')
+        super().set_object_type(val='DATABASE')
+        super().set_object_identifier(val=object_identifier)
     
 class UserPrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('USER')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='USER')
+        super().set_object_identifier(val=object_identifier)
     
 class StagePrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('STAGE')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='STAGE')
+        super().set_object_identifier(val=object_identifier)
     
 class WarehousePrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('WAREHOUSE')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='WAREHOUSE')
+        super().set_object_identifier(val=object_identifier)
     
 class SchemaPrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('SCHEMA')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='SCHEMA')
+        super().set_object_identifier(val=object_identifier)
 
 class TablePrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('TABLE')
+     def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='TABLE')
+        super().set_object_identifier(val=object_identifier)
     
 class FileFormatPrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('FILE FORMAT')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='FILE_FORMAT')
+        super().set_object_identifier(val=object_identifier)
     
 class SnowpipePrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('PIPE')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='PIPE')
+        super().set_object_identifier(val=object_identifier)
     
 class StreamPrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('STREAM')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='STREAM')
+        super().set_object_identifier(val=object_identifier)
     
 class TaskPrivileges(BasePrivilege):
-    def __init__(self):
-        super().__init__()
-
-    def set_object_type(self):
-        super().set_object_type('TASK')
+    def __init__(self,session,logger,object_identifier):
+        super().__init__(session=session,logger=logger)
+        super().set_object_type(val='TASK')
+        super().set_object_identifier(val=object_identifier)

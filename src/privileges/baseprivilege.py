@@ -20,13 +20,26 @@ class ObjectType:
     def __delete__(self,instance):
         del instance._object_type
 
+class ObjectIdentifier:
+    def __get__(self,instance,owner):
+        return instance._object_identifier
+    
+    def __set__(self,instance,value):
+        instance._object_identifier = value
+
+    def __delete__(self,instance):
+        del instance._object_identifier
+
 
 class AbsGVPrivilegeAttr:
     object_type = ObjectType()
+    object_identifier=ObjectIdentifier()
 
 class AbsGVPrivilege(ABC):
-    def __init__(self):
+    def __init__(self,session,logger):
         self.attr = AbsGVPrivilegeAttr()
+        self.session=session
+        self.logger=logger
 
     @abstractmethod
     def set_object_type():
@@ -60,15 +73,20 @@ class AbsGVPrivilege(ABC):
 
 
 class BasePrivilege(AbsGVPrivilege):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,session,logger):
+        super().__init__(session=session,logger=logger)
 
     def set_object_type(self,val):
         self.attr.object_type=val
+    
+    def set_object_identifier(self,val):
+        self.attr.object_identifier=val
 
-    @classmethod
-    def grant_privilege_on_object_to_role(cls,privlege_type,object_type,object_identifier,role) -> str: 
-        qry = f"GRANT {privlege_type} ON {object_type} {object_identifier} TO ROLE {role}"
+    def grant_privilege_on_object_to_role(self,privlege_type,role) -> str: 
+        self.logger.info(f"inside to grant {privlege_type} privilege to role {role}")     
+        qry = f"GRANT {privlege_type} ON {self.attr.object_type} {self.attr.object_identifier} TO ROLE {role}"
+        self.session.sql(qry).collect()
+        self.logger.info("privilege granted")
         return qry
     
     @classmethod

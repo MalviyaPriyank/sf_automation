@@ -20,33 +20,35 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from exception.privilegeexception import ObjectNotSupported
 
 class Privilege:
-    def __init__(self,cls,logger):
-        self.logger=logger
-        cls = cls.replace(' ','')
-        if cls.upper()=='DATABASE':
-            self.attr=DatabasePrivileges()
-        if cls.upper()=='SCHEMA':
-            self.attr=SchemaPrivileges()
-        if cls.upper()=='WAREHOUSE':
-            self.attr=WarehousePrivileges()
-        if cls.upper()=='STAGE':
-            self.attr=StagePrivileges()
-        if cls.upper()=='TABLE':
-            self.attr=TablePrivileges()
-        if cls.upper()=='FILEFORMAT' or cls.upper()=='FILE_FORMAT':
-            self.attr=FileFormatPrivileges()
-        if cls.upper()=='SNOWPIPE':
-            self.attr=SnowpipePrivileges()
-        if cls.upper()=='STREAM':
-            self.attr=StreamPrivileges()
-        if cls.upper()=='TASK':
-            self.attr=TaskPrivileges()
-        if cls.upper()=='USER':
-            self.attr=UserPrivileges()
+    def __init__(self,session,object_type,object_identifier,logger):
+        object_type = object_type.replace(' ','')
+        if object_type.upper()=='DATABASE':
+            self.obj=DatabasePrivileges(object_identifier=object_identifier)
+        if object_type.upper()=='SCHEMA':
+            self.obj=SchemaPrivileges(object_identifier)
+        if object_type.upper()=='WAREHOUSE':
+            self.obj=WarehousePrivileges(object_identifier)
+        if object_type.upper()=='STAGE':
+            self.obj=StagePrivileges(object_identifier)
+        if object_type.upper()=='TABLE':
+            self.obj=TablePrivileges(object_identifier)
+        if object_type.upper()=='FILEFORMAT' or object_type.upper()=='FILE_FORMAT':
+            self.obj=FileFormatPrivileges(object_identifier)
+        if object_type.upper()=='SNOWPIPE':
+            self.obj=SnowpipePrivileges(object_identifier)
+        if object_type.upper()=='STREAM':
+            self.obj=StreamPrivileges(object_identifier)
+        if object_type.upper()=='TASK':
+            self.obj=TaskPrivileges(object_identifier)
+        if object_type.upper()=='USER':
+            self.obj=UserPrivileges(object_identifier)
         else:
-            raise ObjectNotSupported(object_type=cls.upper())
+            raise ObjectNotSupported(object_type=object_type.upper())
 
-    def get_allowed_privileges(self):
-        self.logger.info(f"Getting privielges for  {self.attr.__class__.__name__}")
-        self.attr.get_allowed_privileges()
+    def find_privileges(self):
+        return self.obj.get_allowed_privileges()
+    
+    def grant_privilege(self,privelege_type,role):
+        self.obj.grant_privilege_on_object_to_role(privlege_type=privelege_type,role=role)
+        
         
