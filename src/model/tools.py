@@ -30,6 +30,7 @@ from src.accountusage import copyhistory
 from src.processing.stage import Stage
 from src.pipeline import fullload
 from vars.gvobject import Config as cfg
+import traceback
 from snowflake.snowpark.exceptions import SnowparkSQLException
 
 from valueexception import (
@@ -161,12 +162,13 @@ class LLMTools:
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
         except (SnowchainException,SnowparkSQLException) as e:
-            self.logger.info(f"inside Snowchainexception")
-            self.logger.info(f"Error : {e}")
+            self.logger.warn(f"inside Snowchainexception")
+            self.logger.warn(f"Error : {e}")
             return f"There was an error  creating object: {e}"
         except Exception as e:
-            self.logger.info("inside generic exception")
-            self.logger.info(f"Error : {e}")
+            self.logger.warn("inside generic exception")
+            self.logger.warn(f"Error : {e}")
+            self.logger.warn(f"Traceback: {traceback.format_exc()}")
             return f"There was ab error creating object : {e}"
         
 
