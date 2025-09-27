@@ -20,28 +20,28 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from exception.privilegeexception import ObjectNotSupported
 
 class Privilege:
-    def __init__(self,session,object_type,object_identifier,logger):
+    def __init__(self,session,logger,object_type,object_identifier):
         object_type = object_type.replace(' ','')
         if object_type.upper()=='DATABASE':
-            self.obj=DatabasePrivileges(object_identifier=object_identifier)
+            self.obj=DatabasePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='SCHEMA':
-            self.obj=SchemaPrivileges(object_identifier)
+            self.obj=SchemaPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='WAREHOUSE':
-            self.obj=WarehousePrivileges(object_identifier)
+            self.obj=WarehousePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='STAGE':
-            self.obj=StagePrivileges(object_identifier)
+            self.obj=StagePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='TABLE':
-            self.obj=TablePrivileges(object_identifier)
+            self.obj=TablePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='FILEFORMAT' or object_type.upper()=='FILE_FORMAT':
-            self.obj=FileFormatPrivileges(object_identifier)
+            self.obj=FileFormatPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='SNOWPIPE':
-            self.obj=SnowpipePrivileges(object_identifier)
+            self.obj=SnowpipePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='STREAM':
-            self.obj=StreamPrivileges(object_identifier)
+            self.obj=StreamPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='TASK':
-            self.obj=TaskPrivileges(object_identifier)
+            self.obj=TaskPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         if object_type.upper()=='USER':
-            self.obj=UserPrivileges(object_identifier)
+            self.obj=UserPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         else:
             raise ObjectNotSupported(object_type=object_type.upper())
 
