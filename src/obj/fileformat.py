@@ -1328,7 +1328,6 @@ class FileFormat(BaseObject):
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 
 
-
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment fileformat object : {self.attr.name}")
@@ -1341,5 +1340,3 @@ class FileFormat(BaseObject):
         deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
         deploy_inst.set_deployment_id('NA')
         deploy_inst.insert_into_deploy_control_table()
-
-

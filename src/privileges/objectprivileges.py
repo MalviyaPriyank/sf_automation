@@ -2,7 +2,7 @@ from .baseprivilege import BasePrivilege
 
 class DatabasePrivileges(BasePrivilege):
     def __init__(self,session,logger,object_identifier):
-        super().__init__()
+        super().__init__(session=session,logger=logger)
         super().set_object_type(val='DATABASE')
         super().set_object_identifier(val=object_identifier)
     

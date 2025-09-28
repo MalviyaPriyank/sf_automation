@@ -20,6 +20,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 from conf import llm_config, readconf
+from privileges.privilege import Privilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
@@ -764,6 +765,11 @@ class LLMTools:
         for qry in SQL_QUERY.split(';'):
             self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=SQL_QUERY)
         return 'Completed successfully'
+    
+    def grant_privileges(self, object_type, object_identifier, role):
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+        privileges = privilege_obj.find_privileges()
+        privilege_obj.grant_privilege(privilege_type=privileges, role=role)
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
