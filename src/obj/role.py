@@ -96,17 +96,5 @@ class Role(BaseObject):
         self.logger.info(f"creating role {self.attr.name}")
         self.create_role()
         if len(pargs) == 0:
-            self.create_deployment_entry()
+            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
-        self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database('NA')
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()

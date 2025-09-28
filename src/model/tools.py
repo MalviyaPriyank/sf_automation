@@ -6,6 +6,7 @@ import inspect
 import pandas as pd
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
+import ast
 
 import re
 import contextlib
@@ -104,7 +105,7 @@ class LLMTools:
             table_list.append(row[0])
         # table_list_df = table_list_df.sort('ORDINAL_POSITION').select('column_name','data_type')
         '''
-        table_list = tables.Tables(session=self.session).get_all_tables_in_schema(db_name=database,schema_name=schema)
+        table_list = tables.Tables(session=self.sf_session).get_all_tables_in_schema(db_name=database,schema_name=schema)
         self.logger.info(f'database {database} and schema {schema} contain following tables: {table_list}')
         return f'database {database} and schema {schema} contain following tables: {table_list}'
 
@@ -112,7 +113,7 @@ class LLMTools:
     def get_list_of_cols(self, DATABASE, SCHEMA, TABLE_LIST):
         col_list = {}
         for table in TABLE_LIST:
-            col_list[table] = columns.Columns(session=self.session).get_all_columns_of_a_table(database_name=DATABASE,schema_name=SCHEMA,table_name=TABLE)
+            col_list[table] = columns.Columns(session=self.sf_session).get_all_columns_of_a_table(database_name=DATABASE,schema_name=SCHEMA,table_name=table)
         return f'Heres a table to column mapping: {col_list}'
 
 
@@ -759,14 +760,10 @@ class LLMTools:
 
 
     def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
-        return self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=sql_query)
-
-
-    def grant_privilege(self, object_type, object_identifier, role):
-        privilege_obj = privilege.Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
-        privileges = privilege_obj.find_privileges()
-        privilege_obj.grant_privilege(privilege_type=privileges, role=role)
-
+        
+        for qry in SQL_QUERY.split(';'):
+            self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=SQL_QUERY)
+        return 'Completed successfully'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
@@ -777,4 +774,3 @@ class LLMTools:
             lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: result}}]
         }})
         return tool_result
-        
