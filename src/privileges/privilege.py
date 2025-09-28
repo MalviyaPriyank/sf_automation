@@ -22,33 +22,35 @@ from exception.privilegeexception import ObjectNotSupported
 class Privilege:
     def __init__(self,session,logger,object_type,object_identifier):
         object_type = object_type.replace(' ','')
+        logger.info(f"inside privilege for {object_type} : {object_identifier}")
         if object_type.upper()=='DATABASE':
             self.obj=DatabasePrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='SCHEMA':
+        elif object_type.upper()=='SCHEMA':
             self.obj=SchemaPrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='WAREHOUSE':
+        elif object_type.upper()=='WAREHOUSE':
             self.obj=WarehousePrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='STAGE':
+        elif object_type.upper()=='STAGE':
             self.obj=StagePrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='TABLE':
+        elif object_type.upper()=='TABLE':
             self.obj=TablePrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='FILEFORMAT' or object_type.upper()=='FILE_FORMAT':
+        elif object_type.upper()=='FILEFORMAT' or object_type.upper()=='FILE_FORMAT':
             self.obj=FileFormatPrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='SNOWPIPE':
+        elif object_type.upper()=='SNOWPIPE':
             self.obj=SnowpipePrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='STREAM':
+        elif object_type.upper()=='STREAM':
             self.obj=StreamPrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='TASK':
+        elif object_type.upper()=='TASK':
             self.obj=TaskPrivileges(session=session,logger=logger,object_identifier=object_identifier)
-        if object_type.upper()=='USER':
+        elif object_type.upper()=='USER':
             self.obj=UserPrivileges(session=session,logger=logger,object_identifier=object_identifier)
         else:
             raise ObjectNotSupported(object_type=object_type.upper())
 
     def find_privileges(self):
+        self.obj.logger.info(f"finding possible privileges for {self.obj.attr.object_type} : {self.obj.attr.object_identifier}")
         return self.obj.get_allowed_privileges()
     
     def grant_privilege(self,privilege_type,role):
-        self.obj.grant_privilege_on_object_to_role(privlege_type=privelege_type,role=role)
+        self.obj.grant_privilege_on_object_to_role(privlege_type=privilege_type,role=role)
         
         
