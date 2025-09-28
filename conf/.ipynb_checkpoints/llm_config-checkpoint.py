@@ -964,7 +964,35 @@ tools = {
                             },
                         },
                         "required":[
-                            "name","comment"
+                            "name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"grant_privileges",
+                "description":"grants privileges on an object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                            "role": {
+                                "type":"string",
+                                "description":"role to grant privileges to"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier","role"
                         ]
                     }
                 }

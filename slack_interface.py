@@ -146,6 +146,7 @@ def run(body, say):
         logger.info(f"{traceback.print_exc()}")
         logger.info(e)
         say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.')
+        chat_history = []
         SocketModeHandler(app, "xapp-1-A095SRHCLJZ-9196877250133-bbac21ac7e626fedc0734a6dc3bf027c79eed9b43d1ef70fc3c392cbadde797d").start()
 
 @app.event("message")

@@ -760,7 +760,13 @@ class LLMTools:
 
     def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
         return self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=sql_query)
-        
+
+
+    def grant_privilege(self, object_type, object_identifier, role):
+        privilege_obj = privilege.Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+        privileges = privilege_obj.find_privileges()
+        privilege_obj.grant_privilege(privilege_type=privileges, role=role)
+
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

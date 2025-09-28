@@ -30,6 +30,7 @@ from src.accountusage import copyhistory
 from src.processing.stage import Stage
 from src.pipeline import fullload
 from vars.gvobject import Config as cfg
+import traceback
 from snowflake.snowpark.exceptions import SnowparkSQLException
 
 from valueexception import (
@@ -161,12 +162,13 @@ class LLMTools:
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
         except (SnowchainException,SnowparkSQLException) as e:
-            self.logger.info(f"inside Snowchainexception")
-            self.logger.info(f"Error : {e}")
+            self.logger.warn(f"inside Snowchainexception")
+            self.logger.warn(f"Error : {e}")
             return f"There was an error  creating object: {e}"
         except Exception as e:
-            self.logger.info("inside generic exception")
-            self.logger.info(f"Error : {e}")
+            self.logger.warn("inside generic exception")
+            self.logger.warn(f"Error : {e}")
+            self.logger.warn(f"Traceback: {traceback.format_exc()}")
             return f"There was ab error creating object : {e}"
         
 
@@ -748,7 +750,7 @@ class LLMTools:
             return result
 
     
-    def create_role(self, NAME, COMMENT=""):
+    def create_role_object(self, NAME, COMMENT=""):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
         data_dict = {arg: values[arg] for arg in args[1:]}
@@ -758,7 +760,13 @@ class LLMTools:
 
     def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
         return self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=sql_query)
-        
+
+
+    def grant_privilege(self, object_type, object_identifier, role):
+        privilege_obj = privilege.Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+        privileges = privilege_obj.find_privileges()
+        privilege_obj.grant_privilege(privilege_type=privileges, role=role)
+
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
