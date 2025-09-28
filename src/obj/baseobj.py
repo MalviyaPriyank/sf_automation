@@ -66,8 +66,19 @@ class BaseObject(AbstractObject):
             repo.write_file_to_local(filepath=filepath,content=self.qry)
             repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
             repo.push_file_to_remote()
-        elif object_database =='NA':
+        elif object_database =='NA' and object_schema != 'NA':
             filepath=f"Database/{object_name}/DDL/{object_name}.sql"
+            repo = Repository()
+            self.logger.info(f"Writing file for {object_type} {object_name} to repo")
+            self.logger.info("Before cloning")
+            repo.clone_repo()
+            self.logger.info("After cloning")
+            repo.instantiate_repo()
+            repo.write_file_to_local(filepath=filepath,content=self.qry)
+            repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
+            repo.push_file_to_remote()
+        elif object_database =='NA' and object_schema == 'NA':
+            filepath=f"{object_name}/DDL/{object_name}.sql"
             repo = Repository()
             self.logger.info(f"Writing file for {object_type} {object_name} to repo")
             self.logger.info("Before cloning")

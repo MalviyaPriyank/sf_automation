@@ -87,7 +87,7 @@ class Role(BaseObject):
         self.add_properties_to_query()
         
     def create_role(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
     def create_object(self,*pargs,**kwargs): 
         self.set_name(kwargs[tags.NAME])
@@ -97,4 +97,19 @@ class Role(BaseObject):
         self.create_role()
         if len(pargs) == 0:
             self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
 
+
+    @classmethod
+    def grant_role_to_user(self,role,user):
+        self.qry=f" GRANT ROLE {role} TO USER {user}"
+        self.execute_final_query()
+        self.create_deployment_entry(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        self.write_file_to_git(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+    
+    @classmethod
+    def grant_role_to_role(self,parent_role,child_role):
+        self.qry=f" GRANT ROLE {parent_role} TO ROLE {child_role}"
+        self.execute_final_query()
+        self.create_deployment_entry(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        self.write_file_to_git(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')

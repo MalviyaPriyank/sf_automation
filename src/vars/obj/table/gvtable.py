@@ -15,6 +15,7 @@ class Table:
             "GEOSPATIAL":["GEOGRAPHY","GEOMETRY"],
             "VECTOR":["VECTOR"]    
         }
+        return allowed_types_dict
 
 class TempTable(Table):
     _scope="SCOPE"

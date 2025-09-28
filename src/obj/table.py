@@ -205,6 +205,6 @@ class Table(BaseObject):
 
         self.logger.info(f" Query : {qry}")
         self.session.sql(qry).collect()
-        self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
+        self.create_deployment_entry(object_name=table,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
         self.write_file_to_git(object_name=table,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 
