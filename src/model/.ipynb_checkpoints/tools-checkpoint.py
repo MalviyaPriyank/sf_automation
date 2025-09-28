@@ -6,6 +6,7 @@ import inspect
 import pandas as pd
 from langchain_aws import ChatBedrock
 from botocore.exceptions import ClientError
+import ast
 
 import re
 import contextlib
@@ -19,6 +20,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 from conf import llm_config, readconf
+from privileges.privilege import Privilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
@@ -104,7 +106,7 @@ class LLMTools:
             table_list.append(row[0])
         # table_list_df = table_list_df.sort('ORDINAL_POSITION').select('column_name','data_type')
         '''
-        table_list = tables.Tables(session=self.session).get_all_tables_in_schema(db_name=database,schema_name=schema)
+        table_list = tables.Tables(session=self.sf_session).get_all_tables_in_schema(db_name=database,schema_name=schema)
         self.logger.info(f'database {database} and schema {schema} contain following tables: {table_list}')
         return f'database {database} and schema {schema} contain following tables: {table_list}'
 
@@ -112,7 +114,7 @@ class LLMTools:
     def get_list_of_cols(self, DATABASE, SCHEMA, TABLE_LIST):
         col_list = {}
         for table in TABLE_LIST:
-            col_list[table] = columns.Columns(session=self.session).get_all_columns_of_a_table(database_name=DATABASE,schema_name=SCHEMA,table_name=TABLE)
+            col_list[table] = columns.Columns(session=self.sf_session).get_all_columns_of_a_table(database_name=DATABASE,schema_name=SCHEMA,table_name=table)
         return f'Heres a table to column mapping: {col_list}'
 
 
@@ -759,14 +761,18 @@ class LLMTools:
 
 
     def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
-        return self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=sql_query)
+        for qry in SQL_QUERY.split(';'):
+            self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=SQL_QUERY)
+        return 'Completed successfully'
 
-
-    def grant_privilege(self, object_type, object_identifier, role):
-        privilege_obj = privilege.Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
-        privileges = privilege_obj.find_privileges()
+    def find_privileges(self, object_type, object_identifier):
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+        return f'Available privilege options are: {privilege_obj.find_privileges()}'
+    
+    def grant_privileges(self, object_type, object_identifier, privileges, role):
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         privilege_obj.grant_privilege(privilege_type=privileges, role=role)
-
+        return f'Privileges {privileges} granted successfully'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
@@ -777,4 +783,3 @@ class LLMTools:
             lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: result}}]
         }})
         return tool_result
-        

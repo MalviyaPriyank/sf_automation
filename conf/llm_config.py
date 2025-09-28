@@ -972,8 +972,32 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"find_privileges",
+                "description":"retrieves list of allowed privileges on an object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"grant_privileges",
-                "description":"grants privileges on an object",
+                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object, then choose from the list.",
                 "inputSchema": {
                     "json":{
                         "type":"object",

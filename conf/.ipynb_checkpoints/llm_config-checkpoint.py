@@ -972,8 +972,32 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"find_privileges",
+                "description":"retrieves list of allowed privileges on an object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"grant_privileges",
-                "description":"grants privileges on an object",
+                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object, then choose from the list.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1001,7 +1025,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_fact_dimension_table",
-                "description":"creates a fact dimension table object. use the get_list_of_tables tool to get list of tables and get_list_of_columns tool to get all columns for those tables. you then write a SQL query for fact dimension and provide it as an input here.",
+                "description":"creates a fact dimension table object. use the get_list_of_tables tool to get list of tables and get_list_of_columns tool to get all columns for those tables. you then write a SQL query for fact dimension and provide it as an input here.Write a sql query to identify dimension tables and fact tables, ensure fact tables reference dimensions using surrogate keys or natural keys.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1016,11 +1040,11 @@ tools = {
                             },
                             "TABLE": {
                                 "type":"string",
-                                "description":"table name"
+                                "description":"table list"
                             },
                             "SQL_QUERY": {
                                 "type":"string",
-                                "description":"write the sql query to create fact dimension table. DO NOT ask for this query from the user"
+                                "description":"Write sql queries to identify dimension tables and fact tables, ensure fact tables reference dimensions using surrogate keys or natural keys. DO NOT ask for this query from the user"
                             },
                         },
                         "required":[

@@ -761,15 +761,18 @@ class LLMTools:
 
 
     def create_fact_dimension_table(self, DATABASE, SCHEMA, TABLE, SQL_QUERY):
-        
         for qry in SQL_QUERY.split(';'):
             self.obj_class_mapping[ss.TABLE_OBJ].create_table_using_query(database=DATABASE,schema=SCHEMA,table=TABLE,qry=SQL_QUERY)
         return 'Completed successfully'
-    
-    def grant_privileges(self, object_type, object_identifier, role):
+
+    def find_privileges(self, object_type, object_identifier):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
-        privileges = privilege_obj.find_privileges()
+        return f'Available privilege options are: {privilege_obj.find_privileges()}'
+    
+    def grant_privileges(self, object_type, object_identifier, privileges, role):
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         privilege_obj.grant_privilege(privilege_type=privileges, role=role)
+        return f'Privileges {privileges} granted successfully'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
