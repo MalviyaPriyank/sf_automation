@@ -64,7 +64,7 @@ class BasePrivilege:
     def get_allowed_privileges(self) -> list:
         self.logger.info(f"fetching allowed privileges for {self.attr.object_type}")
         allowed_privileges=priv._allowed_privileges[self.attr.object_type]
-        self.logger.info(f"allowed privileges for {self.attr.object_type}")
+        self.logger.info(f"allowed privileges for {self.attr.object_type} : {allowed_privileges}")
         return allowed_privileges
     
 
