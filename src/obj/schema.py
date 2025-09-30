@@ -408,7 +408,7 @@ class Schema(BaseObject):
         self.logger.info('call create schema')
         self.create_schema()
         self.logger.info(f'schema {self.attr.name} created successfully')
-        self.grant_default_privileges()
+        #self.grant_default_privileges()
         if len(largs) == 0:
             self.create_deployment_entry()
             self.logger.info('writing file to git')

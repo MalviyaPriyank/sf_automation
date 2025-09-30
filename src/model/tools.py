@@ -21,6 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../schema'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 from conf import llm_config, readconf
 from privileges.privilege import Privilege
+from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
@@ -769,10 +770,22 @@ class LLMTools:
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
-    def grant_privileges(self, object_type, object_identifier, privileges, role):
+    def grant_privileges_on_object(self, object_type, object_identifier, privileges, role):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         privilege_obj.grant_privilege(privilege_type=privileges, role=role)
         return f'Privileges {privileges} granted successfully'
+    
+    def grant_privileges_on_role_to_role(self, role_parent=None,role_child=None):
+        privilege_obj = BasePrivilege(session=self.sf_session,logger=self.logger)
+        qry=privilege_obj.grant_role_to_role(role1=role_parent,role2=role_child)
+        self.sf_session.sql(qry).collect()
+        return f'privileges to role granted succesfully'
+
+    def grant_privileges_on_role_to_user(self, role,user):
+        privilege_obj = BasePrivilege(session=self.sf_session,logger=self.logger)
+        qry=privilege_obj.grant_role_to_user(role1=role,user=user)
+        self.sf_session.sql(qry).collect()
+        return f'privileges to user granted succesfully'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

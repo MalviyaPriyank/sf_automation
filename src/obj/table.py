@@ -186,7 +186,7 @@ class Table(BaseObject):
                 self.logger.info(f"creating table {self.attr.name}")
                 self.set_qualified_name()
                 self.create_table()
-                self.grant_default_privileges()
+                #self.grant_default_privileges()
                 self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
                 self.write_file_to_git(object_name=files,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 

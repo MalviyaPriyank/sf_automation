@@ -454,6 +454,7 @@ class StorageIntegration():
 
 class Privilege():
     _allowed_object_type = ["USER","ROLE","WAREHOUSE","DATABASE","SCHEMA","TABLE","FILE FORMAT","PIPE","TASK","STAGE","STREAM"]
+
     _allowed_privileges = {
         "USER": ["MONITOR","OWNERSHIP","ALL"],
         "ROLE": ["OWNERSHIP"],

@@ -335,7 +335,7 @@ class Database(BaseObject):
             self.logger.info('calling create database')
             self.create_database()
             self.logger.info('granting default privileges')
-            self.grant_default_privileges(*['initial'])
+            #self.grant_default_privileges(*['initial'])
         else:
             self.logger.info('set name')
             self.set_name(kwargs[tags.NAME])
@@ -377,7 +377,7 @@ class Database(BaseObject):
             self.create_database()
 
             self.logger.info('grant default priv')
-            self.grant_default_privileges()
+            #self.grant_default_privileges()
             
             self.logger.info('create deployment entry')
             self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')

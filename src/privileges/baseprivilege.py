@@ -55,11 +55,18 @@ class BasePrivilege:
         self.session.sql(qry).collect()
         self.logger.info("privilege granted")
         return qry
-    
+
     @classmethod
-    def grant_role_to_role(cls,role1,role2):
+    def grant_role_to_role(self,role1,role2):
         qry = f"GRANT ROLE {role1} to ROLE {role2}"
         return qry
+        
+    
+    @classmethod
+    def grant_role_to_user(cls,role,user):
+        qry = f"GRANT ROLE {role} to USER {user}"
+        return qry
+        
 
     def get_allowed_privileges(self) -> list:
         self.logger.info(f"fetching allowed privileges for {self.attr.object_type}")
