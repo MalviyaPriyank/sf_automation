@@ -9,8 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -996,8 +996,8 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"grant_privileges",
-                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object, then choose from the list.",
+                "name":"grant_privilege_on_object",
+                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object. you then choose from the retrieved list of allowed privileges by interpreting user request. for example if user request interprets to USAGE privilege, you select USAGE, you dont select the entire list of privileges returned from find_privileges tool but select one from the list that applies.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
@@ -1014,9 +1014,61 @@ tools = {
                                 "type":"string",
                                 "description":"role to grant privileges to"
                             },
+                            "privilege": {
+                                "type":"string",
+                                "description":"one privilege to be granted from the list of allowed privileges"
+                            }
                         },
                         "required":[
-                            "object_type","object_identifier","role"
+                            "object_type","object_identifier","role","privilege"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"grant_privilege_on_role_to_role",
+                "description":"grants privileges on a role object to another role object.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "role_parent": {
+                                "type":"string",
+                                "description":"source role for privilege"
+                            },
+                            "role_child": {
+                                "type":"string",
+                                "description":"destination role to grant privilege to"
+                            },
+                        },
+                        "required":[
+                            "role_parent","role_child"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"grant_privilege_on_role_to_user",
+                "description":"grants privilege on a role object to a user object.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "role": {
+                                "type":"string",
+                                "description":"source role for privilege"
+                            },
+                            "user": {
+                                "type":"string",
+                                "description":"user object name to grant privilege to"
+                            },
+                        },
+                        "required":[
+                            "role_parent","role_child"
                         ]
                     }
                 }

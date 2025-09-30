@@ -770,18 +770,18 @@ class LLMTools:
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
-    def grant_privileges_on_object(self, object_type, object_identifier, privileges, role):
+    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
-        privilege_obj.grant_privilege(privilege_type=privileges, role=role)
-        return f'Privileges {privileges} granted successfully'
+        privilege_obj.grant_privilege(privilege_type=privilege, role=role)
+        return f'Privilege {privilege} granted successfully'
     
-    def grant_privileges_on_role_to_role(self, role_parent=None,role_child=None):
+    def grant_privilege_on_role_to_role(self, role_parent, role_child):
         privilege_obj = BasePrivilege(session=self.sf_session,logger=self.logger)
         qry=privilege_obj.grant_role_to_role(role1=role_parent,role2=role_child)
         self.sf_session.sql(qry).collect()
         return f'privileges to role granted succesfully'
 
-    def grant_privileges_on_role_to_user(self, role,user):
+    def grant_privilege_on_role_to_user(self, role, user):
         privilege_obj = BasePrivilege(session=self.sf_session,logger=self.logger)
         qry=privilege_obj.grant_role_to_user(role1=role,user=user)
         self.sf_session.sql(qry).collect()
