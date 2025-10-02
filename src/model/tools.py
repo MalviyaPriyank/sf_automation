@@ -92,7 +92,7 @@ class LLMTools:
                                   ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
                                   ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger)
-                                  #'user': user.User(self.sf_session,self.user_id, logger=self.logger)
+                                  ss.USER_OBJ: user.User(self.sf_session, self.user_id, logger=self.logger)
                                   }
 
 

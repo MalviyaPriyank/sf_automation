@@ -1076,6 +1076,42 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"create_user_object",
+                "description":"creates a user object.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "NAME": {
+                                "type":"string",
+                                "description":"name for user"
+                            },
+                            "PASSWORD": {
+                                "type":"string",
+                                "description":"initial password for the user. User must change this at login"
+                            },
+                            "FIRST_NAME": {
+                                "type":"string",
+                                "description":"first name of the user"
+                            },
+                            "LAST_NAME": {
+                                "type":"string",
+                                "description":"last name of the user"
+                            },
+                            "EMAIL": {
+                                "type":"string",
+                                "description":"email of the user"
+                            },
+                        },
+                        "required":[
+                            "NAME","PASSWORD","FIRST_NAME","LAST_NAME","EMAIL"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"create_fact_dimension_table",
                 "description":"creates a fact dimension table object. use the get_list_of_tables tool to get list of tables and get_list_of_columns tool to get all columns for those tables. you then write a SQL query for fact dimension and provide it as an input here.Write a sql query to identify dimension tables and fact tables, ensure fact tables reference dimensions using surrogate keys or natural keys.",
                 "inputSchema": {
