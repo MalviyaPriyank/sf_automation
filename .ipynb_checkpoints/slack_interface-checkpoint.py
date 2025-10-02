@@ -42,6 +42,7 @@ def get_new_files_since(start_time, folder='analysis'):
 
 def run(body, say):
     try:
+        global chat_history
         session_inst = session.Session()
 
         session_inst.set_user('pehlaadmi')
@@ -59,9 +60,6 @@ def run(body, say):
         bedrock_obj = Bedrock()
         retrieval_workflow = bedrock_obj.get_retriever_obj()
         tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
-        logger.info("************** TOOL LIST **********************")
-        logger.info(tools)
-        logger.info("************** TOOL LIST **********************")
         # say('Logged in to snowflake')
         # print(body)
         prompt = body['event']['text']
@@ -91,7 +89,6 @@ def run(body, say):
         
         prompt = body['event']['text']
         chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
-        logger.info(chat_history)
         response = bedrock_obj.converse(messages=chat_history)
         chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
         logger.info(f'response: {response}')
@@ -102,6 +99,7 @@ def run(body, say):
         
         tool_start_time = time.time()
         while len(response)>0:
+            print(chat_history)
             tool_result = []
             done_tool_call = False
             for content in response:
@@ -145,6 +143,7 @@ def run(body, say):
     except Exception as e:
         logger.info(f"{traceback.print_exc()}")
         logger.info(e)
+        chat_history=[]
         say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.')
         chat_history = []
         SocketModeHandler(app, "xapp-1-A095SRHCLJZ-9196877250133-bbac21ac7e626fedc0734a6dc3bf027c79eed9b43d1ef70fc3c392cbadde797d").start()

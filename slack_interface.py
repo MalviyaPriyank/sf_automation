@@ -99,6 +99,7 @@ def run(body, say):
         
         tool_start_time = time.time()
         while len(response)>0:
+            print(chat_history)
             tool_result = []
             done_tool_call = False
             for content in response:
