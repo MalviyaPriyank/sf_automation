@@ -130,12 +130,12 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        if value == "NONE":
-            instance._must_change_password = value
-        else: 
-            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            instance._must_change_password = value    
-    
+        #if value == "NONE":
+        #    instance._must_change_password = value
+        #else: 
+        vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        instance._must_change_password = "TRUE"    
+
     def __delete__(self,instance):
         del instance._must_change_password
 

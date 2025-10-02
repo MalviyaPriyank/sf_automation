@@ -3,9 +3,11 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../git'))
 
 from vars.gvobject import Privilege as priv
 from exception.privilegeexception import InvalidObject
+from repository import Repository  
 
 class ObjectType:
     def __get__(self,instance,owner):
@@ -64,6 +66,18 @@ class BasePrivilege:
     
     @classmethod
     def grant_role_to_user(cls,role,user):
+        '''
+        filepath=f"Role/{role}/Users/{user}.txt"
+        repo = Repository()
+        cls.logger.info(f"Writing file for {role} grant to {user} to repo")
+        cls.logger.info("Before cloning")
+        repo.clone_repo()
+        cls.logger.info("After cloning")
+        repo.instantiate_repo()
+        repo.write_file_to_local(filepath=filepath,content=f'{user}')
+        repo.add_file_for_push(filepath=filepath,commit_msg=f'Adding {user} to {role}')
+        repo.push_file_to_remote()
+        '''
         qry = f"GRANT ROLE {role} to USER {user}"
         return qry
         
