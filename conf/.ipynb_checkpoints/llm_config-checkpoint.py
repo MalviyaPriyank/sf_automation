@@ -9,8 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
-KB_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+CHAT_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#anthropic.claude-3-haiku-20240307-v1:0' #'anthropic.claude-3-sonnet-20240229-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
+KB_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-5-sonnet-20241022-v2:0'#'anthropic.claude-3-haiku-20240307-v1:0' #'us.anthropic.claude-3-7-sonnet-20250219-v1:0'
 EMBEDDINGS_MODEL_ID = 'amazon.titan-embed-text-v1'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -1017,10 +1017,14 @@ tools = {
                             "privilege": {
                                 "type":"string",
                                 "description":"one privilege to be granted from the list of allowed privileges"
-                            }
+                            },
+                            "database_name": {
+                                "type":"string",
+                                "description":"name of database. this is set to 'None' if object type is DATABASE, otherwise request it from user."
+                            },
                         },
                         "required":[
-                            "object_type","object_identifier","role","privilege"
+                            "object_type","object_identifier","role","privilege","database_name"
                         ]
                     }
                 }

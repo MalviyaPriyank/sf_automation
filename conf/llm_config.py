@@ -1017,10 +1017,14 @@ tools = {
                             "privilege": {
                                 "type":"string",
                                 "description":"one privilege to be granted from the list of allowed privileges"
-                            }
+                            },
+                            "database_name": {
+                                "type":"string",
+                                "description":"name of database. this is set to 'None' if object type is DATABASE, otherwise request it from user."
+                            },
                         },
                         "required":[
-                            "object_type","object_identifier","role","privilege"
+                            "object_type","object_identifier","role","privilege","database_name"
                         ]
                     }
                 }
