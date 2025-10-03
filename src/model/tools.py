@@ -770,10 +770,10 @@ class LLMTools:
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
-    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,*args):
+    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name=None):
         if object_type.upper() != 'DATABASE':
-            self.logger(f"switching to {args} database")
-            self.sf_session.sql(f"USE DATABASE {args[0]}").collect()
+            self.logger(f"switching to {database_name} database")
+            self.sf_session.sql(f"USE DATABASE {database_name}").collect()
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'
