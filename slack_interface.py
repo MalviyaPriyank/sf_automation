@@ -45,7 +45,7 @@ def run(body, say):
         global chat_history
         session_inst = session.Session()
 
-        session_inst.set_user('pehlaadmi')
+        session_inst.set_user('frosty')
         session_inst.set_password('Hellopehlaadmi@24')
         session_inst.set_account('kzekzkb-pm40264')
 
