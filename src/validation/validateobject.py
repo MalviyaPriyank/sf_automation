@@ -16,7 +16,8 @@ from exception.objectexception import (
     ObjectDoesNotExist,
     DuplicateObject,
     ColumnDoesNotExist,
-    MustBeAnAdmin
+    MustBeAnAdmin,
+    InvalidAttributesToAlter
 )
 
 
@@ -254,5 +255,14 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist(object_type="USER", object_name=user_name)
+    
+    @staticmethod
+    def attribute_exist(object_type,alter_dictionary,attribute_list):
+        attributes_to_alter=list(alter_dictionary.keys())
+        diff_list=list(set(attributes_to_alter) - set(attribute_list))
+        if len(diff_list):
+            raise InvalidAttributesToAlter(object_type=object_type,attribute_list=diff_list)
+        else:
+            return True
 
         

@@ -33,3 +33,8 @@ class MustBeAnAdmin(ObjectException):
     def __init__(self, object_type):
         message=f"can only be operated on using ACCOUNTADMIN role"
         super().__init__(object_type, message)
+
+class InvalidAttributesToAlter(ObjectException):
+    def __init__(self, object_type, attribute_list):
+        message = f" does not have following properties to alter {attribute_list}"
+        super().__init__(object_type, message)

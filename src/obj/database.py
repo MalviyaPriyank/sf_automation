@@ -21,20 +21,32 @@ from .baseobj import BaseObject
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        if instance.parent.is_create==1:
+            return instance._name
+        elif instance.parent.is_create==0:
+            return (instance._old_name, instance._new_name)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.is_new_database(session=instance.parent.session, database_name=value)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-            and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-            instance._name = value
-
+        if instance.parent.is_create==1:
+            vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=value)
+            if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = value
+        elif instance.parent.is_create==0:
+            vo.database_exist(session=instance.parent.session,database_name=value[0])
+            instance._old_name=value[0]
+            vo.is_new_database(session=instance.parent.session, database_name=value[1])
+            instance._new_name=value[1]
 
     def __delete__(self,instance):
-        del instance._name
+        if instance.parent.is_create==1:
+            del instance._name
+        elif instance.parent.is_create==0:
+            del instance._old_name
+            del instance._new_name
 
 class DataRetentionTimeInDays:
     def __get__(self,instance,owner):
@@ -307,11 +319,53 @@ class Database(BaseObject):
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
-    def prepare_query(self):
+    def alter_object(self):        
+        for prop in self.property_lst:
+            if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days}"
+                self.execute_final_query()
+            if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days}"
+                self.execute_final_query()
+            if prop == tags.EXTERNAL_VOLUME:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.EXTERNAL_VOLUME} = {self.attr.external_volume}"
+                self.execute_final_query()
+            if prop == tags.CATALOG:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CATALOG} = {self.attr.catalog}"
+                self.execute_final_query()
+            if prop == tags.REPLACE_INVALID_CHARACTERS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+                self.execute_final_query()
+            if prop == tags.DEFAULT_DDL_COLLATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
+                self.execute_final_query()
+            if prop == tags.LOG_LEVEL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.LOG_LEVEL} = {self.attr.log_level}"
+                self.execute_final_query()
+            if prop == tags.TRACE_LEVEL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TRACE_LEVEL} = {self.attr.trace_level}"
+                self.execute_final_query()
+            if prop == tags.STORAGE_SERIALIZATION_POLICY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
+        
+    
+    def prepare_query(self,is_create):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_account_qry()
-        self.add_properties_to_query()
+        if is_create == 1:
+            self.set_create_account_qry()
+            self.add_properties_to_query()
+        elif is_create==0:
+            self.alter_object()
 
     def grant_default_privileges(self,*largs):
         priv_inst = privilege.Privilege(self.session)
@@ -326,8 +380,11 @@ class Database(BaseObject):
     def create_database(self):
         self.execute_final_query()
 
-    def create_object(self,*largs,**kwargs):
+
+    def create_object(self,is_create,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {is_create}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=is_create # adding instance variable to use in descriptor
 
         if len(largs) != 0:
             self.logger.info(' list args passed')
@@ -371,7 +428,7 @@ class Database(BaseObject):
             self.set_comment(kwargs[tags.COMMENT])
 
             self.logger.info('preapare query')
-            self.prepare_query()
+            self.prepare_query(is_create=is_create)
 
             self.logger.info('execute query')
             self.create_database()
@@ -384,4 +441,3 @@ class Database(BaseObject):
 
             self.logger.info('writing file to git')
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-            
