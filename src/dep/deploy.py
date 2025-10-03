@@ -265,7 +265,7 @@ class Deploy:
         sql_lst = self.get_scripts_to_deploy()
         self.logger.info(f"after getting scripts: {sql_lst}")
         for qry in sql_lst:
-            qry = qry.replace(dev_db,test_db)
+            qry = qry.replace('DEV','TEST')
             self.session.sql(qry).collect()
         self.logger.info('Deployment complete')
         self.logger.info('Cleaning the table')

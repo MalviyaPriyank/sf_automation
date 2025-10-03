@@ -24,7 +24,7 @@ class Name:
               and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
               and not vv.has_special_characters(value,instance.parent.__class__.__name__,self.__class__.__name__)
               ):
-            instance._account_name = value
+            instance._name = value
 
 class Password:
     def __get__(self,instance,owner):
@@ -120,7 +120,7 @@ class Email:
             instance._email=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._email = value
+            instance._email =f"'{value}'"
     
     def __delete__(self,instance):
         del instance._email
@@ -439,30 +439,31 @@ class User(BaseObject):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
+            self.logger.info(f"setting flag for {attribute_tag} : {attribute_name}")
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"_name")
-        set_flag(gv._password_tag,"_password")
-        set_flag(gv._login_name_tag,"_login_name")
-        set_flag(gv._display_name_tag,"_display_name")
-        set_flag(gv._first_name_tag,"_first_name")
-        set_flag(gv._last_name_tag,"_last_name")
-        set_flag(gv._email_tag,"_email")
-        set_flag(gv._must_change_password_tag,"_must_change_password")
-        set_flag(gv._disabled_tag,"_disabled")
-        set_flag(gv._days_to_expiry_tag,"_days_to_expiry_tag")
-        set_flag(gv._mins_to_unlock_tag,"_mins_to_unlock")
-        set_flag(gv._default_warehouse_tag,"_default_warehouse")
-        set_flag(gv._default_role_tag,"_default_role")
-        set_flag(gv._default_secondary_roles_tag,"_default_secondary_roles")
-        set_flag(gv._mins_to_by_pass_mfa_tag,"_mins_to_by_pass_mfa")
-        set_flag(gv._rsa_public_key_tag,"_rsa_public_key")
-        set_flag(gv._rsa_public_key_fp_tag,"_rsa_public_key_fp")
-        set_flag(gv._rsa_public_key_2_tag,"_rsa_public_key_2")
-        set_flag(gv._rsa_public_key_2_fp_tag,"_rsa_public_key_2_fp")
-        set_flag(gv._type_tag,"_type")
-        set_flag(gv._comment_tag,"_comment")
-        set_flag(gv._enable_unredacted_query_syntax_error_tag,"_enable_unredacted_query_syntax_error")
+        set_flag(gv._name_tag,"name")
+        set_flag(gv._password_tag,"password")
+        set_flag(gv._login_name_tag,"login_name")
+        set_flag(gv._display_name_tag,"display_name")
+        set_flag(gv._first_name_tag,"first_name")
+        set_flag(gv._last_name_tag,"last_name")
+        set_flag(gv._email_tag,"email")
+        set_flag(gv._must_change_password_tag,"must_change_password")
+        set_flag(gv._disabled_tag,"disabled")
+        set_flag(gv._days_to_expiry_tag,"days_to_expiry")
+        set_flag(gv._mins_to_unlock_tag,"mins_to_unlock")
+        set_flag(gv._default_warehouse_tag,"default_warehouse")
+        set_flag(gv._default_role_tag,"default_role")
+        set_flag(gv._default_secondary_roles_tag,"default_secondary_roles")
+        set_flag(gv._mins_to_by_pass_mfa_tag,"mins_to_by_pass_mfa")
+        set_flag(gv._rsa_public_key_tag,"rsa_public_key")
+        set_flag(gv._rsa_public_key_fp_tag,"rsa_public_key_fp")
+        set_flag(gv._rsa_public_key_2_tag,"rsa_public_key_2")
+        set_flag(gv._rsa_public_key_2_fp_tag,"rsa_public_key_2_fp")
+        set_flag(gv._type_tag,"type")
+        set_flag(gv._comment_tag,"comment")
+        set_flag(gv._enable_unredacted_query_syntax_error_tag,"enable_unredacted_query_syntax_error")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -476,8 +477,6 @@ class User(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._name_tag:
-                    self.qry = f" {self.qry} {gv._name_tag}  = {self.attr.name} "
                 if prop == gv._password_tag:
                     self.qry = f" {self.qry} {gv._password_tag} = {self.attr.password} "
                 if prop == gv._display_name_tag:
@@ -531,14 +530,27 @@ class User(BaseObject):
 
 
     def create_object(self,**kwargs):
-
+        self.logger.info(f'set name {kwargs[gv._name_tag]}')
         self.set_name(kwargs[gv._name_tag])
+
         self.set_password(kwargs[gv._password_tag])
+        self.logger.info(f'set password {kwargs[gv._password_tag]}')
+
         self.set_login_name(kwargs[gv._login_name_tag])
+        self.logger.info(f'set login name {kwargs[gv._login_name_tag]}')
+
         self.set_display_name(kwargs[gv._display_name_tag])
+        self.logger.info(f'set display name {kwargs[gv._display_name_tag]}')
+
         self.set_first_name(kwargs[gv._first_name_tag])
+        self.logger.info(f'set first name {kwargs[gv._first_name_tag]}')
+
         self.set_last_name(kwargs[gv._last_name_tag])
+        self.logger.info(f'set last name {kwargs[gv._last_name_tag]}')
+
         self.set_email(kwargs[gv._email_tag])
+        self.logger.info(f'set email  {kwargs[gv._email_tag]}')
+
         self.set_must_change_password(kwargs[gv._must_change_password_tag])
         self.set_disabled(kwargs[gv._disabled_tag])
         self.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
@@ -556,6 +568,5 @@ class User(BaseObject):
         self.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
         self.prepare_query()
         self.create_user()
-        self.create_deployment_entry()
         self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
         self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
