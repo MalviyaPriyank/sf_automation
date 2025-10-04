@@ -27,11 +27,7 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user to provide value for NAME for database object. This is to be taken as input from user. do not assume a value."
-                            },
-                            "OLD_NAME": {
-                                "type":"string",
-                                "description":"user to provide value for OLD NAME for database object if IS_CREATE is FALSE meaning the ask is to alter object. otherwise set this to 'NONE'"
+                                "description":"user to provide value for NAME for database object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -79,7 +75,7 @@ tools = {
                             }
                         },
                         "required":[
-                            "NAME","IS_CREATE","OLD_NAME"
+                            "NAME","IS_CREATE"
                         ]
                     }
                 }
@@ -95,7 +91,11 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user to provide value for NAME for external stage object. This is to be taken as input from user. do not assume a value."
+                                "description":"user to provide value for NAME for external stage object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "DATABASE": {
                                 "type":"string",
@@ -184,7 +184,11 @@ tools = {
                             },
                             "NAME": {
                                 "type":"string",
-                                "description":"user provided name for FILE_FORMAT for file format object"
+                                "description":"user provided name for FILE_FORMAT for file format object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "MULTI_LINE": {
                                 "type":"string",
@@ -378,7 +382,11 @@ tools = {
                             },
                             "NAME": {
                                 "type":"string",
-                                "description":"name of the service. To be provided by the user."
+                                "description":"name of the service. To be provided by the user. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "ATTRIBUTES": {
                                 "type":"string",
@@ -423,11 +431,15 @@ tools = {
                         "properties": {
                             "DATABASE": {
                                 "type":"string",
-                                "description":"user provided value for DATABASE for database object"
+                                "description":"user provided value for DATABASE for schema object"
                             },
                         "NAME": {
                                 "type":"string",
-                                "description":"user provided value for NAME for database object"
+                                "description":"user provided value for NAME for schema object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                         "WITH_MANAGED_ACCESS": {
                                 "type":"string",
@@ -435,47 +447,47 @@ tools = {
                             },
                         "DATA_RETENTION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for DATA_RETENTION_TIME_IN_DAYS for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "MAX_DATA_EXTENSION_TIME_IN_DAYS": {
                                 "type":"string",
-                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "EXTERNAL_VOLUME": {
                                 "type":"string",
-                                "description":"user provided value for EXTERNAL_VOLUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for EXTERNAL_VOLUME for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "CATALOG": {
                                 "type":"string",
-                                "description":"user provided value for CATALOG for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for CATALOG for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
-                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for REPLACE_INVALID_CHARACTERS for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "DEFAULT_DDL_COLLATION": {
                                 "type":"string",
-                                "description":"user provided value for DEFAULT_DDL_COLLATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for DEFAULT_DDL_COLLATION for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "LOG_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for LOG_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for LOG_LEVEL for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "TRACE_LEVEL": {
                                 "type":"string",
-                                "description":"user provided value for TRACE_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for TRACE_LEVEL for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "STORAGE_SERIALIZATION_POLICY": {
                                 "type":"string",
-                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for STORAGE_SERIALIZATION_POLICY for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "CLASSIFICATION_PROFILE": {
                                 "type":"string",
-                                "description":"user provided value for CLASSIFICATION_PROFILE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for CLASSIFICATION_PROFILE for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                         "COMMENT": {
                                 "type":"string",
-                                "description":"user provided value for COMMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+                                "description":"user provided value for COMMENT for schema object. if value is not provided by user, DEFAULT value is set to NONE"
                             },
                             
                         },
@@ -520,7 +532,11 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user provided NAME for storage integration object"
+                                "description":"user provided NAME for storage integration object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "ENABLED": {
                                 "type":"string",
@@ -744,7 +760,7 @@ tools = {
                             },
 			"NAME": {
                                 "type":"string",
-                                "description":"user provided value for NAME for task object"
+                                "description":"user provided value for NAME for task object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
 			"SQL": {
                                 "type":"string",
