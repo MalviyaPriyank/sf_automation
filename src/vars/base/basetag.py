@@ -6,6 +6,7 @@ class BaseTag:
     DATABASE="DATABASE"
     SCHEMA="SCHEMA"
     NAME="NAME"
+    OLD_NAME="OLD_NAME"
     COMMENT="COMMENT"
 
 @dataclass(frozen=True)

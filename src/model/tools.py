@@ -177,7 +177,8 @@ class LLMTools:
 
 
     def create_database_object(self, 
-                               NAME, 
+                               NAME,
+                               OLD_NAME="NONE", 
                                CATALOG="NONE", 
                                COMMENT="NONE",  
                                EXTERNAL_VOLUME="NONE", 
@@ -216,8 +217,8 @@ class LLMTools:
 
     def create_externalstage_object(self,
                                     NAME,
-                                    DATABASE="DB_CONFIG",
-                                    SCHEMA="SCH_CONFIG",
+                                    DATABASE="NONE",
+                                    SCHEMA="NONE",
                                     FILE_FORMAT="NONE",
                                     COMMENT="NONE",
                                     URL="NONE",
@@ -243,7 +244,7 @@ class LLMTools:
                                 NAME,
                                 DATABASE,
                                 SCHEMA,
-                                TYPE="CSV",
+                                TYPE="NONE",
                                 COMPRESSION="NONE",
                                 RECORD_DELIMITER="NONE",
                                 FIELD_DELIMITER="NONE",
@@ -307,12 +308,12 @@ class LLMTools:
 
     def create_resourcemonitor_object(self,
                                     NAME,
-                                    CREDIT_QUOTA="75",
-                                    FREQUENCY="DAILY",
+                                    CREDIT_QUOTA="NONE",
+                                    FREQUENCY="NONE",
                                     START_TIMESTAMP="NONE",
                                     END_TIMESTAMP="NONE",
-                                    NOTIFY_USERS="ADMIN",
-                                    TRIGGERS_ON="75",
+                                    NOTIFY_USERS="NONE",
+                                    TRIGGERS_ON="NONE",
                                     THRESHOLD="NONE",
                                     ACTION="NONE",
                                     **kwargs):
@@ -416,8 +417,8 @@ class LLMTools:
 
     def create_warehouse_object(self,
                                 NAME,
-                                WAREHOUSE_SIZE="SMALL",
-                                WAREHOUSE_TYPE="STANDARD",
+                                WAREHOUSE_SIZE="NONE",
+                                WAREHOUSE_TYPE="NONE",
                                 RESOURCE_CONSTRAINT="NONE",
                                 MAX_CLUSTER_COUNT="NONE",
                                 MIN_CLUSTER_COUNT="NONE",
