@@ -40,9 +40,9 @@ class ValidateObject:
             raise ObjectDoesNotExist('SCHEMA', schema_name)
         
     @staticmethod 
-    def pipe_exist(session,database_name,schema_name):
+    def pipe_exist(session,database_name,schema_name,pipe_name):
         pipe_inst = pipes(session=session)
-        if pipe_inst.is_existing_pipe(database_name,schema_name):
+        if pipe_inst.is_existing_pipe(db_name=database_name,schema_name=schema_name,pipe_name=pipe_name):
             return True
         else:
             raise ObjectDoesNotExist('PIPE', schema_name)
@@ -88,9 +88,9 @@ class ValidateObject:
             raise DuplicateObject('SCHEMA', schema_name)
 
     @staticmethod 
-    def is_new_pipe(session,database_name,schema_name):
+    def is_new_pipe(session,database_name,schema_name,pipe_name):
         pipe_inst = pipes(session=session)
-        if pipe_inst.is_new_pipe(database_name,schema_name):
+        if pipe_inst.is_new_pipe(db_name=database_name,schema_name=schema_name,pipe_name=pipe_name):
             return True
         else:
             raise DuplicateObject('PIPE', schema_name)

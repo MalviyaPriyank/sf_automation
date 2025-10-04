@@ -45,15 +45,33 @@ class Schema:
 
 class Name:   
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.is_new_file_format(session=instance.parent.session, database_name=instance._database, schema_name=instance._database, file_format_name=value)
-        instance._name = value
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_file_format(session=instance.parent.session, database_name=instance._database, schema_name=instance._database, file_format_name=name)
+            instance._name = name
+            instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for rename operation")
+            old_name=value["NAME"]
+            new_name=value["RENAME_TO"]
+            instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+            if new_name != "NONE":
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.file_format_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=old_name)
+                vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name="NONE"
+                instance._rename_to="NONE"
 
     def __del__(self,instance):
         del instance._name
+        del instance._rename_to
 
 
 class Type:
@@ -1174,25 +1192,144 @@ class FileFormat(BaseObject):
                     self.qry = f" {self.qry} {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data} "
                 if prop == tags.DISABLE_AUTO_CONVERT:
                     self.qry = f" {self.qry} {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert} "
+
+    def alter_object(self):
+        for prop in self.property_lst:
+            if prop == tags.TYPE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TYPE} = {self.attr.type}"
+                self.execute_final_query()
+            if prop == tags.COMPRESSION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMPRESSION} = {self.attr.compression}"
+                self.execute_final_query()
+            if prop == tags.RECORD_DELIMITER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.RECORD_DELIMITER} = {self.attr.record_delimiter}"
+                self.execute_final_query()
+            if prop == tags.FIELD_DELIMITER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.FIELD_DELIMITER} = {self.attr.field_delimiter}"
+                self.execute_final_query()
+            if prop == tags.MULTI_LINE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.MULTI_LINE} = {self.attr.multi_line}"
+                self.execute_final_query()
+            if prop == tags.FILE_EXTENSION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.FILE_EXTENSION} = {self.attr.file_extension}"
+                self.execute_final_query()
+            if prop == tags.PARSE_HEADER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.PARSE_HEADER} = {self.attr.parse_header}"
+                self.execute_final_query()
+            if prop == tags.SKIP_HEADER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SKIP_HEADER} = {self.attr.skip_header}"
+                self.execute_final_query()
+            if prop == tags.SKIP_BLANK_LINES:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SKIP_BLANK_LINES} = {self.attr.skip_blank_lines}"
+                self.execute_final_query()
+            if prop == tags.DATE_FORMAT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DATE_FORMAT} = {self.attr.date_format}"
+                self.execute_final_query()
+            if prop == tags.TIME_FORMAT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TIME_FORMAT} = {self.attr.time_format}"
+                self.execute_final_query()
+            if prop == tags.TIMESTAMP_FORMAT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TIMESTAMP_FORMAT} = {self.attr.timestamp_format}"
+                self.execute_final_query()
+            if prop == tags.BINARY_FORMAT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.BINARY_FORMAT} = {self.attr.binary_format}"
+                self.execute_final_query()
+            if prop == tags.ESCAPE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ESCAPE} = {self.attr.escape}"
+                self.execute_final_query()
+            if prop == tags.ESCAPE_UNENCLOSED_FIELD:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ESCAPE_UNENCLOSED_FIELD} = {self.attr.escape_unenclosed_field}"
+                self.execute_final_query()
+            if prop == tags.TRIM_SPACE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TRIM_SPACE} = {self.attr.trim_space}"
+                self.execute_final_query()
+            if prop == tags.FIELD_OPTIONALLY_ENCLOSED_BY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.FIELD_OPTIONALLY_ENCLOSED_BY} = {self.attr.field_optionally_enclosed_by}"
+                self.execute_final_query()
+            if prop == tags.NULL_IF:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.NULL_IF} = {self.attr.null_if}"
+                self.execute_final_query()
+            if prop == tags.ERROR_ON_COLUMN_COUNT_MISMATCH:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ERROR_ON_COLUMN_COUNT_MISMATCH} = {self.attr.error_on_column_count_mismatch}"
+                self.execute_final_query()
+            if prop == tags.REPLACE_INVALID_CHARACTERS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+                self.execute_final_query()
+            if prop == tags.EMPTY_FIELD_AS_NULL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.EMPTY_FIELD_AS_NULL} = {self.attr.empty_field_as_null}"
+                self.execute_final_query()
+            if prop == tags.SKIP_BYTE_ORDER_MARK:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SKIP_BYTE_ORDER_MARK} = {self.attr.skip_byte_order_mark}"
+                self.execute_final_query()
+            if prop == tags.ENCODING:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCODING} = {self.attr.encoding}"
+                self.execute_final_query()
+            if prop == tags.ENABLE_OCTAL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENABLE_OCTAL} = {self.attr.enable_octal}"
+                self.execute_final_query()
+            if prop == tags.ALLOW_DUPLICATE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ALLOW_DUPLICATE} = {self.attr.allow_duplicate}"
+                self.execute_final_query()
+            if prop == tags.STRIP_OUTER_ARRAY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STRIP_OUTER_ARRAY} = {self.attr.strip_outer_array}"
+                self.execute_final_query()
+            if prop == tags.STRIP_NULL_VALUES:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STRIP_NULL_VALUES} = {self.attr.strip_null_values}"
+                self.execute_final_query()
+            if prop == tags.IGNORE_UTF8_ERRORS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.IGNORE_UTF8_ERRORS} = {self.attr.ignore_utf8_errors}"
+                self.execute_final_query()
+            if prop == tags.SNAPPY_COMPRESSION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SNAPPY_COMPRESSION} = {self.attr.snappy_compression}"
+                self.execute_final_query()
+            if prop == tags.BINARY_AS_TEXT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.BINARY_AS_TEXT} = {self.attr.binary_as_text}"
+                self.execute_final_query()
+            if prop == tags.USE_LOGICAL_TYPE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USE_LOGICAL_TYPE} = {self.attr.use_logical_type}"
+                self.execute_final_query()
+            if prop == tags.USE_VECTORIZED_SCANNER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USE_VECTORIZED_SCANNER} = {self.attr.use_vectorized_scanner}"
+                self.execute_final_query()
+            if prop == tags.PRESERVE_SPACE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.PRESERVE_SPACE} = {self.attr.preserve_space}"
+                self.execute_final_query()
+            if prop == tags.STRIP_OUTER_ELEMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STRIP_OUTER_ELEMENT} = {self.attr.strip_outer_element}"
+                self.execute_final_query()
+            if prop == tags.DISABLE_SNOWFLAKE_DATA:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data}"
+                self.execute_final_query()
+            if prop == tags.DISABLE_AUTO_CONVERT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming schema {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
         
+
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_qry()
-        self.add_properties_to_query()
+        if self.is_create=="TRUE":
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=="FALSE":
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
 
     def create_file_format(self):
         self.execute_final_query()
 
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges["FILE FORMAT"]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "FILE FORMAT",object_identifier=self.qualified_name,role = role)
-
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         self.logger.info('set database')
         self.set_database(kwargs[tags.DATABASE])
@@ -1320,22 +1457,7 @@ class FileFormat(BaseObject):
         self.logger.info(f"execute query")
         self.create_file_format()
 
-        self.logger.info('grant default priv')
         if len(largs) == 0:
             self.logger.info('create deployment entry')
-            self.create_deployment_entry()
+            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
-
-
-    def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment fileformat object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()

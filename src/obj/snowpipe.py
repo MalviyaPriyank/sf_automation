@@ -49,6 +49,7 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_pipe(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=name)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -62,6 +63,13 @@ class Name:
             instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
             if new_name != "NONE":
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.pipe_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=old_name)
+                vo.is_new_pipe(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name="NONE"
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
@@ -275,7 +283,6 @@ class Snowpipe(BaseObject):
         self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
         self.is_create=kwargs[tags.IS_CREATE]
-
         self.set_database(kwargs[tags.DATABASE])
         self.set_schema(kwargs[tags.SCHEMA])
         self.set_name(kwargs[tags.NAME])
@@ -289,9 +296,7 @@ class Snowpipe(BaseObject):
         self.prepare_query()
         self.logger.info(f"creating snowpipe : {self.attr.name}")
         self.create_snowpipe()
-        #self.grant_default_privileges()
         self.resume_snowpipe()
         if len(largs) == 0:
-            #self.create_deployment_entry()
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
 
