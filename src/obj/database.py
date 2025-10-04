@@ -27,7 +27,7 @@ class Name:
     def __set__(self,instance,value):
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
-            name=value["NAME"]["NAME"]
+            name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
             vo.is_new_database(session=instance.parent.session, database_name=name)
