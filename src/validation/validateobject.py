@@ -193,6 +193,17 @@ class ValidateObject:
             return res
         else:
             raise DuplicateObject(object_type=obj_type,object_name=obj_name)
+        
+    @staticmethod
+    def is_new_warehouse(session,object_type,object_name):
+        df=session.sql("SHOW WAREHOUSES")
+        df=df.select(col("*")).collect()
+        int_df=session.create_dataframe(df)
+        int_count=int_df.filter(col("NAME")==f'{object_name.upper()}').count()
+        if int_count==0:
+            return True
+        else:
+            raise DuplicateObject(object_type=object_type,object_name=object_name)
 
     @staticmethod
     def is_new_integration(session,object_type,object_name):
@@ -272,6 +283,17 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist(object_type="USER", object_name=user_name)
+        
+    @staticmethod
+    def is_new_user(session,user_name,object_type):
+        df=session.sql('SHOW USERS')
+        user_df=df.select(col("*")).collect()
+        df=session.create_dataframe(user_df)
+        user_count=df.filter(col("name")== user_name.upper()).count()
+        if user_count == 0:
+            return True
+        else:
+            raise DuplicateObject(object_type=object_type,object_name=user_name)
     
     @staticmethod
     def attribute_exist(object_type,alter_dictionary,attribute_list):

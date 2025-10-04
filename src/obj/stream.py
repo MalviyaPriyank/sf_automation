@@ -50,20 +50,54 @@ class ObjectType:
     def __delete__(self,instance):
         del instance._object_type
 
-class Name:
+class Name:   
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-            and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-                instance._name = value
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_pipe(session=instance.parent.session,
+                           database_name=instance._database,
+                           schema_name=instance._schema,
+                           pipe_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.pipe_exist(session=instance.parent.session,
+                              database_name=instance._database,
+                              schema_name=instance._schema,
+                              pipe_name=old_name)
+                vo.is_new_pipe(session=instance.parent.session,
+                               database_name=instance._database,
+                               schema_name=instance._schema,
+                               pipe_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
 
-    def __delete__(self,instance):
+
+    def __del__(self,instance):
         del instance._name
+        del instance._rename_to
+
 
 
 class TableName:

@@ -38,18 +38,20 @@ class Name:
                 instance._name = name
                 instance._rename_to="NONE"
         else:
-            instance.parent.logger.info(f" for rename operation")
-            old_name=value["NAME"]["NAME"]
-            new_name=value["NAME"]["RENAME_TO"]
-            instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
                 vo.database_exist(session=instance.parent.session,database_name=old_name)
                 vo.is_new_database(session=instance.parent.session,database_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
-                instance._name="NONE"
+                instance._name=old_name
                 instance._rename_to="NONE"
 
     def __delete__(self,instance):
@@ -357,7 +359,7 @@ class Database(BaseObject):
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
             self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
         
@@ -425,7 +427,7 @@ class Database(BaseObject):
             self.set_comment(kwargs[tags.COMMENT])
 
             self.logger.info('preapare query')
-            self.prepare_query(is_create=kwargs[tags.IS_CREATE])
+            self.prepare_query()
 
             if kwargs[tags.IS_CREATE] == "TRUE":
                 self.logger.info('execute query')
@@ -435,7 +437,7 @@ class Database(BaseObject):
                 #self.grant_default_privileges()
                 
                 self.logger.info('create deployment entry')
-                self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+                self.create_deployment_entry(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
 
                 self.logger.info('writing file to git')
-                self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+                self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')

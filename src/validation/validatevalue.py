@@ -3,10 +3,14 @@ import re
 import json
 import sys
 import os
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from datetime import datetime
 from croniter import croniter
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger('validation_logs').setLevel(logging.INFO)
+logger = logging.getLogger('validation_logs')
 
 from valueexception import ( 
     MustStartWithAlphabet,
@@ -172,11 +176,16 @@ class ValidateValue:
     @staticmethod
     def is_between(value,num1,num2,object_type,attr_name,**kwargs):
         try:
+            #check task for kwargs
+            logger.info(f" cheking if {value} lies between {num1} and {num2}")
+            logger.info(f"Object type : {object_type}")
+            logger.info(f"Attribute name : {attr_name}")
+            logger.info(f"Additional args : {kwargs}")
             num = float(value)
             if num1 <= num <= num2:
                 return True
             else:
-                if len(kwargs)!=0:
+                if not kwargs:
                     raise MustBeBetween(object_type,attr_name,num1,num2)
                 else:
                     raise CustomErrorMessage(object_type,attr_name,value,kwargs)
