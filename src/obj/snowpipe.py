@@ -43,15 +43,25 @@ class Schema:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              ):
-            instance._name = value
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = value
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for rename operation")
+            old_name=value["NAME"]
+            new_name=value["RENAME_TO"]
+            instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+            if new_name != "NONE":
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
 
     def __delete__(self,instance):
         del instance._name
@@ -196,7 +206,7 @@ class Snowpipe(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name}  '
+        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name[0]}  '
 
 
     def add_properties_to_query(self):
@@ -214,11 +224,42 @@ class Snowpipe(BaseObject):
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
         self.qry= self.qry + f" AS {self.copy_into}"
 
+    def alter_object(self):
+        for prop in self.property_lst:
+            if prop == tags.AUTO_INGEST:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AUTO_INGEST} = {self.attr.auto_ingest}"
+                self.execute_final_query()
+            if prop == tags.ERROR_INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
+                self.execute_final_query()
+            if prop == tags.AWS_SNS_TOPIC:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AWS_SNS_TOPIC} = {self.attr.aws_sns_topic}"
+                self.execute_final_query()
+            if prop == tags.INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.INTEGRATION} = {self.attr.integration}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming schema {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
+
+
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_qry()
-        self.add_properties_to_query()
+        if self.is_create=="TRUE":
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=="FALSE":
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
+
     
     def pause_snowpipe(self):
         self.session.sql(f"ALTER PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name} SET PIPE_EXECUTION_PAUSED=true").collect()
@@ -230,17 +271,11 @@ class Snowpipe(BaseObject):
         self.execute_final_query()
         self.pause_snowpipe()
 
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges["PIPE"]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = "PIPE",object_identifier=self.qualified_name,role = role)
-
-
-
     def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Snowpipe : values passed : {kwargs}")
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
+
         self.set_database(kwargs[tags.DATABASE])
         self.set_schema(kwargs[tags.SCHEMA])
         self.set_name(kwargs[tags.NAME])

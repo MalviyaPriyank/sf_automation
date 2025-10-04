@@ -22,19 +22,38 @@ from .baseobj import BaseObject
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.is_new_database(session=instance.parent.session, database_name=value)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-            and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-            instance._name = value
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for rename operation")
+            old_name=value["NAME"]
+            new_name=value["RENAME_TO"]
+            instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+            if new_name!="NONE":
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.database_exist(session=instance.parent.session,database_name=old_name)
+                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name="NONE"
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
 class DataRetentionTimeInDays:
     def __get__(self,instance,owner):
@@ -192,8 +211,6 @@ class DatabaseAttrs:
 
     name = Name()
 
-    old_name=OldName()
-
     data_retention_time_in_days = DataRetentionTimeInDays()
 
     max_data_extension_time_in_days = MaxDataExtensionTimeInDays()
@@ -221,12 +238,6 @@ class Database(BaseObject):
 
     def set_name(self, value):
         self.attr.name = value
-
-    def set_old_name(self,value):
-        self.attr.old_name=value
-
-    def set_name_tag(self, value):
-        self.attr.name_tag = value
 
     def set_data_retention_time_in_days(self, value):
         self.attr.data_retention_time_in_days = value
@@ -266,8 +277,6 @@ class Database(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.NAME,"_name")
-        set_flag(tags.OLD_NAME,"_old_name")
         set_flag(tags.DATA_RETENTION_TIME_IN_DAYS,"_data_retention_time_in_days")
         set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
         set_flag(tags.EXTERNAL_VOLUME,"_external_volume")
@@ -287,7 +296,7 @@ class Database(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE OR REPLACE DATABASE  {self.attr.name} "
+        self.qry = f"CREATE OR REPLACE DATABASE  {self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -346,30 +355,23 @@ class Database(BaseObject):
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
 
-        if tags.OLD_NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__} {self.attr.old_name} RENAME TO {self.attr.name}"
-            self.logger.info(f"Renaming database {self.attr.old_name} to {self.attr.name}")
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
         
     
-    def prepare_query(self,is_create):
+    def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        if is_create == 'TRUE':
+        if self.is_create == 'TRUE':
             self.set_create_account_qry()
             self.add_properties_to_query()
-        elif is_create=='FALSE':
+        elif self.is_create=='FALSE':
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
             self.alter_object()
-
-    def grant_default_privileges(self,*largs):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                if len(largs)==0:
-                    priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
-                else:
-                    priv_inst.grant_privilege_on_object_to_role(privilege_type=privileges, object_type=self.__class__.__name__.upper(), object_identifier='DB_CONFIG', role=role)
-
 
     def create_database(self):
         self.execute_final_query()
@@ -378,6 +380,7 @@ class Database(BaseObject):
     def create_object(self,*largs,**kwargs):
         self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         if len(largs) != 0:
             self.logger.info(' list args passed')
@@ -389,9 +392,6 @@ class Database(BaseObject):
         else:
             self.logger.info('set name')
             self.set_name(kwargs[tags.NAME])
-
-            self.logger.info('set old name')
-            self.set_old_name(kwargs[tags.OLD_NAME])
 
             self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
             self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])

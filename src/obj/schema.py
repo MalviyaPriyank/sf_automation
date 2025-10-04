@@ -28,19 +28,37 @@ class Database:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.is_new_schema(session=instance.parent.session,database_name=instance._database,schema_name=value)
-        if vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            if ( not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-                and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-                instance._name = value
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_schema(session=instance.parent.session,database_name=instance._database,schema_name=name)
+            if vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__):
+                if ( not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                    and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                    instance._name = name
+                    instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for rename operation")
+            old_name=value["NAME"]
+            new_name=value["RENAME_TO"]
+            instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+            if new_name != "NONE":
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.schema_exist(session=instance.parent.session,database_name=instance._database,schema_name=old_name)
+                vo.is_new_schema(session=instance.parent.session,database_name=instance._database,schema_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name="NONE"
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
 class WithManagedAccess:
     def __get__(self,instance,owner):
@@ -288,7 +306,6 @@ class Schema(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.NAME,"_name")
         set_flag(tags.WITH_MANAGED_ACCESS,"_with_managed_access")
         set_flag(tags.DATA_RETENTION_TIME_IN_DAYS,"_data_retention_time_in_days")
         set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
@@ -310,7 +327,7 @@ class Schema(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE OR REPLACE SCHEMA {self.attr.database}.{self.attr.name} "
+        self.qry = f"CREATE OR REPLACE SCHEMA {self.attr.database}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -340,38 +357,67 @@ class Schema(BaseObject):
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
+    def alter_object(self):
+        for prop in self.property_lst:
+            if prop == tags.WITH_MANAGED_ACCESS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.WITH_MANAGED_ACCESS} = {self.attr.with_managed_access}"
+                self.execute_final_query()
+            if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days}"
+                self.execute_final_query()
+            if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days}"
+                self.execute_final_query()
+            if prop == tags.EXTERNAL_VOLUME:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.EXTERNAL_VOLUME} = {self.attr.external_volume}"
+                self.execute_final_query()
+            if prop == tags.CATALOG:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CATALOG} = {self.attr.catalog}"
+                self.execute_final_query()
+            if prop == tags.REPLACE_INVALID_CHARACTERS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+                self.execute_final_query()
+            if prop == tags.DEFAULT_DDL_COLLATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
+                self.execute_final_query()
+            if prop == tags.LOG_LEVEL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.LOG_LEVEL} = {self.attr.log_level}"
+                self.execute_final_query()
+            if prop == tags.STORAGE_SERIALIZATION_POLICY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy}"
+                self.execute_final_query()
+            if prop == tags.CLASSIFICATION_PROFILE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CLASSIFICATION_PROFILE} = {self.attr.classification_profile}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming schema {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
+
 
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_account_qry()
-        self.add_properties_to_query()
+        if self.is_create=="TRUE":
+            self.set_create_account_qry()
+            self.add_properties_to_query()
+        elif self.is_create=="FALSE":
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
 
     def create_schema(self):
         self.session.sql(self.qry).collect()
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment schema object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
-
-
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         self.logger.info('set database')
         self.set_database(kwargs[tags.DATABASE])
@@ -410,6 +456,6 @@ class Schema(BaseObject):
         self.logger.info(f'schema {self.attr.name} created successfully')
         #self.grant_default_privileges()
         if len(largs) == 0:
-            self.create_deployment_entry()
+            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema='NA')
             self.logger.info('writing file to git')
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema='NA')

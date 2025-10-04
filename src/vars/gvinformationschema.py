@@ -8,6 +8,7 @@ class InformationSchema:
     _stage_view=f"{_information_schema}.STAGES"
     _file_format_view=f"{_information_schema}.FILE_FORMATS"
     _column_view=f"{_information_schema}.COLUMNS"
+    _pipe_view=f"{_information_schema}.PIPES"
 
 
 class DatabaseColumnList:
@@ -159,4 +160,14 @@ class ColumnColumnList:
 class Column:
     def __init__(self):
         self.columns=ColumnColumnList()
+
+class PipeColumnList:
+    _view=InformationSchema._pipe_view
+    _pipe_catalog="PIPE_CATALOG"
+    _pipe_schema="PIPE_SCHEMA"
+    _pipe_name="PIPE_NAME"
+
+class Pipe:
+    def __init__(self):
+        self.columns=PipeColumnList()
 

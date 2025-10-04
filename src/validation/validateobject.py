@@ -12,6 +12,7 @@ from infschema.tables import Tables as tbl
 from infschema.stages import Stages as stg
 from infschema.fileformats import FileFormats as ff
 from infschema.columns import Columns as cols
+from infschema.pipes import Pipes as pipes
 from exception.objectexception import ( 
     ObjectDoesNotExist,
     DuplicateObject,
@@ -37,6 +38,14 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist('SCHEMA', schema_name)
+        
+    @staticmethod 
+    def pipe_exist(session,database_name,schema_name):
+        pipe_inst = pipes(session=session)
+        if pipe_inst.is_existing_pipe(database_name,schema_name):
+            return True
+        else:
+            raise ObjectDoesNotExist('PIPE', schema_name)
     
     @staticmethod
     def table_exist(session,database_name,schema_name,table_name):
@@ -77,7 +86,15 @@ class ValidateObject:
             return True
         else:
             raise DuplicateObject('SCHEMA', schema_name)
-        
+
+    @staticmethod 
+    def is_new_pipe(session,database_name,schema_name):
+        pipe_inst = pipes(session=session)
+        if pipe_inst.is_new_pipe(database_name,schema_name):
+            return True
+        else:
+            raise DuplicateObject('PIPE', schema_name)
+
     @staticmethod 
     def is_new_table(session,database_name,schema_name):
         tbl_inst = tbl(session=session)
@@ -264,5 +281,5 @@ class ValidateObject:
             raise InvalidAttributesToAlter(object_type=object_type,attribute_list=diff_list)
         else:
             return True
-
+        
         
