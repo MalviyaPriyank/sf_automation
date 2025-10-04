@@ -27,7 +27,7 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user to provide value for NAME for database object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"user to provide value for NAME in a dictionary for database object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",

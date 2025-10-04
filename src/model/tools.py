@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import time
 import shutil
 import inspect
@@ -192,7 +193,12 @@ class LLMTools:
                                **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.DATABASE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.DATABASE_OBJ, data_dict)
 
@@ -589,10 +595,10 @@ class LLMTools:
     def create_maskingpolicy_object(self,
                                     ROLE,
                                     NAME,
-                               IS_CREATE="TRUE",
                                     SIGNATURE,
                                     RETURNS,
                                     BODY,
+                               IS_CREATE="TRUE",
                                     COMMENT="NONE",
                                     EXEMPT_OTHER_POLICIES="NONE"
                                     ):
