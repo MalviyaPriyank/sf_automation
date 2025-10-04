@@ -25,8 +25,9 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
-            name=value["NAME"]
+            name=value["NAME"]["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
             vo.is_new_database(session=instance.parent.session, database_name=name)
@@ -38,8 +39,8 @@ class Name:
                 instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for rename operation")
-            old_name=value["NAME"]
-            new_name=value["RENAME_TO"]
+            old_name=value["NAME"]["NAME"]
+            new_name=value["NAME"]["RENAME_TO"]
             instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
             if new_name!="NONE":
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)

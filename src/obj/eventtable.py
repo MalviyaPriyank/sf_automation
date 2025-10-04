@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 from vars.gvobject import Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
-from vars.obj.database.gvdatabase import DatabaseTag as tags
+from vars.obj.eventtable.gveventtable import EventTableTag as tags
 from dep import deploy
 from setup import privilege 
 from .baseobj import BaseObject 
@@ -241,11 +241,12 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class DatabaseAttrs:
+class EventTableAttrs:
     def __init__(self,parent):
         self.parent = parent
 
     name = Name()
+    cluster_by=ClusterBy()
 
     data_retention_time_in_days = DataRetentionTimeInDays()
 
@@ -267,13 +268,16 @@ class DatabaseAttrs:
     comment = Comment()
 
 
-class Database(BaseObject):
+class EventTable(BaseObject):
     def __init__(self,session,user_id,logger):
         super().__init__(session, user_id, logger)
-        self.attr = DatabaseAttrs(self) 
+        self.attr = EventTableAttrs(self) 
 
     def set_name(self, value):
         self.attr.name = value
+
+    def set_cluster_by(self,value):
+        self.attr.cluster_by=value
 
     def set_data_retention_time_in_days(self, value):
         self.attr.data_retention_time_in_days = value
@@ -428,7 +432,7 @@ class Database(BaseObject):
         else:
             self.logger.info('set name')
             self.set_name(kwargs[tags.NAME])
-
+            self.set_cluster_by(kwargs[tags.CL])
             self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
             self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
 
