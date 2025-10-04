@@ -495,7 +495,6 @@ class ExternalStage(BaseObject):
         self.create_external_stage()
 
         self.logger.info('grant default priv')
-        self.grant_default_privileges()
 
         self.logger.info('create deployment entry')
         self.create_deployment_entry()

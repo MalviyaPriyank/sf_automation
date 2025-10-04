@@ -1321,7 +1321,6 @@ class FileFormat(BaseObject):
         self.create_file_format()
 
         self.logger.info('grant default priv')
-        self.grant_default_privileges()
         if len(largs) == 0:
             self.logger.info('create deployment entry')
             self.create_deployment_entry()
