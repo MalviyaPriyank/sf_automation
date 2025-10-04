@@ -24,7 +24,6 @@ class Name:
     def __get__(self,instance,owner):
         return instance._name
 
-    
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.is_new_database(session=instance.parent.session, database_name=value)
@@ -32,20 +31,6 @@ class Name:
             and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
             and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
             ):
-            instance._name = value
-
-    def __delete__(self,instance):
-        del instance._name
-
-class OldName:
-    def __get__(self,instance,owner):
-        return instance._old_name
-
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._old_name=value
-        else:
-            vo.database_exist(session=instance.parent.session,database_name=value)
             instance._name = value
 
     def __delete__(self,instance):
@@ -406,7 +391,7 @@ class Database(BaseObject):
             self.set_name(kwargs[tags.NAME])
 
             self.logger.info('set old name')
-            self.set_name(kwargs[tags.OLD_NAME])
+            self.set_old_name(kwargs[tags.OLD_NAME])
 
             self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
             self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
