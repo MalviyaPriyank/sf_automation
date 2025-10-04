@@ -20,7 +20,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_database_object",
-                "description":"Use this tool to create a database. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
+                "description":"Use this tool to create or alter a database object. NAME is a required input to be taken from user, other values are NONE if not provided by the user. Only use user provided inputs",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -28,6 +28,14 @@ tools = {
                             "NAME": {
                                 "type":"string",
                                 "description":"user to provide value for NAME for database object. This is to be taken as input from user. do not assume a value."
+                            },
+                            "OLD_NAME": {
+                                "type":"string",
+                                "description":"user to provide value for OLD NAME for database object if IS_CREATE is FALSE meaning the ask is to alter object. otherwise set this to 'NONE'"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "REPLACE_INVALID_CHARACTERS": {
                                 "type":"string",
@@ -71,7 +79,7 @@ tools = {
                             }
                         },
                         "required":[
-                            "NAME"
+                            "NAME","IS_CREATE","OLD_NAME"
                         ]
                     }
                 }

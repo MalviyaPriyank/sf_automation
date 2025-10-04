@@ -178,7 +178,8 @@ class LLMTools:
 
     def create_database_object(self, 
                                NAME,
-                               OLD_NAME="NONE", 
+                               OLD_NAME="NONE",
+                               IS_CREATE="TRUE",
                                CATALOG="NONE", 
                                COMMENT="NONE",  
                                EXTERNAL_VOLUME="NONE", 
