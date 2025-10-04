@@ -762,6 +762,10 @@ tools = {
                                 "type":"string",
                                 "description":"user provided value for NAME for task object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
+                            },
 			"SQL": {
                                 "type":"string",
                                 "description":"user provided value for SQL query for task object"

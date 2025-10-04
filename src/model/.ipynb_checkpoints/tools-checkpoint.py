@@ -177,7 +177,8 @@ class LLMTools:
 
 
     def create_database_object(self, 
-                               NAME, 
+                               NAME={"NAME":"NONE","RENAME_TO":"NONE"},
+                               IS_CREATE="TRUE",
                                CATALOG="NONE", 
                                COMMENT="NONE",  
                                EXTERNAL_VOLUME="NONE", 
@@ -205,6 +206,8 @@ class LLMTools:
                                         LANGUAGE,
                                         HANDLER,
                                         PACKAGES,
+                                       
+                               IS_CREATE="TRUE",
                                         **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
@@ -216,8 +219,9 @@ class LLMTools:
 
     def create_externalstage_object(self,
                                     NAME,
-                                    DATABASE="DB_CONFIG",
-                                    SCHEMA="SCH_CONFIG",
+                               IS_CREATE="TRUE",
+                                    DATABASE="NONE",
+                                    SCHEMA="NONE",
                                     FILE_FORMAT="NONE",
                                     COMMENT="NONE",
                                     URL="NONE",
@@ -243,7 +247,8 @@ class LLMTools:
                                 NAME,
                                 DATABASE,
                                 SCHEMA,
-                                TYPE="CSV",
+                               IS_CREATE="TRUE",
+                                TYPE="NONE",
                                 COMPRESSION="NONE",
                                 RECORD_DELIMITER="NONE",
                                 FIELD_DELIMITER="NONE",
@@ -291,6 +296,7 @@ class LLMTools:
                                     DATABASE,
                                     SCHEMA="NONE",
                                     NAME="NONE",
+                               IS_CREATE="TRUE",
                                     FILE_FORMAT="NONE",
                                     COMMENT="NONE",
                                     TAG="NONE",
@@ -307,12 +313,13 @@ class LLMTools:
 
     def create_resourcemonitor_object(self,
                                     NAME,
-                                    CREDIT_QUOTA="75",
-                                    FREQUENCY="DAILY",
+                               IS_CREATE="TRUE",
+                                    CREDIT_QUOTA="NONE",
+                                    FREQUENCY="NONE",
                                     START_TIMESTAMP="NONE",
                                     END_TIMESTAMP="NONE",
-                                    NOTIFY_USERS="ADMIN",
-                                    TRIGGERS_ON="75",
+                                    NOTIFY_USERS="NONE",
+                                    TRIGGERS_ON="NONE",
                                     THRESHOLD="NONE",
                                     ACTION="NONE",
                                     **kwargs):
@@ -335,6 +342,7 @@ class LLMTools:
                                             NAME,
                                             ENABLED,
                                             STORAGE_PROVIDER,
+                               IS_CREATE="TRUE",
                                             TYPE="NONE",
                                             STORAGE_ALLOWED_LOCATIONS="NONE",
                                             STORAGE_BLOCKED_LOCATIONS="NONE",
@@ -357,6 +365,7 @@ class LLMTools:
     def create_schema_object(self,
                             DATABASE,
                             NAME,
+                               IS_CREATE="TRUE",
                             WITH_MANAGED_ACCESS="NONE",
                             DATA_RETENTION_TIME_IN_DAYS="NONE",
                             MAX_DATA_EXTENSION_TIME_IN_DAYS="NONE",
@@ -386,26 +395,26 @@ class LLMTools:
     def create_user_object(self,
                             NAME,
                             PASSWORD,
-                            LOGIN_NAME="DEFAULT",
-                            DISPLAY_NAME="PERSON",
-                            FIRST_NAME="DEFAULT",
-                            LAST_NAME="DEFAULT",
-                            EMAIL="DEFAULT",
+                            LOGIN_NAME="NONE",
+                            DISPLAY_NAME="NONE",
+                            FIRST_NAME="NONE",
+                            LAST_NAME="NONE",
+                            EMAIL="NONE",
                             MUST_CHANGE_PASSWORD="TRUE",
-                            DISABLED="FALSE",
-                            DAYS_TO_EXPIRY="20",
-                            MINS_TO_UNLOCK="20",
-                            DEFAULT_WAREHOUSE="DEFAULT",
-                            DEFAULT_ROLE="DEFAULT",
-                            DEFAULT_SECONDARY_ROLES="ALL",
-                            MINS_TO_BY_PASS_MFA="20",
-                            RSA_PUBLIC_KEY="DEFAULT",
-                            RSA_PUBLIC_KEY_FP="DEFAULT",
-                            RSA_PUBLIC_KEY_2="KEY2",
-                            RSA_PUBLIC_KEY_2_FP="DEFAULT",
-                            TYPE="PERSON",
-                            COMMENT="DEFAULT",
-                            ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="TRUE",
+                            DISABLED="NONE",
+                            DAYS_TO_EXPIRY="NONE",
+                            MINS_TO_UNLOCK="NONE",
+                            DEFAULT_WAREHOUSE="NONE",
+                            DEFAULT_ROLE="NONE",
+                            DEFAULT_SECONDARY_ROLES="NONE",
+                            MINS_TO_BY_PASS_MFA="NONE",
+                            RSA_PUBLIC_KEY="NONE",
+                            RSA_PUBLIC_KEY_FP="NONE",
+                            RSA_PUBLIC_KEY_2="NONE",
+                            RSA_PUBLIC_KEY_2_FP="NONE",
+                            TYPE="NONE",
+                            COMMENT="NONE",
+                            ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR="NONE",
                             **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
@@ -416,8 +425,9 @@ class LLMTools:
 
     def create_warehouse_object(self,
                                 NAME,
-                                WAREHOUSE_SIZE="SMALL",
-                                WAREHOUSE_TYPE="STANDARD",
+                               IS_CREATE="TRUE",
+                                WAREHOUSE_SIZE="NONE",
+                                WAREHOUSE_TYPE="NONE",
                                 RESOURCE_CONSTRAINT="NONE",
                                 MAX_CLUSTER_COUNT="NONE",
                                 MIN_CLUSTER_COUNT="NONE",
@@ -549,6 +559,7 @@ class LLMTools:
                             SCHEMA,
                             NAME,
                             SQL,
+                               IS_CREATE="TRUE",
                             WAREHOUSE="NONE",
                             USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE="NONE",
                             SCHEDULE="NONE",
@@ -578,6 +589,7 @@ class LLMTools:
     def create_maskingpolicy_object(self,
                                     ROLE,
                                     NAME,
+                               IS_CREATE="TRUE",
                                     SIGNATURE,
                                     RETURNS,
                                     BODY,
@@ -633,6 +645,7 @@ class LLMTools:
                             SCHEMA,
                             NAME,
                             TABLE_NAME,
+                               IS_CREATE="TRUE",
                             TAG="NONE",
                             AT="NONE",
                             APPEND_ONLY="NONE",
@@ -659,6 +672,7 @@ class LLMTools:
                             CONDITION,
                             ACTION,
                             ACTION_TYPE,
+                               IS_CREATE="TRUE",
                             IF="NONE",
                             THEN="NONE",
                             WAREHOUSE="NONE",
@@ -673,6 +687,7 @@ class LLMTools:
     def create_notification_object(self,
                                     NAME,
                                     ENABLED,
+                               IS_CREATE="TRUE",
                                     TYPE="NONE",
                                     ALLOWED_RECIPIENTS="NONE",
                                     DEFAULT_RECIPIENTS="NONE",
@@ -770,7 +785,10 @@ class LLMTools:
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
-    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role):
+    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name=None):
+        if object_type.upper() != 'DATABASE':
+            self.logger(f"switching to {database_name} database")
+            self.sf_session.sql(f"USE DATABASE {database_name}").collect()
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'
@@ -783,7 +801,7 @@ class LLMTools:
 
     def grant_privilege_on_role_to_user(self, role, user):
         privilege_obj = BasePrivilege(session=self.sf_session,logger=self.logger)
-        qry=privilege_obj.grant_role_to_user(role1=role,user=user)
+        qry=privilege_obj.grant_role_to_user(role=role,user=user)
         self.sf_session.sql(qry).collect()
         return f'privileges to user granted succesfully'
 
