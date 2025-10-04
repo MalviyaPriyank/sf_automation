@@ -42,8 +42,11 @@ class OldName:
         return instance._old_name
 
     def __set__(self,instance,value):
-        vo.database_exist(session=instance.parent.session,database_name=value)
-        instance._name = value
+        if value == "NONE":
+            instance._old_name=value
+        else:
+            vo.database_exist(session=instance.parent.session,database_name=value)
+            instance._name = value
 
     def __delete__(self,instance):
         del instance._name
@@ -387,8 +390,8 @@ class Database(BaseObject):
         self.execute_final_query()
 
 
-    def create_object(self,is_create,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {is_create}")
+    def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
 
         if len(largs) != 0:
@@ -401,6 +404,9 @@ class Database(BaseObject):
         else:
             self.logger.info('set name')
             self.set_name(kwargs[tags.NAME])
+
+            self.logger.info('set old name')
+            self.set_name(kwargs[tags.OLD_NAME])
 
             self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
             self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
@@ -433,9 +439,9 @@ class Database(BaseObject):
             self.set_comment(kwargs[tags.COMMENT])
 
             self.logger.info('preapare query')
-            self.prepare_query(is_create=is_create)
+            self.prepare_query(is_create=kwargs[tags.IS_CREATE])
 
-            if is_create == "TRUE":
+            if kwargs[tags.IS_CREATE] == "TRUE":
                 self.logger.info('execute query')
                 self.create_database()
 

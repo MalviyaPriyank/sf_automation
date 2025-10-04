@@ -8,6 +8,7 @@ class BaseTag:
     NAME="NAME"
     OLD_NAME="OLD_NAME"
     COMMENT="COMMENT"
+    IS_CREATE="IS_CREATE"
 
 @dataclass(frozen=True)
 class BaseMethod(ABC):
