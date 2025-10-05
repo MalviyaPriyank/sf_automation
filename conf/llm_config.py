@@ -91,7 +91,7 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user to provide value for NAME for external stage object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"user to provide value for NAME in a dictionary for external stage object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -184,7 +184,7 @@ tools = {
                             },
                             "NAME": {
                                 "type":"string",
-                                "description":"user provided name for FILE_FORMAT for file format object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"user provided name for FILE_FORMAT in a dictionary for file format object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -382,7 +382,7 @@ tools = {
                             },
                             "NAME": {
                                 "type":"string",
-                                "description":"name of the service. To be provided by the user. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"name of the service in a dictionary. To be provided by the user. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -435,7 +435,7 @@ tools = {
                             },
                         "NAME": {
                                 "type":"string",
-                                "description":"user provided value for NAME for schema object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"user provided value for NAME in a dictionary for schema object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -532,7 +532,7 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"user provided NAME for storage integration object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                                "description":"user provided NAME in a dictionary for storage integration object. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
                             },
                             "IS_CREATE": {
                                 "type":"string",
@@ -1116,7 +1116,11 @@ tools = {
                         "properties": {
                             "NAME": {
                                 "type":"string",
-                                "description":"name for user"
+                                "description":"value for NAME in a dictionary for user object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)"
+                            },
+                            "IS_CREATE": {
+                                "type":"string",
+                                "description":"set to 'TRUE' if create object. set to 'FALSE' if alter object."
                             },
                             "PASSWORD": {
                                 "type":"string",
