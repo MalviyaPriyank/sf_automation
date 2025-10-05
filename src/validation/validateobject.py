@@ -121,6 +121,42 @@ class ValidateObject:
             return True
         else:
             raise ObjectDoesNotExist(object_type='WAREHOUSE',object_name=warehouse_name)
+
+    @staticmethod
+    def object_exist(session,object_type,object_name):
+        object_type=object_type.upper()
+        object_name=object_name.upper()
+        qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
+        df=session.sql(qry)
+        df=df.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        df_count=df.filter(col("NAME")==object_name).count()
+        if df_count:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type=object_type,object_name=object_name)
+
+    @staticmethod
+    def return_show_query(object_type):
+        qry=f"SHOW {object_type.upper()}S"
+        return qry
+        
+    @staticmethod
+    def is_new_object(session,object_type,object_name):
+        object_type=object_type.upper()
+        object_name=object_name.upper()
+        qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
+        df=session.sql(qry)
+        df=df.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        df_count=df.filter(col("NAME")==f'{object_name}').count()
+        if df_count==0:
+            return True
+        else:
+            raise DuplicateObject(object_type=object_type,object_name=object_name)
+
+
+
         
     @staticmethod
     def role_exist(session,role_name):

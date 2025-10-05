@@ -87,8 +87,19 @@ class Role(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.NAME,"_name")
         set_flag(tags.COMMENT,"_comment")
+
+    def alter_object(self):        
+        for prop in self.property_lst:
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
+
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -108,13 +119,23 @@ class Role(BaseObject):
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_account_qry()
-        self.add_properties_to_query()
+        if self.is_create == 'TRUE':
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=='FALSE':
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
         
     def create_role(self):
         self.execute_final_query()
 
     def create_object(self,*pargs,**kwargs): 
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
+
         self.set_name(kwargs[tags.NAME])
         self.set_comment(kwargs[tags.COMMENT])
         self.prepare_query()
@@ -123,18 +144,3 @@ class Role(BaseObject):
         if len(pargs) == 0:
             self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
             self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
-
-    @classmethod
-    def grant_role_to_user(self,role,user):
-        self.qry=f" GRANT ROLE {role} TO USER {user}"
-        self.execute_final_query()
-        self.create_deployment_entry(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-        self.write_file_to_git(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-    
-    @classmethod
-    def grant_role_to_role(self,parent_role,child_role):
-        self.qry=f" GRANT ROLE {parent_role} TO ROLE {child_role}"
-        self.execute_final_query()
-        self.create_deployment_entry(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-        self.write_file_to_git(object_name='ROLE_GRANT',object_type=self.__class__.__name__,object_database='NA',object_schema='NA')

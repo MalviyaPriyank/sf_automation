@@ -39,20 +39,50 @@ class Schema:
     def __delete__(self,instance):
         del instance._schema
 
-class Name:
+class Name:   
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-            instance._name = value
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.__class__.__name__,
+                             object_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.object_exist(session=instance.parent.session,
+                                object_type=instance.parent.__class__.__name__,
+                                object_name=old_name)
+                vo.is_new_object(session=instance.parent.session,
+                                object_type=instance.parent.__class__.__name__,
+                                object_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
 
-    def __delete__(self,instance):
+
+    def __del__(self,instance):
         del instance._name
+        del instance._rename_to
 
 
 class Sql:
@@ -540,7 +570,7 @@ class Task(BaseObject):
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
-    def set_create_account_qry(self):
+    def set_create_qry(self):
         self.qry = f"CREATE TASK {self.attr.database}.{self.attr.schema}.{self.attr.name} "
 
     def add_properties_to_query(self):
@@ -584,18 +614,68 @@ class Task(BaseObject):
                     self.qry = f" {self.qry} {tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE} = {self.attr.serverless_task_min_statement_size} "
 
         self.qry = self.qry + f" AS  {self.attr.definition} "    
+
+    def alter_object(self):
+        for prop in self.property_lst:
+            if prop == tags.WAREHOUSE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.WAREHOUSE} = {self.attr.warehouse}"
+                self.execute_final_query()
+            if prop == tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE} = {self.attr.user_task_managed_initial_warehouse_size}"
+                self.execute_final_query()
+            if prop == tags.SCHEDULE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SCHEDULE} = {self.attr.schedule}"
+                self.execute_final_query()
+            if prop == tags.CONFIG:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CONFIG} = {self.attr.config}"
+                self.execute_final_query()
+            if prop == tags.ALLOW_OVERLAPPING_EXECUTION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ALLOW_OVERLAPPING_EXECUTION} = {self.attr.allow_overlapping_execution}"
+                self.execute_final_query()
+            if prop == tags.USER_TASK_TIMEOUT_MS:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USER_TASK_TIMEOUT_MS} = {self.attr.user_task_timeout_ms}"
+                self.execute_final_query()
+            if prop == tags.SUSPEND_TASK_AFTER_NUM_FAILURES:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SUSPEND_TASK_AFTER_NUM_FAILURES} = {self.attr.suspend_task_after_num_failures}"
+                self.execute_final_query()
+            if prop == tags.ERROR_INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
+                self.execute_final_query()
+            if prop == tags.SUCCESS_INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SUCCESS_INTEGRATION} = {self.attr.success_integration}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+            if prop == tags.AFTER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AFTER} = {self.attr.after}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
         
 
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_account_qry()
-        self.add_properties_to_query()
+        if self.is_create=="TRUE":
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=="FALSE":
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
 
     def create_task(self):
         self.execute_final_query()
 
     def create_object(self,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
         self.set_database(kwargs[tags.DATABASE])
         self.set_schema(kwargs[tags.SCHEMA])
         self.set_name(kwargs[tags.NAME])
@@ -622,23 +702,14 @@ class Task(BaseObject):
 
         self.prepare_query()
         self.create_task()
-        self.create_deployment_entry()
-        self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
+        self.logger.info('create deployment entry')
+        self.create_deployment_entry(object_name=self.attr.name[0],
+                                        object_type=self.__class__.__name__,
+                                        object_database=self.attr.database,
+                                        object_schema=self.attr.schema)
 
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
-
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
+        self.logger.info('writing file to git')
+        self.write_file_to_git(object_name=self.attr.name[0],
+                                object_type=self.__class__.__name__,
+                                object_database=self.attr.database,
+                                object_schema=self.attr.schema)

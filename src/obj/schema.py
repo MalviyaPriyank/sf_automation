@@ -411,7 +411,7 @@ class Schema(BaseObject):
 
         if tags.NAME in self.property_lst:
             self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming schema {self.attr.name[0]} to {self.attr.name[1]}")
+            self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
 

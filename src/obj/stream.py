@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 
 from vars.gvobject import Stream as gv,Config as cfg, Privilege as gv_priv
@@ -13,6 +14,7 @@ from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
 from vars.obj.stream.gvstream import StreamTag as tags
+from exception.operationexception import PropertyNotSupported
 
 class Database:
     def __get__(self,instance,owner):
@@ -60,10 +62,9 @@ class Name:
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_pipe(session=instance.parent.session,
-                           database_name=instance._database,
-                           schema_name=instance._schema,
-                           pipe_name=name)
+            vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.__class__.__name__,
+                             object_name=value)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -77,27 +78,13 @@ class Name:
             new_name=value.get("RENAME_TO","NONE")
             instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
-                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
-                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.pipe_exist(session=instance.parent.session,
-                              database_name=instance._database,
-                              schema_name=instance._schema,
-                              pipe_name=old_name)
-                vo.is_new_pipe(session=instance.parent.session,
-                               database_name=instance._database,
-                               schema_name=instance._schema,
-                               pipe_name=new_name)
-                instance._name=old_name
-                instance._rename_to=new_name
-            else:
-                instance._name=old_name
-                instance._rename_to="NONE"
+                raise PropertyNotSupported(object_type=instance.parent.__class__.__name__,
+                                           property_name=instance.__class__.__name__)
 
 
     def __del__(self,instance):
         del instance._name
         del instance._rename_to
-
 
 
 class TableName:
@@ -323,7 +310,13 @@ class Stream(BaseObject):
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
-    def set_create_account_qry(self):
+    def alter_object(self):
+        for prop in self.property_lst:
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
+    def set_create_qry(self):
         if self.attr.object_type.upper()=="TABLE":
             self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
         elif self.attr.object_type.upper()=="EXTERNAL TABLE":
@@ -361,33 +354,22 @@ class Stream(BaseObject):
     def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
-        self.set_create_account_qry()
-        self.add_properties_to_query()
+        if self.is_create=="TRUE":
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=="FALSE":
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
 
     def create_stream(self):
         self.execute_final_query()
 
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.session)
-        self.logger.info(f"Tracking for deployment schema object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
-
-
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         self.set_database(kwargs[tags.DATABASE])
         self.set_schema(kwargs[tags.SCHEMA])
@@ -402,7 +384,15 @@ class Stream(BaseObject):
         self.prepare_query()
         self.create_stream()
         self.logger.info(f"creating stream {self.attr.name}")
-        self.grant_default_privileges()
         if len(largs) == 0:
-            self.create_deployment_entry()
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
+            self.logger.info('create deployment entry')
+            self.create_deployment_entry(object_name=self.attr.name[0],
+                                         object_type=self.__class__.__name__,
+                                         object_database=self.attr.database,
+                                         object_schema=self.attr.schema)
+
+            self.logger.info('writing file to git')
+            self.write_file_to_git(object_name=self.attr.name[0],
+                                   object_type=self.__class__.__name__,
+                                   object_database=self.attr.database,
+                                   object_schema=self.attr.schema)

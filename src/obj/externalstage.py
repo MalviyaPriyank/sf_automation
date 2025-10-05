@@ -433,7 +433,7 @@ class ExternalStage(BaseObject):
 
         if tags.NAME in self.property_lst:
             self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
+            self.logger.info(f"Renaming external stage {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
 
