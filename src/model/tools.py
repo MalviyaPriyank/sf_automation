@@ -244,7 +244,12 @@ class LLMTools:
                                     **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.EXTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.EXTERNAL_STAGE_OBJ, data_dict)
 
@@ -293,7 +298,12 @@ class LLMTools:
                                 **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.FILEFORMAT_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.FILEFORMAT_OBJ, data_dict)
 
@@ -312,7 +322,12 @@ class LLMTools:
                                     **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.INTERNAL_STAGE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.INTERNAL_STAGE_OBJ, data_dict)
 
@@ -331,7 +346,12 @@ class LLMTools:
                                     **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.RESOURCE_MONITOR_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.RESOURCE_MONITOR_OBJ, data_dict)
 
@@ -339,7 +359,12 @@ class LLMTools:
     def create_role_object(self, NAME, COMMENT="NONE",**kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.ROLE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.ROLE_OBJ, data_dict)
 
@@ -361,7 +386,12 @@ class LLMTools:
                                             **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         data_dict['STORAGE_ALLOWED_LOCATIONS'] = tuple(eval(data_dict['STORAGE_ALLOWED_LOCATIONS']))
         data_dict['STORAGE_BLOCKED_LOCATIONS'] = tuple(eval(data_dict['STORAGE_BLOCKED_LOCATIONS']))
         self.logger.info(f'creating {ss.STORAGE_INTEGRATION_OBJ} object with parameters: {data_dict}')
@@ -392,6 +422,8 @@ class LLMTools:
             value = values[arg]
             if arg == 'WITH_MANAGED_ACCESS':
                 arg = 'WITH MANAGED ACCESS'
+            if arg == 'NAME':
+                value = json.loads(values[arg]
             data_dict[arg] = value
         #data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.SCHEMA_OBJ} object with parameters: {data_dict}')
@@ -401,6 +433,7 @@ class LLMTools:
     def create_user_object(self,
                             NAME,
                             PASSWORD,
+                           IS_CREATE="TRUE",
                             LOGIN_NAME="NONE",
                             DISPLAY_NAME="NONE",
                             FIRST_NAME="NONE",
@@ -424,7 +457,12 @@ class LLMTools:
                             **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.USER_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.USER_OBJ, data_dict)
 
@@ -452,7 +490,12 @@ class LLMTools:
                                 **kwargs):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.WAREHOUSE_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.WAREHOUSE_OBJ, data_dict)
 
@@ -587,7 +630,12 @@ class LLMTools:
                             SERVERLESS_TASK_MAX_STATEMENT_SIZE="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.TASK_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.TASK_OBJ, data_dict)
         
@@ -604,7 +652,12 @@ class LLMTools:
                                     ):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.MASKINGPOLICY_OBJ} object with parameters: {data_dict}')
         return self.create_masking_policy(ss.MASKINGPOLICY_OBJ, data_dict)
         
@@ -665,7 +718,12 @@ class LLMTools:
                             OBJECT_TYPE="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.STREAM_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.STREAM_OBJ, data_dict)
 
@@ -685,7 +743,12 @@ class LLMTools:
                             COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.ALERT_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.ALERT_OBJ, data_dict)
 
@@ -701,7 +764,12 @@ class LLMTools:
                                     COMMENT="NONE"):
         frame = inspect.currentframe()
         args, _, _, values = inspect.getargvalues(frame)
-        data_dict = {arg: values[arg] for arg in args[1:]}
+        data_dict = {
+            arg: (
+                json.loads(values[arg]) if arg == "NAME" else values[arg]
+            )
+            for arg in args[1:]  # skip 'self'
+        }
         self.logger.info(f'creating {ss.NOTIFICATION_OBJ} object with parameters: {data_dict}')
         return self.create_sf_object(ss.NOTIFICATION_OBJ, data_dict)
 
