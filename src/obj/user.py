@@ -603,5 +603,5 @@ class User(BaseObject):
         self.set_enable_unredacted_query_syntax_error(kwargs[tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR])
         self.prepare_query()
         self.create_user()
-        self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-        self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        self.create_deployment_entry(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
