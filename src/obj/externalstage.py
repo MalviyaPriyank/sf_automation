@@ -367,7 +367,6 @@ class ExternalStage(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.NAME,"_name")
         set_flag(tags.FILE_FORMAT,"_file_format")
         set_flag(tags.COMMENT,"_comment")
         set_flag(tags.URL,"_url")
@@ -388,6 +387,55 @@ class ExternalStage(BaseObject):
         for prop in self.flag_dic.keys():
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
+
+
+    def alter_object(self):        
+        for prop in self.property_lst:
+            if prop == tags.FILE_FORMAT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+            if prop == tags.URL:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
+                self.execute_final_query()
+            if prop == tags.AWS_ACCESS_POINT_ARN:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn}"
+                self.execute_final_query()
+            if prop == tags.STORAGE_INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration}"
+                self.execute_final_query()
+            if prop == tags.ENCRYPTION_TYPE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type}"
+                self.execute_final_query()
+            if prop == tags.ENCRYPTION_MASTER_KEY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key}"
+                self.execute_final_query()
+            if prop == tags.ENCRYPTION_KMS_KEY_ID:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id}"
+                self.execute_final_query()
+            if prop == tags.USE_PRIVATELINK_ENDPOINT:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint}"
+                self.execute_final_query()
+            if prop == tags.ENABLE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENABLE} = {self.attr.enable}"
+                self.execute_final_query()
+            if prop == tags.REFRESH_ON_CREATE:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
+                self.execute_final_query()
+            if prop == tags.AUTO_REFRESH:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AUTO_REFRESH} = {self.attr.auto_refresh}"
+                self.execute_final_query()
+            if prop == tags.NOTIFICATION_INTEGRATION:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration}"
+                self.execute_final_query()
+
+        if tags.NAME in self.property_lst:
+            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
+            self.execute_final_query()
+
 
     def set_create_qry(self):
         self.qry = f"CREATE OR REPLACE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name} "
@@ -424,36 +472,22 @@ class ExternalStage(BaseObject):
                     self.qry=f" {self.qry} )"
 
     def prepare_query(self):
-        self.set_object_properties_flag()
-        self.check_properties_to_set()
-        self.set_create_qry()
-        self.add_properties_to_query()
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.sf_object_tag]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.sf_object_tag,object_identifier=self.qualified_name,role = role)
-
-
-    def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment internal stage object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database(self.attr.database)
-        deploy_inst.set_object_schema(self.attr.schema)
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
+        if self.is_create == 'TRUE':
+            self.set_create_qry()
+            self.add_properties_to_query()
+        elif self.is_create=='FALSE':
+            self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
+            if self.attr.name[1] != "NONE":
+                self.property_lst.append(tags.NAME)
+            self.alter_object()
 
     def create_external_stage(self):
         self.execute_final_query()
 
     def create_object(self,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         self.logger.info('set DATABASE')
         self.set_database(kwargs[tags.DATABASE])
@@ -515,8 +549,14 @@ class ExternalStage(BaseObject):
         self.logger.info('grant default priv')
 
         self.logger.info('create deployment entry')
-        self.create_deployment_entry()
-        self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
+        self.create_deployment_entry(object_name=self.attr.name[0],
+                                     object_type=self.__class__.__name__,
+                                     object_database=self.attr.database,
+                                     object_schema=self.attr.schema)
+        self.write_file_to_git(object_name=self.attr.name[0],
+                               object_type=self.__class__.__name__,
+                               object_database=self.attr.database,
+                               object_schema=self.attr.schema)
             
 
         

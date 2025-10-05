@@ -43,19 +43,48 @@ class Schema:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
-    
+        return (instance._name,instance._rename_to)
+
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-              and not vv.has_space(value,instance.parent.__class__.__name__,self.__class__.__name__)
-              and not vv.has_special_characters_except_underscore(value,instance.parent.__class__.__name__,self.__class__.__name__)
-            ):
-            vo.is_new_alert(session=instance.parent.session,database=instance._database,schema=instance._schema,alert_name=value)
-            instance._name = value
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.alert_exist(session=instance.parent.session,
+                               object_type=instance.parent.__class__.__name__,
+                               database=instance._database,
+                               schema=instance._schema,
+                               alert_name=old_name)
+                vo.is_new_alert(session=instance.parent.session,
+                                database=instance._database,
+                                schema=instance._schema,
+                                alert_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
 
 class Schedule:
@@ -245,31 +274,13 @@ class Alerts(BaseObject):
     def prepare_query(self):
         self.execute_final_query()
 
-
-    def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session)
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry,user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database('NA')
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
-    '''
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
-    '''
-
     def create_alert(self):
         self.session.sql(self.qry).collect()
 
     def create_object(self,*largs,**kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
         self.logger.info('set database')
         self.set_database(kwargs[tags.DATABASE])

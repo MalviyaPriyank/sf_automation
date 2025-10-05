@@ -251,6 +251,19 @@ class ValidateObject:
         else:
             raise DuplicateObject(object_type="ALERT",object_name=alert_name)
         
+    @staticmethod    
+    def alert_exist(session,object_type,database,schema,alert_name):
+        session.sql(f"USE DATABASE {database}").collect()
+        session.sql(f"USE SCHEMA {schema}").collect()
+        df=session.sql('SHOW ALERTS')
+        df=df.select(col("*")).collect()
+        alert_df=session.create_dataframe(df)
+        alert_count=alert_df.filter(col("NAME") ==f'{alert_name.upper()}').count()        
+        if alert_count:
+            return True
+        else:
+            raise ObjectDoesNotExist(object_type=object_type,object_name=alert_name)
+        
     @staticmethod
     def is_account_admin(session,user,object_type):
         grants=session.sql(f"show grants to user {user}")
