@@ -423,7 +423,7 @@ class LLMTools:
             if arg == 'WITH_MANAGED_ACCESS':
                 arg = 'WITH MANAGED ACCESS'
             if arg == 'NAME':
-                value = json.loads(values[arg]
+                value = json.loads(values[arg])
             data_dict[arg] = value
         #data_dict = {arg: values[arg] for arg in args[1:]}
         self.logger.info(f'creating {ss.SCHEMA_OBJ} object with parameters: {data_dict}')

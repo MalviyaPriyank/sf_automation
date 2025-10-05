@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import User as gv,Config as cfg
+from vars.obj.user.gvuser import UserTag as tags
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from dep.deploy import Deploy
@@ -250,7 +250,7 @@ class DefaultSecondaryRoles:
         if value=="NONE":
             instance._default_secondary_roles=value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_default_secondary_roles,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.DEFAULT_SECONDARY_ROLES),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._default_secondary_roles = value
     
     def __delete__(self,instance):
@@ -334,7 +334,7 @@ class Type:
         if value=="NONE":
             instance._type=value
         else:
-            vv.is_allowed_value(value=value,allowed_list=gv._allowed_values_type,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._type=value
 
     def __delete__(self,instance):
@@ -474,28 +474,27 @@ class User(BaseObject):
             self.logger.info(f"setting flag for {attribute_tag} : {attribute_name}")
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(gv._name_tag,"name")
-        set_flag(gv._password_tag,"password")
-        set_flag(gv._login_name_tag,"login_name")
-        set_flag(gv._display_name_tag,"display_name")
-        set_flag(gv._first_name_tag,"first_name")
-        set_flag(gv._last_name_tag,"last_name")
-        set_flag(gv._email_tag,"email")
-        set_flag(gv._must_change_password_tag,"must_change_password")
-        set_flag(gv._disabled_tag,"disabled")
-        set_flag(gv._days_to_expiry_tag,"days_to_expiry")
-        set_flag(gv._mins_to_unlock_tag,"mins_to_unlock")
-        set_flag(gv._default_warehouse_tag,"default_warehouse")
-        set_flag(gv._default_role_tag,"default_role")
-        set_flag(gv._default_secondary_roles_tag,"default_secondary_roles")
-        set_flag(gv._mins_to_by_pass_mfa_tag,"mins_to_by_pass_mfa")
-        set_flag(gv._rsa_public_key_tag,"rsa_public_key")
-        set_flag(gv._rsa_public_key_fp_tag,"rsa_public_key_fp")
-        set_flag(gv._rsa_public_key_2_tag,"rsa_public_key_2")
-        set_flag(gv._rsa_public_key_2_fp_tag,"rsa_public_key_2_fp")
-        set_flag(gv._type_tag,"type")
-        set_flag(gv._comment_tag,"comment")
-        set_flag(gv._enable_unredacted_query_syntax_error_tag,"enable_unredacted_query_syntax_error")
+        set_flag(tags.PASSWORD,"password")
+        set_flag(tags.LOGIN_NAME,"login_name")
+        set_flag(tags.DISPLAY_NAME,"display_name")
+        set_flag(tags.FIRST_NAME,"first_name")
+        set_flag(tags.LAST_NAME,"last_name")
+        set_flag(tags.EMAIL,"email")
+        set_flag(tags.MUST_CHANGE_PASSWORD,"must_change_password")
+        set_flag(tags.DISABLED,"disabled")
+        set_flag(tags.DAYS_TO_EXPIRY,"days_to_expiry")
+        set_flag(tags.MINS_TO_UNLOCK,"mins_to_unlock")
+        set_flag(tags.DEFAULT_WAREHOUSE,"default_warehouse")
+        set_flag(tags.DEFAULT_ROLE,"default_role")
+        set_flag(tags.DEFAULT_SECONDARY_ROLES,"default_secondary_roles")
+        set_flag(tags.MINS_TO_BY_PASS_MFA,"mins_to_by_pass_mfa")
+        set_flag(tags.RSA_PUBLIC_KEY,"rsa_public_key")
+        set_flag(tags.RSA_PUBLIC_KEY_FP,"rsa_public_key_fp")
+        set_flag(tags.RSA_PUBLIC_KEY_2,"rsa_public_key_2")
+        set_flag(tags.RSA_PUBLIC_KEY_2_FP,"rsa_public_key_2_fp")
+        set_flag(tags.TYPE,"type")
+        set_flag(tags.COMMENT,"comment")
+        set_flag(tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR,"enable_unredacted_query_syntax_error")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -504,51 +503,51 @@ class User(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE USER {self.attr.name} "
+        self.qry = f"CREATE USER {self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == gv._password_tag:
-                    self.qry = f" {self.qry} {gv._password_tag} = {self.attr.password} "
-                if prop == gv._display_name_tag:
-                    self.qry = f" {self.qry} {gv._display_name_tag} = {self.attr.display_name} "
-                if prop == gv._first_name_tag:
-                    self.qry = f" {self.qry} {gv._first_name_tag} = {self.attr.first_name} "
-                if prop == gv._last_name_tag:
-                    self.qry = f" {self.qry} {gv._last_name_tag} = {self.attr.last_name} "
-                if prop == gv._email_tag:
-                    self.qry = f" {self.qry} {gv._email_tag} = {self.attr.email} "
-                if prop == gv._must_change_password_tag:
-                    self.qry = f" {self.qry} {gv._must_change_password_tag} = {self.attr.must_change_password} "
-                if prop == gv._disabled_tag:
-                    self.qry = f" {self.qry} {gv._disabled_tag} = {self.attr.disabled} "
-                if prop == gv._days_to_expiry_tag:
-                    self.qry = f" {self.qry} {gv._days_to_expiry_tag} = {self.attr.days_to_expiry} "
-                if prop == gv._mins_to_unlock_tag:
-                    self.qry = f" {self.qry} {gv._mins_to_unlock_tag} = {self.attr.mins_to_unlock} "
-                if prop == gv._default_warehouse_tag:
-                    self.qry = f" {self.qry} {gv._default_warehouse_tag} = {self.attr.default_warehouse} "
-                if prop == gv._default_role_tag:
-                    self.qry = f" {self.qry} {gv._default_role_tag} = {self.attr.default_role} "
-                if prop == gv._default_secondary_roles_tag:
-                    self.qry = f" {self.qry} {gv._default_secondary_roles_tag} = {self.attr.default_secondary_roles} "
-                if prop == gv._mins_to_by_pass_mfa_tag:
-                    self.qry = f" {self.qry} {gv._mins_to_by_pass_mfa_tag} = {self.attr.mins_to_by_pass_mfa} "
-                if prop == gv._rsa_public_key_tag:
-                    self.qry = f" {self.qry} {gv._rsa_public_key_tag} = {self.attr.rsa_public_key} "
-                if prop == gv._rsa_public_key_fp_tag:
-                    self.qry = f" {self.qry} {gv._rsa_public_key_fp_tag} = {self.attr.rsa_public_key_fp} "
-                if prop == gv._rsa_public_key_2_tag:
-                    self.qry = f" {self.qry} {gv._rsa_public_key_2_tag} = {self.attr.rsa_public_key_2} "
-                if prop == gv._rsa_public_key_2_fp_tag:
-                    self.qry = f" {self.qry} {gv._rsa_public_key_2_fp_tag} = {self.attr.rsa_public_key_2_fp} "
-                if prop == gv._type_tag:
-                    self.qry = f" {self.qry} {gv._type_tag} = {self.attr.type} "
-                if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
-                if prop == gv._enable_unredacted_query_syntax_error_tag:
-                    self.qry = f" {self.qry} {gv._enable_unredacted_query_syntax_error_tag} = {self.attr.enable_unredacted_query_syntax_error} "
+                if prop == tags.PASSWORD:
+                    self.qry = f" {self.qry} {tags.PASSWORD} = {self.attr.password} "
+                if prop == tags.DISPLAY_NAME:
+                    self.qry = f" {self.qry} {tags.DISPLAY_NAME} = {self.attr.display_name} "
+                if prop == tags.FIRST_NAME:
+                    self.qry = f" {self.qry} {tags.FIRST_NAME} = {self.attr.first_name} "
+                if prop == tags.LAST_NAME:
+                    self.qry = f" {self.qry} {tags.LAST_NAME} = {self.attr.last_name} "
+                if prop == tags.EMAIL:
+                    self.qry = f" {self.qry} {tags.EMAIL} = {self.attr.email} "
+                if prop == tags.MUST_CHANGE_PASSWORD:
+                    self.qry = f" {self.qry} {tags.MUST_CHANGE_PASSWORD} = {self.attr.must_change_password} "
+                if prop == tags.DISABLED:
+                    self.qry = f" {self.qry} {tags.DISABLED} = {self.attr.disabled} "
+                if prop == tags.DAYS_TO_EXPIRY:
+                    self.qry = f" {self.qry} {tags.DAYS_TO_EXPIRY} = {self.attr.days_to_expiry} "
+                if prop == tags.MINS_TO_UNLOCK:
+                    self.qry = f" {self.qry} {tags.MINS_TO_UNLOCK} = {self.attr.mins_to_unlock} "
+                if prop == tags.DEFAULT_WAREHOUSE:
+                    self.qry = f" {self.qry} {tags.DEFAULT_WAREHOUSE} = {self.attr.default_warehouse} "
+                if prop == tags.DEFAULT_ROLE:
+                    self.qry = f" {self.qry} {tags.DEFAULT_ROLE} = {self.attr.default_role} "
+                if prop == tags.DEFAULT_SECONDARY_ROLES:
+                    self.qry = f" {self.qry} {tags.DEFAULT_SECONDARY_ROLES} = {self.attr.default_secondary_roles} "
+                if prop == tags.MINS_TO_BY_PASS_MFA:
+                    self.qry = f" {self.qry} {tags.MINS_TO_BY_PASS_MFA} = {self.attr.mins_to_by_pass_mfa} "
+                if prop == tags.RSA_PUBLIC_KEY:
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY} = {self.attr.rsa_public_key} "
+                if prop == tags.RSA_PUBLIC_KEY_FP:
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_FP} = {self.attr.rsa_public_key_fp} "
+                if prop == tags.RSA_PUBLIC_KEY_2:
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2} = {self.attr.rsa_public_key_2} "
+                if prop == tags.RSA_PUBLIC_KEY_2_FP:
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2_FP} = {self.attr.rsa_public_key_2_fp} "
+                if prop == tags.TYPE:
+                    self.qry = f" {self.qry} {tags.TYPE} = {self.attr.type} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                if prop == tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR:
+                    self.qry = f" {self.qry} {tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR} = {self.attr.enable_unredacted_query_syntax_error} "
 
 
     def prepare_query(self):
@@ -562,42 +561,46 @@ class User(BaseObject):
 
 
     def create_object(self,**kwargs):
-        self.logger.info(f'set name {kwargs[gv._name_tag]}')
-        self.set_name(kwargs[gv._name_tag])
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f'dictionary passed {kwargs}')
+        self.is_create=kwargs[tags.IS_CREATE]
 
-        self.set_password(kwargs[gv._password_tag])
-        self.logger.info(f'set password {kwargs[gv._password_tag]}')
+        self.logger.info(f'set name {kwargs[tags.NAME]}')
+        self.set_name(kwargs[tags.NAME])
 
-        self.set_login_name(kwargs[gv._login_name_tag])
-        self.logger.info(f'set login name {kwargs[gv._login_name_tag]}')
+        self.set_password(kwargs[tags.PASSWORD])
+        self.logger.info(f'set password {kwargs[tags.PASSWORD]}')
 
-        self.set_display_name(kwargs[gv._display_name_tag])
-        self.logger.info(f'set display name {kwargs[gv._display_name_tag]}')
+        self.set_login_name(kwargs[tags.LOGIN_NAME])
+        self.logger.info(f'set login name {kwargs[tags.LOGIN_NAME]}')
 
-        self.set_first_name(kwargs[gv._first_name_tag])
-        self.logger.info(f'set first name {kwargs[gv._first_name_tag]}')
+        self.set_display_name(kwargs[tags.DISPLAY_NAME])
+        self.logger.info(f'set display name {kwargs[tags.DISPLAY_NAME]}')
 
-        self.set_last_name(kwargs[gv._last_name_tag])
-        self.logger.info(f'set last name {kwargs[gv._last_name_tag]}')
+        self.set_first_name(kwargs[tags.FIRST_NAME])
+        self.logger.info(f'set first name {kwargs[tags.FIRST_NAME]}')
 
-        self.set_email(kwargs[gv._email_tag])
-        self.logger.info(f'set email  {kwargs[gv._email_tag]}')
+        self.set_last_name(kwargs[tags.LAST_NAME])
+        self.logger.info(f'set last name {kwargs[tags.LAST_NAME]}')
 
-        self.set_must_change_password(kwargs[gv._must_change_password_tag])
-        self.set_disabled(kwargs[gv._disabled_tag])
-        self.set_days_to_expiry(kwargs[gv._days_to_expiry_tag])
-        self.set_mins_to_unlock(kwargs[gv._mins_to_unlock_tag])
-        self.set_default_warehouse(kwargs[gv._default_warehouse_tag])
-        self.set_default_role(kwargs[gv._default_role_tag])
-        self.set_default_secondary_roles(kwargs[gv._default_secondary_roles_tag])
-        self.set_mins_to_by_pass_mfa(kwargs[gv._mins_to_by_pass_mfa_tag])
-        self.set_rsa_public_key(kwargs[gv._rsa_public_key_tag])
-        self.set_rsa_public_key_fp(kwargs[gv._rsa_public_key_fp_tag])
-        self.set_rsa_public_key_2(kwargs[gv._rsa_public_key_2_tag])
-        self.set_rsa_public_key_2_fp(kwargs[gv._rsa_public_key_2_fp_tag])
-        self.set_type(kwargs[gv._type_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_enable_unredacted_query_syntax_error(kwargs[gv._enable_unredacted_query_syntax_error_tag])
+        self.set_email(kwargs[tags.EMAIL])
+        self.logger.info(f'set email  {kwargs[tags.EMAIL]}')
+
+        self.set_must_change_password(kwargs[tags.MUST_CHANGE_PASSWORD])
+        self.set_disabled(kwargs[tags.DISABLED])
+        self.set_days_to_expiry(kwargs[tags.DAYS_TO_EXPIRY])
+        self.set_mins_to_unlock(kwargs[tags.MINS_TO_UNLOCK])
+        self.set_default_warehouse(kwargs[tags.DEFAULT_WAREHOUSE])
+        self.set_default_role(kwargs[tags.DEFAULT_ROLE])
+        self.set_default_secondary_roles(kwargs[tags.DEFAULT_SECONDARY_ROLES])
+        self.set_mins_to_by_pass_mfa(kwargs[tags.MINS_TO_BY_PASS_MFA])
+        self.set_rsa_public_key(kwargs[tags.RSA_PUBLIC_KEY])
+        self.set_rsa_public_key_fp(kwargs[tags.RSA_PUBLIC_KEY_FP])
+        self.set_rsa_public_key_2(kwargs[tags.RSA_PUBLIC_KEY_2])
+        self.set_rsa_public_key_2_fp(kwargs[tags.RSA_PUBLIC_KEY_2_FP])
+        self.set_type(kwargs[tags.TYPE])
+        self.set_comment(kwargs[tags.COMMENT])
+        self.set_enable_unredacted_query_syntax_error(kwargs[tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR])
         self.prepare_query()
         self.create_user()
         self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
