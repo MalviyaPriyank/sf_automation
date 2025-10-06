@@ -16,8 +16,7 @@ class QueryInsights:
                 FROM {self.attr._view} 
                 WHERE 
                 {self.attr._start_time} > TO_DATE(DATEADD(DAY, -{x}, CURRENT_DATE()));"""
-        df=self.session.sql(qry).collect()
-        return df
+        return qry
     
     def get_insights_of_all_queries_in_past_x_days_executed_for_more_than_y_milliseconds(self,x,y):
         qry=f"""
@@ -27,5 +26,7 @@ class QueryInsights:
         {self.attr._start_time} > TO_DATE(DATEADD(DAY, -{x}, CURRENT_DATE()))
         AND {self.attr._total_elapsed_time} > {y};
         """
-        df=self.session.sql(qry).collect()
-        return df
+        return qry
+    
+    def get_col_definitions(self):
+        return QueryInsightsView().get_col_and_definitions()
