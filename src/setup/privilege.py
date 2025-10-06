@@ -75,7 +75,6 @@ class Privilege:
         self.set_role(role)
         qry = f"GRANT {self.attr.privilege_type} ON {self.attr.object_type} {object_identifier} TO ROLE {self.attr.role}"
         self.session.sql(qry).collect()
-        return qry
 
         
 

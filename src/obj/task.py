@@ -650,6 +650,9 @@ class Task(BaseObject):
             if prop == tags.AFTER:
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AFTER} = {self.attr.after}"
                 self.execute_final_query()
+            if prop == tags.AFTER:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AFTER} = {self.attr.after}"
+                self.execute_final_query()
 
         if tags.NAME in self.property_lst:
             self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
