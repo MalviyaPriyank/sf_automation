@@ -47,21 +47,36 @@ class Name:
         del instance._name
         del instance._rename_to
 
-class Arguments:
+class MaskingPolicyAs:
     def __get__(self,instance,owner):
-        return instance._arguments
+        return instance._masking_policy_as
     
     def __set__(self,instance,value):
-        instance._arguments = value
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__, 
+                                    attr_name=self.__class__.__name__)
+        value_list=value.split(",")
+        for i in range(0,len(value_list)): #iterating through each value eg : ['email varchar', ' gmail varchar']
+            datatype=value_list[i].split(" ") #splitting on space to get datatype
+            datatype=datatype.strip() # removing extra space in case
+            vv.is_allowed_data_type(data_type=datatype)
+        
+        instance.parent.logger.info("all the data types are validated ")
+        instance.parent.logger.info("setting AS for masking policy ")
+        instance._masking_policy_as=f"({value})" #making it a tuple
 
     def __delete__(self,instance):
-        del instance._arguments
+        del instance._masking_policy_as
 
 class Returns:
     def __get__(self,instance,owner):
         return instance._returns
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        value=value.split(",").split(" ")[1] #setting returns as datatype of first argument 
         instance._returns = value
 
     def __delete__(self,instance):
@@ -107,7 +122,7 @@ class MaskingPolicyAttrs:
     def __init__(self):
         self.parent=self
     name = Name()
-    arguments = Arguments()
+    masking_policy_as = MaskingPolicyAs()
     returns = Returns()
     body = Body()
     comment = Comment()
@@ -123,8 +138,8 @@ class MaskingPolicy(BaseObject):
     def set_name(self,val=None):
         self.attr.name = val
 
-    def set_arguments(self,val=None):
-        self.attr.arguments = val
+    def set_masking_policy_as(self,val=None):
+        self.attr.masking_policy_as = val
 
     def set_returns(self,val=None):
         self.attr.returns = val
@@ -144,16 +159,16 @@ class MaskingPolicy(BaseObject):
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.ARGUMENTS,"arguments")
+        set_flag(tags.MASKING_POLICY_AS,"masking_policy_as")
         set_flag(tags.RETURNS,"returns")
-        #set_flag(tags.BODY,"body")
+        set_flag(tags.BODY,"body")
         set_flag(tags.COMMENT,"comment")
         set_flag(tags.EXEMPT_OTHER_POLICIES,"exempt_other_policies")
 
     def alter_object(self):        
         for prop in self.property_lst:
-            if prop == tags.ARGUMENTS:
-                self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.ARGUMENTS} = {self.attr.arguments}"
+            if prop == tags.MASKING_POLICY_AS:
+                self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.MASKING_POLICY_AS} = {self.attr.masking_policy_as}"
                 self.execute_final_query()
             if prop == tags.RETURNS:
                 self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.RETURNS} = {self.attr.returns}"
@@ -184,14 +199,12 @@ class MaskingPolicy(BaseObject):
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop == tags.ARGUMENTS:
-                    self.qry = f" {self.qry} {tags.ARGUMENTS} {self.attr.arguments} "
+                if prop == tags.MASKING_POLICY_AS:
+                    self.qry = f" {self.qry} {tags.MASKING_POLICY_AS} {self.attr.masking_policy_as} "
                 if prop == tags.RETURNS:
                     self.qry = f" {self.qry} {tags.RETURNS} {self.attr.returns} "
-                '''
                 if prop == tags.BODY:
-                    self.qry = f" {self.qry} {tags.BODY} {self.attr.body} "
-                '''
+                    self.qry = f" {self.qry} -> {self.attr.body} "
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
                 if prop == tags.EXEMPT_OTHER_POLICIES:
@@ -222,11 +235,11 @@ class MaskingPolicy(BaseObject):
 
         self.set_name(kwargs[tags.NAME])
 
-        self.logger.info('set ARGUMENTS')
-        self.set_arguments(kwargs[tags.ARGUMENTS])
+        self.logger.info('set MASKING_POLICY_AS')
+        self.set_masking_policy_as(kwargs[tags.MASKING_POLICY_AS])
 
         self.logger.info('set RETURNS')
-        self.set_returns(kwargs[tags.RETURNS])
+        self.set_returns(kwargs[tags.MASKING_POLICY_AS])
 
 
         self.logger.info('set COMMENT')

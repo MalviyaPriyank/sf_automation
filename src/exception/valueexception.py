@@ -199,5 +199,10 @@ class InvalidDataType(AttributeValidationError):
         message = f" cannot have following invalid data types {invalid_data_typ_list}"
         super().__init__(object_type, attr_name, message)
 
+class DataTypeNotAllowed(SnowchainException):
+    def __init__(self,data_type):
+        error_message = f" Data type : {data_type} is not valid as per the allowed data types on Snowflake. Please change it to a Snowflake compatible data type."
+        super().__init__(error_message)
+
 
     

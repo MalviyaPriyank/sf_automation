@@ -22,6 +22,7 @@ class DataTypes:
 
     @classmethod
     def get_allowed_data_types(cls):
-        return cls.__data_type_dict
-    
+        allowed_dataype_list=[item for sublist in cls.__data_type_dict.values() for item in sublist]
+        return allowed_dataype_list
+
 

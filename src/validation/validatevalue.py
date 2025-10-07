@@ -8,6 +8,7 @@ import logging
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from datetime import datetime
 from croniter import croniter
+from vars.base.basedatatypes import DataTypes as dtype
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger('validation_logs').setLevel(logging.INFO)
 logger = logging.getLogger('validation_logs')
@@ -50,7 +51,8 @@ from valueexception import (
     InvalidSchedule,
     InvalidCron,
     CustomErrorMessage,
-    InvalidDataType
+    InvalidDataType,
+    DataTypeNotAllowed
 )
 
 class ValidateValue:
@@ -377,6 +379,16 @@ class ValidateValue:
             raise InvalidDataType(object_name,attribute_name,invalid_data_typ_lst)
         else:
             return True
+        
+    @staticmethod
+    def is_allowed_data_type(data_type):
+        allowed_data_types=dtype.get_allowed_data_types()
+        if data_type in allowed_data_types:
+            return True
+        else:
+            raise DataTypeNotAllowed(data_type)
+
+
         
 
 
