@@ -24,7 +24,9 @@ class BaseObject(AbstractObject):
     def __init__(self, session, user_id, logger):
         super().__init__(session = session, user_id = user_id, logger = logger)
     
-    def execute_final_query(self):
+    def execute_final_query(self,**kwargs):
+        if 'DATABASE' in kwargs.keys():
+            self.session.sql(f"USE DATABASE {kwargs["DATABASE"]}").collect()
         self.session.sql(self.qry).collect()
     
 
