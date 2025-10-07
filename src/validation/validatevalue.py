@@ -196,22 +196,6 @@ class ValidateValue:
             raise MustBeValidNumber(object_type,attr_name)
 
     @staticmethod
-    def is_valid_cron(value,object_type,attr_name):
-        if 'MINUTE' not in value:
-            if len(value) != 5:
-                raise MustBeValidCRON(object_type,attr_name)
-            elif not 0 <= int(value[0]) <= 59:
-                raise MustBeValidCRON(object_type,attr_name)
-            elif not 0 <= int(value[1]) <= 23:
-                raise MustBeValidCRON(object_type,attr_name)
-            elif not (0 <= int(value[2]) <= 31 or value[2] == 'L'):
-                raise MustBeValidCRON(object_type,attr_name)
-            elif value[3] not in ValidateCron.allowed_values_for_month:
-                raise MustBeValidCRON(object_type,attr_name)
-            elif value[4] not in ValidateCron.allowed_values_for_week:
-                raise MustBeValidCRON(object_type,attr_name)
-
-    @staticmethod
     def is_list(value,object_type,attr_name,*largs,**kwargs):
         if isinstance(value,list):
             if len(largs) != 0:
@@ -365,12 +349,12 @@ class ValidateValue:
             raise InvalidSchedule(object_name,attribute_name,['CRON','HOUR','MINUTE','SECOND'])
     
     @staticmethod
-    def is_valid_cron(value,object_name,attr_name):
+    def is_valid_cron(value,object_type,attr_name):
         try:
             croniter(value, datetime.now())  
             return True
         except:
-            raise InvalidCron(object_name,attr_name)
+            raise InvalidCron(object_type,attr_name)
         
     @staticmethod
     def is_valid_column_types(object_name,attribute_name,tbl_data_typ_lst,allowed_data_type_lst):

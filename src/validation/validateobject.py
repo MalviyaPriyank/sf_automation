@@ -154,12 +154,15 @@ class ValidateObject:
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
         df=df.select(col("*")).collect()
-        df=session.create_dataframe(df)
-        df_count=df.filter(col("NAME")==f'{object_name}').count()
-        if df_count==0:
+        if len(df) == 0: #if there is not even a single row of object_type, eg no tasks 
             return True
         else:
-            raise DuplicateObject(object_type=object_type,object_name=object_name)
+            df=session.create_dataframe(df)
+            df_count=df.filter(col("NAME")==f'{object_name}').count()
+            if df_count==0:
+                return True
+            else:
+                raise DuplicateObject(object_type=object_type,object_name=object_name)
 
 
 

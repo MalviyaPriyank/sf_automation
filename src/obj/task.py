@@ -540,7 +540,7 @@ class Task(BaseObject):
         self.attr.serverless_task_max_statement_size = serverless_task_max_statement_size
 
     def set_qualified_name(self):
-        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name[0]}"
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -574,7 +574,7 @@ class Task(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE TASK {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+        self.qry = f"CREATE TASK {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
