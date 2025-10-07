@@ -4,6 +4,8 @@ import json
 import sys
 import os
 import logging
+import ipaddress
+import re
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from datetime import datetime
@@ -52,7 +54,9 @@ from valueexception import (
     InvalidCron,
     CustomErrorMessage,
     InvalidDataType,
-    DataTypeNotAllowed
+    DataTypeNotAllowed,
+    InvalidCIDRNotation,
+    InvalidVPCEID
 )
 
 class ValidateValue:
@@ -371,6 +375,25 @@ class ValidateValue:
             return True
         else:
             raise DataTypeNotAllowed(data_type)
+        
+    @staticmethod
+    def is_valid_cidr(object_type,attribute_name,cidr_str):
+        try:
+            ipaddress.ip_network(cidr_str, strict=False)
+            return True
+        except ValueError:
+            raise InvalidCIDRNotation(object_type,attribute_name,cidr_str)
+        
+
+    def is_valid_vpce_id(object_type,attr_name,vpce_id):
+        pattern = r"^vpce-[0-9a-f]{17}$"
+        is_valid=bool(re.match(pattern, vpce_id))
+        if is_valid:
+            return True
+        else:
+            raise InvalidVPCEID(object_type,attr_name)
+
+
 
 
         

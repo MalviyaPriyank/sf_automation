@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
-from vars.obj.databaserole.gvdatabaserole import DatabaseRoleTag as tags
+from vars.obj.networkrule.gvnetworkrule import NetworkRuleTag as tags
 
 class Database:
     def __get__(self,instance,owner):
@@ -43,6 +43,60 @@ class Name:
     def __delete__(self,instance):
         del instance._name
 
+class Type:
+    def __get__(self,instance,owner):
+        return instance._type
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(f"{tags.TYPE}"),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._type = value
+    
+    def __delete__(self,instance):
+        del instance._type
+
+
+class ValueList:
+    def __get__(self,instance,owner):
+        return instance._value_list
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        if instance._type=="IPV4":
+            vv.is_valid_cidr(object_type=instance.parent.__class__.__name__,
+                             attribute_name=self.__class__.__name__,
+                             cidr_str=value)
+            instance._value_list=value
+        elif instance._type=="AWSVPCEID":
+            vv.is_valid_vpce_id(object_type=instance.parent.__class__.__name__,
+                             attribute_name=self.__class__.__name__,
+                             vpce_id=value)
+            instance._value_list=value
+            
+    
+    def __delete__(self,instance):
+        del instance._value_list
+
+class Mode:
+    def __get__(self,instance,owner):
+        return instance._mode
+    
+    def __set__(self,instance,value):
+        if instance._type == "HOST_PORT" or instance._type=="PRIVATE_HOST_PORT":
+            instance._mode="EGRESS"
+        else:
+            instance._mode = value
+    
+    def __delete__(self,instance):
+        del instance._mode
+
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -53,25 +107,34 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class ShareAttrs:
+class NetworkRuleAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database=Database()
     name = Name()
+    type=Type()
+    value_list=ValueList()
+    mode=Mode()
     comment = Comment()
 
 
-class DatabaseRole(BaseObject):
+class NetworkRule(BaseObject):
     def __init__(self, session, user_id, logger):
         super().__init__(session, user_id, logger)
-        self.attr = ShareAttrs(self)
+        self.attr = NetworkRuleAttrs(self)
 
-    def set_database(self,val):
-        self.attr.database = val
 
     def set_name(self,val):
         self.attr.name = val
+
+    def set_type(self,val):
+        self.attr.type = val
+
+    def set_value_list(self,val):
+        self.attr.value_list = val
+
+    def set_mode(self,val):
+        self.attr.mode = val
 
     def set_comment(self,val):
         self.attr.comment = val
@@ -125,15 +188,18 @@ class DatabaseRole(BaseObject):
             self.alter_object()
     
     def create_database_role(self):
-        self.execute_final_query({"DATABASE":f"{self.attr.database}"})
+        self.execute_final_query()
 
     def create_object(self,**kwargs):
         self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
         self.is_create=kwargs[tags.IS_CREATE]
 
-        self.set_database(kwargs[tags.DATABASE])
+
         self.set_name(kwargs[tags.NAME])
+        self.set_type(kwargs[tags.TYPE])
+        self.set_value_list(kwargs[tags.VALUE_LIST])
+        self.set_mode(kwargs[tags.MODE])
         self.set_comment(kwargs[tags.COMMENT])
 
         self.prepare_query()

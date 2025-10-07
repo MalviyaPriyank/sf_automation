@@ -204,5 +204,14 @@ class DataTypeNotAllowed(SnowchainException):
         error_message = f" Data type : {data_type} is not valid as per the allowed data types on Snowflake. Please change it to a Snowflake compatible data type."
         super().__init__(error_message)
 
+class InvalidCIDRNotation(SnowchainException):
+    def __init__(self, object_type,attr_name,cidr_str):
+        error_message = f" Attribute {attr_name} of {object_type} must follow CIDR Notation. Please change {cidr_str} to follow CIDR Notation."
+        super().__init__(error_message)
+
+class InvalidVPCEID(SnowchainException):
+    def __init__(self, object_type,attr_name):
+        error_message=f"Attribute {attr_name} of {object_type} is not a valid VPCE ID."
+        super().__init__(error_message)
 
     
