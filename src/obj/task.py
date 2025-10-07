@@ -462,6 +462,9 @@ class Task(BaseObject):
     def __init__(self, session, user_id, logger):
         super().__init__(session, user_id, logger)
         self.attr = TaskAttrs(self)
+        self.session=session
+        self.user_id=user_id
+        self.logger=logger
 
 
     def set_database(self,value):

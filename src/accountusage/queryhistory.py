@@ -27,5 +27,7 @@ class QueryHistory:
         WHERE 
         {self.attr._total_elapsed_time} > {x};"""
         return qry
+    
+    
 
     
