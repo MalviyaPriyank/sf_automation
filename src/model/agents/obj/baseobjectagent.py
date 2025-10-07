@@ -9,7 +9,15 @@ class BaseObjectAgent:
         self.sf_session=sf_session
         self.user_id=user_id
 
-    def get_tools(self):
+
+
+
+
+
+
+
+
+
         
 
 

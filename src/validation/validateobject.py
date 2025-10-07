@@ -126,7 +126,10 @@ class ValidateObject:
     def object_exist(session,object_type,object_name):
         object_type=object_type.upper()
         object_name=object_name.upper()
-        qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
+        if object_type == "MASKINGPOLICY":
+            qry="SHOW MASKING POLICIES"
+        else:    
+            qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
         df=df.select(col("*")).collect()
         df=session.create_dataframe(df)
@@ -145,7 +148,10 @@ class ValidateObject:
     def is_new_object(session,object_type,object_name):
         object_type=object_type.upper()
         object_name=object_name.upper()
-        qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
+        if object_type == "MASKINGPOLICY":
+            qry="SHOW MASKING POLICIES"
+        else: 
+            qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
         df=df.select(col("*")).collect()
         df=session.create_dataframe(df)
