@@ -173,14 +173,15 @@ class MaskingPolicy(BaseObject):
             if prop == tags.RETURNS:
                 self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.RETURNS} = {self.attr.returns}"
                 self.execute_final_query()
-            '''
+            
             if prop == tags.BODY:
                 self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.BODY} = {self.attr.body}"
                 self.execute_final_query()
-            '''
+            
             if prop == tags.COMMENT:
                 self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
+                
             if prop == tags.EXEMPT_OTHER_POLICIES:
                 self.qry = f"ALTER MASKING POLICY {self.attr.name[0]} SET {tags.EXEMPT_OTHER_POLICIES} = {self.attr.exempt_other_policies}"
                 self.execute_final_query()
