@@ -79,7 +79,11 @@ class ValueList:
                              attribute_name=self.__class__.__name__,
                              vpce_id=value)
             instance._value_list=value
-            
+        elif instance._type=="HOST_PORT":
+            vv.is_valid_host_port(object_type=instance.parent.__class__.__name__,
+                                  attribute_name=self.__class__.__name__,
+                                  value=value)
+            instance._value_list=value
     
     def __delete__(self,instance):
         del instance._value_list
@@ -89,10 +93,17 @@ class Mode:
         return instance._mode
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
         if instance._type == "HOST_PORT" or instance._type=="PRIVATE_HOST_PORT":
             instance._mode="EGRESS"
         else:
-            instance._mode = value
+            vv.is_allowed_value(value=value,
+                                allowed_list=tags.allowed_value_list().get(tags.MODE),
+                                object_type=instance.parent.__class__.__name__,
+                                attr_name=self.__class__.__name__)
+            instance._mode=value
     
     def __delete__(self,instance):
         del instance._mode
@@ -144,7 +155,6 @@ class NetworkRule(BaseObject):
 
         def set_flag(attribute_tag,attribute_name):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
-
         set_flag(tags.COMMENT,"_comment")
 
 
@@ -166,8 +176,8 @@ class NetworkRule(BaseObject):
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
-    def set_create_account_qry(self):
-        self.qry = f"CREATE DATABASE ROLE  {self.attr.name} "
+    def set_create_network_rule_qry(self):
+        self.qry = f"CREATE NETWORK RULE  {self.attr.name} {tags.TYPE} = {self.attr.type} {tags.VALUE_LIST} = {self.attr.value_list} {tags.MODE} = {self.attr.mode}"
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -179,7 +189,7 @@ class NetworkRule(BaseObject):
         self.set_object_properties_flag()
         self.check_properties_to_set()
         if self.is_create == 'TRUE':
-            self.set_create_account_qry()
+            self.set_create_network_rule_qry()
             self.add_properties_to_query()
         elif self.is_create=='FALSE':
             self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")

@@ -26,7 +26,8 @@ class BaseObject(AbstractObject):
     
     def execute_final_query(self,**kwargs):
         if 'DATABASE' in kwargs.keys():
-            self.session.sql(f"USE DATABASE {kwargs["DATABASE"]}").collect()
+            self.session.sql(f"USE DATABASE {kwargs['DATABASE']}").collect()
+        
         self.session.sql(self.qry).collect()
     
 

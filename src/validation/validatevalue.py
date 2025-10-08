@@ -6,6 +6,7 @@ import os
 import logging
 import ipaddress
 import re
+import socket
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from datetime import datetime
@@ -56,7 +57,8 @@ from valueexception import (
     InvalidDataType,
     DataTypeNotAllowed,
     InvalidCIDRNotation,
-    InvalidVPCEID
+    InvalidVPCEID,
+    InvalidHostName
 )
 
 class ValidateValue:
@@ -384,7 +386,7 @@ class ValidateValue:
         except ValueError:
             raise InvalidCIDRNotation(object_type,attribute_name,cidr_str)
         
-
+    @staticmethod
     def is_valid_vpce_id(object_type,attr_name,vpce_id):
         pattern = r"^vpce-[0-9a-f]{17}$"
         is_valid=bool(re.match(pattern, vpce_id))
@@ -392,6 +394,47 @@ class ValidateValue:
             return True
         else:
             raise InvalidVPCEID(object_type,attr_name)
+
+
+    def is_valid_host_port(object_type,attribute_name,value):
+        if ":" in value:
+            host_part, port_part = value.rsplit(":", 1)
+        else:
+            host_part, port_part = value, None
+
+        domain_pattern = re.compile(
+            r"^(?:[A-Za-z0-9*-]+\.)+[A-Za-z]{2,}$"
+        )
+        if not domain_pattern.match(host_part):
+            raise InvalidHostName(object_type,attribute_name)
+
+        # Single port (e.g., example.com:8080)
+        single_port_pattern = re.compile(r"^(\d+)$")
+        # Port range (e.g., example.com:8000-8080)
+        port_range_pattern = re.compile(r"^(\d+)-(\d+)$")
+
+        if single_port_pattern.match(port_part):
+            port = int(port_part)
+            if not (0 <= port <= 65535):
+                raise PortMustBeBetween(object_type,attribute_name,0,65535)
+
+        elif port_range_pattern.match(port_part):
+            start, end = map(int, port_range_pattern.match(port_part).groups())
+            if not (1 <= start <= 65535 and 1 <= end <= 65535 and start <= end):
+                raise PortRangeMustBeFromSmallerToBigger(object_type,attribute_name)
+        else:
+            raise InvalidHostPort(object_type,attribute_name)
+        '''
+        REMOVED FOR NOW
+        # --- Step 4: Optional: check DNS resolution if no wildcard ---
+        if "*" not in host_part:
+            try:
+                socket.gethostbyname(host_part)
+            except socket.gaierror:
+                return False
+        '''
+
+        return True
 
 
 

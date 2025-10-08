@@ -214,4 +214,23 @@ class InvalidVPCEID(SnowchainException):
         error_message=f"Attribute {attr_name} of {object_type} is not a valid VPCE ID."
         super().__init__(error_message)
 
+class InvalidHostName(SnowchainException):
+    def __init__(self, object_type,attr_name):
+        error_message=f" {attr_name} of {object_type} must be a valid Host Name."
+        super().__init__(error_message)
+
+class PortMustBeBetween(SnowchainException):
+    def __init__(self, object_type,attr_name,lower_bound,upper_bound):
+        error_message=f"Port specified for {attr_name} of {object_type} must be between {lower_bound} and {upper_bound}."
+        super().__init__(error_message)
+
+class PortRangeMustBeFromSmallerToBigger(SnowchainException):
+    def __init__(self,object_type,attr_name):
+        error_message=f"When specifying port range for {attr_name} of {object_type}, it should be smaller first."
+        super().__init__(error_message)
+
+class InvalidHostPort(SnowchainException):
+    def __init__(self, object_type,attr_name):
+        error_message=f"{attr_name} of {object_type} is not in correct format."
+        super().__init__(error_message)
     
