@@ -12,18 +12,6 @@ from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
 from vars.obj.networkrule.gvnetworkrule import NetworkRuleTag as tags
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        instance._database = value
-    
-    def __delete__(self,instance):
-        del instance._database
-
 class Name:
     def __get__(self,instance,owner):
         return instance._name
@@ -165,7 +153,7 @@ class NetworkRule(BaseObject):
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER NETWORK RULE {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
             self.logger.info(f"Renaming {self.__class__.__name__} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
