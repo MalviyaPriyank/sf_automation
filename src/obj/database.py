@@ -379,7 +379,6 @@ class Database(BaseObject):
     def create_database(self):
         self.execute_final_query()
 
-
     def create_object(self,*largs,**kwargs):
         self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
@@ -441,3 +440,7 @@ class Database(BaseObject):
 
                 self.logger.info('writing file to git')
                 self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+
+    @classmethod
+    def get_attributes(cls):
+        return tags.get_attributes_with_description()
