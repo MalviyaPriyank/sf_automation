@@ -512,6 +512,6 @@ class Operation:
 
     @classmethod
     def get_attributes(cls):
-        return tags.get_attributes_with_description()
+        return tags().get_attributes_with_description()
 
         
