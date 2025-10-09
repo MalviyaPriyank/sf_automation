@@ -440,7 +440,78 @@ class Database(BaseObject):
 
                 self.logger.info('writing file to git')
                 self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+    
+class Operation:
+    @classmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        db_inst=Database(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        
+        db_inst.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        db_inst.logger.info(f'dictionary passed {kwargs}')
+        db_inst.is_create=kwargs[tags.IS_CREATE]
+
+
+        if len(largs) != 0:
+            db_inst.logger.info(' list args passed')
+            db_inst.qry = f"CREATE OR REPLACE DATABASE {kwargs[tags.NAME]}"
+            db_inst.logger.info('calling create database')
+            db_inst.create_database()
+            db_inst.logger.info('granting default privileges')
+            #self.grant_default_privileges(*['initial'])
+        else:
+            db_inst.logger.info('set name')
+            db_inst.set_name(kwargs[tags.NAME])
+
+            db_inst.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
+            db_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+
+            db_inst.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
+            db_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+
+            db_inst.logger.info('set EXTERNAL_VOLUME')
+            db_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+
+            db_inst.logger.info('set CATALOG')
+            db_inst.set_catalog(kwargs[tags.CATALOG])
+
+            db_inst.logger.info('set REPLACE_INVALID_CHARACTERS')
+            db_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+
+            db_inst.logger.info('set DEFAULT_DDL_COLLATION')
+            db_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+
+            db_inst.logger.info('set LOG_LEVEL')
+            db_inst.set_log_level(kwargs[tags.LOG_LEVEL])
+
+            db_inst.logger.info('set TRACE_LEVEL')
+            db_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
+
+            db_inst.logger.info('set STORAGE_SERIALIZATION_POLICY')
+            db_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+
+            db_inst.logger.info('set COMMENT')
+            db_inst.set_comment(kwargs[tags.COMMENT])
+
+            db_inst.logger.info('preapare query')
+            db_inst.prepare_query()
+
+            if kwargs[tags.IS_CREATE] == "TRUE":
+                db_inst.logger.info('execute query')
+                db_inst.create_database()
+
+                db_inst.logger.info('grant default priv')
+                #self.grant_default_privileges()
+                
+                db_inst.logger.info('create deployment entry')
+                db_inst.create_deployment_entry(object_name=db_inst.attr.name[0],object_type=db_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+                db_inst.logger.info('writing file to git')
+                db_inst.write_file_to_git(object_name=db_inst.attr.name[0],object_type=db_inst.__class__.__name__,object_database='NA',object_schema='NA')
 
     @classmethod
     def get_attributes(cls):
         return tags.get_attributes_with_description()
+
+        
