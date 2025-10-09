@@ -10,6 +10,7 @@ from botocore.exceptions import ClientError
 import ast
 
 import re
+import json
 import importlib
 import contextlib
 import io
@@ -113,6 +114,7 @@ class LLMTools:
 
     def create_object(self, obj_type, data_dict):
         try:
+            data_dict = json.loads(data_dict)
             operation = self.import_module(obj_type)
             qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
