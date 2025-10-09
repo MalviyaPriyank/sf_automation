@@ -514,4 +514,3 @@ class Operation:
     def get_attributes(cls):
         return tags().get_attributes_with_description()
 
-        
