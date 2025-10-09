@@ -10,6 +10,7 @@ from botocore.exceptions import ClientError
 import ast
 
 import re
+import importlib
 import contextlib
 import io
 import boto3
@@ -33,7 +34,7 @@ from src.dep import deploy
 from src.accountusage import copyhistory
 from src.processing.stage import Stage
 from src.pipeline import fullload
-from src.dependency import base_dependency
+# from src.dependency import base_dependency
 from vars.gvobject import Config as cfg
 import traceback
 from snowflake.snowpark.exceptions import SnowparkSQLException
@@ -98,27 +99,22 @@ class LLMTools:
                                   }
 
     def import_module(self, obj_type):
-        # Dynamically import module based on object type
         module_path = f"src.obj.{obj_type.lower()}"
         module = importlib.import_module(module_path)
-
-        # Get Operation class
         OperationClass = getattr(module, "Operation")
+        return OperationClass()
 
-        # Instantiate and call create_object
-        return OperationClass(session=self.sf_session, user_id=self.user_id, logger=self.logger)
-
-    def get_obj_params(self, obj_type):
+    def get_object_params(self, obj_type):
         operation = self.import_module(obj_type)
-        return f"the allowed keys for {obj_type} are: {operation.get_attrs()}"
+        return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
 
-    def get_obj_dependency(self, obj_type):
-        return f"heres the list of dependencies for {obj_type}: {base_dependency.ObjectDependency().get_dependencies()}"
+    # def get_obj_dependency(self, obj_type):
+    #    return f"heres the list of dependencies for {obj_type}: {base_dependency.ObjectDependency().get_dependencies()}"
 
-    def create_sf_object(self, obj_type, data_dict):
+    def create_object(self, obj_type, data_dict):
         try:
             operation = self.import_module(obj_type)
-            qry = operation.create_object(**data_dict)
+            qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_name}, query returned: {qry}")
             self.logger.info(f'Object {obj_name} created successfully')
             return f'Object {obj_name} created successfully'
@@ -131,3 +127,13 @@ class LLMTools:
             self.logger.warn(f"Error : {e}")
             self.logger.warn(f"Traceback: {traceback.format_exc()}")
             return f"There was ab error creating object : {e}"
+
+    def tool_call(self, content, tool_result):
+        func_name = content[lcs.TOOL_USE][lcs.NAME]
+        params = content[lcs.TOOL_USE][lcs.INPUT]
+        result = getattr(self, func_name)(**params)
+        tool_result.append({lcs.TOOL_RESULT:{
+            lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
+            lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: result}}]
+        }})
+        return tool_result

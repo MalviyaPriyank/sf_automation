@@ -35,10 +35,12 @@ def msg_template(prompt,
             ss.CONTENT: prompt}
 
 def get_obj_names():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    obj_dir = os.path.join(current_dir, "../obj")
+
     obj_list = []
-    for file in glob.glob("../obj/*"):
-        if file.endswith('.py'):
-            obj_list.append(file.split('/')[-1].replace('.py',''))
+    for file in glob.glob(os.path.join(obj_dir, "*.py")):
+        obj_list.append(os.path.splitext(os.path.basename(file))[0])
     return obj_list
 
 def obj_json_template(filepath):

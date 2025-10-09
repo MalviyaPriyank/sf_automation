@@ -16,7 +16,8 @@ from src.obj import session
 #from src.obj import connection,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
 from conf import readconf
 from src.utils import helper
-from src.model.tools import LLMTools
+#from src.model.tools import LLMTools
+from src.model.tools_new import LLMTools
 from src.model.bedrock import Bedrock
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
