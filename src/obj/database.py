@@ -448,7 +448,7 @@ class Operation:
                          user_id=user_id,
                          logger=logger)
         
-        db_inst.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        db_inst.logger.info(f"Operating on {db_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         db_inst.logger.info(f'dictionary passed {kwargs}')
         db_inst.is_create=kwargs[tags.IS_CREATE]
 
