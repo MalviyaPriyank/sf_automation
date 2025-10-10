@@ -241,8 +241,8 @@ class SecretAttrs:
 
 
 class Secret(BaseObject):
-    def __init__(self, session, user_id, logger):
-        super().__init__(session, user_id, logger)
+    def __init__(self, session, user_id):
+        super().__init__(session, user_id)
         self.attr = SecretAttrs(self)
     
     def set_name(self,val):
@@ -418,93 +418,93 @@ class Secret(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=Secret(session=session,
-                         user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                         user_id=user_id
+                        )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set secret_option")
+        obj_inst.logger.info("set secret_option")
         if tags.SECRET_OPTION in kwargs.keys():
             obj_inst.set_secret_option(kwargs[tags.SECRET_OPTION])
         else:
             obj_inst.set_secret_option('NONE')
 
-        logger.info("set type")
+        obj_inst.logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set api_authentication")
+        obj_inst.logger.info("set api_authentication")
         if tags.API_AUTHENTICATION in kwargs.keys():
             obj_inst.set_api_authentication(kwargs[tags.API_AUTHENTICATION])
         else:
             obj_inst.set_api_authentication('NONE')
 
-        logger.info("set oauth_scopes")
+        obj_inst.logger.info("set oauth_scopes")
         if tags.OAUTH_SCOPES in kwargs.keys():
             obj_inst.set_oauth_scopes(kwargs[tags.OAUTH_SCOPES])
         else:
             obj_inst.set_oauth_scopes('NONE')
 
-        logger.info("set oauth_refresh_token")
+        obj_inst.logger.info("set oauth_refresh_token")
         if tags.OAUTH_REFRESH_TOKEN in kwargs.keys():
             obj_inst.set_oauth_refresh_token(kwargs[tags.OAUTH_REFRESH_TOKEN])
         else:
             obj_inst.set_oauth_refresh_token('NONE')
 
-        logger.info("set oauth_refresh_token_expiry_time")
+        obj_inst.logger.info("set oauth_refresh_token_expiry_time")
         if tags.OAUTH_REFRESH_TOKEN_EXPIRY_TIME in kwargs.keys():
             obj_inst.set_oauth_refresh_token_expiry_time(kwargs[tags.OAUTH_REFRESH_TOKEN_EXPIRY_TIME])
         else:
             obj_inst.set_oauth_refresh_token_expiry_time('NONE')
 
-        logger.info("set enabled")
+        obj_inst.logger.info("set enabled")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
 
-        logger.info("set username")
+        obj_inst.logger.info("set username")
         if tags.USERNAME in kwargs.keys():
             obj_inst.set_username(kwargs[tags.USERNAME])
         else:
             obj_inst.set_username('NONE')
 
-        logger.info("set password")
+        obj_inst.logger.info("set password")
         if tags.PASSWORD in kwargs.keys():
             obj_inst.set_password(kwargs[tags.PASSWORD])
         else:
             obj_inst.set_password('NONE')
 
-        logger.info("set secret_string")
+        obj_inst.logger.info("set secret_string")
         if tags.SECRET_STRING in kwargs.keys():
             obj_inst.set_secret_string(kwargs[tags.SECRET_STRING])
         else:
             obj_inst.set_secret_string('NONE')
 
-        logger.info("set algorithm")
+        obj_inst.logger.info("set algorithm")
         if tags.ALGORITHM in kwargs.keys():
             obj_inst.set_algorithm(kwargs[tags.ALGORITHM])
         else:
             obj_inst.set_algorithm('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

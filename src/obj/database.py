@@ -236,8 +236,8 @@ class DatabaseAttrs:
 
 
 class Database(BaseObject):
-    def __init__(self,session,user_id,logger):
-        super().__init__(session, user_id, logger)
+    def __init__(self,session,user_id):
+        super().__init__(session, user_id)
         self.attr = DatabaseAttrs(self)
 
     def set_name(self, value):
@@ -383,10 +383,10 @@ class Database(BaseObject):
     
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         db_inst=Database(session=session,
                          user_id=user_id,
-                         logger=logger)
+                        )
         
         db_inst.logger.info(f"Operating on {db_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         db_inst.logger.info(f'dictionary passed {kwargs}')

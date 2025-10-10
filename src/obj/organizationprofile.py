@@ -45,12 +45,9 @@ class OrganizationProfileAttrs:
     publish = OrganizationProfilePublish()
 
 class OrganizationProfile(BaseObject):
-    def __init__(self, session, user_id, logger):
+    def __init__(self, session, user_id):
+        super().__init__(session=session,user_id=user_id)
         self.attr = OrganizationProfileAttrs()
-        self.session = session
-        self.user_id = user_id
-        self.logger = logger
-
     # Setter methods
     def set_name(self, v): self.attr.name = v
     def set_body(self, v): self.attr.body = v
@@ -111,45 +108,45 @@ class OrganizationProfile(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=OrganizationProfile(session=session,
                          user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                        )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set body")
+        obj_inst.logger.info("set body")
         if tags.BODY in kwargs.keys():
             obj_inst.set_body(kwargs[tags.BODY])
         else:
             obj_inst.set_body('NONE')
 
-        logger.info("set version")
+        obj_inst.logger.info("set version")
         if tags.VERSION in kwargs.keys():
             obj_inst.set_version(kwargs[tags.VERSION])
         else:
             obj_inst.set_version('NONE')
 
-        logger.info("set publish")
+        obj_inst.logger.info("set publish")
         if tags.PUBLISH in kwargs.keys():
             obj_inst.set_publish(kwargs[tags.PUBLISH])
         else:
             obj_inst.set_publish('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

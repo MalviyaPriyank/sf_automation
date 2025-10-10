@@ -127,11 +127,10 @@ class ReplicationGroupAttrs:
     tag_clause = RGTagClause()
 
 class ReplicationGroup(BaseObject):
-    def __init__(self, session, user_id, logger):
+    def __init__(self, session, user_id):
+        super().__init__(session=session,user_id=user_id)
         self.attr = ReplicationGroupAttrs()
-        self.session = session
-        self.logger = logger
-        self.user_id = user_id
+
 
     # setter methods
     def set_name(self, val=None): self.attr.name = val
@@ -237,81 +236,81 @@ class ReplicationGroup(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=ReplicationGroup(session=session,
                          user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                        )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set object_types")
+        obj_inst.logger.info("set object_types")
         if tags.OBJECT_TYPES in kwargs.keys():
             obj_inst.set_object_types(kwargs[tags.OBJECT_TYPES])
         else:
             obj_inst.set_object_types('NONE')
 
-        logger.info("set allowed_databases")
+        obj_inst.logger.info("set allowed_databases")
         if tags.ALLOWED_DATABASES in kwargs.keys():
             obj_inst.set_allowed_databases(kwargs[tags.ALLOWED_DATABASES])
         else:
             obj_inst.set_allowed_databases('NONE')
 
-        logger.info("set allowed_shares")
+        obj_inst.logger.info("set allowed_shares")
         if tags.ALLOWED_SHARES in kwargs.keys():
             obj_inst.set_allowed_shares(kwargs[tags.ALLOWED_SHARES])
         else:
             obj_inst.set_allowed_shares('NONE')
 
-        logger.info("set allowed_integration_types")
+        obj_inst.logger.info("set allowed_integration_types")
         if tags.ALLOWED_INTEGRATION_TYPES in kwargs.keys():
             obj_inst.set_allowed_integration_types(kwargs[tags.ALLOWED_INTEGRATION_TYPES])
         else:
             obj_inst.set_allowed_integration_types('NONE')
 
-        logger.info("set allowed_accounts")
+        obj_inst.logger.info("set allowed_accounts")
         if tags.ALLOWED_ACCOUNTS in kwargs.keys():
             obj_inst.set_allowed_accounts(kwargs[tags.ALLOWED_ACCOUNTS])
         else:
             obj_inst.set_allowed_accounts('NONE')
 
-        logger.info("set replication_schedule")
+        obj_inst.logger.info("set replication_schedule")
         if tags.REPLICATION_SCHEDULE in kwargs.keys():
             obj_inst.set_replication_schedule(kwargs[tags.REPLICATION_SCHEDULE])
         else:
             obj_inst.set_replication_schedule('NONE')
 
-        logger.info("set ignore_edition_check")
+        obj_inst.logger.info("set ignore_edition_check")
         if tags.IGNORE_EDITION_CHECK in kwargs.keys():
             obj_inst.set_ignore_edition_check(kwargs[tags.IGNORE_EDITION_CHECK])
         else:
             obj_inst.set_ignore_edition_check('NONE')
 
-        logger.info("set error_integration")
+        obj_inst.logger.info("set error_integration")
         if tags.ERROR_INTEGRATION in kwargs.keys():
             obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
         else:
             obj_inst.set_error_integration('NONE')
 
-        logger.info("set tag_clause")
+        obj_inst.logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

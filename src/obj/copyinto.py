@@ -349,8 +349,8 @@ class CopyIntoAttrs:
     load_mode = LoadMode()
 
 class CopyInto(BaseObject):
-    def __init__(self, session, user_id, logger):
-        super().__init__(session, user_id, logger)
+    def __init__(self, session, user_id):
+        super().__init__(session, user_id)
         self.attr = CopyIntoAttrs(self)
 
     def set_table(self,value):

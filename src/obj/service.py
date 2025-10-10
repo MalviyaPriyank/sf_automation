@@ -140,11 +140,9 @@ class ServiceAttrs:
     comment = ServiceComment()
 
 class Service(BaseObject):
-    def __init__(self, session, user_id, logger):
+    def __init__(self, session, user_id):
+        super().__init__(session=session,user_id=user_id)
         self.attr = ServiceAttrs()
-        self.session = session
-        self.user_id = user_id
-        self.logger = logger
 
     # Setter methods
     def set_name(self, v): self.attr.name = v
@@ -256,105 +254,105 @@ class Service(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=Service(session=session,
                          user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                        )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set compute_pool")
+        obj_inst.logger.info("set compute_pool")
         if tags.COMPUTE_POOL in kwargs.keys():
             obj_inst.set_compute_pool(kwargs[tags.COMPUTE_POOL])
         else:
             obj_inst.set_compute_pool('NONE')
 
-        logger.info("set specification_file")
+        obj_inst.logger.info("set specification_file")
         if tags.SPECIFICATION_FILE in kwargs.keys():
             obj_inst.set_specification_file(kwargs[tags.SPECIFICATION_FILE])
         else:
             obj_inst.set_specification_file('NONE')
 
-        logger.info("set specification_template_file")
+        obj_inst.logger.info("set specification_template_file")
         if tags.SPECIFICATION_TEMPLATE_FILE in kwargs.keys():
             obj_inst.set_specification_template_file(kwargs[tags.SPECIFICATION_TEMPLATE_FILE])
         else:
             obj_inst.set_specification_template_file('NONE')
 
-        logger.info("set auto_suspend_secs")
+        obj_inst.logger.info("set auto_suspend_secs")
         if tags.AUTO_SUSPEND_SECS in kwargs.keys():
             obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
         else:
             obj_inst.set_auto_suspend_secs('NONE')
 
-        logger.info("set external_access_integrations")
+        obj_inst.logger.info("set external_access_integrations")
         if tags.EXTERNAL_ACCESS_INTEGRATIONS in kwargs.keys():
             obj_inst.set_external_access_integrations(kwargs[tags.EXTERNAL_ACCESS_INTEGRATIONS])
         else:
             obj_inst.set_external_access_integrations('NONE')
 
-        logger.info("set auto_resume")
+        obj_inst.logger.info("set auto_resume")
         if tags.AUTO_RESUME in kwargs.keys():
             obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
         else:
             obj_inst.set_auto_resume('NONE')
 
-        logger.info("set min_instances")
+        obj_inst.logger.info("set min_instances")
         if tags.MIN_INSTANCES in kwargs.keys():
             obj_inst.set_min_instances(kwargs[tags.MIN_INSTANCES])
         else:
             obj_inst.set_min_instances('NONE')
 
-        logger.info("set min_ready_instances")
+        obj_inst.logger.info("set min_ready_instances")
         if tags.MIN_READY_INSTANCES in kwargs.keys():
             obj_inst.set_min_ready_instances(kwargs[tags.MIN_READY_INSTANCES])
         else:
             obj_inst.set_min_ready_instances('NONE')
 
-        logger.info("set max_instances")
+        obj_inst.logger.info("set max_instances")
         if tags.MAX_INSTANCES in kwargs.keys():
             obj_inst.set_max_instances(kwargs[tags.MAX_INSTANCES])
         else:
             obj_inst.set_max_instances('NONE')
 
-        logger.info("set log_level")
+        obj_inst.logger.info("set log_level")
         if tags.LOG_LEVEL in kwargs.keys():
             obj_inst.set_log_level(kwargs[tags.LOG_LEVEL])
         else:
             obj_inst.set_log_level('NONE')
 
-        logger.info("set query_warehouse")
+        obj_inst.logger.info("set query_warehouse")
         if tags.QUERY_WAREHOUSE in kwargs.keys():
             obj_inst.set_query_warehouse(kwargs[tags.QUERY_WAREHOUSE])
         else:
             obj_inst.set_query_warehouse('NONE')
 
-        logger.info("set tag_clause")
+        obj_inst.logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

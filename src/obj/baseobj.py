@@ -5,15 +5,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../git'))
 
+import logging
 from dep import deploy
 from vars.gvobject import Config as cfg
 from repository import Repository   
 
 class AbstractObject(ABC):
-    def __init__(self,session,user_id,logger):
+    def __init__(self,session,user_id):
         self.session=session
         self.user_id=user_id
-        self.logger=logger
         self.qry=""
 
     @abstractmethod
@@ -21,8 +21,17 @@ class AbstractObject(ABC):
         pass
 
 class BaseObject(AbstractObject):
-    def __init__(self, session, user_id, logger):
-        super().__init__(session = session, user_id = user_id, logger = logger)
+    def __init__(self, session, user_id):
+        super().__init__(session = session, user_id = user_id)
+        self.logger = logging.getLogger(self.__class__.__name__)
+        if not self.logger.hasHandlers():
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+            self.logger.setLevel(logging.INFO)
+
+        self.logger.info(f"Logger initialized for {self.__class__.__name__}")
     
     def execute_final_query(self,**kwargs):
         if 'DATABASE' in kwargs.keys():

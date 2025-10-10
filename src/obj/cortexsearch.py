@@ -110,11 +110,9 @@ class CortexSearchAttrs:
     query=ServiceQuery()
 
 class CortexSearch(BaseObject):
-    def __init__(self,session,user_id,logger):
+    def __init__(self,session,user_id):
+        super().__init__(session=session,user_id=user_id)
         self.attr=CortexSearchAttrs()
-        self.session=session
-        self.logger=logger
-        self.user_id=user_id
 
     def set_name(self,val=None):
         self.attr.name=val
@@ -227,70 +225,70 @@ class CortexSearch(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=CortexSearch(session=session,
                          user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                         )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set on")
+        obj_inst.logger.info("set on")
         if tags.ON in kwargs.keys():
             obj_inst.set_on(kwargs[tags.ON])
         else:
             obj_inst.set_on('NONE')
 
-        logger.info("set ATTRIBUTES")
+        obj_inst.logger.info("set ATTRIBUTES")
         if tags.ATTRIBUTES in kwargs.keys():
             obj_inst.set_service_attributes(kwargs[tags.ATTRIBUTES])
         else:
             obj_inst.set_service_attributes('NONE')
 
-        logger.info("set WAREHOUSE")
+        obj_inst.logger.info("set WAREHOUSE")
         if tags.WAREHOUSE in kwargs.keys():
             obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
         else:
             obj_inst.set_warehouse('NONE')
 
-        logger.info("set TARGET_LAG")
+        obj_inst.logger.info("set TARGET_LAG")
         if tags.TARGET_LAG in kwargs.keys():
             obj_inst.set_target_lag(kwargs[tags.TARGET_LAG])
         else:
             obj_inst.set_target_lag('NONE')
 
-        logger.info("set EMBEDDING_MODEL")
+        obj_inst.logger.info("set EMBEDDING_MODEL")
         if tags.EMBEDDING_MODEL in kwargs.keys():
             obj_inst.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
         else:
             obj_inst.set_embedding_model('NONE')
 
-        logger.info("set INITIALIZE")
+        obj_inst.logger.info("set INITIALIZE")
         if tags.INITIALIZE in kwargs.keys():
             obj_inst.set_initialize(kwargs[tags.INITIALIZE])
         else:
             obj_inst.set_initialize('NONE')
 
-        logger.info("set QUERY")
+        obj_inst.logger.info("set QUERY")
         if tags.QUERY in kwargs.keys():
             obj_inst.set_query(kwargs[tags.QUERY])
         else:
             obj_inst.set_query('NONE')
 
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

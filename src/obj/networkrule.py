@@ -118,8 +118,8 @@ class NetworkRuleAttrs:
 
 
 class NetworkRule(BaseObject):
-    def __init__(self, session, user_id, logger):
-        super().__init__(session, user_id, logger)
+    def __init__(self, session, user_id):
+        super().__init__(session, user_id)
         self.attr = NetworkRuleAttrs(self)
 
 
@@ -211,51 +211,51 @@ class NetworkRule(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,kwargs,*largs):
         obj_inst=NetworkRule(session=session,
                          user_id=user_id,
-                         logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+                         )
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set type")
+        obj_inst.logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set value_list")
+        obj_inst.logger.info("set value_list")
         if tags.VALUE_LIST in kwargs.keys():
             obj_inst.set_value_list(kwargs[tags.VALUE_LIST])
         else:
             obj_inst.set_value_list('NONE')
 
-        logger.info("set mode")
+        obj_inst.logger.info("set mode")
         if tags.MODE in kwargs.keys():
             obj_inst.set_mode(kwargs[tags.MODE])
         else:
             obj_inst.set_mode('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 
