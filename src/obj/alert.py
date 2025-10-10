@@ -8,7 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
-
+import logging
+logger = logging.getLogger('Alert logs')
 
 from vars.gvobject import Config as cfg 
 from vars.obj.alert.gvalert import AlertTag as tags
@@ -277,49 +278,94 @@ class Alerts(BaseObject):
     def create_alert(self):
         self.session.sql(self.qry).collect()
 
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        self.logger.info('set database')
-        self.set_database(kwargs[tags.DATABASE])
-
-        self.logger.info('set schema')
-        self.set_schema(kwargs[tags.SCHEMA])
-
-        self.logger.info('set name')
-        self.set_name(kwargs[tags.NAME])
-
-        self.logger.info('set schedule')
-        self.set_schedule(kwargs[tags.SCHEDULE])
-
-        self.logger.info('set _if_tag')
-        self.set_iff(kwargs[tags.IF])
-
-        self.logger.info('set _action_type')
-        self.set_action_type(kwargs[tags.ACTION_TYPE])
-
-        self.logger.info('set _action_sql')
-        self.set_action_sql(kwargs[tags.ACTION_SQL])
-
-        self.logger.info('set _integration_name')
-        self.set_integration_name(kwargs[tags.INTEGRATION_NAME])
-
-        self.logger.info('set _email_address')
-        self.set_email_address(kwargs[tags.EMAIL_ADDRESS])
-
-        self.logger.info('set _email_subject')
-        self.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
-
-        self.logger.info('set _email_content')
-        self.set_email_content(kwargs[tags.EMAIL_CONTENT])
-
-        self.logger.info('prepare query')
-        self.prepare_query()
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        alert_inst=Alerts(session=session,
+                         user_id=user_id,
+                         logger=logger)
         
-        self.logger.info('execute query')
-        self.create_alert()
+        logger.info(f"Operating on {alert_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        alert_inst.is_create=kwargs[tags.IS_CREATE]
 
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry()
+        logger.info('set database')
+        if tags.DATABASE in kwargs.keys():
+            alert_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            alert_inst.set_database(kwargs[tags.DATABASE])
+
+        logger.info('set schema')
+        if tags.SCHEMA in kwargs.keys():
+            alert_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            alert_inst.set_schema(kwargs[tags.SCHEMA])
+
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            alert_inst.set_name(kwargs[tags.NAME])
+        else:
+            alert_inst.set_name(kwargs[tags.NAME])
+
+        logger.info("set schedule")
+        if tags.SCHEDULE in kwargs.keys():
+            alert_inst.set_schedule(kwargs[tags.SCHEDULE])
+        else:
+            alert_inst.set_schedule(kwargs[tags.SCHEDULE])
+
+        logger.info("set _if_tag")
+        if tags.IF in kwargs.keys():
+            alert_inst.set_iff(kwargs[tags.IF])
+        else:
+            alert_inst.set_iff(kwargs[tags.IF])
+
+        logger.info("set _action_type")
+        if tags.ACTION_TYPE in kwargs.keys():
+            alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
+        else:
+            alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
+
+        logger.info("set _action_sql")
+        if tags.ACTION_SQL in kwargs.keys():
+            alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
+        else:
+            alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
+
+        logger.info("set _integration_name")
+        if tags.INTEGRATION_NAME in kwargs.keys():
+            alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
+        else:
+            alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
+
+        logger.info("set _email_address")
+        if tags.EMAIL_ADDRESS in kwargs.keys():
+            alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
+        else:
+            alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
+
+        logger.info("set _email_subject")
+        if tags.EMAIL_SUBJECT in kwargs.keys():
+            alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
+        else:
+            alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
+
+        logger.info("set _email_content")
+        if tags.EMAIL_CONTENT in kwargs.keys():
+            alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
+        else:
+            alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
+
+
+        logger.info('prepare query')
+        alert_inst.prepare_query()
+        
+        logger.info('execute query')
+        alert_inst.create_alert()
+
+        logger.info('create deployment entry')
+        alert_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()

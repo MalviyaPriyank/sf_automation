@@ -224,37 +224,76 @@ class CortexSearch(BaseObject):
                 self.property_lst.append(tags.NAME)
             self.alter_object()
 
-    def create_search_service(self):
-        self.execute_final_query()
 
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=CortexSearch(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        self.set_name(kwargs[tags.NAME])
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name(kwargs[tags.NAME])
 
-        self.set_on(kwargs[tags.ON])
-        self.logger.info('set ATTRIBUTES')
-        self.set_service_attributes(kwargs[tags.ATTRIBUTES])
+        logger.info("set on")
+        if tags.ON in kwargs.keys():
+            obj_inst.set_on(kwargs[tags.ON])
+        else:
+            obj_inst.set_on(kwargs[tags.ON])
 
-        self.logger.info('set WAREHOUSE')
-        self.set_warehouse(kwargs[tags.WAREHOUSE])
+        logger.info("set ATTRIBUTES")
+        if tags.ATTRIBUTES in kwargs.keys():
+            obj_inst.set_service_attributes(kwargs[tags.ATTRIBUTES])
+        else:
+            obj_inst.set_service_attributes(kwargs[tags.ATTRIBUTES])
 
-        self.logger.info('set TARGET_LAG')
-        self.set_target_lag(kwargs[tags.TARGET_LAG])
+        logger.info("set WAREHOUSE")
+        if tags.WAREHOUSE in kwargs.keys():
+            obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
+        else:
+            obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
 
-        self.logger.info('set EMBEDDING_MODEL')
-        self.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
+        logger.info("set TARGET_LAG")
+        if tags.TARGET_LAG in kwargs.keys():
+            obj_inst.set_target_lag(kwargs[tags.TARGET_LAG])
+        else:
+            obj_inst.set_target_lag(kwargs[tags.TARGET_LAG])
 
-        self.logger.info('set INITIALIZE')
-        self.set_initialize(kwargs[tags.INITIALIZE])
+        logger.info("set EMBEDDING_MODEL")
+        if tags.EMBEDDING_MODEL in kwargs.keys():
+            obj_inst.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
+        else:
+            obj_inst.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
 
-        self.logger.info('set QUERY')
-        self.set_query(kwargs[tags.QUERY])
+        logger.info("set INITIALIZE")
+        if tags.INITIALIZE in kwargs.keys():
+            obj_inst.set_initialize(kwargs[tags.INITIALIZE])
+        else:
+            obj_inst.set_initialize(kwargs[tags.INITIALIZE])
 
-        self.logger.info('preapare query')
-        self.prepare_query()
+        logger.info("set QUERY")
+        if tags.QUERY in kwargs.keys():
+            obj_inst.set_query(kwargs[tags.QUERY])
+        else:
+            obj_inst.set_query(kwargs[tags.QUERY])
 
-        self.logger.info('execute query')
-        self.create_search_service()
+
+        logger.info('prepare query')
+        obj_inst.prepare_query()
+        
+        logger.info('execute query')
+        obj_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()

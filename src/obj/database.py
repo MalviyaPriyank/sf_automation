@@ -8,8 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
-
-
+import logging
+logger = logging.getLogger('Database logs')
 from vars.gvobject import Config as cfg , Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
@@ -63,6 +63,7 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
+        logger.info(f"setting data retention time in days {value}")
         if value == "NONE":
             instance._data_retention_time_in_days = value
         else:
@@ -379,70 +380,9 @@ class Database(BaseObject):
     def create_database(self):
         self.execute_final_query()
 
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        if len(largs) != 0:
-            self.logger.info(' list args passed')
-            self.qry = f"CREATE OR REPLACE DATABASE {kwargs[tags.NAME]}"
-            self.logger.info('calling create database')
-            self.create_database()
-            self.logger.info('granting default privileges')
-            #self.grant_default_privileges(*['initial'])
-        else:
-            self.logger.info('set name')
-            self.set_name(kwargs[tags.NAME])
-
-            self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
-            self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
-
-            self.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
-            self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
-
-            self.logger.info('set EXTERNAL_VOLUME')
-            self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
-
-            self.logger.info('set CATALOG')
-            self.set_catalog(kwargs[tags.CATALOG])
-
-            self.logger.info('set REPLACE_INVALID_CHARACTERS')
-            self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
-
-            self.logger.info('set DEFAULT_DDL_COLLATION')
-            self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
-
-            self.logger.info('set LOG_LEVEL')
-            self.set_log_level(kwargs[tags.LOG_LEVEL])
-
-            self.logger.info('set TRACE_LEVEL')
-            self.set_trace_level(kwargs[tags.TRACE_LEVEL])
-
-            self.logger.info('set STORAGE_SERIALIZATION_POLICY')
-            self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
-
-            self.logger.info('set COMMENT')
-            self.set_comment(kwargs[tags.COMMENT])
-
-            self.logger.info('preapare query')
-            self.prepare_query()
-
-            if kwargs[tags.IS_CREATE] == "TRUE":
-                self.logger.info('execute query')
-                self.create_database()
-
-                self.logger.info('grant default priv')
-                #self.grant_default_privileges()
-                
-                self.logger.info('create deployment entry')
-                self.create_deployment_entry(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
-                self.logger.info('writing file to git')
-                self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
     
 class Operation:
-    @classmethod
+    @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
         db_inst=Database(session=session,
                          user_id=user_id,
@@ -465,34 +405,64 @@ class Operation:
             db_inst.set_name(kwargs[tags.NAME])
 
             db_inst.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
-            db_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+            if tags.DATA_RETENTION_TIME_IN_DAYS in  kwargs.keys(): 
+                db_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+            else:
+                db_inst.set_data_retention_time_in_days("NONE")
 
             db_inst.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
-            db_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+            if tags.MAX_DATA_EXTENSION_TIME_IN_DAYS in kwargs.keys():
+                db_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+            else:
+                db_inst.set_max_data_extension_time_in_days("NONE")
 
             db_inst.logger.info('set EXTERNAL_VOLUME')
-            db_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+            if tags.EXTERNAL_VOLUME in kwargs.keys():
+                db_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+            else:
+                db_inst.set_external_volume("NONE")
 
             db_inst.logger.info('set CATALOG')
-            db_inst.set_catalog(kwargs[tags.CATALOG])
+            if tags.CATALOG in kwargs.keys():
+                db_inst.set_catalog(kwargs[tags.CATALOG])
+            else:
+                db_inst.set_catalog("NONE")
 
             db_inst.logger.info('set REPLACE_INVALID_CHARACTERS')
-            db_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+            if tags.REPLACE_INVALID_CHARACTERS in kwargs.keys():
+                db_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+            else:
+                db_inst.set_replace_invalid_characters("NONE")
 
             db_inst.logger.info('set DEFAULT_DDL_COLLATION')
-            db_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+            if tags.DEFAULT_DDL_COLLATION in kwargs.keys():
+                db_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+            else:
+                db_inst.set_default_ddl_collation("NONE")
 
             db_inst.logger.info('set LOG_LEVEL')
-            db_inst.set_log_level(kwargs[tags.LOG_LEVEL])
+            if tags.LOG_LEVEL in kwargs.keys():
+                db_inst.set_log_level(kwargs[tags.LOG_LEVEL])
+            else:
+                db_inst.set_log_level("NONE")
 
             db_inst.logger.info('set TRACE_LEVEL')
-            db_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
+            if tags.TRACE_LEVEL in kwargs.keys():
+                db_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
+            else:
+                db_inst.set_trace_level("NONE")
 
             db_inst.logger.info('set STORAGE_SERIALIZATION_POLICY')
-            db_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+            if tags.STORAGE_SERIALIZATION_POLICY in kwargs.keys():
+                db_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+            else:
+                db_inst.set_storage_serialization_policy("NONE")
 
             db_inst.logger.info('set COMMENT')
-            db_inst.set_comment(kwargs[tags.COMMENT])
+            if tags.COMMENT in kwargs.keys():
+                db_inst.set_comment(kwargs[tags.COMMENT])
+            else:
+                db_inst.set_comment("NONE")
 
             db_inst.logger.info('preapare query')
             db_inst.prepare_query()
@@ -513,4 +483,3 @@ class Operation:
     @classmethod
     def get_attributes(cls):
         return tags().get_attributes_with_description()
-

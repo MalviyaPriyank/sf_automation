@@ -114,13 +114,14 @@ class LLMTools:
 
     def create_object(self, obj_type, data_dict):
         try:
+            print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
             
             operation = self.import_module(obj_type)
             qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
-            self.logger.info(f"For {obj_name}, query returned: {qry}")
-            self.logger.info(f'Object {obj_name} created successfully')
-            return f'Object {obj_name} created successfully'
+            self.logger.info(f"For {obj_type}, query returned: {qry}")
+            self.logger.info(f'Object {obj_type} created successfully')
+            return f'Object {obj_type} created successfully'
         except (SnowchainException,SnowparkSQLException) as e:
             self.logger.warn(f"inside Snowchainexception")
             self.logger.warn(f"Error : {e}")

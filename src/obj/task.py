@@ -140,7 +140,9 @@ class Schedule:
             ret,type,num=vv.is_valid_schedule(schedule=value,object_name=instance.parent.__class__.__name__,attribute_name=self.__class__.__name__)
             if ret:
                 if type=='CRON':
-                    vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+                    vv.is_valid_cron(value=value,
+                                     object_type=instance.parent.__class__.__name__,
+                                     attr_name=self.__class__.__name__)
                     instance._schedule = f"'{value}'"
                 else:
                     vv.is_positive_number(value=int(num),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
@@ -719,3 +721,47 @@ class Task(BaseObject):
                                 object_type=self.__class__.__name__,
                                 object_database=self.attr.database,
                                 object_schema=self.attr.schema)
+
+
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=DatabaseRole(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
+
+        logger.info("set database")
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            obj_inst.set_database(kwargs[tags.DATABASE])
+
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name(kwargs[tags.NAME])
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+
+
+        logger.info('prepare query')
+        obj_inst.prepare_query()
+        
+        logger.info('execute query')
+        obj_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()

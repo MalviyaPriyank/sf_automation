@@ -112,12 +112,59 @@ class Contact(BaseObject):
         else:
             self.alter_object()
 
-    def create_object(self, *largs, **kwargs):
-        self.is_create = kwargs.get(tags.IS_CREATE)
-        self.set_name(kwargs.get(tags.NAME))
-        self.set_users(kwargs.get(tags.USERS))
-        self.set_email_distribution_list(kwargs.get(tags.EMAIL_DISTRIBUTION_LIST))
-        self.set_url(kwargs.get(tags.URL))
-        self.set_comment(kwargs.get(tags.COMMENT))
-        self.prepare_query()
-        self.execute_final_query()
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=Contact(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
+
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name(kwargs[tags.NAME])
+
+        logger.info("set users")
+        if tags.USERS in kwargs.keys():
+            obj_inst.set_users(kwargs[tags.USERS])
+        else:
+            obj_inst.set_users(kwargs[tags.USERS])
+
+        logger.info("set email_distribution_list")
+        if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
+            obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
+        else:
+            obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
+
+        logger.info("set url")
+        if tags.URL in kwargs.keys():
+            obj_inst.set_url(kwargs[tags.URL])
+        else:
+            obj_inst.set_url(kwargs[tags.URL])
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+
+
+        logger.info('prepare query')
+        obj_inst.prepare_query()
+        
+        logger.info('execute query')
+        obj_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()
+
+

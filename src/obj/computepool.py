@@ -169,17 +169,83 @@ class ComputePool(BaseObject):
         else:
             self.alter_object()
 
-    def create_object(self, *largs, **kwargs):
-        self.is_create = kwargs.get(tags.IS_CREATE)
-        self.set_name(kwargs.get(tags.NAME))
-        self.set_min_nodes(kwargs.get(tags.MIN_NODES))
-        self.set_max_nodes(kwargs.get(tags.MAX_NODES))
-        self.set_instance_family(kwargs.get(tags.INSTANCE_FAMILY))
-        self.set_auto_resume(kwargs.get(tags.AUTO_RESUME))
-        self.set_initially_suspended(kwargs.get(tags.INITIALLY_SUSPENDED))
-        self.set_auto_suspend_secs(kwargs.get(tags.AUTO_SUSPEND_SECS))
-        self.set_comment(kwargs.get(tags.COMMENT))
-        self.set_tag_clause(kwargs.get(tags.TAG_CLAUSE))
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=ComputePool(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        self.prepare_query()
-        self.execute_final_query()
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name(kwargs[tags.NAME])
+
+        logger.info("set min_nodes")
+        if tags.MIN_NODES in kwargs.keys():
+            obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
+        else:
+            obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
+
+        logger.info("set max_nodes")
+        if tags.MAX_NODES in kwargs.keys():
+            obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
+        else:
+            obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
+
+        logger.info("set instance_family")
+        if tags.INSTANCE_FAMILY in kwargs.keys():
+            obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
+        else:
+            obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
+
+        logger.info("set auto_resume")
+        if tags.AUTO_RESUME in kwargs.keys():
+            obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
+        else:
+            obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
+
+        logger.info("set initially_suspended")
+        if tags.INITIALLY_SUSPENDED in kwargs.keys():
+            obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
+        else:
+            obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
+
+        logger.info("set auto_suspend_secs")
+        if tags.AUTO_SUSPEND_SECS in kwargs.keys():
+            obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
+        else:
+            obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+
+
+        logger.info('prepare query')
+        obj_inst.prepare_query()
+        
+        logger.info('execute query')
+        obj_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()
+

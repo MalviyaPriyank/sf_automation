@@ -123,24 +123,48 @@ class DatabaseRole(BaseObject):
             if self.attr.name[1] != "NONE":
                 self.property_lst.append(tags.NAME)
             self.alter_object()
-    
-    def create_database_role(self):
-        self.execute_final_query()
 
-    def create_object(self,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
 
-        self.set_database(kwargs[tags.DATABASE])
-        self.set_name(kwargs[tags.NAME])
-        self.set_comment(kwargs[tags.COMMENT])
 
-        self.prepare_query()
-        self.create_database_role()
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=DatabaseRole(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        logger.info("set database")
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            obj_inst.set_database(kwargs[tags.DATABASE])
 
-        self.logger.info('writing file to git')
-        self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name(kwargs[tags.NAME])
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+
+
+        logger.info('prepare query')
+        obj_inst.prepare_query()
+        
+        logger.info('execute query')
+        obj_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()

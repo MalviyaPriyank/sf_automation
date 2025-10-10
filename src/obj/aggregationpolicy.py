@@ -2,7 +2,8 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
-
+import logging
+logger = logging.getLogger('Aggregation policy logs')
 from .baseobj import BaseObject
 from vars.obj.aggregationpolicy.gvaggregationpolicy import AggregationPolicyTag as tags
 
@@ -86,10 +87,47 @@ class AggregationPolicy(BaseObject):
         else:
             self.alter_object()
 
-    def create_object(self, *largs, **kwargs):
-        self.is_create = kwargs.get(tags.IS_CREATE)
-        self.set_name(kwargs.get(tags.NAME))
-        self.set_body(kwargs.get(tags.BODY))
-        self.set_comment(kwargs.get(tags.COMMENT))
-        self.prepare_query()
+    def create_aggregation_policy(self):
         self.execute_final_query()
+
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        agg_policy_inst=AggregationPolicy(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        
+        logger.info(f"Operating on {agg_policy_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        agg_policy_inst.is_create=kwargs[tags.IS_CREATE]
+        logger.info('set name')
+        agg_policy_inst.set_name(kwargs[tags.NAME])
+
+        agg_policy_inst.logger.info('set BODY')
+        if tags.BODY in  kwargs.keys(): 
+            agg_policy_inst.set_body(kwargs[tags.BODY])
+        else:
+            agg_policy_inst.set_body("NONE")
+
+        logger.info('set comment')
+        if tags.COMMENT in kwargs.keys():
+            agg_policy_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            agg_policy_inst.set_comment("NONE")
+
+        logger.info('preapare query')
+        agg_policy_inst.prepare_query()
+
+        if kwargs[tags.IS_CREATE] == "TRUE":
+            logger.info('execute query')
+            agg_policy_inst.create_aggregation_policy()
+ 
+            logger.info('create deployment entry')
+            agg_policy_inst.create_deployment_entry(object_name=agg_policy_inst.attr.name[0],object_type=agg_policy_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+            logger.info('writing file to git')
+            agg_policy_inst.write_file_to_git(object_name=agg_policy_inst.attr.name[0],object_type=agg_policy_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()

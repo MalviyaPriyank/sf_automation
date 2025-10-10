@@ -180,36 +180,94 @@ class AuthenticationPolicy(BaseObject):
         else:
             self.alter_object()
 
-    def create_object(self, *largs, **kwargs):
-        """
-        kwargs expects:
-          tags.IS_CREATE : "TRUE" / "FALSE"
-          tags.NAME : [name, new_name?]
-          tags.SAML_IDENTITY_PROVIDER
-          tags.SAML_ENABLE_SP_INITIATED
-          tags.SAML_ENABLE_IDP_INITIATED
-          tags.OAUTH_CLIENT_ID
-          tags.OAUTH_CLIENT_SECRET
-          tags.OAUTH_REDIRECT_URI
-          tags.MFA_ENROLLMENT
-          tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS
-          tags.COMMENT
-          tags.TAG_CLAUSE
-        """
-        self.logger.info(f"Operating on {self.__class__.__name__} create flag {kwargs.get(tags.IS_CREATE)}")
-        self.is_create = kwargs.get(tags.IS_CREATE)
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        authentication_policy_inst=AuthenticationPolicy(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        
+        logger.info(f"Operating on {authentication_policy_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        authentication_policy_inst.is_create=kwargs[tags.IS_CREATE]
 
-        self.set_name(kwargs.get(tags.NAME))
-        self.set_saml_idp(kwargs.get(tags.SAML_IDENTITY_PROVIDER))
-        self.set_saml_sp_init(kwargs.get(tags.SAML_ENABLE_SP_INITIATED))
-        self.set_saml_idp_init(kwargs.get(tags.SAML_ENABLE_IDP_INITIATED))
-        self.set_oauth_client_id(kwargs.get(tags.OAUTH_CLIENT_ID))
-        self.set_oauth_client_secret(kwargs.get(tags.OAUTH_CLIENT_SECRET))
-        self.set_oauth_redirect_uri(kwargs.get(tags.OAUTH_REDIRECT_URI))
-        self.set_mfa_enrollment(kwargs.get(tags.MFA_ENROLLMENT))
-        self.set_mfa_enrollment_grace(kwargs.get(tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS))
-        self.set_comment(kwargs.get(tags.COMMENT))
-        self.set_tag_clause(kwargs.get(tags.TAG_CLAUSE))
+        logger.info("set name")
+        if tags.NAME in kwargs.keys():
+            authentication_policy_inst.set_name(kwargs[tags.NAME])
+        else:
+            authentication_policy_inst.set_name(kwargs[tags.NAME])
 
-        self.prepare_query()
-        self.execute_final_query()
+        logger.info("set saml_idp")
+        if tags.SAML_IDENTITY_PROVIDER in kwargs.keys():
+            authentication_policy_inst.set_saml_idp(kwargs[tags.SAML_IDENTITY_PROVIDER])
+        else:
+            authentication_policy_inst.set_saml_idp(kwargs[tags.SAML_IDENTITY_PROVIDER])
+
+        logger.info("set saml_sp_init")
+        if tags.SAML_ENABLE_SP_INITIATED in kwargs.keys():
+            authentication_policy_inst.set_saml_sp_init(kwargs[tags.SAML_ENABLE_SP_INITIATED])
+        else:
+            authentication_policy_inst.set_saml_sp_init(kwargs[tags.SAML_ENABLE_SP_INITIATED])
+
+        logger.info("set saml_idp_init")
+        if tags.SAML_ENABLE_IDP_INITIATED in kwargs.keys():
+            authentication_policy_inst.set_saml_idp_init(kwargs[tags.SAML_ENABLE_IDP_INITIATED])
+        else:
+            authentication_policy_inst.set_saml_idp_init(kwargs[tags.SAML_ENABLE_IDP_INITIATED])
+
+        logger.info("set oauth_client_id")
+        if tags.OAUTH_CLIENT_ID in kwargs.keys():
+            authentication_policy_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
+        else:
+            authentication_policy_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
+
+        logger.info("set oauth_client_secret")
+        if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
+            authentication_policy_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
+        else:
+            authentication_policy_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
+
+        logger.info("set oauth_redirect_uri")
+        if tags.OAUTH_REDIRECT_URI in kwargs.keys():
+            authentication_policy_inst.set_oauth_redirect_uri(kwargs[tags.OAUTH_REDIRECT_URI])
+        else:
+            authentication_policy_inst.set_oauth_redirect_uri(kwargs[tags.OAUTH_REDIRECT_URI])
+
+        logger.info("set mfa_enrollment")
+        if tags.MFA_ENROLLMENT in kwargs.keys():
+            authentication_policy_inst.set_mfa_enrollment(kwargs[tags.MFA_ENROLLMENT])
+        else:
+            authentication_policy_inst.set_mfa_enrollment(kwargs[tags.MFA_ENROLLMENT])
+
+        logger.info("set mfa_enrollment_grace")
+        if tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS in kwargs.keys():
+            authentication_policy_inst.set_mfa_enrollment_grace(kwargs[tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS])
+        else:
+            authentication_policy_inst.set_mfa_enrollment_grace(kwargs[tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS])
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            authentication_policy_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            authentication_policy_inst.set_comment(kwargs[tags.COMMENT])
+
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            authentication_policy_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            authentication_policy_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+
+
+        logger.info('prepare query')
+        authentication_policy_inst.prepare_query()
+        
+        logger.info('execute query')
+        authentication_policy_inst.execute_final_query()
+
+        logger.info('create deployment entry')
+        authentication_policy_inst.create_deployment_entry()
+
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()
