@@ -174,31 +174,60 @@ class ProvisionedThroughput(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=ProvisionedThroughput(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set cloud_provider")
+        if tags.CLOUD_PROVIDER in kwargs.keys():
+            obj_inst.set_cloud_provider(kwargs[tags.CLOUD_PROVIDER])
+        else:
+            obj_inst.set_cloud_provider('NONE')
+
+        logger.info("set model")
+        if tags.MODEL in kwargs.keys():
+            obj_inst.set_model(kwargs[tags.MODEL])
+        else:
+            obj_inst.set_model('NONE')
+
+        logger.info("set ptus")
+        if tags.PTUS in kwargs.keys():
+            obj_inst.set_ptus(kwargs[tags.PTUS])
+        else:
+            obj_inst.set_ptus('NONE')
+
+        logger.info("set term_start")
+        if tags.TERM_START in kwargs.keys():
+            obj_inst.set_term_start(kwargs[tags.TERM_START])
+        else:
+            obj_inst.set_term_start('NONE')
+
+        logger.info("set term_end")
+        if tags.TERM_END in kwargs.keys():
+            obj_inst.set_term_end(kwargs[tags.TERM_END])
+        else:
+            obj_inst.set_term_end('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

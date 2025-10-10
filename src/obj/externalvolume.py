@@ -65,8 +65,8 @@ class ExternalVolume(BaseObject):
         self.user_id = user_id
         self.logger = logger
 
-    # setter methods
-    def set_name(self, v): self.attr.name = v
+
+    def set_name(self, value): self.attr.name = value
     def set_storage_locations(self, v): self.attr.storage_locations = v
     def set_allow_writes(self, v): self.attr.allow_writes = v
     def set_comment(self, v): self.attr.comment = v
@@ -131,30 +131,43 @@ class ExternalVolume(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=ExternalVolume(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set storage_locations")
+        if tags.STORAGE_LOCATIONS in kwargs.keys():
+            obj_inst.set_storage_locations(kwargs[tags.STORAGE_LOCATIONS])
+        else:
+            obj_inst.set_storage_locations('NONE')
+
+        logger.info("set allow_writes")
+        if tags.ALLOW_WRITES in kwargs.keys():
+            obj_inst.set_allow_writes(kwargs[tags.ALLOW_WRITES])
+        else:
+            obj_inst.set_allow_writes('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
+
 
 
         logger.info('prepare query')

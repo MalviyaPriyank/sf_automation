@@ -140,19 +140,19 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
 
         logger.info('prepare query')

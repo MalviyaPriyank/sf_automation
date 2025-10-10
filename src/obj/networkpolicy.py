@@ -202,31 +202,54 @@ class NetworkPolicy(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=NetworkPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set allowed_network_rule_list")
+        if tags.ALLOWED_NETWORK_RULE_LIST in kwargs.keys():
+            obj_inst.set_allowed_network_rule_list(kwargs[tags.ALLOWED_NETWORK_RULE_LIST])
+        else:
+            obj_inst.set_allowed_network_rule_list('NONE')
+
+        logger.info("set blocked_network_rule_list")
+        if tags.BLOCKED_NETWORK_RULE_LIST in kwargs.keys():
+            obj_inst.set_blocked_network_rule_list(kwargs[tags.BLOCKED_NETWORK_RULE_LIST])
+        else:
+            obj_inst.set_blocked_network_rule_list('NONE')
+
+        logger.info("set allowed_ip_list")
+        if tags.ALLOWED_IP_LIST in kwargs.keys():
+            obj_inst.set_allowed_ip_list(kwargs[tags.ALLOWED_IP_LIST])
+        else:
+            obj_inst.set_allowed_ip_list('NONE')
+
+        logger.info("set blocked_ip_list")
+        if tags.BLOCKED_IP_LIST in kwargs.keys():
+            obj_inst.set_blocked_ip_list(kwargs[tags.BLOCKED_IP_LIST])
+        else:
+            obj_inst.set_blocked_ip_list('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

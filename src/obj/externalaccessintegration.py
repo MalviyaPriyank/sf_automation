@@ -130,7 +130,7 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class NetworkRuleAttrs:
+class ExternalAccessIntegrationAttrs:
     def __init__(self,parent):
         self.parent = parent
 
@@ -142,7 +142,7 @@ class NetworkRuleAttrs:
     comment=Comment()
 
 
-class NetworkRule(BaseObject):
+class ExternalAccessIntegration(BaseObject):
     def __init__(self, session, user_id, logger):
         super().__init__(session, user_id, logger)
         self.attr = NetworkRuleAttrs(self)
@@ -246,30 +246,49 @@ class NetworkRule(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=ExternalAccessIntegration(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set allowed_network_rules")
+        if tags.ALLOWED_NETWORK_RULES in kwargs.keys():
+            obj_inst.set_allowed_network_rules(kwargs[tags.ALLOWED_NETWORK_RULES])
+        else:
+            obj_inst.set_allowed_network_rules('NONE')
+
+        logger.info("set enabled")
+        if tags.ENABLED in kwargs.keys():
+            obj_inst.set_enabled(kwargs[tags.ENABLED])
+        else:
+            obj_inst.set_enabled('NONE')
+
+        logger.info("set allowed_api_authentication_integrations")
+        if tags.ALLOWED_API_AUTHENTICATION_INTEGRATIONS in kwargs.keys():
+            obj_inst.set_allowed_api_authentication_integrations(kwargs[tags.ALLOWED_API_AUTHENTICATION_INTEGRATIONS])
+        else:
+            obj_inst.set_allowed_api_authentication_integrations('NONE')
+
+        logger.info("set allowed_authentication_secrets")
+        if tags.ALLOWED_AUTHENTICATION_SECRETS in kwargs.keys():
+            obj_inst.set_allowed_authentication_secrets(kwargs[tags.ALLOWED_AUTHENTICATION_SECRETS])
+        else:
+            obj_inst.set_allowed_authentication_secrets('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
 
 
         logger.info('prepare query')

@@ -143,16 +143,6 @@ class Tag(BaseObject):
             self.alter_object()
 
     def create_object(self, *largs, **kwargs):
-        """
-        Expected kwargs:
-          tags.IS_CREATE : "TRUE" / "FALSE"
-          tags.NAME : [tag_name, maybe new name?]
-          tags.ALLOWED_VALUES : list or single
-          tags.PROPAGATE : one of propagation values
-          tags.ON_CONFLICT : string or “ALLOWED_VALUES_SEQUENCE”
-          tags.COMMENT : comment string
-          tags.TAG_CLAUSE : dict or single
-        """
         self.is_create = kwargs.get(tags.IS_CREATE)
         self.set_name(kwargs.get(tags.NAME))
         self.set_allowed_values(kwargs.get(tags.ALLOWED_VALUES))
@@ -168,31 +158,48 @@ class Tag(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Tag(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set allowed_values")
+        if tags.ALLOWED_VALUES in kwargs.keys():
+            obj_inst.set_allowed_values(kwargs[tags.ALLOWED_VALUES])
+        else:
+            obj_inst.set_allowed_values('NONE')
+
+        logger.info("set propagate")
+        if tags.PROPAGATE in kwargs.keys():
+            obj_inst.set_propagate(kwargs[tags.PROPAGATE])
+        else:
+            obj_inst.set_propagate('NONE')
+
+        logger.info("set on_conflict")
+        if tags.ON_CONFLICT in kwargs.keys():
+            obj_inst.set_on_conflict(kwargs[tags.ON_CONFLICT])
+        else:
+            obj_inst.set_on_conflict('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

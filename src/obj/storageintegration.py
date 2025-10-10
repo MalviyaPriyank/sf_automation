@@ -12,6 +12,7 @@ from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
+from vars.obj.storageintegration.gvstorageintegration import StorageIntegrationTag as tags
 
 class Name:
     def __get__(self,instance,owner):
@@ -368,30 +369,85 @@ class StorageIntegration(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=StorageIntegration(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set type")
+        if tags.TYPE in kwargs.keys():
+            obj_inst.set_type(kwargs[tags.TYPE])
+        else:
+            obj_inst.set_type('NONE')
+
+        logger.info("set enabled")
+        if tags.ENABLED in kwargs.keys():
+            obj_inst.set_enabled(kwargs[tags.ENABLED])
+        else:
+            obj_inst.set_enabled('NONE')
+
+        logger.info("set storage_provider")
+        if tags.STORAGE_PROVIDER in kwargs.keys():
+            obj_inst.set_storage_provider(kwargs[tags.STORAGE_PROVIDER])
+        else:
+            obj_inst.set_storage_provider('NONE')
+
+        logger.info("set storage_aws_role_arn")
+        if tags.STORAGE_AWS_ROLE_ARN in kwargs.keys():
+            obj_inst.set_storage_aws_role_arn(kwargs[tags.STORAGE_AWS_ROLE_ARN])
+        else:
+            obj_inst.set_storage_aws_role_arn('NONE')
+
+        logger.info("set storage_aws_external_id")
+        if tags.STORAGE_AWS_EXTERNAL_ID in kwargs.keys():
+            obj_inst.set_storage_aws_external_id(kwargs[tags.STORAGE_AWS_EXTERNAL_ID])
+        else:
+            obj_inst.set_storage_aws_external_id('NONE')
+
+        logger.info("set storage_aws_object_acl")
+        if tags.STORAGE_AWS_OBJECT_ACL in kwargs.keys():
+            obj_inst.set_storage_aws_object_acl(kwargs[tags.STORAGE_AWS_OBJECT_ACL])
+        else:
+            obj_inst.set_storage_aws_object_acl('NONE')
+
+        logger.info("set use_private_link_endpoint")
+        if tags.USE_PRIVATE_LINK_ENDPOINT in kwargs.keys():
+            obj_inst.set_use_private_link_endpoint(kwargs[tags.USE_PRIVATE_LINK_ENDPOINT])
+        else:
+            obj_inst.set_use_private_link_endpoint('NONE')
+
+        logger.info("set azure_tenant_id")
+        if tags.AZURE_TENANT_ID in kwargs.keys():
+            obj_inst.set_azure_tenant_id(kwargs[tags.AZURE_TENANT_ID])
+        else:
+            obj_inst.set_azure_tenant_id('NONE')
+
+        logger.info("set storage_allowed_locations")
+        if tags.STORAGE_ALLOWED_LOCATIONS in kwargs.keys():
+            obj_inst.set_storage_allowed_locations(kwargs[tags.STORAGE_ALLOWED_LOCATIONS])
+        else:
+            obj_inst.set_storage_allowed_locations('NONE')
+
+        logger.info("set storage_blocked_locations")
+        if tags.STORAGE_BLOCKED_LOCATIONS in kwargs.keys():
+            obj_inst.set_storage_blocked_locations(kwargs[tags.STORAGE_BLOCKED_LOCATIONS])
+        else:
+            obj_inst.set_storage_blocked_locations('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
 
 
         logger.info('prepare query')

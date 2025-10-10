@@ -268,31 +268,48 @@ class MaskingPolicy(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=MaskingPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set masking_policy_as")
+        if tags.MASKING_POLICY_AS in kwargs.keys():
+            obj_inst.set_masking_policy_as(kwargs[tags.MASKING_POLICY_AS])
+        else:
+            obj_inst.set_masking_policy_as('NONE')
+
+        logger.info("set returns")
+        if tags.RETURNS in kwargs.keys():
+            obj_inst.set_returns(kwargs[tags.RETURNS])
+        else:
+            obj_inst.set_returns('NONE')
+
+        logger.info("set body")
+        if tags.BODY in kwargs.keys():
+            obj_inst.set_body(kwargs[tags.BODY])
+        else:
+            obj_inst.set_body('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
+        logger.info("set exempt_other_policies")
+        if tags.EXEMPT_OTHER_POLICIES in kwargs.keys():
+            obj_inst.set_exempt_other_policies(kwargs[tags.EXEMPT_OTHER_POLICIES])
+        else:
+            obj_inst.set_exempt_other_policies('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

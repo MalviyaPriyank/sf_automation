@@ -239,49 +239,49 @@ class Operation:
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
         logger.info("set on")
         if tags.ON in kwargs.keys():
             obj_inst.set_on(kwargs[tags.ON])
         else:
-            obj_inst.set_on(kwargs[tags.ON])
+            obj_inst.set_on('NONE')
 
         logger.info("set ATTRIBUTES")
         if tags.ATTRIBUTES in kwargs.keys():
             obj_inst.set_service_attributes(kwargs[tags.ATTRIBUTES])
         else:
-            obj_inst.set_service_attributes(kwargs[tags.ATTRIBUTES])
+            obj_inst.set_service_attributes('NONE')
 
         logger.info("set WAREHOUSE")
         if tags.WAREHOUSE in kwargs.keys():
             obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
         else:
-            obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
+            obj_inst.set_warehouse('NONE')
 
         logger.info("set TARGET_LAG")
         if tags.TARGET_LAG in kwargs.keys():
             obj_inst.set_target_lag(kwargs[tags.TARGET_LAG])
         else:
-            obj_inst.set_target_lag(kwargs[tags.TARGET_LAG])
+            obj_inst.set_target_lag('NONE')
 
         logger.info("set EMBEDDING_MODEL")
         if tags.EMBEDDING_MODEL in kwargs.keys():
             obj_inst.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
         else:
-            obj_inst.set_embedding_model(kwargs[tags.EMBEDDING_MODEL])
+            obj_inst.set_embedding_model('NONE')
 
         logger.info("set INITIALIZE")
         if tags.INITIALIZE in kwargs.keys():
             obj_inst.set_initialize(kwargs[tags.INITIALIZE])
         else:
-            obj_inst.set_initialize(kwargs[tags.INITIALIZE])
+            obj_inst.set_initialize('NONE')
 
         logger.info("set QUERY")
         if tags.QUERY in kwargs.keys():
             obj_inst.set_query(kwargs[tags.QUERY])
         else:
-            obj_inst.set_query(kwargs[tags.QUERY])
+            obj_inst.set_query('NONE')
 
 
         logger.info('prepare query')

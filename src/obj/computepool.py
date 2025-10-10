@@ -184,55 +184,55 @@ class Operation:
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
         logger.info("set min_nodes")
         if tags.MIN_NODES in kwargs.keys():
             obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
         else:
-            obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
+            obj_inst.set_min_nodes('NONE')
 
         logger.info("set max_nodes")
         if tags.MAX_NODES in kwargs.keys():
             obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
         else:
-            obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
+            obj_inst.set_max_nodes('NONE')
 
         logger.info("set instance_family")
         if tags.INSTANCE_FAMILY in kwargs.keys():
             obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
         else:
-            obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
+            obj_inst.set_instance_family('NONE')
 
         logger.info("set auto_resume")
         if tags.AUTO_RESUME in kwargs.keys():
             obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
         else:
-            obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
+            obj_inst.set_auto_resume('NONE')
 
         logger.info("set initially_suspended")
         if tags.INITIALLY_SUSPENDED in kwargs.keys():
             obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
         else:
-            obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
+            obj_inst.set_initially_suspended('NONE')
 
         logger.info("set auto_suspend_secs")
         if tags.AUTO_SUSPEND_SECS in kwargs.keys():
             obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
         else:
-            obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
+            obj_inst.set_auto_suspend_secs('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
         logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
-            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+            obj_inst.set_tag_clause('NONE')
 
 
         logger.info('prepare query')

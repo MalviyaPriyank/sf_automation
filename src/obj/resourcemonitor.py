@@ -293,31 +293,66 @@ class ResourceMonitor(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=ResourceMonitor(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+        logger.info("set credit_quota")
+        if tags.CREDIT_QUOTA in kwargs.keys():
+            obj_inst.set_credit_quota(kwargs[tags.CREDIT_QUOTA])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_credit_quota('NONE')
 
+        logger.info("set frequency")
+        if tags.FREQUENCY in kwargs.keys():
+            obj_inst.set_frequency(kwargs[tags.FREQUENCY])
+        else:
+            obj_inst.set_frequency('NONE')
+
+        logger.info("set start_timestamp")
+        if tags.START_TIMESTAMP in kwargs.keys():
+            obj_inst.set_start_timestamp(kwargs[tags.START_TIMESTAMP])
+        else:
+            obj_inst.set_start_timestamp('NONE')
+
+        logger.info("set end_timestamp")
+        if tags.END_TIMESTAMP in kwargs.keys():
+            obj_inst.set_end_timestamp(kwargs[tags.END_TIMESTAMP])
+        else:
+            obj_inst.set_end_timestamp('NONE')
+
+        logger.info("set notify_users")
+        if tags.NOTIFY_USERS in kwargs.keys():
+            obj_inst.set_notify_users(kwargs[tags.NOTIFY_USERS])
+        else:
+            obj_inst.set_notify_users('NONE')
+
+        logger.info("set triggers")
+        if tags.TRIGGERS in kwargs.keys():
+            obj_inst.set_triggers(kwargs[tags.TRIGGERS])
+        else:
+            obj_inst.set_triggers('NONE')
+
+        logger.info("set threshold")
+        if tags.THRESHOLD in kwargs.keys():
+            obj_inst.set_threshold(kwargs[tags.THRESHOLD])
+        else:
+            obj_inst.set_threshold('NONE')
+
+        logger.info("set action")
+        if tags.ACTION in kwargs.keys():
+            obj_inst.set_action(kwargs[tags.ACTION])
+        else:
+            obj_inst.set_action('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

@@ -249,30 +249,54 @@ class NotificationIntegrationEmail(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=NotificationIntegrationEmail(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set enabled")
+        if tags.ENABLED in kwargs.keys():
+            obj_inst.set_enabled(kwargs[tags.ENABLED])
+        else:
+            obj_inst.set_enabled('NONE')
+
+        logger.info("set type")
+        if tags.TYPE in kwargs.keys():
+            obj_inst.set_type(kwargs[tags.TYPE])
+        else:
+            obj_inst.set_type('NONE')
+
+        logger.info("set allowed_recipients")
+        if tags.ALLOWED_RECIPIENTS in kwargs.keys():
+            obj_inst.set_allowed_recipients(kwargs[tags.ALLOWED_RECIPIENTS])
+        else:
+            obj_inst.set_allowed_recipients('NONE')
+
+        logger.info("set default_recipients")
+        if tags.DEFAULT_RECIPIENTS in kwargs.keys():
+            obj_inst.set_default_recipients(kwargs[tags.DEFAULT_RECIPIENTS])
+        else:
+            obj_inst.set_default_recipients('NONE')
+
+        logger.info("set default_subject")
+        if tags.DEFAULT_SUBJECT in kwargs.keys():
+            obj_inst.set_default_subject(kwargs[tags.DEFAULT_SUBJECT])
+        else:
+            obj_inst.set_default_subject('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
 
         logger.info('prepare query')

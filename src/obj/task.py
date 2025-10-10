@@ -726,7 +726,7 @@ class Task(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Task(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -737,19 +737,134 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set definition")
+        if tags.SQL in kwargs.keys():
+            obj_inst.set_definition(kwargs[tags.SQL])
+        else:
+            obj_inst.set_definition('NONE')
+
+        logger.info("set warehouse")
+        if tags.WAREHOUSE in kwargs.keys():
+            obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
+        else:
+            obj_inst.set_warehouse('NONE')
+
+        logger.info("set user_task_managed_initial_warehouse_size")
+        if tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE in kwargs.keys():
+            obj_inst.set_user_task_managed_initial_warehouse_size(kwargs[tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE])
+        else:
+            obj_inst.set_user_task_managed_initial_warehouse_size('NONE')
+
+        logger.info("set schedule")
+        if tags.SCHEDULE in kwargs.keys():
+            obj_inst.set_schedule(kwargs[tags.SCHEDULE])
+        else:
+            obj_inst.set_schedule('NONE')
+
+        logger.info("set config")
+        if tags.CONFIG in kwargs.keys():
+            obj_inst.set_config(kwargs[tags.CONFIG])
+        else:
+            obj_inst.set_config('NONE')
+
+        logger.info("set allow_overlapping_execution")
+        if tags.ALLOW_OVERLAPPING_EXECUTION in kwargs.keys():
+            obj_inst.set_allow_overlapping_execution(kwargs[tags.ALLOW_OVERLAPPING_EXECUTION])
+        else:
+            obj_inst.set_allow_overlapping_execution('NONE')
+
+        logger.info("set user_task_timeout_ms")
+        if tags.USER_TASK_TIMEOUT_MS in kwargs.keys():
+            obj_inst.set_user_task_timeout_ms(kwargs[tags.USER_TASK_TIMEOUT_MS])
+        else:
+            obj_inst.set_user_task_timeout_ms('NONE')
+
+        logger.info("set suspend_task_after_num_failures")
+        if tags.SUSPEND_TASK_AFTER_NUM_FAILURES in kwargs.keys():
+            obj_inst.set_suspend_task_after_num_failures(kwargs[tags.SUSPEND_TASK_AFTER_NUM_FAILURES])
+        else:
+            obj_inst.set_suspend_task_after_num_failures('NONE')
+
+        logger.info("set error_integration")
+        if tags.ERROR_INTEGRATION in kwargs.keys():
+            obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
+        else:
+            obj_inst.set_error_integration('NONE')
+
+        logger.info("set success_integration")
+        if tags.SUCCESS_INTEGRATION in kwargs.keys():
+            obj_inst.set_success_integration(kwargs[tags.SUCCESS_INTEGRATION])
+        else:
+            obj_inst.set_success_integration('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
+        logger.info("set after")
+        if tags.AFTER in kwargs.keys():
+            obj_inst.set_after(kwargs[tags.AFTER])
+        else:
+            obj_inst.set_after('NONE')
+
+        logger.info("set when")
+        if tags.WHEN in kwargs.keys():
+            obj_inst.set_when(kwargs[tags.WHEN])
+        else:
+            obj_inst.set_when('NONE')
+
+        logger.info("set finalize")
+        if tags.FINALIZE in kwargs.keys():
+            obj_inst.set_finalize(kwargs[tags.FINALIZE])
+        else:
+            obj_inst.set_finalize('NONE')
+
+        logger.info("set task_auto_retry_attempts")
+        if tags.TASK_AUTO_RETRY_ATTEMPTS in kwargs.keys():
+            obj_inst.set_task_auto_retry_attempts(kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS])
+        else:
+            obj_inst.set_task_auto_retry_attempts('NONE')
+
+        logger.info("set user_task_minimum_trigger_interval_in_seconds")
+        if tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS in kwargs.keys():
+            obj_inst.set_user_task_minimum_trigger_interval_in_seconds(kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS])
+        else:
+            obj_inst.set_user_task_minimum_trigger_interval_in_seconds('NONE')
+
+        logger.info("set target_completion_interval")
+        if tags.TARGET_COMPLETION_INTERVAL in kwargs.keys():
+            obj_inst.set_target_completion_interval(kwargs[tags.TARGET_COMPLETION_INTERVAL])
+        else:
+            obj_inst.set_target_completion_interval('NONE')
+
+        logger.info("set serverless_task_min_statement_size")
+        if tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE in kwargs.keys():
+            obj_inst.set_serverless_task_min_statement_size(kwargs[tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE])
+        else:
+            obj_inst.set_serverless_task_min_statement_size('NONE')
+
+        logger.info("set serverless_task_max_statement_size")
+        if tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE in kwargs.keys():
+            obj_inst.set_serverless_task_max_statement_size(kwargs[tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE])
+        else:
+            obj_inst.set_serverless_task_max_statement_size('NONE')
+
 
 
         logger.info('prepare query')

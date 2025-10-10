@@ -561,7 +561,7 @@ class ExternalStage(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=ExternalStage(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -572,19 +572,97 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set file_format")
+        if tags.FILE_FORMAT in kwargs.keys():
+            obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
+        else:
+            obj_inst.set_file_format('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
+        logger.info("set url")
+        if tags.URL in kwargs.keys():
+            obj_inst.set_url(kwargs[tags.URL])
+        else:
+            obj_inst.set_url('NONE')
+
+        logger.info("set aws_access_point_arn")
+        if tags.AWS_ACCESS_POINT_ARN in kwargs.keys():
+            obj_inst.set_aws_access_point_arn(kwargs[tags.AWS_ACCESS_POINT_ARN])
+        else:
+            obj_inst.set_aws_access_point_arn('NONE')
+
+        logger.info("set storage_integration")
+        if tags.STORAGE_INTEGRATION in kwargs.keys():
+            obj_inst.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
+        else:
+            obj_inst.set_storage_integration('NONE')
+
+        logger.info("set encryption_type")
+        if tags.ENCRYPTION_TYPE in kwargs.keys():
+            obj_inst.set_encryption_type(kwargs[tags.ENCRYPTION_TYPE])
+        else:
+            obj_inst.set_encryption_type('NONE')
+
+        logger.info("set encryption_master_key")
+        if tags.ENCRYPTION_MASTER_KEY in kwargs.keys():
+            obj_inst.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
+        else:
+            obj_inst.set_encryption_master_key('NONE')
+
+        logger.info("set encryption_kms_key_id")
+        if tags.ENCRYPTION_KMS_KEY_ID in kwargs.keys():
+            obj_inst.set_encryption_kms_key_id(kwargs[tags.ENCRYPTION_KMS_KEY_ID])
+        else:
+            obj_inst.set_encryption_kms_key_id('NONE')
+
+        logger.info("set use_privatelink_endpoint")
+        if tags.USE_PRIVATELINK_ENDPOINT in kwargs.keys():
+            obj_inst.set_use_privatelink_endpoint(kwargs[tags.USE_PRIVATELINK_ENDPOINT])
+        else:
+            obj_inst.set_use_privatelink_endpoint('NONE')
+
+        logger.info("set enable")
+        if tags.ENABLE in kwargs.keys():
+            obj_inst.set_enable(kwargs[tags.ENABLE])
+        else:
+            obj_inst.set_enable('NONE')
+
+        logger.info("set refresh_on_create")
+        if tags.REFRESH_ON_CREATE in kwargs.keys():
+            obj_inst.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
+        else:
+            obj_inst.set_refresh_on_create('NONE')
+
+        logger.info("set auto_refresh")
+        if tags.AUTO_REFRESH in kwargs.keys():
+            obj_inst.set_auto_refresh(kwargs[tags.AUTO_REFRESH])
+        else:
+            obj_inst.set_auto_refresh('NONE')
+
+        logger.info("set notification_integration")
+        if tags.NOTIFICATION_INTEGRATION in kwargs.keys():
+            obj_inst.set_notification_integration(kwargs[tags.NOTIFICATION_INTEGRATION])
+        else:
+            obj_inst.set_notification_integration('NONE')
 
 
         logger.info('prepare query')

@@ -16,6 +16,7 @@ class AlertTag(BaseTag,BaseMethod):
     EMAIL_ADDRESS="EMAIL_ADDRESS"
     EMAIL_CONTENT="EMAIL_CONTENT"
     EMAIL_SUBJECT="EMAIL_SUBJECT"
+    WAREHOUSE="WAREHOUSE"
 
     @classmethod
     def allowed_value_list(cls):

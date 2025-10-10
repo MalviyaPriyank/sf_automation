@@ -126,31 +126,31 @@ class Operation:
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
         logger.info("set users")
         if tags.USERS in kwargs.keys():
             obj_inst.set_users(kwargs[tags.USERS])
         else:
-            obj_inst.set_users(kwargs[tags.USERS])
+            obj_inst.set_users('NONE')
 
         logger.info("set email_distribution_list")
         if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
             obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
         else:
-            obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
+            obj_inst.set_email_distribution_list('NONE')
 
         logger.info("set url")
         if tags.URL in kwargs.keys():
             obj_inst.set_url(kwargs[tags.URL])
         else:
-            obj_inst.set_url(kwargs[tags.URL])
+            obj_inst.set_url('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
 
         logger.info('prepare query')

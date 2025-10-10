@@ -153,31 +153,54 @@ class Listing(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Listing(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set share")
+        if tags.SHARE in kwargs.keys():
+            obj_inst.set_share(kwargs[tags.SHARE])
+        else:
+            obj_inst.set_share('NONE')
+
+        logger.info("set application_package")
+        if tags.APPLICATION_PACKAGE in kwargs.keys():
+            obj_inst.set_application_package(kwargs[tags.APPLICATION_PACKAGE])
+        else:
+            obj_inst.set_application_package('NONE')
+
+        logger.info("set yaml_manifest")
+        if tags.YAML_MANIFEST in kwargs.keys():
+            obj_inst.set_yaml_manifest(kwargs[tags.YAML_MANIFEST])
+        else:
+            obj_inst.set_yaml_manifest('NONE')
+
+        logger.info("set publish")
+        if tags.PUBLISH in kwargs.keys():
+            obj_inst.set_publish(kwargs[tags.PUBLISH])
+        else:
+            obj_inst.set_publish('NONE')
+
+        logger.info("set review")
+        if tags.REVIEW in kwargs.keys():
+            obj_inst.set_review(kwargs[tags.REVIEW])
+        else:
+            obj_inst.set_review('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
+            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

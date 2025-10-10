@@ -320,7 +320,7 @@ class Snowpipe(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Snowpipe(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -331,20 +331,49 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set auto_ingest")
+        if tags.AUTO_INGEST in kwargs.keys():
+            obj_inst.set_auto_ingest(kwargs[tags.AUTO_INGEST])
+        else:
+            obj_inst.set_auto_ingest('NONE')
+
+        logger.info("set error_integration")
+        if tags.ERROR_INTEGRATION in kwargs.keys():
+            obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
+        else:
+            obj_inst.set_error_integration('NONE')
+
+        logger.info("set aws_sns_topic")
+        if tags.AWS_SNS_TOPIC in kwargs.keys():
+            obj_inst.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
+        else:
+            obj_inst.set_aws_sns_topic('NONE')
+
+        logger.info("set integration")
+        if tags.INTEGRATION in kwargs.keys():
+            obj_inst.set_integration(kwargs[tags.INTEGRATION])
+        else:
+            obj_inst.set_integration('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
+            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

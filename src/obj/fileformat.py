@@ -1475,7 +1475,7 @@ class FileFormat(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=FileFormat(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -1486,19 +1486,235 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
+
+        logger.info("set type")
+        if tags.TYPE in kwargs.keys():
+            obj_inst.set_type(kwargs[tags.TYPE])
+        else:
+            obj_inst.set_type('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+        logger.info("set compression")
+        if tags.COMPRESSION in kwargs.keys():
+            obj_inst.set_compression(kwargs[tags.COMPRESSION])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_compression('NONE')
+
+        logger.info("set record_delimiter")
+        if tags.RECORD_DELIMITER in kwargs.keys():
+            obj_inst.set_record_delimiter(kwargs[tags.RECORD_DELIMITER])
+        else:
+            obj_inst.set_record_delimiter('NONE')
+
+        logger.info("set field_delimiter")
+        if tags.FIELD_DELIMITER in kwargs.keys():
+            obj_inst.set_field_delimiter(kwargs[tags.FIELD_DELIMITER])
+        else:
+            obj_inst.set_field_delimiter('NONE')
+
+        logger.info("set multi_line")
+        if tags.MULTI_LINE in kwargs.keys():
+            obj_inst.set_multi_line(kwargs[tags.MULTI_LINE])
+        else:
+            obj_inst.set_multi_line('NONE')
+
+        logger.info("set file_extension")
+        if tags.FILE_EXTENSION in kwargs.keys():
+            obj_inst.set_file_extension(kwargs[tags.FILE_EXTENSION])
+        else:
+            obj_inst.set_file_extension('NONE')
+
+        logger.info("set parse_header")
+        if tags.PARSE_HEADER in kwargs.keys():
+            obj_inst.set_parse_header(kwargs[tags.PARSE_HEADER])
+        else:
+            obj_inst.set_parse_header('NONE')
+
+        logger.info("set skip_header")
+        if tags.SKIP_HEADER in kwargs.keys():
+            obj_inst.set_skip_header(kwargs[tags.SKIP_HEADER])
+        else:
+            obj_inst.set_skip_header('NONE')
+
+        logger.info("set skip_blank_lines")
+        if tags.SKIP_BLANK_LINES in kwargs.keys():
+            obj_inst.set_skip_blank_lines(kwargs[tags.SKIP_BLANK_LINES])
+        else:
+            obj_inst.set_skip_blank_lines('NONE')
+
+        logger.info("set date_format")
+        if tags.DATE_FORMAT in kwargs.keys():
+            obj_inst.set_date_format(kwargs[tags.DATE_FORMAT])
+        else:
+            obj_inst.set_date_format('NONE')
+
+        logger.info("set time_format")
+        if tags.TIME_FORMAT in kwargs.keys():
+            obj_inst.set_time_format(kwargs[tags.TIME_FORMAT])
+        else:
+            obj_inst.set_time_format('NONE')
+
+        logger.info("set timestamp_format")
+        if tags.TIMESTAMP_FORMAT in kwargs.keys():
+            obj_inst.set_timestamp_format(kwargs[tags.TIMESTAMP_FORMAT])
+        else:
+            obj_inst.set_timestamp_format('NONE')
+
+        logger.info("set binary_format")
+        if tags.BINARY_FORMAT in kwargs.keys():
+            obj_inst.set_binary_format(kwargs[tags.BINARY_FORMAT])
+        else:
+            obj_inst.set_binary_format('NONE')
+
+        logger.info("set escape")
+        if tags.ESCAPE in kwargs.keys():
+            obj_inst.set_escape(kwargs[tags.ESCAPE])
+        else:
+            obj_inst.set_escape('NONE')
+
+        logger.info("set escape_unenclosed_field")
+        if tags.ESCAPE_UNENCLOSED_FIELD in kwargs.keys():
+            obj_inst.set_escape_unenclosed_field(kwargs[tags.ESCAPE_UNENCLOSED_FIELD])
+        else:
+            obj_inst.set_escape_unenclosed_field('NONE')
+
+        logger.info("set trim_space")
+        if tags.TRIM_SPACE in kwargs.keys():
+            obj_inst.set_trim_space(kwargs[tags.TRIM_SPACE])
+        else:
+            obj_inst.set_trim_space('NONE')
+
+        logger.info("set field_optionally_enclosed_by")
+        if tags.FIELD_OPTIONALLY_ENCLOSED_BY in kwargs.keys():
+            obj_inst.set_field_optionally_enclosed_by(kwargs[tags.FIELD_OPTIONALLY_ENCLOSED_BY])
+        else:
+            obj_inst.set_field_optionally_enclosed_by('NONE')
+
+        logger.info("set null_if")
+        if tags.NULL_IF in kwargs.keys():
+            obj_inst.set_null_if(kwargs[tags.NULL_IF])
+        else:
+            obj_inst.set_null_if('NONE')
+
+        logger.info("set error_on_column_count_mismatch")
+        if tags.ERROR_ON_COLUMN_COUNT_MISMATCH in kwargs.keys():
+            obj_inst.set_error_on_column_count_mismatch(kwargs[tags.ERROR_ON_COLUMN_COUNT_MISMATCH])
+        else:
+            obj_inst.set_error_on_column_count_mismatch('NONE')
+
+        logger.info("set replace_invalid_characters")
+        if tags.REPLACE_INVALID_CHARACTERS in kwargs.keys():
+            obj_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+        else:
+            obj_inst.set_replace_invalid_characters('NONE')
+
+        logger.info("set empty_field_as_null")
+        if tags.EMPTY_FIELD_AS_NULL in kwargs.keys():
+            obj_inst.set_empty_field_as_null(kwargs[tags.EMPTY_FIELD_AS_NULL])
+        else:
+            obj_inst.set_empty_field_as_null('NONE')
+
+        logger.info("set skip_byte_order_mark")
+        if tags.SKIP_BYTE_ORDER_MARK in kwargs.keys():
+            obj_inst.set_skip_byte_order_mark(kwargs[tags.SKIP_BYTE_ORDER_MARK])
+        else:
+            obj_inst.set_skip_byte_order_mark('NONE')
+
+        logger.info("set encoding")
+        if tags.ENCODING in kwargs.keys():
+            obj_inst.set_encoding(kwargs[tags.ENCODING])
+        else:
+            obj_inst.set_encoding('NONE')
+
+        logger.info("set enable_octal")
+        if tags.ENABLE_OCTAL in kwargs.keys():
+            obj_inst.set_enable_octal(kwargs[tags.ENABLE_OCTAL])
+        else:
+            obj_inst.set_enable_octal('NONE')
+
+        logger.info("set allow_duplicate")
+        if tags.ALLOW_DUPLICATE in kwargs.keys():
+            obj_inst.set_allow_duplicate(kwargs[tags.ALLOW_DUPLICATE])
+        else:
+            obj_inst.set_allow_duplicate('NONE')
+
+        logger.info("set strip_outer_array")
+        if tags.STRIP_OUTER_ARRAY in kwargs.keys():
+            obj_inst.set_strip_outer_array(kwargs[tags.STRIP_OUTER_ARRAY])
+        else:
+            obj_inst.set_strip_outer_array('NONE')
+
+        logger.info("set strip_null_values")
+        if tags.STRIP_NULL_VALUES in kwargs.keys():
+            obj_inst.set_strip_null_values(kwargs[tags.STRIP_NULL_VALUES])
+        else:
+            obj_inst.set_strip_null_values('NONE')
+
+        logger.info("set ignore_utf8_errors")
+        if tags.IGNORE_UTF8_ERRORS in kwargs.keys():
+            obj_inst.set_ignore_utf8_errors(kwargs[tags.IGNORE_UTF8_ERRORS])
+        else:
+            obj_inst.set_ignore_utf8_errors('NONE')
+
+        logger.info("set snappy_compression")
+        if tags.SNAPPY_COMPRESSION in kwargs.keys():
+            obj_inst.set_snappy_compression(kwargs[tags.SNAPPY_COMPRESSION])
+        else:
+            obj_inst.set_snappy_compression('NONE')
+
+        logger.info("set binary_as_text")
+        if tags.BINARY_AS_TEXT in kwargs.keys():
+            obj_inst.set_binary_as_text(kwargs[tags.BINARY_AS_TEXT])
+        else:
+            obj_inst.set_binary_as_text('NONE')
+
+        logger.info("set use_logical_type")
+        if tags.USE_LOGICAL_TYPE in kwargs.keys():
+            obj_inst.set_use_logical_type(kwargs[tags.USE_LOGICAL_TYPE])
+        else:
+            obj_inst.set_use_logical_type('NONE')
+
+        logger.info("set use_vectorized_scanner")
+        if tags.USE_VECTORIZED_SCANNER in kwargs.keys():
+            obj_inst.set_use_vectorized_scanner(kwargs[tags.USE_VECTORIZED_SCANNER])
+        else:
+            obj_inst.set_use_vectorized_scanner('NONE')
+
+        logger.info("set preserve_space")
+        if tags.PRESERVE_SPACE in kwargs.keys():
+            obj_inst.set_preserve_space(kwargs[tags.PRESERVE_SPACE])
+        else:
+            obj_inst.set_preserve_space('NONE')
+
+        logger.info("set strip_outer_element")
+        if tags.STRIP_OUTER_ELEMENT in kwargs.keys():
+            obj_inst.set_strip_outer_element(kwargs[tags.STRIP_OUTER_ELEMENT])
+        else:
+            obj_inst.set_strip_outer_element('NONE')
+
+        logger.info("set disable_snowflake_data")
+        if tags.DISABLE_SNOWFLAKE_DATA in kwargs.keys():
+            obj_inst.set_disable_snowflake_data(kwargs[tags.DISABLE_SNOWFLAKE_DATA])
+        else:
+            obj_inst.set_disable_snowflake_data('NONE')
+
+        logger.info("set disable_auto_convert")
+        if tags.DISABLE_AUTO_CONVERT in kwargs.keys():
+            obj_inst.set_disable_auto_convert(kwargs[tags.DISABLE_AUTO_CONVERT])
+        else:
+            obj_inst.set_disable_auto_convert('NONE')
 
 
         logger.info('prepare query')

@@ -243,7 +243,7 @@ class StoredProcedure(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=StoredProcedure(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -254,19 +254,50 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+        logger.info("set logic")
+        if tags.LOGIC in kwargs.keys():
+            obj_inst.set_logic(kwargs[tags.LOGIC])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_logic('NONE')
+
+        logger.info("set return_type")
+        if tags.RETURN_TYPE in kwargs.keys():
+            obj_inst.set_return_type(kwargs[tags.RETURNS])
+        else:
+            obj_inst.set_return_type('NONE')
+
+        logger.info("set language")
+        if tags.LANGUAGE in kwargs.keys():
+            obj_inst.set_language(kwargs[tags.LANGUAGE])
+        else:
+            obj_inst.set_language('NONE')
+
+        logger.info("set handler")
+        if tags.HANDLER in kwargs.keys():
+            obj_inst.set_handler(kwargs[tags.HANDLER])
+        else:
+            obj_inst.set_handler('NONE')
+
+        logger.info("set packages")
+        if tags.PACKAGES in kwargs.keys():
+            obj_inst.set_packages(kwargs[tags.PACKAGES])
+        else:
+            obj_inst.set_packages('NONE')
+
 
 
         logger.info('prepare query')

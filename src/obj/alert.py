@@ -256,7 +256,7 @@ class Alerts(BaseObject):
     def set_create_alert_qry(self):
         self.qry = f"""CREATE ALERT {self.attr.database}.{self.attr.schema}.{self.attr.name} """
         if self.attr.warehouse != "NONE":
-            self.qry=self.qry + f""" WAREHOUSE = {self.attr.warehouse} """
+            self.qry=self.qry + f""" {tags.WAREHOUSE} = {self.attr.warehouse} """
         self.qry=self.qry + f""" 
                             SCHEDULE = {self.attr.schedule} 
                             IF 
@@ -293,67 +293,73 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             alert_inst.set_database(kwargs[tags.DATABASE])
         else:
-            alert_inst.set_database(kwargs[tags.DATABASE])
+            alert_inst.set_database('NONE')
 
         logger.info('set schema')
         if tags.SCHEMA in kwargs.keys():
             alert_inst.set_schema(kwargs[tags.SCHEMA])
         else:
-            alert_inst.set_schema(kwargs[tags.SCHEMA])
+            alert_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             alert_inst.set_name(kwargs[tags.NAME])
         else:
-            alert_inst.set_name(kwargs[tags.NAME])
+            alert_inst.set_name('NONE')
 
         logger.info("set schedule")
         if tags.SCHEDULE in kwargs.keys():
             alert_inst.set_schedule(kwargs[tags.SCHEDULE])
         else:
-            alert_inst.set_schedule(kwargs[tags.SCHEDULE])
+            alert_inst.set_schedule('NONE')
 
         logger.info("set _if_tag")
         if tags.IF in kwargs.keys():
             alert_inst.set_iff(kwargs[tags.IF])
         else:
-            alert_inst.set_iff(kwargs[tags.IF])
+            alert_inst.set_iff('NONE')
 
         logger.info("set _action_type")
         if tags.ACTION_TYPE in kwargs.keys():
             alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
         else:
-            alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
+            alert_inst.set_action_type('NONE')
 
         logger.info("set _action_sql")
         if tags.ACTION_SQL in kwargs.keys():
             alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
         else:
-            alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
+            alert_inst.set_action_sql('NONE')
 
         logger.info("set _integration_name")
         if tags.INTEGRATION_NAME in kwargs.keys():
             alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
         else:
-            alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
+            alert_inst.set_integration_name('NONE')
 
         logger.info("set _email_address")
         if tags.EMAIL_ADDRESS in kwargs.keys():
             alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
         else:
-            alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
+            alert_inst.set_email_address('NONE')
 
         logger.info("set _email_subject")
         if tags.EMAIL_SUBJECT in kwargs.keys():
             alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
         else:
-            alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
+            alert_inst.set_email_subject('NONE')
 
         logger.info("set _email_content")
         if tags.EMAIL_CONTENT in kwargs.keys():
             alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
         else:
-            alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
+            alert_inst.set_email_content('NONE')
+
+        logger.info("set warehouse")
+        if tags.EMAIL_CONTENT in kwargs.keys():
+            alert_inst.set_email_content(kwargs[tags.WAREHOUSE])
+        else:
+            alert_inst.set_email_content('NONE')
 
 
         logger.info('prepare query')

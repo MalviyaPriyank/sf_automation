@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
-from vars.obj.externalaccessintegration.gvexternalaccessintegration import ExternalAccessIntegration as tags
+from vars.obj.securityintegration.gvsecurityintegration import SecurityIntegrationTag as tags
 
 
 class Name:
@@ -362,31 +362,84 @@ class SecurityIntegration(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=SecurityIntegration(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set type")
+        if tags.TYPE in kwargs.keys():
+            obj_inst.set_type(kwargs[tags.TYPE])
+        else:
+            obj_inst.set_type('NONE')
+
+        logger.info("set auth_type")
+        if tags.AUTH_TYPE in kwargs.keys():
+            obj_inst.set_auth_type(kwargs[tags.AUTH_TYPE])
+        else:
+            obj_inst.set_auth_type('NONE')
+
+        logger.info("set enabled")
+        if tags.ENABLED in kwargs.keys():
+            obj_inst.set_enabled(kwargs[tags.ENABLED])
+        else:
+            obj_inst.set_enabled('NONE')
+
+        logger.info("set oauth_token_endpoint")
+        if tags.OAUTH_TOKEN_ENDPOINT in kwargs.keys():
+            obj_inst.set_oauth_token_endpoint(kwargs[tags.OAUTH_TOKEN_ENDPOINT])
+        else:
+            obj_inst.set_oauth_token_endpoint('NONE')
+
+        logger.info("set oauth_client_auth_method")
+        if tags.OAUTH_CLIENT_AUTH_METHOD in kwargs.keys():
+            obj_inst.set_oauth_client_auth_method(kwargs[tags.OAUTH_CLIENT_AUTH_METHOD])
+        else:
+            obj_inst.set_oauth_client_auth_method('NONE')
+
+        logger.info("set oauth_client_id")
+        if tags.OAUTH_CLIENT_ID in kwargs.keys():
+            obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
+        else:
+            obj_inst.set_oauth_client_id('NONE')
+
+        logger.info("set oauth_client_secret")
+        if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
+            obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
+        else:
+            obj_inst.set_oauth_client_secret('NONE')
+
+        logger.info("set oauth_grant")
+        if tags.OAUTH_GRANT in kwargs.keys():
+            obj_inst.set_oauth_grant(kwargs[tags.OAUTH_GRANT])
+        else:
+            obj_inst.set_oauth_grant('NONE')
+
+        logger.info("set oauth_access_token_validity")
+        if tags.OAUTH_ACCESS_TOKEN_VALIDITY in kwargs.keys():
+            obj_inst.set_oauth_access_token_validity(kwargs[tags.OAUTH_ACCESS_TOKEN_VALIDITY])
+        else:
+            obj_inst.set_oauth_access_token_validity('NONE')
+
+        logger.info("set oauth_allowed_scopes")
+        if tags.OAUTH_ALLOWED_SCOPES in kwargs.keys():
+            obj_inst.set_oauth_allowed_scopes(kwargs[tags.OAUTH_ALLOWED_SCOPES])
+        else:
+            obj_inst.set_oauth_allowed_scopes('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
+            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

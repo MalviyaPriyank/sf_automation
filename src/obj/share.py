@@ -56,14 +56,8 @@ class Share(BaseObject):
     def set_name(self,val):
         self.attr.name = val
 
-    def setNAME(self,val):
-        self.attr.name_tag = val
-
     def set_comment(self,val):
         self.attr.comment = val
-
-    def setCOMMENT(self,val):
-        self.attr.comment_tag = val
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -111,32 +105,25 @@ class Share(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Share(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
-
+            obj_inst.set_comment('NONE')
+            
         logger.info('prepare query')
         obj_inst.prepare_query()
         

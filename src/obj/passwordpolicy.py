@@ -143,7 +143,6 @@ class PasswordPolicyAttrs:
     comment = PPComment()
     tag_clause = PPTagClause()
 
-# ---- Main Object ----
 
 class PasswordPolicy(BaseObject):
     def __init__(self, session, user_id, logger):
@@ -152,7 +151,6 @@ class PasswordPolicy(BaseObject):
         self.user_id = user_id
         self.logger = logger
 
-    # setter convenience methods
     def set_name(self, v): self.attr.name = v
     def set_min_length(self, v): self.attr.min_length = v
     def set_max_length(self, v): self.attr.max_length = v
@@ -219,24 +217,6 @@ class PasswordPolicy(BaseObject):
             self.alter_object()
 
     def create_object(self, *largs, **kwargs):
-        """
-        Expected kwargs:
-          tags.IS_CREATE : "TRUE" / "FALSE"
-          tags.NAME : [name, maybe rename?] or name
-          tags.PASSWORD_MIN_LENGTH
-          tags.PASSWORD_MAX_LENGTH
-          tags.PASSWORD_MIN_UPPER_CASE_CHARS
-          tags.PASSWORD_MIN_LOWER_CASE_CHARS
-          tags.PASSWORD_MIN_NUMERIC_CHARS
-          tags.PASSWORD_MIN_SPECIAL_CHARS
-          tags.PASSWORD_MIN_AGE_DAYS
-          tags.PASSWORD_MAX_AGE_DAYS
-          tags.PASSWORD_MAX_RETRIES
-          tags.PASSWORD_LOCKOUT_TIME_MINS
-          tags.PASSWORD_HISTORY
-          tags.COMMENT
-          tags.TAG_CLAUSE
-        """
         self.is_create = kwargs.get(tags.IS_CREATE)
         self.set_name(kwargs.get(tags.NAME))
         self.set_min_length(kwargs.get(tags.PASSWORD_MIN_LENGTH))
@@ -259,30 +239,96 @@ class PasswordPolicy(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=PasswordPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set min_length")
+        if tags.MIN_LENGTH in kwargs.keys():
+            obj_inst.set_min_length(kwargs[tags.PASSWORD_MIN_LENGTH])
+        else:
+            obj_inst.set_min_length('NONE')
+
+        logger.info("set max_length")
+        if tags.MAX_LENGTH in kwargs.keys():
+            obj_inst.set_max_length(kwargs[tags.PASSWORD_MAX_LENGTH])
+        else:
+            obj_inst.set_max_length('NONE')
+
+        logger.info("set min_upper")
+        if tags.MIN_UPPER in kwargs.keys():
+            obj_inst.set_min_upper(kwargs[tags.PASSWORD_MIN_UPPER_CASE_CHARS])
+        else:
+            obj_inst.set_min_upper('NONE')
+
+        logger.info("set min_lower")
+        if tags.MIN_LOWER in kwargs.keys():
+            obj_inst.set_min_lower(kwargs[tags.PASSWORD_MIN_LOWER_CASE_CHARS])
+        else:
+            obj_inst.set_min_lower('NONE')
+
+        logger.info("set min_numeric")
+        if tags.MIN_NUMERIC in kwargs.keys():
+            obj_inst.set_min_numeric(kwargs[tags.PASSWORD_MIN_NUMERIC_CHARS])
+        else:
+            obj_inst.set_min_numeric('NONE')
+
+        logger.info("set min_special")
+        if tags.MIN_SPECIAL in kwargs.keys():
+            obj_inst.set_min_special(kwargs[tags.PASSWORD_MIN_SPECIAL_CHARS])
+        else:
+            obj_inst.set_min_special('NONE')
+
+        logger.info("set min_age")
+        if tags.MIN_AGE in kwargs.keys():
+            obj_inst.set_min_age(kwargs[tags.PASSWORD_MIN_AGE_DAYS])
+        else:
+            obj_inst.set_min_age('NONE')
+
+        logger.info("set max_age")
+        if tags.MAX_AGE in kwargs.keys():
+            obj_inst.set_max_age(kwargs[tags.PASSWORD_MAX_AGE_DAYS])
+        else:
+            obj_inst.set_max_age('NONE')
+
+        logger.info("set max_retries")
+        if tags.MAX_RETRIES in kwargs.keys():
+            obj_inst.set_max_retries(kwargs[tags.PASSWORD_MAX_RETRIES])
+        else:
+            obj_inst.set_max_retries('NONE')
+
+        logger.info("set lockout_time")
+        if tags.LOCKOUT_TIME in kwargs.keys():
+            obj_inst.set_lockout_time(kwargs[tags.PASSWORD_LOCKOUT_TIME_MINS])
+        else:
+            obj_inst.set_lockout_time('NONE')
+
+        logger.info("set history")
+        if tags.HISTORY in kwargs.keys():
+            obj_inst.set_history(kwargs[tags.PASSWORD_HISTORY])
+        else:
+            obj_inst.set_history('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
+
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
 
 
         logger.info('prepare query')

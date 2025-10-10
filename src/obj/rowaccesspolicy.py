@@ -144,16 +144,6 @@ class RowAccessPolicy(BaseObject):
             self.alter_object()
 
     def create_object(self, *largs, **kwargs):
-        """
-        Expected kwargs:
-          tags.IS_CREATE : "TRUE" / "FALSE"
-          tags.NAME : [policy_name, new_name?]
-          tags.SIGNATURE : e.g. "col1 VARCHAR, col2 INT"
-          tags.RETURNS : "BOOLEAN"
-          tags.EXPRESSION : SQL condition string
-          tags.COMMENT : comment text
-          tags.TAG_CLAUSE : dict of tags
-        """
         self.is_create = kwargs.get(tags.IS_CREATE)
         self.set_name(kwargs.get(tags.NAME))
         self.set_signature(kwargs.get(tags.SIGNATURE))
@@ -169,31 +159,48 @@ class RowAccessPolicy(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=RowAccessPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set signature")
+        if tags.SIGNATURE in kwargs.keys():
+            obj_inst.set_signature(kwargs[tags.SIGNATURE])
+        else:
+            obj_inst.set_signature('NONE')
+
+        logger.info("set returns")
+        if tags.RETURNS in kwargs.keys():
+            obj_inst.set_returns(kwargs[tags.RETURNS])
+        else:
+            obj_inst.set_returns('NONE')
+
+        logger.info("set expression")
+        if tags.EXPRESSION in kwargs.keys():
+            obj_inst.set_expression(kwargs[tags.EXPRESSION])
+        else:
+            obj_inst.set_expression('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
+            obj_inst.set_comment('NONE')
 
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()

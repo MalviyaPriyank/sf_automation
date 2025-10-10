@@ -401,7 +401,7 @@ class Stream(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Stream(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -412,20 +412,79 @@ class Operation:
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
+            obj_inst.set_database('NONE')
+
+        logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
-            obj_inst.set_name(kwargs[tags.NAME])
+            obj_inst.set_name('NONE')
+
+        logger.info("set object_type")
+        if tags.OBJECT_TYPE in kwargs.keys():
+            obj_inst.set_object_type(kwargs[tags.OBJECT_TYPE])
+        else:
+            obj_inst.set_object_type('NONE')
+
+        logger.info("set table_name")
+        if tags.TABLE_NAME in kwargs.keys():
+            obj_inst.set_table_name(kwargs[tags.TABLE_NAME])
+        else:
+            obj_inst.set_table_name('NONE')
+
+        logger.info("set at")
+        if tags.AT in kwargs.keys():
+            obj_inst.set_at(kwargs[tags.AT])
+        else:
+            obj_inst.set_at('NONE')
+
+        logger.info("set offset")
+        if tags.OFFSET in kwargs.keys():
+            obj_inst.set_offset(kwargs[tags.OFFSET])
+        else:
+            obj_inst.set_offset('NONE')
+
+        logger.info("set before")
+        if tags.BEFORE in kwargs.keys():
+            obj_inst.set_before(kwargs[tags.BEFORE])
+        else:
+            obj_inst.set_before('NONE')
+
+        logger.info("set timestamp")
+        if tags.TIMESTAMP in kwargs.keys():
+            obj_inst.set_timestamp(kwargs[tags.TIMESTAMP])
+        else:
+            obj_inst.set_timestamp('NONE')
+
+        logger.info("set append_only")
+        if tags.APPEND_ONLY in kwargs.keys():
+            obj_inst.set_append_only(kwargs[tags.APPEND_ONLY])
+        else:
+            obj_inst.set_append_only('NONE')
+
+        logger.info("set insert_only")
+        if tags.INSERT_ONLY in kwargs.keys():
+            obj_inst.set_insert_only(kwargs[tags.INSERT_ONLY])
+        else:
+            obj_inst.set_insert_only('NONE')
+
+        logger.info("set show_initial_rows")
+        if tags.SHOW_INITIAL_ROWS in kwargs.keys():
+            obj_inst.set_show_initial_rows(kwargs[tags.SHOW_INITIAL_ROWS])
+        else:
+            obj_inst.set_show_initial_rows('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
+            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
