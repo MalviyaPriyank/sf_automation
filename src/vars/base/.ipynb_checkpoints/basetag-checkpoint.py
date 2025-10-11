@@ -14,7 +14,7 @@ class BaseTag:
         return {
             "DATABASE":"User provide value for name of the Database where object must be created. If the object is DATABASE itself then this will be NONE .",
             "SCHEMA":"User provide value for name of the Schema where object must be created. If the object is SCHEMA itself then this will be NONE .",
-            "NAME":"this is a dictionary data type with keys {'NAME', 'RENAME_TO'} - pass value as a dictionary object. This is to be taken as input from user. do not assume a value. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE). NAME will be the original name when using alter (IS_CREATE=TRUE)",
+            "NAME":"this is a dictionary data type with keys {'NAME', 'RENAME_TO'} - pass value as a dictionary object. This is to be taken as input from user. DO NOT ASSUME values for NAME and RENAME_TO, these are to be taken from user. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE).",
             "COMMENT":"This will be user defined comment for the object. If user does not define one add a proper comment as per your understanding and inform the user.",
             "IS_CREATE":"Set this to 'TRUE' if create object. set to 'FALSE' if alter object."
         }
