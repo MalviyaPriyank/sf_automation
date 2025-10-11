@@ -50,7 +50,8 @@ class UserTag(BaseTag):
             "RSA_PUBLIC_KEY_2": "Second RSA public key for key pair authentication rotation.",
             "RSA_PUBLIC_KEY_2_FP": "Fingerprint for the second RSA public key.",
             "TYPE": "Type of user (e.g., 'LOCAL' or 'FEDERATED').",
-            "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR": "If TRUE, shows full unredacted query text in syntax error messages."
+            "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR": "If TRUE, shows full unredacted query text in syntax error messages.",
+            "IS_CREATE":"Set this to 'TRUE' if create object. set to 'FALSE' if alter object."
         }
 
     @classmethod

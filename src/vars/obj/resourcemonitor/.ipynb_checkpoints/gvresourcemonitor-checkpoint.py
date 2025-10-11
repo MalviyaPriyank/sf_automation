@@ -20,7 +20,8 @@ class ResourceMonitorTag(BaseTag):
     @classmethod
     def get_attributes_with_description(cls):
         return {
-            "NAME": "Unique name for the resource monitor. Must be unique within the account. (str)",
+            "NAME":"this is a dictionary data type with keys {'NAME', 'RENAME_TO'} - pass value as a dictionary object. This is to be taken as input from user. DO NOT ASSUME values for NAME and RENAME_TO, these are to be taken from user. the format is a dictionary with key 'NAME' for the name, and 'RENAME_TO' key when the ask is to alter (IS_CREATE=TRUE).",
+            "IS_CREATE":"Set this to 'TRUE' if create object. set to 'FALSE' if alter object.",
             "CREDIT_QUOTA": "Number of compute credits allocated to this resource monitor per frequency interval. Used to cap or track usage. (float or int)",
             "FREQUENCY": "Defines how often the monitor resets its credit quota. Possible values: 'DAILY', 'WEEKLY', 'MONTHLY', or 'YEARLY'. (str)",
             "START_TIMESTAMP": "Timestamp (UTC) when monitoring begins or the first interval starts. If omitted, starts immediately upon creation. (datetime str or ISO 8601 format)",
