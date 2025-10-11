@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag,BaseMethod
+from base.basetag import BaseTag, ,BaseMethod
 
-class UserTag(BaseTag,BaseMethod):
+class UserTag(BaseTag):
     PASSWORD="PASSWORD"
     LOGIN_NAME="LOGIN_NAME"
     DISPLAY_NAME="DISPLAY_NAME"
@@ -30,12 +30,28 @@ class UserTag(BaseTag,BaseMethod):
 
     @classmethod
     def get_attributes_with_description(cls):
-        attr_dict=super().get_attributes_with_description()
-        attr_dict["PASSWORD"] = "initial password for the user. User must change this at login"
-        attr_dict["FIRST_NAME"] = "first name of the user"
-        attr_dict["LAST_NAME"] = "last name of the user"
-        attr_dict["EMAIL"] = "email of the user"
-        return attr_dict
+        return {
+            "PASSWORD": "Initial password for the user. User must change this upon first login.",
+            "LOGIN_NAME": "Login name for the user (unique within the account).",
+            "DISPLAY_NAME": "Display name for the user, visible in Snowsight and the UI.",
+            "FIRST_NAME": "First name of the user.",
+            "LAST_NAME": "Last name of the user.",
+            "EMAIL": "Email address associated with the user account.",
+            "MUST_CHANGE_PASSWORD": "If TRUE, user must change the password at the next login.",
+            "DISABLED": "If TRUE, disables the user so they cannot log in.",
+            "DAYS_TO_EXPIRY": "Number of days until the user password expires.",
+            "MINS_TO_UNLOCK": "Number of minutes until a locked user account automatically unlocks.",
+            "DEFAULT_WAREHOUSE": "Default warehouse automatically used in sessions for this user.",
+            "DEFAULT_ROLE": "Default role granted to the user upon login.",
+            "DEFAULT_SECONDARY_ROLES": "Secondary roles automatically enabled for the user on login.",
+            "MINS_TO_BY_PASS_MFA": "Number of minutes to bypass multi-factor authentication after a successful login.",
+            "RSA_PUBLIC_KEY": "First RSA public key for key pair authentication.",
+            "RSA_PUBLIC_KEY_FP": "Fingerprint for the first RSA public key.",
+            "RSA_PUBLIC_KEY_2": "Second RSA public key for key pair authentication rotation.",
+            "RSA_PUBLIC_KEY_2_FP": "Fingerprint for the second RSA public key.",
+            "TYPE": "Type of user (e.g., 'LOCAL' or 'FEDERATED').",
+            "ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR": "If TRUE, shows full unredacted query text in syntax error messages."
+        }
 
     @classmethod
     def allowed_value_list(cls):
