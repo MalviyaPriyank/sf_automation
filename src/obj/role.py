@@ -108,7 +108,7 @@ class Role(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE ROLE {self.attr.name} "
+        self.qry = f"CREATE ROLE {self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -130,21 +130,6 @@ class Role(BaseObject):
         
     def create_role(self):
         self.execute_final_query()
-
-    def create_object(self,*pargs,**kwargs): 
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        self.set_name(kwargs[tags.NAME])
-        self.set_comment(kwargs[tags.COMMENT])
-        self.prepare_query()
-        self.logger.info(f"creating role {self.attr.name}")
-        self.create_role()
-        if len(pargs) == 0:
-            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
 
 class Operation:
     @staticmethod

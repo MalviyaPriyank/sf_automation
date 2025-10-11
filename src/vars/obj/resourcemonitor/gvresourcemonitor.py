@@ -36,7 +36,6 @@ class ResourceMonitorTag(BaseTag):
     def allowed_value_list(cls):
         return {
             "FREQUENCY":["MONTHLY","DAILY","WEEKLY","YEARLY","NEVER"],
-            "TRIGGERS":["SINGLE","MULTIPLE"],
             "ACTION":["SUSPEND","SUSPEND_IMMEDIATE","NOTIFY"]
         }
 

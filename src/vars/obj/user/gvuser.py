@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../base'))
 
-from base.basetag import BaseTag, ,BaseMethod
+from base.basetag import BaseTag, BaseMethod
 
 class UserTag(BaseTag):
     PASSWORD="PASSWORD"

@@ -17,6 +17,7 @@ from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
 from .baseobj import BaseObject 
+from vars.obj.notificationintegrationemail.gvnotificationintegrationemai import NotificationIntegrationEmailTag as tags
 
 class Name:
     def __get__(self,instance,owner):

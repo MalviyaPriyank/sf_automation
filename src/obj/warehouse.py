@@ -86,7 +86,7 @@ class WarehouseSize:
             instance._warehouse_size=value
         else:
             vv.is_allowed_value(value,gv._allowed_values_warehouse_size,instance.parent.__class__.__name__,self.__class__.__name__)
-            instance._warehouse_size = f"'{value}'"
+            instance._warehouse_size = value
 
     def __delete__(self,instance):
         del instance._warehouse_size
@@ -130,7 +130,7 @@ class MinClusterCount:
             instance._min_cluster_count=value
         else:
             vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_less_than_or_equal_to(value_base=instance._max_cluster_count,value_ref=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_less_than_or_equal_to(value_base=value,value_ref=instance._max_cluster_count,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._min_cluster_count=value
 
     def __delete__(self,instance):
@@ -402,7 +402,7 @@ class Warehouse(BaseObject):
 
 
     def set_create_warehouse_qry(self):
-        self.qry = f"CREATE WAREHOUSE IF NOT EXISTS {self.attr.name} "
+        self.qry = f"CREATE WAREHOUSE IF NOT EXISTS {self.attr.name[0]} "
 
 
     def add_properties_to_query(self):
@@ -411,7 +411,7 @@ class Warehouse(BaseObject):
                 if prop == gv._warehouse_type_tag:
                     self.qry = f" {self.qry} {gv._warehouse_type_tag}  = {self.attr.warehouse_type} "
                 if prop == gv._warehouse_size_tag:
-                    self.qry = f" {self.qry} {gv._warehouse_size_tag} = {self.attr.warehouse_size} "
+                    self.qry = f" {self.qry} {gv._warehouse_size_tag} = '{self.attr.warehouse_size}' "
                 if prop == gv._resource_constraint_tag:
                     self.qry = f" {self.qry} {gv._resource_constraint_tag} = {self.attr.resource_constraint} "
                 if prop == gv._max_cluster_count_tag:
@@ -442,7 +442,7 @@ class Warehouse(BaseObject):
                     self.qry = f" {self.qry} {gv._statement_timeout_in_seconds_tag} = {self.attr.statement_timeout_in_seconds} "
 
 
-    def prepare_create_query(self):
+    def prepare_query(self):
         self.set_object_properties_flag()
         self.check_properties_to_set()
         self.set_create_warehouse_qry()
@@ -450,43 +450,6 @@ class Warehouse(BaseObject):
     
     def create_warehouse(self,*largs):
         self.execute_final_query()         
-
-    def create_object(self,*largs,**kwargs):
-        self.set_name(kwargs[gv._name_tag])
-        self.set_warehouse_type(kwargs[gv._warehouse_type_tag])
-        self.set_warehouse_size(kwargs[gv._warehouse_size_tag])
-        self.set_auto_resume(kwargs[gv._auto_resume_tag])
-        self.set_auto_suspend(kwargs[gv._auto_suspend_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-        self.set_enable_query_acceleration(kwargs[gv._enable_query_acceleration_tag])
-        self.set_initially_suspended(kwargs[gv._initially_suspended_tag])
-        self.set_max_cluster_count(kwargs[gv._max_cluster_count_tag])
-        self.set_resource_constraint(kwargs[gv._resource_constraint_tag])
-        self.set_max_concurrency_level(kwargs[gv._max_concurrency_level_tag])
-        self.set_min_cluster_count(kwargs[gv._min_cluster_count_tag])
-        self.set_query_acceleration_max_scale_factor(kwargs[gv._query_acceleration_max_scale_factor_tag])
-        self.set_resource_monitor(kwargs[gv._resource_monitor_tag])
-        self.set_scaling_policy(kwargs[gv._scaling_policy_tag])
-        self.set_statement_timeout_in_seconds(kwargs[gv._statement_timeout_in_seconds_tag])
-        self.set_statement_queued_timeout_in_seconds(kwargs[gv._statement_queued_timeout_in_seconds_tag])
-        self.prepare_create_query()     
-        self.logger.info(f"creating warehouse {self.attr.name}")
-        self.create_warehouse()
-        if len(largs) == 0:
-            self.create_deployment_entry()
-
-    def create_deployment_entry(self):
-        deploy_inst = Deploy(self.attr.session)
-        self.logger.info(f"Tracking for deployment warehouse object : {self.attr.name}")
-        deploy_inst.insert_into_deployment_script_table(qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database('NA')
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
 
 
 class Operation:
@@ -610,7 +573,10 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name,
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
 
 
     @classmethod

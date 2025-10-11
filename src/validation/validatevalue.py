@@ -308,6 +308,7 @@ class ValidateValue:
     
     @staticmethod
     def is_less_than_or_equal_to(value_base,value_ref,object_type,attr_name):
+        logger.info(f"inside to check {value_base} <= {value_ref}")
         if value_base<=value_ref:
             return True
         else:

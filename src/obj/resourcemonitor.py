@@ -57,7 +57,7 @@ class CreditQuota:
         if value=="NONE":
             instance._credit_quota=value
         else:
-            vv.is_positive_number(value)
+            vv.is_positive_number(value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._credit_quota = value
     
     def __delete__(self,instance):
@@ -113,55 +113,45 @@ class NotifyUsers:
     def __delete__(self,instance):
         del instance._notify_users
 
-class Triggers:
-    def __get__(self,instance,owner):
-        return instance._triggers
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._triggers=value
-        else:
-            vv.is_allowed_value(value=value.upper(),allowed_list=tags.allowed_value_list().get(tags.TRIGGERS),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._triggers=value
-        
-    def __delete__(self,instance):
-        del instance._triggers
-
 class Threshold:
     def __get__(self,instance,owner):
         return instance._threshold
     
     def __set__(self,instance,value):
-        if instance._triggers!="NONE":
-            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            if instance._triggers=="SINGLE":
-                vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-                instance._threshold=value
-            elif instance._triggers=="MULTIPLE":
-                vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-                instance._threshold=value
-        elif instance._triggers=="NONE":
-            instance._threshold="NONE"
+        instance._threshold=[]
+        vv.is_positive_number(value=value,
+                                 object_type=instance.parent.__class__.__name__,
+                                 attr_name=self.__class__.__name__)
+        instance._threshold.append(value)
         
     def __delete__(self,instance):
         del instance._threshold
+
+class Triggers:
+    def __get__(self,instance,owner):
+        return instance._triggers
+    
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside triggers to set: {value}")
+        if value=="NONE":
+            instance._triggers="NONE"
+        else:
+            instance._triggers="TRUE"
+        
+    def __delete__(self,instance):
+        del instance._action
 
 class Action:
     def __get__(self,instance,owner):
         return instance._action
     
     def __set__(self,instance,value):
-        if instance._triggers!="NONE":
-            vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            if instance._triggers=="SINGLE":
-                vv.is_positive_number(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-                instance._action=value
-            elif instance._triggers=="MULTIPLE":
-                vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*[],**{"MUST_BE_OF_LENGTH":len(instance._threshold)})
-                instance._action=value
-        elif instance._triggers=="NONE":
-            instance._action="NONE"
-
+        instance._action=[]
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(tags.ACTION),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._action.append(value)
         
     def __delete__(self,instance):
         del instance._action
@@ -228,7 +218,7 @@ class ResourceMonitor(BaseObject):
         set_flag(tags.START_TIMESTAMP,"_start_timestamp")
         set_flag(tags.END_TIMESTAMP,"_end_timestamp")
         set_flag(tags.NOTIFY_USERS,"_notify_users")
-        set_flag(tags.TRIGGERS,"_triggers")
+        set_flag(tags.TRIGGERS,"triggers")
         set_flag(tags.THRESHOLD,"_threshold")
         set_flag(tags.ACTION,"_action")
 
@@ -240,7 +230,7 @@ class ResourceMonitor(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_resource_monitor_qry(self):
-        self.qry = f"CREATE OR REPLACE RESOURCE MONITOR {self.attr.name} "
+        self.qry = f"CREATE OR REPLACE RESOURCE MONITOR {self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -258,11 +248,8 @@ class ResourceMonitor(BaseObject):
                     self.qry = f" {self.qry} {tags.NOTIFY_USERS} = {self.attr.notify_users} "
                 if prop == tags.TRIGGERS:
                     self.qry=f" {self.qry} TRIGGERS "
-                    if tags.TRIGGERS.upper()=="SINGLE":
-                        self.qry = f" {self.qry} ON {self.attr.threshold} DO {self.attr.action} "
-                    if tags.TRIGGERS.upper()=="MULTIPLE":
-                        for i in range(0,len(self.attr.threshold)):
-                            self.qry=f" {self.qry} ON {self.attr.threshold[i]} DO {self.attr.action[i]} "
+                    for i in range(0,len(self.attr.action)):
+                        self.qry = f" {self.qry} ON {self.attr.threshold[i]}  PERCENT DO {self.attr.action[i] } "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -320,9 +307,9 @@ class Operation:
 
         logger.info("set start_timestamp")
         if tags.START_TIMESTAMP in kwargs.keys():
-            obj_inst.set_start_timestamp(kwargs[tags.START_TIMESTAMP])
+            obj_inst.set_start_timestmap(kwargs[tags.START_TIMESTAMP])
         else:
-            obj_inst.set_start_timestamp('NONE')
+            obj_inst.set_start_timestmap('NONE')
 
         logger.info("set end_timestamp")
         if tags.END_TIMESTAMP in kwargs.keys():
@@ -338,22 +325,16 @@ class Operation:
 
         logger.info("set triggers")
         if tags.TRIGGERS in kwargs.keys():
-            obj_inst.set_triggers(kwargs[tags.TRIGGERS])
+            logger.info("setting to true")
+            obj_inst.set_triggers("TRUE")
+            for i in range(0,len(kwargs[tags.TRIGGERS])):
+                logger.info(f"set threshold and action {kwargs[tags.TRIGGERS][i]}")
+                obj_inst.set_threshold(kwargs[tags.TRIGGERS][i][tags.THRESHOLD])
+                obj_inst.set_action(kwargs[tags.TRIGGERS][i][tags.ACTION])
         else:
-            obj_inst.set_triggers('NONE')
-
-        logger.info("set threshold")
-        if tags.THRESHOLD in kwargs.keys():
-            obj_inst.set_threshold(kwargs[tags.THRESHOLD])
-        else:
-            obj_inst.set_threshold('NONE')
-
-        logger.info("set action")
-        if tags.ACTION in kwargs.keys():
-            obj_inst.set_action(kwargs[tags.ACTION])
-        else:
-            obj_inst.set_action('NONE')
-
+            obj_inst.set_triggers("NONE")
+            obj_inst.set_action("NONE")
+            obj_inst.set_threshold("NONE")
         logger.info('prepare query')
         obj_inst.prepare_query()
         
@@ -361,8 +342,8 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
-
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
 
     @classmethod
     def get_attributes(cls):
