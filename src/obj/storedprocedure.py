@@ -140,8 +140,8 @@ class StoredProcedureAttrs:
     packages=Packages()
 
 class StoredProcedure(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr=StoredProcedureAttrs(self)
 
     def set_database(self,value):
@@ -242,57 +242,57 @@ class StoredProcedure(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=StoredProcedure(session=session,
-                         user_id=user_id
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set database")
+        logger.info("set database")
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
             obj_inst.set_database('NONE')
 
-        obj_inst.logger.info("set schema")
+        logger.info("set schema")
         if tags.SCHEMA in kwargs.keys():
             obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
             obj_inst.set_schema('NONE')
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set logic")
+        logger.info("set logic")
         if tags.LOGIC in kwargs.keys():
             obj_inst.set_logic(kwargs[tags.LOGIC])
         else:
             obj_inst.set_logic('NONE')
 
-        obj_inst.logger.info("set return_type")
+        logger.info("set return_type")
         if tags.RETURN_TYPE in kwargs.keys():
             obj_inst.set_return_type(kwargs[tags.RETURNS])
         else:
             obj_inst.set_return_type('NONE')
 
-        obj_inst.logger.info("set language")
+        logger.info("set language")
         if tags.LANGUAGE in kwargs.keys():
             obj_inst.set_language(kwargs[tags.LANGUAGE])
         else:
             obj_inst.set_language('NONE')
 
-        obj_inst.logger.info("set handler")
+        logger.info("set handler")
         if tags.HANDLER in kwargs.keys():
             obj_inst.set_handler(kwargs[tags.HANDLER])
         else:
             obj_inst.set_handler('NONE')
 
-        obj_inst.logger.info("set packages")
+        logger.info("set packages")
         if tags.PACKAGES in kwargs.keys():
             obj_inst.set_packages(kwargs[tags.PACKAGES])
         else:
@@ -300,13 +300,13 @@ class Operation:
 
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

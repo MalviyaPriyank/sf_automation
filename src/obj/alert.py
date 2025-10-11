@@ -8,6 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
+import logging
+logger = logging.getLogger('Alert logs')
 
 from vars.gvobject import Config as cfg 
 from vars.obj.alert.gvalert import AlertTag as tags
@@ -45,10 +47,10 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        instance.parent.alert_inst.logger.info(f"inside to set name {value}")
+        instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
-            instance.parent.alert_inst.logger.info(f" for create operation setting name: {name}")
+            instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
             vo.is_new_database(session=instance.parent.session, database_name=name)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
@@ -58,13 +60,13 @@ class Name:
                 instance._name = name
                 instance._rename_to="NONE"
         else:
-            instance.parent.alert_inst.logger.info(f" for alter operation")
+            instance.parent.logger.info(f" for alter operation")
             old_name=value["NAME"]
-            instance.parent.alert_inst.logger.info(f"old name {old_name}")
+            instance.parent.logger.info(f"old name {old_name}")
             new_name=value.get("RENAME_TO","NONE")
-            instance.parent.alert_inst.logger.info(f"new name {new_name}")
+            instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
-                instance.parent.alert_inst.logger.info(f" changing name from {old_name} to {new_name}")
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
                 vo.alert_exist(session=instance.parent.session,
                                object_type=instance.parent.__class__.__name__,
@@ -210,8 +212,8 @@ class AlertAttrs:
 
 
 class Alerts(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr=AlertAttrs(self)
 
     def set_database(self, value):
@@ -278,95 +280,95 @@ class Alerts(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         alert_inst=Alerts(session=session,
                          user_id=user_id,
-                         )
+                         logger=logger)
         
-        alert_inst.logger.info(f"Operating on {alert_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        alert_inst.logger.info(f'dictionary passed {kwargs}')
+        logger.info(f"Operating on {alert_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         alert_inst.is_create=kwargs[tags.IS_CREATE]
 
-        alert_inst.logger.info('set database')
+        logger.info('set database')
         if tags.DATABASE in kwargs.keys():
             alert_inst.set_database(kwargs[tags.DATABASE])
         else:
             alert_inst.set_database('NONE')
 
-        alert_inst.logger.info('set schema')
+        logger.info('set schema')
         if tags.SCHEMA in kwargs.keys():
             alert_inst.set_schema(kwargs[tags.SCHEMA])
         else:
             alert_inst.set_schema('NONE')
 
-        alert_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             alert_inst.set_name(kwargs[tags.NAME])
         else:
             alert_inst.set_name('NONE')
 
-        alert_inst.logger.info("set schedule")
+        logger.info("set schedule")
         if tags.SCHEDULE in kwargs.keys():
             alert_inst.set_schedule(kwargs[tags.SCHEDULE])
         else:
             alert_inst.set_schedule('NONE')
 
-        alert_inst.logger.info("set _if_tag")
+        logger.info("set _if_tag")
         if tags.IF in kwargs.keys():
             alert_inst.set_iff(kwargs[tags.IF])
         else:
             alert_inst.set_iff('NONE')
 
-        alert_inst.logger.info("set _action_type")
+        logger.info("set _action_type")
         if tags.ACTION_TYPE in kwargs.keys():
             alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
         else:
             alert_inst.set_action_type('NONE')
 
-        alert_inst.logger.info("set _action_sql")
+        logger.info("set _action_sql")
         if tags.ACTION_SQL in kwargs.keys():
             alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
         else:
             alert_inst.set_action_sql('NONE')
 
-        alert_inst.logger.info("set _integration_name")
+        logger.info("set _integration_name")
         if tags.INTEGRATION_NAME in kwargs.keys():
             alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
         else:
             alert_inst.set_integration_name('NONE')
 
-        alert_inst.logger.info("set _email_address")
+        logger.info("set _email_address")
         if tags.EMAIL_ADDRESS in kwargs.keys():
             alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
         else:
             alert_inst.set_email_address('NONE')
 
-        alert_inst.logger.info("set _email_subject")
+        logger.info("set _email_subject")
         if tags.EMAIL_SUBJECT in kwargs.keys():
             alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
         else:
             alert_inst.set_email_subject('NONE')
 
-        alert_inst.logger.info("set _email_content")
+        logger.info("set _email_content")
         if tags.EMAIL_CONTENT in kwargs.keys():
             alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
         else:
             alert_inst.set_email_content('NONE')
 
-        alert_inst.logger.info("set warehouse")
+        logger.info("set warehouse")
         if tags.EMAIL_CONTENT in kwargs.keys():
             alert_inst.set_email_content(kwargs[tags.WAREHOUSE])
         else:
             alert_inst.set_email_content('NONE')
 
 
-        alert_inst.logger.info('prepare query')
+        logger.info('prepare query')
         alert_inst.prepare_query()
         
-        alert_inst.logger.info('execute query')
+        logger.info('execute query')
         alert_inst.create_alert()
 
-        alert_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         alert_inst.create_deployment_entry()
 
 

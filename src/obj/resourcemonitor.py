@@ -182,8 +182,8 @@ class ResourceMonitorAttrs:
 
 
 class ResourceMonitor(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = ResourceMonitorAttrs(self)
     
     def validate_user(self):
@@ -292,75 +292,75 @@ class ResourceMonitor(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=ResourceMonitor(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set credit_quota")
+        logger.info("set credit_quota")
         if tags.CREDIT_QUOTA in kwargs.keys():
             obj_inst.set_credit_quota(kwargs[tags.CREDIT_QUOTA])
         else:
             obj_inst.set_credit_quota('NONE')
 
-        obj_inst.logger.info("set frequency")
+        logger.info("set frequency")
         if tags.FREQUENCY in kwargs.keys():
             obj_inst.set_frequency(kwargs[tags.FREQUENCY])
         else:
             obj_inst.set_frequency('NONE')
 
-        obj_inst.logger.info("set start_timestamp")
+        logger.info("set start_timestamp")
         if tags.START_TIMESTAMP in kwargs.keys():
             obj_inst.set_start_timestamp(kwargs[tags.START_TIMESTAMP])
         else:
             obj_inst.set_start_timestamp('NONE')
 
-        obj_inst.logger.info("set end_timestamp")
+        logger.info("set end_timestamp")
         if tags.END_TIMESTAMP in kwargs.keys():
             obj_inst.set_end_timestamp(kwargs[tags.END_TIMESTAMP])
         else:
             obj_inst.set_end_timestamp('NONE')
 
-        obj_inst.logger.info("set notify_users")
+        logger.info("set notify_users")
         if tags.NOTIFY_USERS in kwargs.keys():
             obj_inst.set_notify_users(kwargs[tags.NOTIFY_USERS])
         else:
             obj_inst.set_notify_users('NONE')
 
-        obj_inst.logger.info("set triggers")
+        logger.info("set triggers")
         if tags.TRIGGERS in kwargs.keys():
             obj_inst.set_triggers(kwargs[tags.TRIGGERS])
         else:
             obj_inst.set_triggers('NONE')
 
-        obj_inst.logger.info("set threshold")
+        logger.info("set threshold")
         if tags.THRESHOLD in kwargs.keys():
             obj_inst.set_threshold(kwargs[tags.THRESHOLD])
         else:
             obj_inst.set_threshold('NONE')
 
-        obj_inst.logger.info("set action")
+        logger.info("set action")
         if tags.ACTION in kwargs.keys():
             obj_inst.set_action(kwargs[tags.ACTION])
         else:
             obj_inst.set_action('NONE')
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

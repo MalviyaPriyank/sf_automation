@@ -59,9 +59,11 @@ class ExternalVolumeAttrs:
     tag_clause = EVTagClause()
 
 class ExternalVolume(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session=session,user_id=user_id)
+    def __init__(self, session, user_id, logger):
         self.attr = ExternalVolumeAttrs()
+        self.session = session
+        self.user_id = user_id
+        self.logger = logger
 
 
     def set_name(self, value): self.attr.name = value
@@ -128,39 +130,39 @@ class ExternalVolume(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=ExternalVolume(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set storage_locations")
+        logger.info("set storage_locations")
         if tags.STORAGE_LOCATIONS in kwargs.keys():
             obj_inst.set_storage_locations(kwargs[tags.STORAGE_LOCATIONS])
         else:
             obj_inst.set_storage_locations('NONE')
 
-        obj_inst.logger.info("set allow_writes")
+        logger.info("set allow_writes")
         if tags.ALLOW_WRITES in kwargs.keys():
             obj_inst.set_allow_writes(kwargs[tags.ALLOW_WRITES])
         else:
             obj_inst.set_allow_writes('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set tag_clause")
+        logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
@@ -168,13 +170,13 @@ class Operation:
 
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

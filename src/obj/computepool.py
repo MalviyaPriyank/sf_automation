@@ -1,6 +1,6 @@
 import sys
 import os
-import logging
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
@@ -95,11 +95,13 @@ class ComputePoolAttrs:
     tag_clause = CPTagClause()
 
 class ComputePool(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
         self.attr = ComputePoolAttrs()
+        self.session = session
+        self.user_id = user_id
+        self.logger = logger
 
-
+    # setter methods
     def set_name(self, v): self.attr.name = v
     def set_min_nodes(self, v): self.attr.min_nodes = v
     def set_max_nodes(self, v): self.attr.max_nodes = v
@@ -169,77 +171,77 @@ class ComputePool(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=ComputePool(session=session,
                          user_id=user_id,
-                         )
+                         logger=logger)
         
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set min_nodes")
+        logger.info("set min_nodes")
         if tags.MIN_NODES in kwargs.keys():
             obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
         else:
             obj_inst.set_min_nodes('NONE')
 
-        obj_inst.logger.info("set max_nodes")
+        logger.info("set max_nodes")
         if tags.MAX_NODES in kwargs.keys():
             obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
         else:
             obj_inst.set_max_nodes('NONE')
 
-        obj_inst.logger.info("set instance_family")
+        logger.info("set instance_family")
         if tags.INSTANCE_FAMILY in kwargs.keys():
             obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
         else:
             obj_inst.set_instance_family('NONE')
 
-        obj_inst.logger.info("set auto_resume")
+        logger.info("set auto_resume")
         if tags.AUTO_RESUME in kwargs.keys():
             obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
         else:
             obj_inst.set_auto_resume('NONE')
 
-        obj_inst.logger.info("set initially_suspended")
+        logger.info("set initially_suspended")
         if tags.INITIALLY_SUSPENDED in kwargs.keys():
             obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
         else:
             obj_inst.set_initially_suspended('NONE')
 
-        obj_inst.logger.info("set auto_suspend_secs")
+        logger.info("set auto_suspend_secs")
         if tags.AUTO_SUSPEND_SECS in kwargs.keys():
             obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
         else:
             obj_inst.set_auto_suspend_secs('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set tag_clause")
+        logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

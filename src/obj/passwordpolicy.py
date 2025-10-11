@@ -145,10 +145,11 @@ class PasswordPolicyAttrs:
 
 
 class PasswordPolicy(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session=session,user_id=user_id)
+    def __init__(self, session, user_id, logger):
         self.attr = PasswordPolicyAttrs()
-
+        self.session = session
+        self.user_id = user_id
+        self.logger = logger
 
     def set_name(self, v): self.attr.name = v
     def set_min_length(self, v): self.attr.min_length = v
@@ -237,106 +238,106 @@ class PasswordPolicy(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=PasswordPolicy(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set min_length")
+        logger.info("set min_length")
         if tags.MIN_LENGTH in kwargs.keys():
             obj_inst.set_min_length(kwargs[tags.PASSWORD_MIN_LENGTH])
         else:
             obj_inst.set_min_length('NONE')
 
-        obj_inst.logger.info("set max_length")
+        logger.info("set max_length")
         if tags.MAX_LENGTH in kwargs.keys():
             obj_inst.set_max_length(kwargs[tags.PASSWORD_MAX_LENGTH])
         else:
             obj_inst.set_max_length('NONE')
 
-        obj_inst.logger.info("set min_upper")
+        logger.info("set min_upper")
         if tags.MIN_UPPER in kwargs.keys():
             obj_inst.set_min_upper(kwargs[tags.PASSWORD_MIN_UPPER_CASE_CHARS])
         else:
             obj_inst.set_min_upper('NONE')
 
-        obj_inst.logger.info("set min_lower")
+        logger.info("set min_lower")
         if tags.MIN_LOWER in kwargs.keys():
             obj_inst.set_min_lower(kwargs[tags.PASSWORD_MIN_LOWER_CASE_CHARS])
         else:
             obj_inst.set_min_lower('NONE')
 
-        obj_inst.logger.info("set min_numeric")
+        logger.info("set min_numeric")
         if tags.MIN_NUMERIC in kwargs.keys():
             obj_inst.set_min_numeric(kwargs[tags.PASSWORD_MIN_NUMERIC_CHARS])
         else:
             obj_inst.set_min_numeric('NONE')
 
-        obj_inst.logger.info("set min_special")
+        logger.info("set min_special")
         if tags.MIN_SPECIAL in kwargs.keys():
             obj_inst.set_min_special(kwargs[tags.PASSWORD_MIN_SPECIAL_CHARS])
         else:
             obj_inst.set_min_special('NONE')
 
-        obj_inst.logger.info("set min_age")
+        logger.info("set min_age")
         if tags.MIN_AGE in kwargs.keys():
             obj_inst.set_min_age(kwargs[tags.PASSWORD_MIN_AGE_DAYS])
         else:
             obj_inst.set_min_age('NONE')
 
-        obj_inst.logger.info("set max_age")
+        logger.info("set max_age")
         if tags.MAX_AGE in kwargs.keys():
             obj_inst.set_max_age(kwargs[tags.PASSWORD_MAX_AGE_DAYS])
         else:
             obj_inst.set_max_age('NONE')
 
-        obj_inst.logger.info("set max_retries")
+        logger.info("set max_retries")
         if tags.MAX_RETRIES in kwargs.keys():
             obj_inst.set_max_retries(kwargs[tags.PASSWORD_MAX_RETRIES])
         else:
             obj_inst.set_max_retries('NONE')
 
-        obj_inst.logger.info("set lockout_time")
+        logger.info("set lockout_time")
         if tags.LOCKOUT_TIME in kwargs.keys():
             obj_inst.set_lockout_time(kwargs[tags.PASSWORD_LOCKOUT_TIME_MINS])
         else:
             obj_inst.set_lockout_time('NONE')
 
-        obj_inst.logger.info("set history")
+        logger.info("set history")
         if tags.HISTORY in kwargs.keys():
             obj_inst.set_history(kwargs[tags.PASSWORD_HISTORY])
         else:
             obj_inst.set_history('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set tag_clause")
+        logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

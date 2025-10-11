@@ -243,8 +243,8 @@ class SecurityIntegrationAttrs:
     comment=Comment()
 
 class SecurityIntegration(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr=SecurityIntegrationAttrs(self)
 
     def set_name(self,val):
@@ -361,93 +361,93 @@ class SecurityIntegration(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=SecurityIntegration(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set type")
+        logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        obj_inst.logger.info("set auth_type")
+        logger.info("set auth_type")
         if tags.AUTH_TYPE in kwargs.keys():
             obj_inst.set_auth_type(kwargs[tags.AUTH_TYPE])
         else:
             obj_inst.set_auth_type('NONE')
 
-        obj_inst.logger.info("set enabled")
+        logger.info("set enabled")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
 
-        obj_inst.logger.info("set oauth_token_endpoint")
+        logger.info("set oauth_token_endpoint")
         if tags.OAUTH_TOKEN_ENDPOINT in kwargs.keys():
             obj_inst.set_oauth_token_endpoint(kwargs[tags.OAUTH_TOKEN_ENDPOINT])
         else:
             obj_inst.set_oauth_token_endpoint('NONE')
 
-        obj_inst.logger.info("set oauth_client_auth_method")
+        logger.info("set oauth_client_auth_method")
         if tags.OAUTH_CLIENT_AUTH_METHOD in kwargs.keys():
             obj_inst.set_oauth_client_auth_method(kwargs[tags.OAUTH_CLIENT_AUTH_METHOD])
         else:
             obj_inst.set_oauth_client_auth_method('NONE')
 
-        obj_inst.logger.info("set oauth_client_id")
+        logger.info("set oauth_client_id")
         if tags.OAUTH_CLIENT_ID in kwargs.keys():
             obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
         else:
             obj_inst.set_oauth_client_id('NONE')
 
-        obj_inst.logger.info("set oauth_client_secret")
+        logger.info("set oauth_client_secret")
         if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
             obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
         else:
             obj_inst.set_oauth_client_secret('NONE')
 
-        obj_inst.logger.info("set oauth_grant")
+        logger.info("set oauth_grant")
         if tags.OAUTH_GRANT in kwargs.keys():
             obj_inst.set_oauth_grant(kwargs[tags.OAUTH_GRANT])
         else:
             obj_inst.set_oauth_grant('NONE')
 
-        obj_inst.logger.info("set oauth_access_token_validity")
+        logger.info("set oauth_access_token_validity")
         if tags.OAUTH_ACCESS_TOKEN_VALIDITY in kwargs.keys():
             obj_inst.set_oauth_access_token_validity(kwargs[tags.OAUTH_ACCESS_TOKEN_VALIDITY])
         else:
             obj_inst.set_oauth_access_token_validity('NONE')
 
-        obj_inst.logger.info("set oauth_allowed_scopes")
+        logger.info("set oauth_allowed_scopes")
         if tags.OAUTH_ALLOWED_SCOPES in kwargs.keys():
             obj_inst.set_oauth_allowed_scopes(kwargs[tags.OAUTH_ALLOWED_SCOPES])
         else:
             obj_inst.set_oauth_allowed_scopes('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

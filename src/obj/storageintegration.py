@@ -207,8 +207,8 @@ class StorageIntegrationAttrs:
     comment=Comment()
 
 class StorageIntegration(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = StorageIntegrationAttrs(self)
 
     def set_name(self, value):
@@ -368,81 +368,81 @@ class StorageIntegration(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=StorageIntegration(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set type")
+        logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        obj_inst.logger.info("set enabled")
+        logger.info("set enabled")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
 
-        obj_inst.logger.info("set storage_provider")
+        logger.info("set storage_provider")
         if tags.STORAGE_PROVIDER in kwargs.keys():
             obj_inst.set_storage_provider(kwargs[tags.STORAGE_PROVIDER])
         else:
             obj_inst.set_storage_provider('NONE')
 
-        obj_inst.logger.info("set storage_aws_role_arn")
+        logger.info("set storage_aws_role_arn")
         if tags.STORAGE_AWS_ROLE_ARN in kwargs.keys():
             obj_inst.set_storage_aws_role_arn(kwargs[tags.STORAGE_AWS_ROLE_ARN])
         else:
             obj_inst.set_storage_aws_role_arn('NONE')
 
-        obj_inst.logger.info("set storage_aws_external_id")
+        logger.info("set storage_aws_external_id")
         if tags.STORAGE_AWS_EXTERNAL_ID in kwargs.keys():
             obj_inst.set_storage_aws_external_id(kwargs[tags.STORAGE_AWS_EXTERNAL_ID])
         else:
             obj_inst.set_storage_aws_external_id('NONE')
 
-        obj_inst.logger.info("set storage_aws_object_acl")
+        logger.info("set storage_aws_object_acl")
         if tags.STORAGE_AWS_OBJECT_ACL in kwargs.keys():
             obj_inst.set_storage_aws_object_acl(kwargs[tags.STORAGE_AWS_OBJECT_ACL])
         else:
             obj_inst.set_storage_aws_object_acl('NONE')
 
-        obj_inst.logger.info("set use_private_link_endpoint")
+        logger.info("set use_private_link_endpoint")
         if tags.USE_PRIVATE_LINK_ENDPOINT in kwargs.keys():
             obj_inst.set_use_private_link_endpoint(kwargs[tags.USE_PRIVATE_LINK_ENDPOINT])
         else:
             obj_inst.set_use_private_link_endpoint('NONE')
 
-        obj_inst.logger.info("set azure_tenant_id")
+        logger.info("set azure_tenant_id")
         if tags.AZURE_TENANT_ID in kwargs.keys():
             obj_inst.set_azure_tenant_id(kwargs[tags.AZURE_TENANT_ID])
         else:
             obj_inst.set_azure_tenant_id('NONE')
 
-        obj_inst.logger.info("set storage_allowed_locations")
+        logger.info("set storage_allowed_locations")
         if tags.STORAGE_ALLOWED_LOCATIONS in kwargs.keys():
             obj_inst.set_storage_allowed_locations(kwargs[tags.STORAGE_ALLOWED_LOCATIONS])
         else:
             obj_inst.set_storage_allowed_locations('NONE')
 
-        obj_inst.logger.info("set storage_blocked_locations")
+        logger.info("set storage_blocked_locations")
         if tags.STORAGE_BLOCKED_LOCATIONS in kwargs.keys():
             obj_inst.set_storage_blocked_locations(kwargs[tags.STORAGE_BLOCKED_LOCATIONS])
         else:
             obj_inst.set_storage_blocked_locations('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
@@ -450,13 +450,13 @@ class Operation:
 
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

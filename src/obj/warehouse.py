@@ -315,8 +315,8 @@ class WarehouseAttrs:
     statement_timeout_in_seconds = StatementTimeoutInSeconds()
 
 class Warehouse(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = WarehouseAttrs(self)
 
     def set_name(self, value):
@@ -491,111 +491,111 @@ class Warehouse(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=Warehouse(session=session,
-                         user_id=user_id
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set warehouse_size")
+        logger.info("set warehouse_size")
         if tags.WAREHOUSE_SIZE in kwargs.keys():
             obj_inst.set_warehouse_size(kwargs[tags.WAREHOUSE_SIZE])
         else:
             obj_inst.set_warehouse_size('NONE')
 
-        obj_inst.logger.info("set warehouse_type")
+        logger.info("set warehouse_type")
         if tags.WAREHOUSE_TYPE in kwargs.keys():
             obj_inst.set_warehouse_type(kwargs[tags.WAREHOUSE_TYPE])
         else:
             obj_inst.set_warehouse_type('NONE')
 
-        obj_inst.logger.info("set resource_constraint")
+        logger.info("set resource_constraint")
         if tags.RESOURCE_CONSTRAINT in kwargs.keys():
             obj_inst.set_resource_constraint(kwargs[tags.RESOURCE_CONSTRAINT])
         else:
             obj_inst.set_resource_constraint('NONE')
 
-        obj_inst.logger.info("set max_cluster_count")
+        logger.info("set max_cluster_count")
         if tags.MAX_CLUSTER_COUNT in kwargs.keys():
             obj_inst.set_max_cluster_count(kwargs[tags.MAX_CLUSTER_COUNT])
         else:
             obj_inst.set_max_cluster_count('NONE')
 
-        obj_inst.logger.info("set min_cluster_count")
+        logger.info("set min_cluster_count")
         if tags.MIN_CLUSTER_COUNT in kwargs.keys():
             obj_inst.set_min_cluster_count(kwargs[tags.MIN_CLUSTER_COUNT])
         else:
             obj_inst.set_min_cluster_count('NONE')
 
-        obj_inst.logger.info("set scaling_policy")
+        logger.info("set scaling_policy")
         if tags.SCALING_POLICY in kwargs.keys():
             obj_inst.set_scaling_policy(kwargs[tags.SCALING_POLICY])
         else:
             obj_inst.set_scaling_policy('NONE')
 
-        obj_inst.logger.info("set auto_suspend")
+        logger.info("set auto_suspend")
         if tags.AUTO_SUSPEND in kwargs.keys():
             obj_inst.set_auto_suspend(kwargs[tags.AUTO_SUSPEND])
         else:
             obj_inst.set_auto_suspend('NONE')
 
-        obj_inst.logger.info("set auto_resume")
+        logger.info("set auto_resume")
         if tags.AUTO_RESUME in kwargs.keys():
             obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
         else:
             obj_inst.set_auto_resume('NONE')
 
-        obj_inst.logger.info("set initially_suspended")
+        logger.info("set initially_suspended")
         if tags.INITIALLY_SUSPENDED in kwargs.keys():
             obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
         else:
             obj_inst.set_initially_suspended('NONE')
 
-        obj_inst.logger.info("set resource_monitor")
+        logger.info("set resource_monitor")
         if tags.RESOURCE_MONITOR in kwargs.keys():
             obj_inst.set_resource_monitor(kwargs[tags.RESOURCE_MONITOR])
         else:
             obj_inst.set_resource_monitor('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set enable_query_acceleration")
+        logger.info("set enable_query_acceleration")
         if tags.ENABLE_QUERY_ACCELERATION in kwargs.keys():
             obj_inst.set_enable_query_acceleration(kwargs[tags.ENABLE_QUERY_ACCELERATION])
         else:
             obj_inst.set_enable_query_acceleration('NONE')
 
-        obj_inst.logger.info("set query_acceleration_max_scale_factor")
+        logger.info("set query_acceleration_max_scale_factor")
         if tags.QUERY_ACCELERATION_MAX_SCALE_FACTOR in kwargs.keys():
             obj_inst.set_query_acceleration_max_scale_factor(kwargs[tags.QUERY_ACCELERATION_MAX_SCALE_FACTOR])
         else:
             obj_inst.set_query_acceleration_max_scale_factor('NONE')
 
-        obj_inst.logger.info("set max_concurrency_level")
+        logger.info("set max_concurrency_level")
         if tags.MAX_CONCURRENCY_LEVEL in kwargs.keys():
             obj_inst.set_max_concurrency_level(kwargs[tags.MAX_CONCURRENCY_LEVEL])
         else:
             obj_inst.set_max_concurrency_level('NONE')
 
-        obj_inst.logger.info("set statement_queued_timeout_in_seconds")
+        logger.info("set statement_queued_timeout_in_seconds")
         if tags.STATEMENT_QUEUED_TIMEOUT_IN_SECONDS in kwargs.keys():
             obj_inst.set_statement_queued_timeout_in_seconds(kwargs[tags.STATEMENT_QUEUED_TIMEOUT_IN_SECONDS])
         else:
             obj_inst.set_statement_queued_timeout_in_seconds('NONE')
 
-        obj_inst.logger.info("set statement_timeout_in_seconds")
+        logger.info("set statement_timeout_in_seconds")
         if tags.STATEMENT_TIMEOUT_IN_SECONDS in kwargs.keys():
             obj_inst.set_statement_timeout_in_seconds(kwargs[tags.STATEMENT_TIMEOUT_IN_SECONDS])
         else:
@@ -603,13 +603,13 @@ class Operation:
 
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

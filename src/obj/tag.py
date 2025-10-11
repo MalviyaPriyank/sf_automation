@@ -77,8 +77,10 @@ class TagAttrs:
 
 class Tag(BaseObject):
     def __init__(self, session, user_id, logger):
-        super().__init__(session=session,user_id=user_id)
         self.attr = TagAttrs()
+        self.session = session
+        self.user_id = user_id
+        self.logger = logger
 
     # setter convenience methods
     def set_name(self, v): self.attr.name = v
@@ -155,57 +157,57 @@ class Tag(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=Tag(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set allowed_values")
+        logger.info("set allowed_values")
         if tags.ALLOWED_VALUES in kwargs.keys():
             obj_inst.set_allowed_values(kwargs[tags.ALLOWED_VALUES])
         else:
             obj_inst.set_allowed_values('NONE')
 
-        obj_inst.logger.info("set propagate")
+        logger.info("set propagate")
         if tags.PROPAGATE in kwargs.keys():
             obj_inst.set_propagate(kwargs[tags.PROPAGATE])
         else:
             obj_inst.set_propagate('NONE')
 
-        obj_inst.logger.info("set on_conflict")
+        logger.info("set on_conflict")
         if tags.ON_CONFLICT in kwargs.keys():
             obj_inst.set_on_conflict(kwargs[tags.ON_CONFLICT])
         else:
             obj_inst.set_on_conflict('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set tag_clause")
+        logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

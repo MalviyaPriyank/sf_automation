@@ -100,8 +100,10 @@ class FailoverGroupAttrs:
 
 class FailoverGroup(BaseObject):
     def __init__(self, session, user_id, logger):
-        super().__init__(session=session,user_id=user_id)
         self.attr = FailoverGroupAttrs()
+        self.session = session
+        self.logger = logger
+        self.user_id = user_id
 
 
     def set_name(self, val=None): self.attr.name = val
@@ -184,58 +186,58 @@ class FailoverGroup(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=FailoverGroup(session=session,
-                         user_id=user_id
-                         )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set object_types")
+        logger.info("set object_types")
         if tags.OBJECT_TYPES in kwargs.keys():
             obj_inst.set_object_types(kwargs[tags.OBJECT_TYPES])
         else:
             obj_inst.set_object_types('NONE')
 
-        obj_inst.logger.info("set allowed_databases")
+        logger.info("set allowed_databases")
         if tags.ALLOWED_DATABASES in kwargs.keys():
             obj_inst.set_allowed_databases(kwargs[tags.ALLOWED_DATABASES])
         else:
             obj_inst.set_allowed_databases('NONE')
 
-        obj_inst.logger.info("set allowed_shares")
+        logger.info("set allowed_shares")
         if tags.ALLOWED_SHARES in kwargs.keys():
             obj_inst.set_allowed_shares(kwargs[tags.ALLOWED_SHARES])
         else:
             obj_inst.set_allowed_shares('NONE')
 
-        obj_inst.logger.info("set allowed_accounts")
+        logger.info("set allowed_accounts")
         if tags.ALLOWED_ACCOUNTS in kwargs.keys():
             obj_inst.set_allowed_accounts(kwargs[tags.ALLOWED_ACCOUNTS])
         else:
             obj_inst.set_allowed_accounts('NONE')
 
-        obj_inst.logger.info("set replication_schedule")
+        logger.info("set replication_schedule")
         if tags.REPLICATION_SCHEDULE in kwargs.keys():
             obj_inst.set_replication_schedule(kwargs[tags.REPLICATION_SCHEDULE])
         else:
             obj_inst.set_replication_schedule('NONE')
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

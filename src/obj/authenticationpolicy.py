@@ -2,10 +2,12 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
+import logging
+logger = logging.getLogger('authentication policy logs')
 from .baseobj import BaseObject
 from vars.obj.authenticationpolicy.gvauthenticationpolicy import AuthenticationPolicyTag as tags
 
-
+# ========== Descriptors ==========
 
 class AuthName:
     def __get__(self, instance, owner):
@@ -101,6 +103,8 @@ class AuthTagClause:
         del instance._tag_clause
 
 
+# ========== Attr container ==========
+
 class AuthenticationPolicyAttrs:
     name = AuthName()
     saml_idp = AuthSamlIdp()
@@ -115,9 +119,11 @@ class AuthenticationPolicyAttrs:
     tag_clause = AuthTagClause()
 
 class AuthenticationPolicy(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
         self.attr = AuthenticationPolicyAttrs()
+        self.session = session
+        self.user_id = user_id
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
 
     # setters
     def set_name(self, v): self.attr.name = v
@@ -174,89 +180,89 @@ class AuthenticationPolicy(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=AuthenticationPolicy(session=session,
                          user_id=user_id,
-                         )
+                         logger=logger)
         
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set saml_idp")
+        logger.info("set saml_idp")
         if tags.SAML_IDENTITY_PROVIDER in kwargs.keys():
             obj_inst.set_saml_idp(kwargs[tags.SAML_IDENTITY_PROVIDER])
         else:
             obj_inst.set_saml_idp('NONE')
 
-        obj_inst.logger.info("set saml_sp_init")
+        logger.info("set saml_sp_init")
         if tags.SAML_ENABLE_SP_INITIATED in kwargs.keys():
             obj_inst.set_saml_sp_init(kwargs[tags.SAML_ENABLE_SP_INITIATED])
         else:
             obj_inst.set_saml_sp_init('NONE')
 
-        obj_inst.logger.info("set saml_idp_init")
+        logger.info("set saml_idp_init")
         if tags.SAML_ENABLE_IDP_INITIATED in kwargs.keys():
             obj_inst.set_saml_idp_init(kwargs[tags.SAML_ENABLE_IDP_INITIATED])
         else:
             obj_inst.set_saml_idp_init('NONE')
 
-        obj_inst.logger.info("set oauth_client_id")
+        logger.info("set oauth_client_id")
         if tags.OAUTH_CLIENT_ID in kwargs.keys():
             obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
         else:
             obj_inst.set_oauth_client_id('NONE')
 
-        obj_inst.logger.info("set oauth_client_secret")
+        logger.info("set oauth_client_secret")
         if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
             obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
         else:
             obj_inst.set_oauth_client_secret('NONE')
 
-        obj_inst.logger.info("set oauth_redirect_uri")
+        logger.info("set oauth_redirect_uri")
         if tags.OAUTH_REDIRECT_URI in kwargs.keys():
             obj_inst.set_oauth_redirect_uri(kwargs[tags.OAUTH_REDIRECT_URI])
         else:
             obj_inst.set_oauth_redirect_uri('NONE')
 
-        obj_inst.logger.info("set mfa_enrollment")
+        logger.info("set mfa_enrollment")
         if tags.MFA_ENROLLMENT in kwargs.keys():
             obj_inst.set_mfa_enrollment(kwargs[tags.MFA_ENROLLMENT])
         else:
             obj_inst.set_mfa_enrollment('NONE')
 
-        obj_inst.logger.info("set mfa_enrollment_grace")
+        logger.info("set mfa_enrollment_grace")
         if tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS in kwargs.keys():
             obj_inst.set_mfa_enrollment_grace(kwargs[tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS])
         else:
             obj_inst.set_mfa_enrollment_grace('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set tag_clause")
+        logger.info("set tag_clause")
         if tags.TAG_CLAUSE in kwargs.keys():
             obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
         else:
             obj_inst.set_tag_clause('NONE')
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

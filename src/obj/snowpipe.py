@@ -175,8 +175,8 @@ class SnowpipeAttrs:
     comment = Comment()
 
 class Snowpipe(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.attr = SnowpipeAttrs(self)
 
     def set_database(self,value):
@@ -319,69 +319,69 @@ class Snowpipe(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=Snowpipe(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set database")
+        logger.info("set database")
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
             obj_inst.set_database('NONE')
 
-        obj_inst.logger.info("set schema")
+        logger.info("set schema")
         if tags.SCHEMA in kwargs.keys():
             obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
             obj_inst.set_schema('NONE')
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set auto_ingest")
+        logger.info("set auto_ingest")
         if tags.AUTO_INGEST in kwargs.keys():
             obj_inst.set_auto_ingest(kwargs[tags.AUTO_INGEST])
         else:
             obj_inst.set_auto_ingest('NONE')
 
-        obj_inst.logger.info("set error_integration")
+        logger.info("set error_integration")
         if tags.ERROR_INTEGRATION in kwargs.keys():
             obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
         else:
             obj_inst.set_error_integration('NONE')
 
-        obj_inst.logger.info("set aws_sns_topic")
+        logger.info("set aws_sns_topic")
         if tags.AWS_SNS_TOPIC in kwargs.keys():
             obj_inst.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
         else:
             obj_inst.set_aws_sns_topic('NONE')
 
-        obj_inst.logger.info("set integration")
+        logger.info("set integration")
         if tags.INTEGRATION in kwargs.keys():
             obj_inst.set_integration(kwargs[tags.INTEGRATION])
         else:
             obj_inst.set_integration('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

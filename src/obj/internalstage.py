@@ -171,8 +171,8 @@ class InternalStageAttrs:
 
 
 class InternalStage(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session, user_id)
+    def __init__(self, session, user_id, logger):
+        super().__init__(session, user_id, logger)
         self.sf_object_tag = "STAGE"
         self.attr = InternalStageAttrs(self)
 
@@ -335,57 +335,57 @@ class InternalStage(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=InternalStage(session=session,
-                         user_id=user_id
-                         )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set database")
+        logger.info("set database")
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
             obj_inst.set_database('NONE')
 
-        obj_inst.logger.info("set schema")
+        logger.info("set schema")
         if tags.SCHEMA in kwargs.keys():
             obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
             obj_inst.set_schema('NONE')
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set file_format")
+        logger.info("set file_format")
         if tags.FILE_FORMAT in kwargs.keys():
             obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
         else:
             obj_inst.set_file_format('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        obj_inst.logger.info("set encryption")
+        logger.info("set encryption")
         if tags.ENCRYPTION in kwargs.keys():
             obj_inst.set_encryption(kwargs[tags.ENCRYPTION])
         else:
             obj_inst.set_encryption('NONE')
 
-        obj_inst.logger.info("set enable")
+        logger.info("set enable")
         if tags.ENABLE in kwargs.keys():
             obj_inst.set_enable(kwargs[tags.ENABLE])
         else:
             obj_inst.set_enable('NONE')
 
-        obj_inst.logger.info("set refresh_on_create")
+        logger.info("set refresh_on_create")
         if tags.REFRESH_ON_CREATE in kwargs.keys():
             obj_inst.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
         else:
@@ -393,13 +393,13 @@ class Operation:
 
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 

@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.contact.gvcontact import ContactTag as tags
-import logging
+
 class ContactName:
     def __get__(self, instance, owner):
         return instance._name
@@ -54,9 +54,11 @@ class ContactAttrs:
     comment = ContactComment()
 
 class Contact(BaseObject):
-    def __init__(self, session, user_id):
-        super().__init__(session=session,user_id=user_id)
+    def __init__(self, session, user_id, logger):
         self.attr = ContactAttrs()
+        self.session = session
+        self.user_id = user_id
+        self.logger = logger
 
     # Setter methods
     def set_name(self, v): self.attr.name = v
@@ -112,52 +114,52 @@ class Contact(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=Contact(session=session,
                          user_id=user_id,
-                        )
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set name")
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info("set users")
+        logger.info("set users")
         if tags.USERS in kwargs.keys():
             obj_inst.set_users(kwargs[tags.USERS])
         else:
             obj_inst.set_users('NONE')
 
-        obj_inst.logger.info("set email_distribution_list")
+        logger.info("set email_distribution_list")
         if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
             obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
         else:
             obj_inst.set_email_distribution_list('NONE')
 
-        obj_inst.logger.info("set url")
+        logger.info("set url")
         if tags.URL in kwargs.keys():
             obj_inst.set_url(kwargs[tags.URL])
         else:
             obj_inst.set_url('NONE')
 
-        obj_inst.logger.info("set comment")
+        logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
 
-        obj_inst.logger.info('prepare query')
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
 
