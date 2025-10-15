@@ -116,9 +116,11 @@ class LLMTools:
         try:
             print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
-            
             operation = self.import_module(obj_type)
-            qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
+            if obj_type.upper() == 'TABLE':
+                qry=operation.create_table_using_files_from_stage()
+            else:
+                qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_type}, query returned: {qry}")
             self.logger.info(f'Object {obj_type} created successfully')
             return f'Object {obj_type} created successfully'

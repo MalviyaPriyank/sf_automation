@@ -17,6 +17,7 @@ from dep.deploy import Deploy
 from setup import privilege
 from vars.base.basedatatypes import DataTypes
 from .baseobj import BaseObject 
+from vars.obj.table.gvtable import Table as tags
 
 
 class Database:
@@ -150,9 +151,10 @@ class Table(BaseObject):
             if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
                 priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.qualified_name,role = role)
 
-    def create_table_using_files_from_stage(self,database,schema,filelist=[]):
-        self.set_database(database)
-        self.set_schema(schema)
+    def create_table_using_files_from_stage(self):
+        #self,database,schema,filelist=[]
+        self.set_database('MY_DEV_DB')
+        self.set_schema('MY_SCHEMA')
         #stg = Stage(self.root,cfg._config_database,cfg._config_schema)
         #stg.set_stage(cfg._config_stage)
         #stg.set_stage_reference()
@@ -213,7 +215,7 @@ class Table(BaseObject):
 class Operation:
     @staticmethod
     def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=DatabaseRole(session=session,
+        obj_inst=Table(session=session,
                          user_id=user_id,
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
@@ -232,15 +234,6 @@ class Operation:
         else:
             obj_inst.set_name(kwargs[tags.NAME])
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-
-
-        logger.info('prepare query')
-        obj_inst.prepare_query()
         
         logger.info('execute query')
         obj_inst.execute_final_query()

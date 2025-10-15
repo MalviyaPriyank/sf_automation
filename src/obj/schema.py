@@ -487,6 +487,12 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
+        logger.info("set database")
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            obj_inst.set_database('NONE')
+
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
@@ -573,8 +579,10 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
-
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name,
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema='NA')
 
     @classmethod
     def get_attributes(cls):
