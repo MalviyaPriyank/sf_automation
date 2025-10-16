@@ -563,6 +563,86 @@ class CopyInto(BaseObject):
         self.logger.info(f"Copy into query : {self.qry}")
         return self.qry
 
+
+class Operation:
+    @staticmethod
+    def create_object(session,user_id,logger,kwargs,*largs):
+        obj_inst=CopyInto(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
+
+        obj_inst.logger.info('set database')
+        obj_inst.set_database(kwargs[tags.DATABASE])
+
+        obj_inst.logger.info('set _schema')
+        obj_inst.set_schema(kwargs[tags.SCHEMA])
+
+        obj_inst.logger.info('set _table')
+        obj_inst.set_table(kwargs[tags.TABLE])
+
+        obj_inst.logger.info('set _stage')
+        obj_inst.set_stage(kwargs[tags.STAGE])
+
+        obj_inst.logger.info('set _file_format')
+        obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
+
+        obj_inst.logger.info('set _on_error')
+        obj_inst.set_on_error(kwargs[tags.ON_ERROR])
+
+        obj_inst.logger.info('set _size_limit')
+        obj_inst.set_size_limit(kwargs[tags.SIZE_LIMIT])
+
+        obj_inst.logger.info('set _purge')
+        obj_inst.set_purge(kwargs[tags.PURGE])
+
+        obj_inst.logger.info('set _return_failed_only')
+        obj_inst.set_return_failed_only(kwargs[tags.RETURN_FAILED_ONLY])
+
+        obj_inst.logger.info('set _match_by_column_name')
+        obj_inst.set_match_by_column_name(kwargs[tags.MATCH_BY_COLUMN_NAME])
+
+        obj_inst.logger.info('set _include_metadata')
+        obj_inst.set_include_metadata(kwargs[tags.INCLUDE_METADATA])
+
+        obj_inst.logger.info('set _enforce_length')
+        obj_inst.set_enforce_length(kwargs[tags.ENFORCE_LENGTH])
+
+        obj_inst.logger.info('set _truncatecolumns')
+        obj_inst.set_truncatecolumns(kwargs[tags.TRUNCATECOLUMNS])
+
+        obj_inst.logger.info('set _force')
+        obj_inst.set_force(kwargs[tags.FORCE])
+
+        obj_inst.logger.info('set _load_uncertain_files')
+        obj_inst.set_load_uncertain_files(kwargs[tags.LOAD_UNCERTAIN_FILES])
+
+        obj_inst.logger.info('set _file_processor')
+        obj_inst.set_file_processor(kwargs[tags.FILE_PROCESSOR])
+
+        obj_inst.logger.info('set _scanner')
+        obj_inst.set_scanner(kwargs[tags.SCANNER])
+
+        obj_inst.logger.info('set _project_name')
+        obj_inst.set_project_name(kwargs[tags.PROJECT_NAME])
+
+        obj_inst.logger.info('set _model_name')
+        obj_inst.set_model_name(kwargs[tags.MODEL_NAME])
+
+        obj_inst.logger.info('set _model_version')
+        obj_inst.set_model_version(kwargs[tags.MODEL_VERSION])
+
+        obj_inst.logger.info('set _load_mode')
+        obj_inst.set_load_mode(kwargs[tags.LOAD_MODE])
+
+        obj_inst.logger.info(f"preparing copy into for {obj_inst.attr.table}")
+        obj_inst.prepare_query()
+
+        return obj_inst.qry
+
+
     
 
         

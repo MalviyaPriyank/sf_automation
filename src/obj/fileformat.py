@@ -905,6 +905,19 @@ class DisableAutoConvert:
     def __del__(self,instance):
         del instance._disable_auto_convert
 
+class Comment:
+    def __get__(self,instance,owner):
+        return instance._comment
+    
+    def __set__(self,instance,value):
+        if value == 'NONE':
+            instance._comment = value
+        else:
+            instance._comment = f"'{value}'"
+    
+    def __delete__(self,instance):
+        del instance._comment
+
 class FileFormatAttrs:
     def __init__(self,parent):
         self.parent = parent
@@ -948,6 +961,7 @@ class FileFormatAttrs:
     strip_outer_element = StripOuterElement()
     disable_snowflake_data = DisableSnowflakeData()
     disable_auto_convert = DisableAutoConvert()
+    comment=Comment()
 
 class FileFormat(BaseObject):
     def __init__(self, session, user_id, logger):
@@ -1071,6 +1085,9 @@ class FileFormat(BaseObject):
     def set_disable_auto_convert(self, val):
         self.attr.disable_auto_convert = val
 
+    def set_comment(self,val):
+        self.attr.comment=val
+
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
 
@@ -1116,6 +1133,7 @@ class FileFormat(BaseObject):
         set_flag(tags.STRIP_OUTER_ELEMENT, "_strip_outer_element")
         set_flag(tags.DISABLE_SNOWFLAKE_DATA, "_disable_snowflake_data")
         set_flag(tags.DISABLE_AUTO_CONVERT, "_disable_auto_convert")
+        set_flag(tags.COMMENT,"_comment")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -1201,6 +1219,8 @@ class FileFormat(BaseObject):
                     self.qry = f" {self.qry} {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data} "
                 if prop == tags.DISABLE_AUTO_CONVERT:
                     self.qry = f" {self.qry} {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def alter_object(self):
         for prop in self.property_lst:
@@ -1456,6 +1476,9 @@ class FileFormat(BaseObject):
 
         self.logger.info('set DISABLE_AUTO_CONVERT')
         self.set_disable_auto_convert(kwargs[tags.DISABLE_AUTO_CONVERT])
+
+        self.logger.info('set COMMENT')
+        self.set_comment(kwargs[tags.COMMENT])
 
         self.logger.info('set qualified name')
         self.set_qualified_name()
@@ -1716,6 +1739,11 @@ class Operation:
         else:
             obj_inst.set_disable_auto_convert('NONE')
 
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
@@ -1724,7 +1752,16 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
+        
+        logger.info('writing to git')
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
 
 
     @classmethod

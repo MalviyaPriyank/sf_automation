@@ -43,7 +43,7 @@ class Schema:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
         instance.parent.logger.info(f"inside to set name {value}")
@@ -74,6 +74,10 @@ class Name:
             else:
                 instance._name=old_name
                 instance._rename_to="NONE"
+
+    def __delete__(self,instance):
+        del instance._name
+        del instance._rename_to
 
 class FileFormat:   
     def __get__(self,instance,owner):
@@ -438,7 +442,7 @@ class ExternalStage(BaseObject):
 
 
     def set_create_qry(self):
-        self.qry = f"CREATE OR REPLACE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+        self.qry = f"CREATE OR REPLACE STAGE {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -472,6 +476,8 @@ class ExternalStage(BaseObject):
                     self.qry=f" {self.qry} )"
 
     def prepare_query(self):
+        self.set_object_properties_flag()
+        self.check_properties_to_set()
         if self.is_create == 'TRUE':
             self.set_create_qry()
             self.add_properties_to_query()
@@ -542,6 +548,7 @@ class ExternalStage(BaseObject):
 
         self.logger.info('prepare query')
         self.prepare_query()
+        self.execute_final_query()
 
         self.logger.info('execute query')
         self.create_external_stage()
@@ -668,19 +675,17 @@ class Operation:
         logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
-        obj_inst.execute_final_query()
-
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.logger.info('create deployment entry')
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                     object_type=obj_inst.__class__.__name__,
+                                     object_database=obj_inst.attr.database,
+                                     object_schema=obj_inst.attr.schema)
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                               object_type=obj_inst.__class__.__name__,
+                               object_database=obj_inst.attr.database,
+                               object_schema=obj_inst.attr.schema)
 
 
     @classmethod
     def get_attributes(cls):
         return tags().get_attributes_with_description()
-
-
-        
-
-
-
