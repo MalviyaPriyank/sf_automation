@@ -119,8 +119,8 @@ class LLMTools:
             operation = self.import_module(obj_type)
             qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_type}, query returned: {qry}")
-            self.logger.info(f'Object {obj_type} created successfully')
-            return f'Object {obj_type} created successfully'
+            self.logger.info(f'Object {obj_type} created successfully.')
+            return f'Object {obj_type} created successfully, and returned {qry}'
         except (SnowchainException,SnowparkSQLException) as e:
             self.logger.warn(f"inside Snowchainexception")
             self.logger.warn(f"Error : {e}")
@@ -130,6 +130,9 @@ class LLMTools:
             self.logger.warn(f"Error : {e}")
             self.logger.warn(f"Traceback: {traceback.format_exc()}")
             return f"There was ab error creating object : {e}"
+
+    def ingestion_pipeline_instructions(self, question):
+        return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. use the query returned from copy into as an input to snowpipe object."
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

@@ -12,6 +12,13 @@ RETRIEVAL_WORKFLOW = 'retrieval_workflow'
 CREATE_SF_OBJ = 'create_sf_object'
 GET_WORKFLOW = 'get_workflow'
 
+NEW_SYSTEM_PROMPTS = {
+    'user':'You are an assistant named Frosty to help user build on snowflake platform.',
+    'assistant':'how to create ingestion pipeline',
+    'user':'you need to create file format object, then external stage object, then copy into object, and then snowpipe object. the copy into query is one of the inputs to snowpipe.',
+    'assistant':'how can i help'
+}
+
 SYSTEM_PROMPTS = {
     'user':'You are an assistant named Frosty to help user build on snowflake platform. Only answer questions related to snowflake. Start by retrieving the workflow provided as tool named get_workflow. Always provide a link to snowflake documentation if you pull information from the web. keep verbosity to minimum. Assume user has an account with snowflake. onboarding data is same as creating ingestion pipeline. for resource monitor object, remind user that this can only be done through AccountAdmin.',
     'assistant':'How to create a database object?',

@@ -62,5 +62,25 @@ tools = {
                 }
             },
         },
+        {
+            "toolSpec": {
+                "name":"ingestion_pipeline_instructions",
+                "description":"Use this tool to get instructions and dependencies for creating ingestion pipeline.",
+                "inputSchema": {
+                    "json":{ 
+                        "type":"object",
+                        "properties": {
+                            "question": {
+                                "type":"string",
+                                "description":"user question"
+                            },
+                        },
+                        "required":[
+                            "question"
+                        ]
+                    }
+                }
+            },
+        },
     ]
 }

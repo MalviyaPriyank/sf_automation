@@ -85,7 +85,7 @@ class LLMTools:
                                   ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
                                   ss.SCHEMA_OBJ: schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
+                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id,logger=self.logger),
                                   ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
@@ -114,12 +114,13 @@ class LLMTools:
 
     def create_object(self, obj_type, data_dict):
         try:
+            print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
             operation = self.import_module(obj_type)
             qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
-            self.logger.info(f"For {obj_name}, query returned: {qry}")
-            self.logger.info(f'Object {obj_name} created successfully')
-            return f'Object {obj_name} created successfully'
+            self.logger.info(f"For {obj_type}, query returned: {qry}")
+            self.logger.info(f'Object {obj_type} created successfully.')
+            return f'Object {obj_type} created successfully, and returned {qry}'
         except (SnowchainException,SnowparkSQLException) as e:
             self.logger.warn(f"inside Snowchainexception")
             self.logger.warn(f"Error : {e}")
@@ -129,6 +130,9 @@ class LLMTools:
             self.logger.warn(f"Error : {e}")
             self.logger.warn(f"Traceback: {traceback.format_exc()}")
             return f"There was ab error creating object : {e}"
+
+    def ingestion_pipeline_instructions(self, question):
+        return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. use the query returned from copy into as an input to snowpipe object."
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]
