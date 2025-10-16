@@ -85,7 +85,7 @@ class LLMTools:
                                   ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
                                   ss.SCHEMA_OBJ: schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, root=self.root, user_id=self.user_id, logger=self.logger),
+                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
                                   ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id,logger=self.logger),
                                   ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
@@ -117,10 +117,7 @@ class LLMTools:
             print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
             operation = self.import_module(obj_type)
-            if obj_type.upper() == 'TABLE':
-                qry=operation.create_table_using_files_from_stage()
-            else:
-                qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
+            qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_type}, query returned: {qry}")
             self.logger.info(f'Object {obj_type} created successfully')
             return f'Object {obj_type} created successfully'

@@ -46,14 +46,41 @@ class Schema:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
-    
+        return (instance._name,instance._rename_to)
+
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)        
-        instance._name = value
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.database_exist(session=instance.parent.session,database_name=old_name)
+                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
 class ColumnNameList:
     def __get__(self,instance,owner):
@@ -99,10 +126,9 @@ class TableAttrs:
 
 class Table(BaseObject):
 
-    def __init__(self,session,root,user_id,logger):
+    def __init__(self,session,user_id,logger):
         super().__init__(session=session,user_id=user_id,logger=logger)
         self.attr = TableAttrs(self)
-        self.root = root
 
     def set_database(self,database):
         self.attr.database = database
@@ -114,32 +140,30 @@ class Table(BaseObject):
         self.attr.name = name
 
     def set_qualified_name(self):
-        self.qualified_name=f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+        self.qualified_name=f"{self.attr.database}.{self.attr.schema}.{self.attr.name[0]}"
 
-    def set_column_name_list(self,ddl_df):
-        self.attr.column_name_list = ddl_df["Column_Name"].to_list()
+    def set_column_name_list(self,value):
+        self.attr.column_name_list = value
 
-    def set_column_type_list(self,ddl_df):
-        self.attr.column_type_list = ddl_df["Column_Type"].to_list()
+    def set_column_type_list(self,value):
+        self.attr.column_type_list = value
 
     def read_table_ddl_file(self):
         table_ddl_df = pd.read_csv(self.attr.file_path)
         return table_ddl_df
-        
-    def get_column_in_a_list(self,column_name):
-        return self.attr.table_ddl_df[column_name]
+
     
     def get_create_table_query(self):
-        qry = f"CREATE OR REPLACE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name} ("
+        self.qry = f"CREATE OR REPLACE TABLE {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} ("
 
         for i in range(0,len(self.attr.column_name_list)):
             if i != len(self.attr.column_name_list) -1:
-                qry = qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]}, '
+                self.qry = self.qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]}, '
             else: 
-                qry = qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} '
+                self.qry = self.qry + f' {self.attr.column_name_list[i]} {self.attr.column_type_list[i]} '
 
-        qry = qry + " ) "
-        return qry
+        self.qry = self.qry + " ) "
+        return self.qry
 
     def create_table(self):
         self.qry = self.get_create_table_query()
@@ -228,18 +252,33 @@ class Operation:
         else:
             obj_inst.set_database(kwargs[tags.DATABASE])
 
+        logger.info("set schema")
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+
         logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name(kwargs[tags.NAME])
 
-        
-        logger.info('execute query')
-        obj_inst.execute_final_query()
+        logger.info("set column")
+        if tags.COLUMNS_LIST in kwargs.keys():
+            obj_inst.set_column_name_list(kwargs[tags.COLUMNS_LIST])
+        else:
+            obj_inst.set_column_name_list("NONE")
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        logger.info("set data types")
+        if tags.DATA_TYPES in kwargs.keys():
+            obj_inst.set_column_type_list(kwargs[tags.DATA_TYPES])
+        else:
+            obj_inst.set_column_type_list("NONE")
+
+        obj_inst.set_qualified_name()
+        obj_inst.get_create_table_query()
+        obj_inst.session.sql(obj_inst.qry).collect()
 
 
     @classmethod
