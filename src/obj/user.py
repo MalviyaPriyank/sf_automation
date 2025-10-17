@@ -757,9 +757,11 @@ class Operation:
         logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
-
+        logger.info('git sync')
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
 
     @classmethod
     def get_attributes(cls):
