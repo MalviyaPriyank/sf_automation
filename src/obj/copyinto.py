@@ -641,6 +641,10 @@ class Operation:
         obj_inst.prepare_query()
 
         return obj_inst.qry
+    
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()
 
 
     
