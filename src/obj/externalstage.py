@@ -674,6 +674,7 @@ class Operation:
 
         logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.execute_final_query()
         
         obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],

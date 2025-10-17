@@ -18,6 +18,23 @@ class SchemaTag(BaseTag):
     TRACE_LEVEL="TRACE_LEVEL"
     STORAGE_SERIALIZATION_POLICY="STORAGE_SERIALIZATION_POLICY"
     CLASSIFICATION_PROFILE="CLASSIFICATION_PROFILE"
+
+    @classmethod
+    def get_attributes_with_description(cls):
+        attr_dict = super().get_attributes_with_description()
+        attr_dict["WITH_MANAGED_ACCESS"] = "user provided value for WITH_MANAGED_ACCESS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["DATA_RETENTION_TIME_IN_DAYS"] = "user provided value for DATA_RETENTION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["MAX_DATA_EXTENSION_TIME_IN_DAYS"] = "user provided value for MAX_DATA_EXTENSION_TIME_IN_DAYS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["EXTERNAL_VOLUME"] = "user provided value for EXTERNAL_VOLUME for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["CATALOG"] = "user provided value for CATALOG for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["DEFAULT_DDL_COLLATION"] = "user provided value for DEFAULT_DDL_COLLATION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["REPLACE_INVALID_CHARACTERS"] = "user provided value for REPLACE_INVALID_CHARACTERS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["LOG_LEVEL"] = "user provided value for LOG_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["TRACE_LEVEL"] = "user provided value for TRACE_LEVEL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["STORAGE_SERIALIZATION_POLICY"] = "user provided value for STORAGE_SERIALIZATION_POLICY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["CLASSIFICATION_PROFILE"] = "user provided value for CLASSIFICATION_PROFILE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        return attr_dict
+
     
 
     @classmethod

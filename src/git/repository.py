@@ -4,7 +4,9 @@ import os
 clone_dir = "/Users/priyankmalviya/snowchain/agentic/repo"
 
 # Repo URL
-repo_url = "https://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@github.com/MalviyaPriyank/Snowchain.git"
+repo_url = "https://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@github.com/MalviyaPriyank/Snowchain.git"
+#repo_url="https://github.com/MalviyaPriyank/gyrusdemo.git"
+#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
 
 class Repository:
     def __init__(self):

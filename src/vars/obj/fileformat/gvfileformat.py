@@ -45,6 +45,48 @@ class FileFormatTag(BaseTag,BaseMethod):
     DISABLE_AUTO_CONVERT="DISABLE_AUTO_CONVERT"
 
     @classmethod
+    def get_attributes_with_description(cls):
+        attr_dict = super().get_attributes_with_description()
+        attr_dict["TYPE"] = "user provided value for TYPE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["COMPRESSION"] = "user provided value for COMPRESSION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["RECORD_DELIMITER"] = "user provided value for RECORD_DELIMITER for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["FIELD_DELIMITER"] = "user provided value for FIELD_DELIMITER for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["MULTI_LINE"] = "user provided value for MULTI_LINE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["FILE_EXTENSION"] = "user provided value for FILE_EXTENSION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["PARSE_HEADER"] = "user provided value for PARSE_HEADER for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["SKIP_HEADER"] = "user provided value for SKIP_HEADER for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["SKIP_BLANK_LINES"] = "user provided value for SKIP_BLANK_LINES for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["DATE_FORMAT"] = "user provided value for DATE_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["TIME_FORMAT"] = "user provided value for TIME_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["TIMESTAMP_FORMAT"] = "user provided value for TIMESTAMP_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["BINARY_FORMAT"] = "user provided value for BINARY_FORMAT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ESCAPE"] = "user provided value for ESCAPE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ESCAPE_UNENCLOSED_FIELD"] = "user provided value for ESCAPE_UNENCLOSED_FIELD for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["TRIM_SPACE"] = "user provided value for TRIM_SPACE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["FIELD_OPTIONALLY_ENCLOSED_BY"] = "user provided value for FIELD_OPTIONALLY_ENCLOSED_BY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["NULL_IF"] = "user provided value for NULL_IF for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ERROR_ON_COLUMN_COUNT_MISMATCH"] = "user provided value for ERROR_ON_COLUMN_COUNT_MISMATCH for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["REPLACE_INVALID_CHARACTERS"] = "user provided value for REPLACE_INVALID_CHARACTERS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["EMPTY_FIELD_AS_NULL"] = "user provided value for EMPTY_FIELD_AS_NULL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["SKIP_BYTE_ORDER_MARK"] = "user provided value for SKIP_BYTE_ORDER_MARK for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ENCODING"] = "user provided value for ENCODING for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ENABLE_OCTAL"] = "user provided value for ENABLE_OCTAL for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ALLOW_DUPLICATE"] = "user provided value for ALLOW_DUPLICATE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["STRIP_OUTER_ARRAY"] = "user provided value for STRIP_OUTER_ARRAY for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["STRIP_NULL_VALUES"] = "user provided value for STRIP_NULL_VALUES for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["IGNORE_UTF8_ERRORS"] = "user provided value for IGNORE_UTF8_ERRORS for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["SNAPPY_COMPRESSION"] = "user provided value for SNAPPY_COMPRESSION for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["BINARY_AS_TEXT"] = "user provided value for BINARY_AS_TEXT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["USE_LOGICAL_TYPE"] = "user provided value for USE_LOGICAL_TYPE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["USE_VECTORIZED_SCANNER"] = "user provided value for USE_VECTORIZED_SCANNER for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["PRESERVE_SPACE"] = "user provided value for PRESERVE_SPACE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["STRIP_OUTER_ELEMENT"] = "user provided value for STRIP_OUTER_ELEMENT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["DISABLE_SNOWFLAKE_DATA"] = "user provided value for DISABLE_SNOWFLAKE_DATA for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["DISABLE_AUTO_CONVERT"] = "user provided value for DISABLE_AUTO_CONVERT for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        return attr_dict
+
+
+    @classmethod
     def allowed_value_list(cls):
         return {
             "TYPE":["CSV","JSON","AVRO","ORC","PARQUET","XML","DEFAULT"],

@@ -10,6 +10,9 @@ from vars.gvobject import Config as cfg
 
 _dev_env = 'DEV'
 _test_env = 'TEST'
+_bronze_env='BRONZE'
+_silver_env='SILVER'
+
 
 class ObjectType:
     def __get__(self,instance,owner):
@@ -259,13 +262,16 @@ class Deploy:
         self.session.sql(clean_table).collect()
 
     def deploy_from_dev_to_test(self):
-        dev_db = self.get_db_name_of_environment(_dev_env)
-        test_db = self.get_db_name_of_environment(_test_env)
+        #dev_db = self.get_db_name_of_environment(_dev_env)
+        #test_db = self.get_db_name_of_environment(_test_env)
         self.logger.info("before getting scripts to deploy")
         sql_lst = self.get_scripts_to_deploy()
         self.logger.info(f"after getting scripts: {sql_lst}")
         for qry in sql_lst:
-            qry = qry.replace('DEV','TEST')
+            if _dev_env in qry:
+                qry = qry.replace(_dev_env,_test_env)
+            elif _bronze_env in qry:
+                qry=qry.replace(_bronze_env,_silver_env)
             self.session.sql(qry).collect()
         self.logger.info('Deployment complete')
         self.logger.info('Cleaning the table')
