@@ -132,7 +132,12 @@ class LLMTools:
             return f"There was ab error creating object : {e}"
 
     def ingestion_pipeline_instructions(self, question):
-        return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. use the query returned from copy into as an input to snowpipe object."
+        return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. for each object, be sure to get their input params using get_object_params tool. use the query returned from copy into as an input to snowpipe object."
+
+    def deploy_all_dev_to_test(self, query):
+        deploy_obj = deploy.Deploy(session=self.sf_session,logger=self.logger)
+        deploy_obj.deploy_from_dev_to_test()
+        return 'All objects from dev are deployed to test successfully'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

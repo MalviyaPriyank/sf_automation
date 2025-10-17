@@ -21,7 +21,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_object",
-                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool, to get the dictionary keys and their description for data_dict attribute.",
+                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -81,6 +81,26 @@ tools = {
                     }
                 }
             },
+        },
+        {
+            "toolSpec": {
+                "name":"deploy_all_dev_to_test",
+                "description":"deploys all objects from dev environment to test environment.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user query"
+                            }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
         },
     ]
 }
