@@ -141,10 +141,15 @@ class LLMTools:
         return 'All objects from dev are deployed to test successfully'
 
     def get_salesforce_data(self, object_type, object_identifier):
-        salesforce_obj = salesforce.Salesforce()
+        salesforce_obj = salesforce.SForce()
         columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
+        self.logger.info(f"Columns pulled {columns_list}")
+        # Need to ask user which columns to pull
+        # pass this column list to get_records_from_salesforce which will return pandas df
+        # ask user what database and schema they want to write the data in, along with name of the table
+        # pass db,schema,df and table name to utils function to write pandas df to snowflake.
         df = salesforce_obj.get_records_from_salesforce(object_type=object_type, object_identifier=object_identifier, columns_list=columns_list)
-        return f'please create a table, columns are: {columns_list}, and heres the data to create a table with: {df}'
+        return f'please create a table,ask user which columns they want from this list {columns_list}, and heres the data to create a table with: {df}'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

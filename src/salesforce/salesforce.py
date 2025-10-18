@@ -26,7 +26,7 @@ for f in metadata['fields']:
     print(f['name'], f['type'], f.get('length'), f.get('nillable'))
 '''
 
-class Salesforce:
+class SForce:
     def __init__(self):
         self.username="priyank-qztd@force.com"
         self.pwd="LaxmiValentina@0522"
@@ -35,9 +35,9 @@ class Salesforce:
 
     def get_columns_of_object(self,object_type):
         sf=Salesforce(
-            username=self.username,
-            password=self.pwd,
-            security_token=self.security_token,
+            username=f"{self.username}",
+            password=f"{self.pwd}",
+            security_token=f"{self.security_token}",
             domain="login" 
         )
         if object_type.upper()=="ACCOUNT":
@@ -58,7 +58,7 @@ class Salesforce:
             qry = "SELECT "
             for i in range(0,len(columns_list)):
                 if i != len(columns_list)-1:
-                    qry = qry + ", " + columns_list[i]
+                    qry = qry + columns_list[i] + ","
                 else:
                     qry = qry + columns_list[i]
             qry = qry + f" FROM ACCOUNT WHERE NAME = '{object_identifier}'"
