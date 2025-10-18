@@ -27,7 +27,7 @@ from privileges.privilege import Privilege
 from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src import salesforce
+from src.salesforce import salesforce
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
