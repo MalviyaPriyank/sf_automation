@@ -130,7 +130,7 @@ class LLMTools:
             self.logger.warn("inside generic exception")
             self.logger.warn(f"Error : {e}")
             self.logger.warn(f"Traceback: {traceback.format_exc()}")
-            return f"There was ab error creating object : {e}"
+            return f"There was an error creating object : {e}"
 
     def ingestion_pipeline_instructions(self, question):
         return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. for each object, be sure to get their input params using get_object_params tool. use the query returned from copy into as an input to snowpipe object."
@@ -140,7 +140,7 @@ class LLMTools:
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
-    def get_salesforce_data(self, object_type, object_identifier):
+    def get_salesforce_cols(self, object_type, object_identifier):
         salesforce_obj = salesforce.SForce()
         columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
         self.logger.info(f"Columns pulled {columns_list}")
@@ -148,8 +148,15 @@ class LLMTools:
         # pass this column list to get_records_from_salesforce which will return pandas df
         # ask user what database and schema they want to write the data in, along with name of the table
         # pass db,schema,df and table name to utils function to write pandas df to snowflake.
-        df = salesforce_obj.get_records_from_salesforce(object_type=object_type, object_identifier=object_identifier, columns_list=columns_list)
-        return f'please create a table,ask user which columns they want from this list {columns_list}, and heres the data to create a table with: {df}'
+        return f'please create a table,ask user which columns they want from this list {columns_list}'
+
+    def get_salesforce_data_into_table(self, object_type, object_identifier, columns_list, database, schema, table):
+        exec("columns_list = "+columns_list)
+        df = salesforce_obj.get_records_from_salesforce(object_type=object_type, 
+                                                        object_identifier=object_identifier, 
+                                                        columns_list=columns_list)
+        salesforce_obj.write_pandas_df_to_snowflake(session,df,database,schema,table)
+        return 'salesforce data successfully loaded into snowflake table'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

@@ -64,19 +64,59 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"get_salesforce_data",
-                "description":"Use this tool to retrieve data from salesforce. it returns column list and dataframe, you then create a table object with it.",
+                "name":"get_salesforce_cols",
+                "description":"Use this tool to retrieve data columns from salesforce. it returns column list, you then cconfirm with user the columns they want to keep.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
                         "properties": {
                             "object_type": {
                                 "type":"string",
-                                "description":"type of object"
+                                "description":"user provided type of object"
                             },
                             "object_identifier": {
                                 "type":"string",
-                                "description":"identifier for the object"
+                                "description":"user provided identifier for the object"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier"
+                        ]
+                    }
+                }
+            },
+        },
+        {
+            "toolSpec": {
+                "name":"get_salesforce_data_into_table(",
+                "description":"Use this tool to load data from salesforce into snowflake table.",
+                "inputSchema": {
+                    "json":{ 
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"user provided type of object"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"user provided identifier for the object"
+                            },
+                            "database": {
+                                "type":"string",
+                                "description":"user provided database name"
+                            },
+                            "schema": {
+                                "type":"string",
+                                "description":"user provided schema name"
+                            },
+                            "table": {
+                                "type":"string",
+                                "description":"user provided table name"
+                            },
+                            "columns_list": {
+                                "type":"string",
+                                "description":"user provided list of columns"
                             },
                         },
                         "required":[
