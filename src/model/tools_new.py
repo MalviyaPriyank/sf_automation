@@ -144,15 +144,11 @@ class LLMTools:
         salesforce_obj = salesforce.SForce()
         columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
         self.logger.info(f"Columns pulled {columns_list}")
-        # Need to ask user which columns to pull
-        # pass this column list to get_records_from_salesforce which will return pandas df
-        # ask user what database and schema they want to write the data in, along with name of the table
-        # pass db,schema,df and table name to utils function to write pandas df to snowflake.
         return f'please create a table, ask user which columns they want from this list: {columns_list}'
 
     def get_salesforce_data_into_table(self, object_type, object_identifier, columns_list, database, schema, table):
-        self.logger.info(f"columns={columns_list}")
         exec("columns_list = "+columns_list)
+        salesforce_obj = salesforce.SForce()
         df = salesforce_obj.get_records_from_salesforce(object_type=object_type, 
                                                         object_identifier=object_identifier, 
                                                         columns_list=columns_list)
