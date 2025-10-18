@@ -27,6 +27,7 @@ from privileges.privilege import Privilege
 from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
+from src import salesforce
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
@@ -133,6 +134,17 @@ class LLMTools:
 
     def ingestion_pipeline_instructions(self, question):
         return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. for each object, be sure to get their input params using get_object_params tool. use the query returned from copy into as an input to snowpipe object."
+
+    def deploy_all_dev_to_test(self, query):
+        deploy_obj = deploy.Deploy(session=self.sf_session,logger=self.logger)
+        deploy_obj.deploy_from_dev_to_test()
+        return 'All objects from dev are deployed to test successfully'
+
+    def get_salesforce_data(self, object_type, object_identifier):
+        salesforce_obj = salesforce.Salesforce()
+        columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
+        df = salesforce_obj.get_records_from_salesforce(object_type=object_type, object_identifier=object_identifier, columns_list=columns_list)
+        return f'please create a table, columns are: {columns_list}, and heres the data to create a table with: {df}'
 
     def tool_call(self, content, tool_result):
         func_name = content[lcs.TOOL_USE][lcs.NAME]

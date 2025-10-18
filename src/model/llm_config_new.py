@@ -64,6 +64,30 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"get_salesforce_data",
+                "description":"Use this tool to retrieve data from salesforce. it returns column list and dataframe, you then create a table object with it.",
+                "inputSchema": {
+                    "json":{ 
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"type of object"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"identifier for the object"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier"
+                        ]
+                    }
+                }
+            },
+        },
+        {
+            "toolSpec": {
                 "name":"ingestion_pipeline_instructions",
                 "description":"Use this tool to get instructions and dependencies for creating ingestion pipeline.",
                 "inputSchema": {
