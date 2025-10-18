@@ -88,7 +88,7 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"get_salesforce_data_into_table(",
+                "name":"get_salesforce_data_into_table",
                 "description":"Use this tool to load data from salesforce into snowflake table.",
                 "inputSchema": {
                     "json":{ 
@@ -116,7 +116,7 @@ tools = {
                             },
                             "columns_list": {
                                 "type":"string",
-                                "description":"user provided list of columns"
+                                "description":"user provided list of columns. this should be in the format ['col1','col2']"
                             },
                         },
                         "required":[

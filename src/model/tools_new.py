@@ -148,9 +148,10 @@ class LLMTools:
         # pass this column list to get_records_from_salesforce which will return pandas df
         # ask user what database and schema they want to write the data in, along with name of the table
         # pass db,schema,df and table name to utils function to write pandas df to snowflake.
-        return f'please create a table,ask user which columns they want from this list {columns_list}'
+        return f'please create a table, ask user which columns they want from this list: {columns_list}'
 
     def get_salesforce_data_into_table(self, object_type, object_identifier, columns_list, database, schema, table):
+        self.logger.info(f"columns={columns_list}")
         exec("columns_list = "+columns_list)
         df = salesforce_obj.get_records_from_salesforce(object_type=object_type, 
                                                         object_identifier=object_identifier, 
