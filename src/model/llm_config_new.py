@@ -148,6 +148,66 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"find_privileges",
+                "description":"retrieves list of allowed privileges on an object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"grant_privilege_on_object",
+                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object. you then choose from the retrieved list of allowed privileges by interpreting user request. for example if user request interprets to USAGE privilege, you select USAGE, you dont select the entire list of privileges returned from find_privileges tool but select one from the list that applies.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                            "role": {
+                                "type":"string",
+                                "description":"role to grant privileges to"
+                            },
+                            "privilege": {
+                                "type":"string",
+                                "description":"one privilege to be granted from the list of allowed privileges"
+                            },
+                            "database_name": {
+                                "type":"string",
+                                "description":"name of database. this is set to 'None' if object type is DATABASE, otherwise request it from user."
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier","role","privilege","database_name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"deploy_all_dev_to_test",
                 "description":"deploys all objects from dev environment to test environment.",
                 "inputSchema": {

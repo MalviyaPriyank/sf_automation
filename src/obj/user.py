@@ -96,7 +96,7 @@ class DisplayName:
             instance._display_name=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._display_name = value
+            instance._display_name = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._display_name
@@ -110,7 +110,7 @@ class FirstName:
             instance._first_name=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._first_name = value
+            instance._first_name = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._first_name
@@ -124,7 +124,7 @@ class MiddleName:
             instance._middle_name=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._middle_name = value
+            instance._middle_name = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._middle_name
@@ -138,7 +138,7 @@ class LastName:
             instance._last_name=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._last_name = value
+            instance._last_name = f"'{value}'"
 
     def __delete__(self,instance):
         del instance._last_name
@@ -619,6 +619,8 @@ class Operation:
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():
+            logger.info("name found in dictionary")
+            logger.info(f"{kwargs[tags.NAME]}")
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')

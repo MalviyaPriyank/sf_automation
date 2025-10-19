@@ -107,7 +107,7 @@ class Role(BaseObject):
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
-    def set_create_account_qry(self):
+    def set_create_qry(self):
         self.qry = f"CREATE ROLE {self.attr.name[0]} "
 
     def add_properties_to_query(self):
@@ -142,7 +142,7 @@ class Operation:
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
         logger.info("set name")
-        if tags.DATABASE in kwargs.keys():
+        if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
