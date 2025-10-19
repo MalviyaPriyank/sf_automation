@@ -47,27 +47,35 @@ class SForce:
                 columns_list.append(f['name'])
             return columns_list
 
-    def get_records_from_salesforce(self,object_type,object_identifier,columns_list):
+    def get_records_from_salesforce(self,logger,object_type,object_identifier,columns_list):
         sf=Salesforce(
             username=self.username,
             password=self.pwd,
             security_token=self.security_token,
             domain="login" 
         )
+        
         if object_type.upper()=="ACCOUNT":
+            logger.info("create select query for ACCOUNT object")
+            logger.info(f"colummns list {columns_list}")
+            logger.info(f"type of colummns list {type(columns_list)}")
             qry = "SELECT "
             for i in range(0,len(columns_list)):
+                logger.info(f"total number of columns {len(columns_list)}")
+                logger.info(f"for column {columns_list[i]}")
                 if i != len(columns_list)-1:
                     qry = qry + columns_list[i] + ","
+                    logger.info(f"qry : {qry}")
                 else:
                     qry = qry + columns_list[i]
+                    logger.info(f"qry : {qry}")
             qry = qry + f" FROM ACCOUNT WHERE NAME = '{object_identifier}'"
-
+            logger.info(f"final qry : {qry}")
         response = sf.query(qry)
         df = pd.DataFrame(response['records']).drop(columns='attributes')
         return df
 
-    def write_pandas_df_to_snowflake(session, df, database, schema, table):
+    def write_pandas_df_to_snowflake(self, session, df, database, schema, table):
         session.sql(f"USE DATABASE {database}").collect()
         session.sql(f"USE SCHEMA {schema}").collect()
         session.write_pandas(

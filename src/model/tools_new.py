@@ -1,4 +1,5 @@
 import os
+import ast
 import sys
 import json
 import time
@@ -147,7 +148,8 @@ class LLMTools:
         return f'please create a table, ask user which columns they want from this list: {columns_list}'
 
     def get_salesforce_data_into_table(self, object_type, object_identifier, columns_list, database, schema, table):
-        exec("columns_list = "+columns_list)
+        # exec("columns_list = "+columns_list)
+        columns_list = ast.literal_eval(columns_list)
         self.logger.info(f"columns list before getting data from salesforce: {columns_list}")
         salesforce_obj = salesforce.SForce()
         df = salesforce_obj.get_records_from_salesforce(object_type=object_type, 

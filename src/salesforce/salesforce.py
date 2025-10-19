@@ -75,7 +75,7 @@ class SForce:
         df = pd.DataFrame(response['records']).drop(columns='attributes')
         return df
 
-    def write_pandas_df_to_snowflake(session, df, database, schema, table):
+    def write_pandas_df_to_snowflake(self, session, df, database, schema, table):
         session.sql(f"USE DATABASE {database}").collect()
         session.sql(f"USE SCHEMA {schema}").collect()
         session.write_pandas(
