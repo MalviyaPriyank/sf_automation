@@ -28,7 +28,7 @@ from privileges.privilege import Privilege
 from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
-from src.salesforce import salesforce
+#from salesforce import salesforceextract
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
@@ -141,8 +141,9 @@ class LLMTools:
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
+    '''
     def get_salesforce_cols(self, object_type, object_identifier):
-        salesforce_obj = salesforce.SForce()
+        salesforce_obj = salesforceextract.SForce()
         columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
         self.logger.info(f"Columns pulled {columns_list}")
         return f'please create a table, ask user which columns they want from this list: {columns_list}'
@@ -151,13 +152,14 @@ class LLMTools:
         # exec("columns_list = "+columns_list)
         columns_list = ast.literal_eval(columns_list)
         self.logger.info(f"columns list before getting data from salesforce: {columns_list}")
-        salesforce_obj = salesforce.SForce()
+        salesforce_obj = salesforceextract.SForce()
         df = salesforce_obj.get_records_from_salesforce(object_type=object_type, 
                                                         logger=self.logger,
                                                         object_identifier=object_identifier, 
                                                         columns_list=columns_list)
         salesforce_obj.write_pandas_df_to_snowflake(self.sf_session,df,database,schema,table)
         return 'salesforce data successfully loaded into snowflake table'
+    '''
     
     def find_privileges(self, object_type, object_identifier,database="NONE",schema="NONE"):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database,schema=schema)

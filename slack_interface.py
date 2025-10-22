@@ -51,8 +51,8 @@ def run(body, say):
         session_inst.set_account('kzekzkb-pm40264')
 
         logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        logging.getLogger('snowchain_logs').setLevel(logging.INFO)
-        logger = logging.getLogger('snowchain_logs')
+        logging.getLogger(__name__).setLevel(logging.INFO)
+        logger = logging.getLogger(__name__)
         
         logger.info('session started')
 
