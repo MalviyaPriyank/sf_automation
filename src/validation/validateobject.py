@@ -333,12 +333,15 @@ class ValidateObject:
     def is_new_resource_monitor(session,resource_monitor_name):
         df=session.sql('SHOW RESOURCE MONITORS')
         df=df.select(col("*")).collect()
-        rm_df=session.create_dataframe(df)
-        rm_count=rm_df.filter(col("NAME") ==f'{resource_monitor_name.upper()}').count()        
-        if rm_count == 0:
+        if len(df) == 0: #if there is not even a single row of object_type, eg no tasks 
             return True
         else:
-            raise DuplicateObject(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
+            rm_df=session.create_dataframe(df)
+            rm_count=rm_df.filter(col("NAME") ==f'{resource_monitor_name.upper()}').count()        
+            if rm_count == 0:
+                return True
+            else:
+                raise DuplicateObject(object_type="RESOURCE MONITOR",object_name=resource_monitor_name)
 
     @staticmethod
     def user_exist(session,user_name):

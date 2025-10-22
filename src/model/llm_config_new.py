@@ -162,9 +162,17 @@ tools = {
                                 "type":"string",
                                 "description":"name for the object"
                             },
+                          "database": {
+                                "type":"string",
+                                "description":"name for the database. Default value is NONE"
+                            },
+                          "schema": {
+                                "type":"string",
+                                "description":"name for the schema. Default value is NONE"
+                            },
                         },
                         "required":[
-                            "object_type","object_identifier"
+                            "object_type","object_identifier","database","schema"
                         ]
                     }
                 }
@@ -198,9 +206,13 @@ tools = {
                                 "type":"string",
                                 "description":"name of database. this is set to 'None' if object type is DATABASE, otherwise request it from user."
                             },
+                            "schema": {
+                                "type":"string",
+                                "description":"name for the schema. Default value is NONE"
+                            },
                         },
                         "required":[
-                            "object_type","object_identifier","role","privilege","database_name"
+                            "object_type","object_identifier","role","privilege","database_name","schema"
                         ]
                     }
                 }

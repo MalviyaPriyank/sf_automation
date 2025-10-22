@@ -20,9 +20,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 from exception.privilegeexception import ObjectNotSupported
 
 class Privilege:
-    def __init__(self,session,logger,object_type,object_identifier,database=None,schema=None):
+    def __init__(self,session,logger,object_type,object_identifier,database,schema):
         object_type = object_type.replace(' ','')
         logger.info(f"inside privilege for {object_type} : {object_identifier}")
+        logger.info(f" database {database}: , schema: {schema}")
         if object_type.upper()=='DATABASE':
             self.obj=DatabasePrivileges(session=session,logger=logger,object_identifier=object_identifier)
         elif object_type.upper()=='SCHEMA':

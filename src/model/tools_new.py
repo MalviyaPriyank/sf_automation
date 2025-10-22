@@ -159,15 +159,15 @@ class LLMTools:
         salesforce_obj.write_pandas_df_to_snowflake(self.sf_session,df,database,schema,table)
         return 'salesforce data successfully loaded into snowflake table'
     
-    def find_privileges(self, object_type, object_identifier):
-        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+    def find_privileges(self, object_type, object_identifier,database="NONE",schema="NONE"):
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database,schema=schema)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
-    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name=None):
+    def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name="NONE",schema="NONE"):
         if object_type.upper() != 'DATABASE':
             self.logger(f"switching to {database_name} database")
             self.sf_session.sql(f"USE DATABASE {database_name}").collect()
-        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier)
+        privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database_name,schema=schema)
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'
 

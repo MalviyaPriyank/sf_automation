@@ -268,7 +268,10 @@ class Deploy:
         sql_lst = self.get_scripts_to_deploy()
         self.logger.info(f"after getting scripts: {sql_lst}")
         for qry in sql_lst:
-            if _dev_env in qry:
+            self.logger.info(f"inside for : {qry}")
+            self.logger.info(f"checking if {_dev_env.upper()} is in {qry.upper()}")
+            if _dev_env.upper() in qry.upper():
+                self.logger.info(f"{_dev_env} found")
                 qry = qry.replace(_dev_env,_test_env)
             elif _bronze_env in qry:
                 qry=qry.replace(_bronze_env,_silver_env)
