@@ -5,96 +5,140 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.failovergroup.gvfailovergroup import FailoverGroupTag as tags
+from validation.validateobject import ValidateObject as vo
+from validation.validatevalue import ValidateValue as vv
 
 
 
-class FGName:
+class Name:
     def __get__(self, instance, owner):
         return instance._name
 
     def __set__(self, instance, value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_object(session=instance.parent.session
+                    ,object_type="FAILOVER GROUP"
+                    ,name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.object_exist(session=instance.parent.session,
+                                object_type="FAILOVER GROUP",
+                                object_name=old_name)
+                vo.is_new_object(session=instance.parent.session
+                    ,object_type="FAILOVER GROUP"
+                    ,name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
+
         instance._name = value
 
     def __delete__(self, instance):
         del instance._name
 
 
-class FGObjectTypes:
+class ObjectTypes:
     def __get__(self, instance, owner):
         return instance._object_types
 
     def __set__(self, instance, value):
-        # expects list like ['DATABASES','SHARES']
-        if isinstance(value, list):
-            instance._object_types = f"OBJECT_TYPES = ({', '.join(value)})"
-        else:
-            instance._object_types = f"OBJECT_TYPES = ({value})"
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get("OBJECT TYPES"),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._object_types=value
+        
 
     def __delete__(self, instance):
         del instance._object_types
 
 
-class FGAllowedDatabases:
+class AllowedDatabases:
     def __get__(self, instance, owner):
         return instance._allowed_databases
 
     def __set__(self, instance, value):
         # expects list of database names
-        if isinstance(value, list):
-            instance._allowed_databases = f"ALLOWED_DATABASES = ({', '.join(value)})"
-        else:
-            instance._allowed_databases = f"ALLOWED_DATABASES = ({value})"
+        for db in value:
+            vo.database_exist(session=instance.parent.session,
+                              database_name=db)
+        instance._allowed_databases=value
 
     def __delete__(self, instance):
         del instance._allowed_databases
 
 
-class FGAllowedShares:
+class AllowedShares:
     def __get__(self, instance, owner):
         return instance._allowed_shares
 
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._allowed_shares = f"ALLOWED_SHARES = ({', '.join(value)})"
-        else:
-            instance._allowed_shares = f"ALLOWED_SHARES = ({value})"
+        for shr in value:
+            vo.object_exist(session=instance.parent.session,
+                            object_type="SHARE",
+                            object_name=shr)
+        instance._allowed_shares=value
 
     def __delete__(self, instance):
         del instance._allowed_shares
 
 
-class FGAllowedAccounts:
+class AllowedIntegrationTypes:
     def __get__(self, instance, owner):
-        return instance._allowed_accounts
+        return instance._allowed_integration_types
 
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._allowed_accounts = f"ALLOWED_ACCOUNTS = ({', '.join(value)})"
-        else:
-            instance._allowed_accounts = f"ALLOWED_ACCOUNTS = ({value})"
+        for int_types in value:
+            vo.integration_exist(session=instance.parent.__class__.__name__,
+                                 integration_name=int_types)
+        instance._allowed_integration_types=value
 
     def __delete__(self, instance):
-        del instance._allowed_accounts
+        del instance._allowed_integration_types
 
 
-class FGReplicationSchedule:
+class ReplicationSchedule:
     def __get__(self, instance, owner):
         return instance._replication_schedule
 
     def __set__(self, instance, value):
-        instance._replication_schedule = f"REPLICATION_SCHEDULE = '{value}'"
+        vv.is_valid_cron(value=value,
+                         object_type=instance.parent.__class__.__name__,
+                         attr_name=self.__class__.__name__)
+        instance._replication_schedule = value
 
     def __delete__(self, instance):
         del instance._replication_schedule
 
-
 class FailoverGroupAttrs:
-    name = FGName()
-    object_types = FGObjectTypes()
-    allowed_databases = FGAllowedDatabases()
-    allowed_shares = FGAllowedShares()
-    allowed_accounts = FGAllowedAccounts()
-    replication_schedule = FGReplicationSchedule()
+    name = Name()
+    object_types = ObjectTypes()
+    allowed_databases = AllowedDatabases()
+    allowed_shares = AllowedShares()
+    allowed_integration_types = AllowedIntegrationTypes()
+    replication_schedule = ReplicationSchedule()
 
 
 
@@ -239,7 +283,7 @@ class Operation:
 
         logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
-
+        obj_inst.write_file_to_git()
 
     @classmethod
     def get_attributes(cls):

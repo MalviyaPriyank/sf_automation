@@ -17,7 +17,7 @@ class FailoverGroupTag(BaseTag):
     @classmethod
     def allowed_value_list(cls):
         return {
-            "OBJECT_TYPES": ["DATABASES", "SHARES"],
+            "OBJECT_TYPES": ["DATABASES", "SHARES","ACCOUNT PARAMETERS","INTEGRATIONS","NETWORK POLICIES","RESOURCE MONITORS","ROLES","SHARES","USERS","WAREHOUSES"],
             "REPLICATION_SCHEDULE": [
                 "<n> MINUTE",
                 "USING CRON <cron_expression> UTC"
