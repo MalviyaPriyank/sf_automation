@@ -358,7 +358,9 @@ class ValidateValue:
     @staticmethod
     def is_valid_cron(value,object_type,attr_name):
         try:
-            croniter(value, datetime.now())  
+            cleaned = value.replace("USING CRON", "").strip()
+            cleaned = " ".join(cleaned.split()[:5])
+            croniter(cleaned, datetime.now())  
             return True
         except:
             raise InvalidCron(object_type,attr_name)

@@ -569,9 +569,10 @@ class Config():
     _deployment_scripts_table_column_list = ["SQL_TEXT","USER_ID"]
     _deployment_scripts_table_column_data_type_dict ={
         "SQL_TEXT" : "VARCHAR",
-        "USER_ID" : "VARCHAR(50)"
+        "USER_ID" : "VARCHAR(50)",
+
     }
-    _deployment_control_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
+    _deployment_control_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","SQL_TEXT","DEPLOYMENT_ID","MODIFIED_TIMESTAMP","UNIQUE_ID"]
     _deployment_control_table_column_data_type_dict = {
         "OBJECT_TYPE" : "VARCHAR(50)",
         "OBJECT_DATABASE" : "VARCHAR(50)",
@@ -579,7 +580,10 @@ class Config():
         "OBJECT_NAME" : "VARCHAR(100)",
         "MODIFIED_BY" : "VARCHAR(50)",
         "DEPLOYMENT_STATUS" : "VARCHAR(100)",
-        "DEPLOYMENT_ID" : "VARCHAR(50)"
+        "SQL_TEXT":"VACHAR",
+        "DEPLOYMENT_ID" : "VARCHAR(50)",
+        "MODIFIED_TIMESTAMP":"VARCHAR(50)",
+        "UNIQUE_ID":"VARCHAR(50)"
     }
     _deployment_log_table_column_list = ["DEPLOYMENT_ID","DEPLOYMENT_TIMESTAMP","DEPLOYMENT_STATUS"]
     _deployment_log_table_column_data_type_dict = {
@@ -587,7 +591,7 @@ class Config():
         "DEPLOYMENT_TIMESTAMP" : "TIMESTAMP",
         "DEPLOYMENT_STATUS" : "VARCHAR(50)"
     }
-    _deployment_history_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID"]
+    _deployment_history_table_column_list = ["OBJECT_TYPE","OBJECT_DATABASE","OBJECT_SCHEMA","OBJECT_NAME","MODIFIED_BY","DEPLOYMENT_STATUS","DEPLOYMENT_ID","DEPLOYED_BY"]
     _deployment_history_table_column_data_type_dict = {
         "OBJECT_TYPE" : "VARCHAR(50)",
         "OBJECT_DATABASE" : "VARCHAR(50)",
@@ -595,7 +599,8 @@ class Config():
         "OBJECT_NAME" : "VARCHAR(100)",
         "MODIFIED_BY" : "VARCHAR(50)",
         "DEPLOYMENT_STATUS" : "VARCHAR(100)",
-        "DEPLOYMENT_ID" : "VARCHAR(50)"
+        "DEPLOYMENT_ID" : "VARCHAR(50)",
+        "DEPLOYED_BY":"VARCHAR(50)"
     }    
     _deployment_reference_table_column_list = ["ENVIRONMENT_NAME","DATABASE_NAME"] 
     _deployment_reference_table_column_data_type_dict = {

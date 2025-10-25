@@ -93,7 +93,9 @@ class Schedule:
         return instance._schedule
     
     def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside schedule setting : {value}")
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._schedule = f"'{value}'"
 
     
@@ -111,11 +113,14 @@ class Iff:
     def __delete__(self,instance):
         del instance._iff
 
-class ActionType:
+class Then:
     def __get__(self,instance,owner):
         return instance._action_type
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
         instance._action_type=value  
 
     def __delete__(self,instance):
@@ -193,6 +198,16 @@ class Warehouse:
     def __delete__(self,instance):
         del instance._warehouse
 
+class Comment:
+    def __get__(self,instance,owner):
+        return instance._comment
+    
+    def __set__(self,instance,value):
+        instance._comment = f"'{value}'"
+
+    def __delete__(self,instance):
+        del instance._comment
+
 class AlertAttrs:
     def __init__(self,parent):
         self.parent = parent
@@ -200,15 +215,12 @@ class AlertAttrs:
     database=Database()
     schema=Schema()
     name = Name()
-    schedule = Schedule()
     iff=Iff()
-    action_type=ActionType()
-    action_sql=ActionSql()
-    integration_name=IntegrationName()
-    email_address=EmailAddress()
-    email_subject=EmailSubject()
-    email_content=EmailContent()
+    then=Then()
     warehouse=Warehouse()
+    schedule = Schedule()
+    comment=Comment()
+
 
 
 class Alerts(BaseObject):
@@ -225,36 +237,26 @@ class Alerts(BaseObject):
     def set_name(self, value):
         self.attr.name = value
 
-    def set_schedule(self,value):
-        self.attr.schedule=value
-    
     def set_iff(self,value):
         self.attr.iff=value
-
-    def set_action_type(self,value):
-        self.attr.action_type=value
-
-    def set_action_sql(self,value):
-        self.attr.action_sql=value
-
-    def set_integration_name(self,value):
-        self.attr.integration_name=value
-
-    def set_email_address(self,value):
-        self.attr.email_address=value
-
-    def set_email_subject(self,value):
-        self.attr.email_subject=value
-
-    def set_email_content(self,value):
-        self.attr.email_content=value
+    
+    def set_then(self,value):
+        self.attr.then=value
 
     def set_warehouse(self,value):
         self.attr.warehouse=value
 
+    def set_schedule(self,value):
+        self.attr.schedule=value
+
+    def set_comment(self,value):
+        self.attr.comment=value
+
 
     def set_create_alert_qry(self):
-        self.qry = f"""CREATE ALERT {self.attr.database}.{self.attr.schema}.{self.attr.name} """
+        self.logger.info("Creating query")
+        self.qry = f"""CREATE OR REPLACE ALERT {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} """
+        self.logger.info(f"Initial query : {self.qry}")
         if self.attr.warehouse != "NONE":
             self.qry=self.qry + f""" {tags.WAREHOUSE} = {self.attr.warehouse} """
         self.qry=self.qry + f""" 
@@ -267,16 +269,10 @@ class Alerts(BaseObject):
                                 )
                             )   
                             """
-        if self.attr.action_type.upper()=="SQL":
-            self.qry=self.qry+ f""" THEN {self.attr.action_sql} ;"""
-        elif self.attr.action_type.upper()=="INTEGRATION":
-            self.qry=self.qry + f""" THEN CALL SYSTEM$SEND_EMAIL({self.attr.integration_name},{self.attr.email_address},{self.attr.email_subject},{self.attr.email_content} ) ;"""
-    
-    def prepare_query(self):
-        self.execute_final_query()
+        self.qry=self.qry + self.attr.then
 
     def create_alert(self):
-        self.session.sql(self.qry).collect()
+        self.execute_final_query()
 
 class Operation:
     @staticmethod
@@ -284,6 +280,7 @@ class Operation:
         alert_inst=Alerts(session=session,
                          user_id=user_id,
                          logger=logger)
+        logger=logger.getChild(__name__)
         
         logger.info(f"Operating on {alert_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
@@ -307,69 +304,45 @@ class Operation:
         else:
             alert_inst.set_name('NONE')
 
+        logger.info("set iff")
+        if tags.IF in kwargs.keys():
+            alert_inst.set_iff(kwargs[tags.IF])
+        else:
+            alert_inst.set_iff('NONE')
+
+        logger.info("set then")
+        if tags.THEN in kwargs.keys():
+            alert_inst.set_then(kwargs[tags.THEN])
+        else:
+            alert_inst.set_then('NONE')
+
+        logger.info("set warehouse")
+        if tags.WAREHOUSE in kwargs.keys():
+            alert_inst.set_warehouse(kwargs[tags.WAREHOUSE])
+        else:
+            alert_inst.set_warehouse('NONE')
+
         logger.info("set schedule")
         if tags.SCHEDULE in kwargs.keys():
             alert_inst.set_schedule(kwargs[tags.SCHEDULE])
         else:
             alert_inst.set_schedule('NONE')
 
-        logger.info("set _if_tag")
-        if tags.IF in kwargs.keys():
-            alert_inst.set_iff(kwargs[tags.IF])
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            alert_inst.set_comment(kwargs[tags.COMMENT])
         else:
-            alert_inst.set_iff('NONE')
-
-        logger.info("set _action_type")
-        if tags.ACTION_TYPE in kwargs.keys():
-            alert_inst.set_action_type(kwargs[tags.ACTION_TYPE])
-        else:
-            alert_inst.set_action_type('NONE')
-
-        logger.info("set _action_sql")
-        if tags.ACTION_SQL in kwargs.keys():
-            alert_inst.set_action_sql(kwargs[tags.ACTION_SQL])
-        else:
-            alert_inst.set_action_sql('NONE')
-
-        logger.info("set _integration_name")
-        if tags.INTEGRATION_NAME in kwargs.keys():
-            alert_inst.set_integration_name(kwargs[tags.INTEGRATION_NAME])
-        else:
-            alert_inst.set_integration_name('NONE')
-
-        logger.info("set _email_address")
-        if tags.EMAIL_ADDRESS in kwargs.keys():
-            alert_inst.set_email_address(kwargs[tags.EMAIL_ADDRESS])
-        else:
-            alert_inst.set_email_address('NONE')
-
-        logger.info("set _email_subject")
-        if tags.EMAIL_SUBJECT in kwargs.keys():
-            alert_inst.set_email_subject(kwargs[tags.EMAIL_SUBJECT])
-        else:
-            alert_inst.set_email_subject('NONE')
-
-        logger.info("set _email_content")
-        if tags.EMAIL_CONTENT in kwargs.keys():
-            alert_inst.set_email_content(kwargs[tags.EMAIL_CONTENT])
-        else:
-            alert_inst.set_email_content('NONE')
-
-        logger.info("set warehouse")
-        if tags.EMAIL_CONTENT in kwargs.keys():
-            alert_inst.set_email_content(kwargs[tags.WAREHOUSE])
-        else:
-            alert_inst.set_email_content('NONE')
-
+            alert_inst.set_comment('NONE')
 
         logger.info('prepare query')
-        alert_inst.prepare_query()
+        alert_inst.set_create_alert_qry()
         
         logger.info('execute query')
         alert_inst.create_alert()
 
-        logger.info('create deployment entry')
-        alert_inst.create_deployment_entry()
+
+        #logger.info('create deployment entry')
+        #alert_inst.create_deployment_entry()
 
 
     @classmethod
