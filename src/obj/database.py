@@ -195,7 +195,6 @@ class StorageSerializationPolicy:
     def __delete__(self,instance):
         del instance._storage_serialization_policy
 
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment

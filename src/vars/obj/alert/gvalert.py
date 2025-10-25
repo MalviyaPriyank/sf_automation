@@ -22,7 +22,7 @@ class AlertTag(BaseTag,BaseMethod):
     def get_attributes_with_description(cls):
         attr_dict=super().get_attributes_with_description()
         attr_dict["IF"]="The SQL statement that represents the condition for the alert."
-        attr_dict["THEN"]="The SQL statement that should be executed if the condition returns one or more rows."
+        attr_dict["THEN"]="The SQL statement that should be executed if the condition returns one or more rows.You must provide a THEN clause that performs an action (like CALL or INSERT), not just a SELECT. "
         attr_dict["WAREHOUSE"]="user provided value of Warhouse for alert object."
         attr_dict["SCHEDULE"]="user provided value for SCHEDULE for alert object. This is a required attribute."
         attr_dict["COMMENT"]="user provided value for CATALOG for database object. if value is not provided by user, DEFAULT value is set to NONE."

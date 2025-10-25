@@ -212,13 +212,15 @@ class ValidateObject:
         
     @staticmethod
     def is_valid_user_email(session,user_email):
+        print("****** INSIDE EMAIL VALIDATION ***************")
+        print(f"email :{user_email}")
         df=session.sql("SHOW USERS")
         df=df.select(col("*")).collect()
         df=session.create_dataframe(df)
         df_users=df.select(col("NAME"),col("EMAIL"))
-        exist_count=df_users.filter(col("NAME")==user_email.upper()).union(df_users.filter(col("EMAIL")== user_email.upper())).count()
+        exist_count=df_users.filter(col("NAME")==user_email.upper()).union(df_users.filter(col("EMAIL")== user_email)).count()
         if exist_count==0:
-                raise ObjectDoesNotExist(object_type='USER',object_name=user_email)
+            raise ObjectDoesNotExist(object_type='USER',object_name=user_email)
         return True
     
     @staticmethod

@@ -269,7 +269,7 @@ class Alerts(BaseObject):
                                 )
                             )   
                             """
-        self.qry=self.qry + self.attr.then
+        self.qry=self.qry + f" {tags.THEN} " +self.attr.then
 
     def create_alert(self):
         self.execute_final_query()
