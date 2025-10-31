@@ -217,10 +217,12 @@ class ValidateObject:
         df=session.sql("SHOW USERS")
         df=df.select(col("*")).collect()
         df=session.create_dataframe(df)
-        df_users=df.select(col("NAME"),col("EMAIL"))
-        exist_count=df_users.filter(col("NAME")==user_email.upper()).union(df_users.filter(col("EMAIL")== user_email)).count()
+        df_users=df.select(col("EMAIL"))
+        print(f'{df_users.collect()}')
+        exist_count=df_users.filter(col("EMAIL")== user_email).count()
+        print(f'exist count {exist_count}')
         if exist_count==0:
-            raise ObjectDoesNotExist(object_type='USER',object_name=user_email)
+            raise ObjectDoesNotExist(object_type='USER_EMAIL',object_name=user_email)
         return True
     
     @staticmethod

@@ -94,14 +94,18 @@ class AllowedRecipients:
         return instance._allowed_recipients
     
     def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside allowed recipient to set {value}")
         if value=="NONE":
             instance._allowed_recipients=value
         else:
             value_str=""
-            vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__) 
+            instance.parent.logger.info(f"{value} passed list check")  
             for email in value:
-                email=f"'{email}'"
+                email=f"{email}"
+                instance.parent.logger.info(f"checking if {email} is valid user")
                 vo.is_valid_user_email(session=instance.parent.session,user_email=email)
+                instance.parent.logger.info(f"{email} passed valid user check")
             for i in range(0,len(value)):
                 if i != len(value)-1:
                     value_str=value_str+f"'{email}',"
@@ -123,7 +127,7 @@ class DefaultRecipients:
             value_str=""
             vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             for email in value:
-                email=f"'{email}'"
+                email=f"{email}"
                 vo.is_valid_user_email(session=instance.parent.session,user_email=email)
             for i in range(0,len(value)):
                 if i != len(value)-1:
@@ -179,6 +183,7 @@ class NotificationIntegrationEmailAttr:
 
 class NotificationIntegrationEmail(BaseObject):
     def __init__(self, session, user_id, logger):
+        logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.attr = NotificationIntegrationEmailAttr(self)
 
@@ -242,25 +247,6 @@ class NotificationIntegrationEmail(BaseObject):
         self.set_create_account_qry()
         self.add_properties_to_query()
 
-    def create_deployment_entry(self):
-        deploy_inst = deploy.Deploy(self.session)
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(self.__class__.__name__)
-        deploy_inst.set_object_database('NA')
-        deploy_inst.set_object_schema('NA')
-        deploy_inst.set_object_name(self.attr.name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
-
-    def grant_default_privileges(self):
-        priv_inst = privilege.Privilege(self.session)
-        for role,privileges in cfg._default_role_privilege_set.items():
-            if privileges in gv_priv._allowed_privileges[self.__class__.__name__.upper()]:
-                priv_inst.grant_privilege_on_object_to_role(privilege_type = privileges,object_type = self.__class__.__name__.upper(),object_identifier=self.attr.name,role = role)
-
-
     def create_notification_integration(self):
         self.execute_final_query()
 
@@ -276,7 +262,6 @@ class NotificationIntegrationEmail(BaseObject):
 
         self.prepare_query()
         self.create_notification_integration()
-        self.create_deployment_entry()
 
 class Operation:
     @staticmethod
@@ -288,25 +273,25 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        logger.info(f"set name {kwargs[tags.NAME]}")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set enabled")
+        logger.info(f"set enabled {kwargs[tags.ENABLED]}")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
 
-        logger.info("set type")
+        logger.info(f"set type {kwargs[tags.TYPE]}")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set allowed_recipients")
+        logger.info(f"set allowed_recipients {kwargs[tags.ALLOWED_RECIPIENTS]}")
         if tags.ALLOWED_RECIPIENTS in kwargs.keys():
             obj_inst.set_allowed_recipients(kwargs[tags.ALLOWED_RECIPIENTS])
         else:
@@ -338,7 +323,11 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
+        #obj_inst.create_deployment_entry()
 
 
     @classmethod

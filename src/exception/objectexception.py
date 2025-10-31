@@ -10,7 +10,7 @@ class ObjectException(SnowchainException):
     def __init__(self, object_type, message):
         self.object_type = object_type
         self.message = message
-        self.error_message = f"{self.object_type} object {self.message}. Please retry."
+        self.error_message = f"{self.object_type} object {self.message}. Please ask user to provide the right input."
         super().__init__(self.error_message)
     
 class ObjectDoesNotExist(ObjectException):
