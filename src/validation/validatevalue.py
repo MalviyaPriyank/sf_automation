@@ -111,6 +111,7 @@ class ValidateValue:
             raise MustNotHaveSpecialCharacters(object_type,attr_name)
         else:
             return False
+        
 
     @staticmethod
     def has_special_characters_except_underscore(value,object_type,attr_name):

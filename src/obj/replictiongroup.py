@@ -2,38 +2,85 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from .baseobj import BaseObject
 from vars.obj.replicationgroup.gvreplicationgroup import ReplicationGroupTag as tags
+from validation.validatevalue import ValidateValue as vv
+from validation.validateobject import ValidateObject as vo
+from exception.valueexception import InvalidObjectTypeForAllowedDatabases
 
-class RGName:
-    def __get__(self, instance, owner):
-        return instance._name
-    def __set__(self, instance, value):
-        instance._name = value
-    def __delete__(self, instance):
+class Name:
+    def __get__(self,instance,owner):
+        return (instance._name,instance._rename_to)
+
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.database_exist(session=instance.parent.session,database_name=old_name)
+                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
+
+    def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
-class RGObjectTypes:
+
+class ObjectTypes:
     def __get__(self, instance, owner):
         return instance._object_types
+    
     def __set__(self, instance, value):
-        # expects list or comma-separated strings
-        if isinstance(value, list):
-            instance._object_types = f"OBJECT_TYPES = ({', '.join(value)})"
-        else:
-            instance._object_types = f"OBJECT_TYPES = ({value})"
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        for object in value:
+            vv.is_allowed_value(value=object,
+                                allowed_list=tags.allowed_value_list().get('OBJECT_TYPES'),
+                                object_type=instance.parent.__class__.__name__,
+                                attr_name=self.__class__.__name__)
+        instance._object_types=value
+
     def __delete__(self, instance):
         del instance._object_types
 
-class RGAllowedDatabases:
+class AllowedDatabases:
     def __get__(self, instance, owner):
         return instance._allowed_databases
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._allowed_databases = f"ALLOWED_DATABASES = ({', '.join(value)})"
+        if 'DATABASES' not in instance._object_types:
+            raise InvalidObjectTypeForAllowedDatabases(attr_name=self.__class__.__name__,object_name=instance.parent.__class__.__name__)
+        if value=="NONE":
+            instance._allowed_databases=value
         else:
-            instance._allowed_databases = f"ALLOWED_DATABASES = ({value})"
+            for db in value:
+                vo.database_exist(session=instance.parent.session,
+                                  database_name=db)
+            instance._allowed_databases=value
+
     def __delete__(self, instance):
         del instance._allowed_databases
 

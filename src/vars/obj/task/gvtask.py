@@ -31,6 +31,16 @@ class TaskTag(BaseTag):
     LOG_LEVEL="LOG_LEVEL"
 
     @classmethod
+    def get_attributes_with_description(cls):
+        attr_dict=super().get_attributes_with_description()
+        attr_dict["SQL"]="The sql query to execute. Always write only one sql. If there are multiple sqls required create a new task as child task with the second sql."
+        attr_dict["WAREHOUSE"]="Specifies the virtual warehouse that provides compute resources for task runs."
+        attr_dict["USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE"]="Specifies the size of the compute resources to provision for the first run of the task for serverless tasks."
+        attr_dict["SCHEDULE"]="Specifies the schedule for periodically running the task."
+        attr_dict["AFTER"]="Specifies one or more predecessor tasks for the current task. Use this option to create a task graph or add this task to an existing task graph. A task graph is a series of tasks that starts with a scheduled root task and is linked together by dependencies."
+        return attr_dict
+
+    @classmethod
     def allowed_value_list(cls):
         return {
             "USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE":["XSMALL","SMALL","MEDIUM","LARGE","XLARGE","XXLARGE"],

@@ -466,7 +466,7 @@ class Task(BaseObject):
         self.attr = TaskAttrs(self)
         self.session=session
         self.user_id=user_id
-        self.logger=logger
+        self.logger=logger.getChild(self.__class__.__name__)
 
 
     def set_database(self,value):
@@ -733,148 +733,198 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
+        # set database
         if tags.DATABASE in kwargs.keys():
+            obj_inst.logger.info(f"set database: {kwargs[tags.DATABASE]}")
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
+            obj_inst.logger.info(f"set database: NONE")
             obj_inst.set_database('NONE')
 
-        logger.info("set schema")
+        # set schema
         if tags.SCHEMA in kwargs.keys():
+            obj_inst.logger.info(f"set schema: {kwargs[tags.SCHEMA]}")
             obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
+            obj_inst.logger.info(f"set schema: NONE")
             obj_inst.set_schema('NONE')
 
-        logger.info("set name")
+        # set name
         if tags.NAME in kwargs.keys():
+            obj_inst.logger.info(f"set name: {kwargs[tags.NAME]}")
             obj_inst.set_name(kwargs[tags.NAME])
         else:
+            obj_inst.logger.info(f"set name: NONE")
             obj_inst.set_name('NONE')
 
-        logger.info("set definition")
+        # set definition
         if tags.SQL in kwargs.keys():
+            obj_inst.logger.info(f"set definition: {kwargs[tags.SQL]}")
             obj_inst.set_definition(kwargs[tags.SQL])
         else:
+            obj_inst.logger.info(f"set definition: NONE")
             obj_inst.set_definition('NONE')
 
-        logger.info("set warehouse")
+        # set warehouse
         if tags.WAREHOUSE in kwargs.keys():
+            obj_inst.logger.info(f"set warehouse: {kwargs[tags.WAREHOUSE]}")
             obj_inst.set_warehouse(kwargs[tags.WAREHOUSE])
         else:
+            obj_inst.logger.info(f"set warehouse: NONE")
             obj_inst.set_warehouse('NONE')
 
-        logger.info("set user_task_managed_initial_warehouse_size")
+        # set user_task_managed_initial_warehouse_size
         if tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE in kwargs.keys():
+            obj_inst.logger.info(f"set user_task_managed_initial_warehouse_size: {kwargs[tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE]}")
             obj_inst.set_user_task_managed_initial_warehouse_size(kwargs[tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE])
         else:
+            obj_inst.logger.info(f"set user_task_managed_initial_warehouse_size: NONE")
             obj_inst.set_user_task_managed_initial_warehouse_size('NONE')
 
-        logger.info("set schedule")
+        # set schedule
         if tags.SCHEDULE in kwargs.keys():
+            obj_inst.logger.info(f"set schedule: {kwargs[tags.SCHEDULE]}")
             obj_inst.set_schedule(kwargs[tags.SCHEDULE])
         else:
+            obj_inst.logger.info(f"set schedule: NONE")
             obj_inst.set_schedule('NONE')
 
-        logger.info("set config")
+        # set config
         if tags.CONFIG in kwargs.keys():
+            obj_inst.logger.info(f"set config: {kwargs[tags.CONFIG]}")
             obj_inst.set_config(kwargs[tags.CONFIG])
         else:
+            obj_inst.logger.info(f"set config: NONE")
             obj_inst.set_config('NONE')
 
-        logger.info("set allow_overlapping_execution")
+        # set allow_overlapping_execution
         if tags.ALLOW_OVERLAPPING_EXECUTION in kwargs.keys():
+            obj_inst.logger.info(f"set allow_overlapping_execution: {kwargs[tags.ALLOW_OVERLAPPING_EXECUTION]}")
             obj_inst.set_allow_overlapping_execution(kwargs[tags.ALLOW_OVERLAPPING_EXECUTION])
         else:
+            obj_inst.logger.info(f"set allow_overlapping_execution: NONE")
             obj_inst.set_allow_overlapping_execution('NONE')
 
-        logger.info("set user_task_timeout_ms")
+        # set user_task_timeout_ms
         if tags.USER_TASK_TIMEOUT_MS in kwargs.keys():
+            obj_inst.logger.info(f"set user_task_timeout_ms: {kwargs[tags.USER_TASK_TIMEOUT_MS]}")
             obj_inst.set_user_task_timeout_ms(kwargs[tags.USER_TASK_TIMEOUT_MS])
         else:
+            obj_inst.logger.info(f"set user_task_timeout_ms: NONE")
             obj_inst.set_user_task_timeout_ms('NONE')
 
-        logger.info("set suspend_task_after_num_failures")
+        # set suspend_task_after_num_failures
         if tags.SUSPEND_TASK_AFTER_NUM_FAILURES in kwargs.keys():
+            obj_inst.logger.info(f"set suspend_task_after_num_failures: {kwargs[tags.SUSPEND_TASK_AFTER_NUM_FAILURES]}")
             obj_inst.set_suspend_task_after_num_failures(kwargs[tags.SUSPEND_TASK_AFTER_NUM_FAILURES])
         else:
+            obj_inst.logger.info(f"set suspend_task_after_num_failures: NONE")
             obj_inst.set_suspend_task_after_num_failures('NONE')
 
-        logger.info("set error_integration")
+        # set error_integration
         if tags.ERROR_INTEGRATION in kwargs.keys():
+            obj_inst.logger.info(f"set error_integration: {kwargs[tags.ERROR_INTEGRATION]}")
             obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
         else:
+            obj_inst.logger.info(f"set error_integration: NONE")
             obj_inst.set_error_integration('NONE')
 
-        logger.info("set success_integration")
+        # set success_integration
         if tags.SUCCESS_INTEGRATION in kwargs.keys():
+            obj_inst.logger.info(f"set success_integration: {kwargs[tags.SUCCESS_INTEGRATION]}")
             obj_inst.set_success_integration(kwargs[tags.SUCCESS_INTEGRATION])
         else:
+            obj_inst.logger.info(f"set success_integration: NONE")
             obj_inst.set_success_integration('NONE')
 
-        logger.info("set comment")
+        # set comment
         if tags.COMMENT in kwargs.keys():
+            obj_inst.logger.info(f"set comment: {kwargs[tags.COMMENT]}")
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
+            obj_inst.logger.info(f"set comment: NONE")
             obj_inst.set_comment('NONE')
 
-        logger.info("set after")
+        # set after
         if tags.AFTER in kwargs.keys():
+            obj_inst.logger.info(f"set after: {kwargs[tags.AFTER]}")
             obj_inst.set_after(kwargs[tags.AFTER])
         else:
+            obj_inst.logger.info(f"set after: NONE")
             obj_inst.set_after('NONE')
 
-        logger.info("set when")
+        # set when
         if tags.WHEN in kwargs.keys():
+            obj_inst.logger.info(f"set when: {kwargs[tags.WHEN]}")
             obj_inst.set_when(kwargs[tags.WHEN])
         else:
+            obj_inst.logger.info(f"set when: NONE")
             obj_inst.set_when('NONE')
 
-        logger.info("set finalize")
+        # set finalize
         if tags.FINALIZE in kwargs.keys():
+            obj_inst.logger.info(f"set finalize: {kwargs[tags.FINALIZE]}")
             obj_inst.set_finalize(kwargs[tags.FINALIZE])
         else:
+            obj_inst.logger.info(f"set finalize: NONE")
             obj_inst.set_finalize('NONE')
 
-        logger.info("set task_auto_retry_attempts")
+        # set task_auto_retry_attempts
         if tags.TASK_AUTO_RETRY_ATTEMPTS in kwargs.keys():
+            obj_inst.logger.info(f"set task_auto_retry_attempts: {kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS]}")
             obj_inst.set_task_auto_retry_attempts(kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS])
         else:
+            obj_inst.logger.info(f"set task_auto_retry_attempts: NONE")
             obj_inst.set_task_auto_retry_attempts('NONE')
 
-        logger.info("set user_task_minimum_trigger_interval_in_seconds")
+        # set user_task_minimum_trigger_interval_in_seconds
         if tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS in kwargs.keys():
+            obj_inst.logger.info(f"set user_task_minimum_trigger_interval_in_seconds: {kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS]}")
             obj_inst.set_user_task_minimum_trigger_interval_in_seconds(kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS])
         else:
+            obj_inst.logger.info(f"set user_task_minimum_trigger_interval_in_seconds: NONE")
             obj_inst.set_user_task_minimum_trigger_interval_in_seconds('NONE')
 
-        logger.info("set target_completion_interval")
+        # set target_completion_interval
         if tags.TARGET_COMPLETION_INTERVAL in kwargs.keys():
+            obj_inst.logger.info(f"set target_completion_interval: {kwargs[tags.TARGET_COMPLETION_INTERVAL]}")
             obj_inst.set_target_completion_interval(kwargs[tags.TARGET_COMPLETION_INTERVAL])
         else:
+            obj_inst.logger.info(f"set target_completion_interval: NONE")
             obj_inst.set_target_completion_interval('NONE')
 
-        logger.info("set serverless_task_min_statement_size")
+        # set serverless_task_min_statement_size
         if tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE in kwargs.keys():
+            obj_inst.logger.info(f"set serverless_task_min_statement_size: {kwargs[tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE]}")
             obj_inst.set_serverless_task_min_statement_size(kwargs[tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE])
         else:
+            obj_inst.logger.info(f"set serverless_task_min_statement_size: NONE")
             obj_inst.set_serverless_task_min_statement_size('NONE')
 
-        logger.info("set serverless_task_max_statement_size")
+        # set serverless_task_max_statement_size
         if tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE in kwargs.keys():
+            obj_inst.logger.info(f"set serverless_task_max_statement_size: {kwargs[tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE]}")
             obj_inst.set_serverless_task_max_statement_size(kwargs[tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE])
         else:
+            obj_inst.logger.info(f"set serverless_task_max_statement_size: NONE")
             obj_inst.set_serverless_task_max_statement_size('NONE')
 
-
-
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
         logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.logger.info("creating deployment entry")
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema,)
+        obj_inst.logger.info("writing to git")
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema,)
 
 
     @classmethod

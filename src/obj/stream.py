@@ -64,7 +64,7 @@ class Name:
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
             vo.is_new_object(session=instance.parent.session,
                              object_type=instance.parent.__class__.__name__,
-                             object_name=value)
+                             object_name=name)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -242,6 +242,7 @@ class StreamAttrs:
 
 class Stream(BaseObject):
     def __init__(self, session, user_id, logger):
+        logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.attr = StreamAttrs(self)
 
@@ -286,7 +287,7 @@ class Stream(BaseObject):
         self.attr.comment = value
 
     def set_qualified_name(self):
-        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
+        self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name[0]}"
 
 
     def set_object_properties_flag(self):
@@ -318,13 +319,13 @@ class Stream(BaseObject):
 
     def set_create_qry(self):
         if self.attr.object_type.upper()=="TABLE":
-            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} ON TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
         elif self.attr.object_type.upper()=="EXTERNAL TABLE":
-            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON EXTERNAL TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} ON EXTERNAL TABLE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
         elif self.attr.object_type.upper()=="STAGE":
-            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON STAGE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} ON STAGE {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
         elif self.attr.object_type.upper()=="VIEW":
-            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name} ON VIEW {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
+            self.qry = f"CREATE STREAM {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} ON VIEW {self.attr.database}.{self.attr.schema}.{self.attr.table_name}"
 
 
     def add_properties_to_query(self):
@@ -404,97 +405,122 @@ class Operation:
         obj_inst=Stream(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
-
-        logger.info("set database")
+        # set database
         if tags.DATABASE in kwargs.keys():
+            obj_inst.logger.info(f"set database {kwargs[tags.DATABASE]}")
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
+            obj_inst.logger.info("set database NONE")
             obj_inst.set_database('NONE')
 
-        logger.info("set schema")
+        # set schema
         if tags.SCHEMA in kwargs.keys():
+            obj_inst.logger.info(f"set schema {kwargs[tags.SCHEMA]}")
             obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
+            obj_inst.logger.info("set schema NONE")
             obj_inst.set_schema('NONE')
 
-        logger.info("set name")
+        # set name
         if tags.NAME in kwargs.keys():
+            obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
             obj_inst.set_name(kwargs[tags.NAME])
         else:
+            obj_inst.logger.info("set name NONE")
             obj_inst.set_name('NONE')
 
-        logger.info("set object_type")
+        # set object_type
         if tags.OBJECT_TYPE in kwargs.keys():
+            obj_inst.logger.info(f"set object_type {kwargs[tags.OBJECT_TYPE]}")
             obj_inst.set_object_type(kwargs[tags.OBJECT_TYPE])
         else:
+            obj_inst.logger.info("set object_type NONE")
             obj_inst.set_object_type('NONE')
 
-        logger.info("set table_name")
+        # set table_name
         if tags.TABLE_NAME in kwargs.keys():
+            obj_inst.logger.info(f"set table_name {kwargs[tags.TABLE_NAME]}")
             obj_inst.set_table_name(kwargs[tags.TABLE_NAME])
         else:
+            obj_inst.logger.info("set table_name NONE")
             obj_inst.set_table_name('NONE')
 
-        logger.info("set at")
+        # set at
         if tags.AT in kwargs.keys():
+            obj_inst.logger.info(f"set at {kwargs[tags.AT]}")
             obj_inst.set_at(kwargs[tags.AT])
         else:
+            obj_inst.logger.info("set at NONE")
             obj_inst.set_at('NONE')
 
-        logger.info("set offset")
+        # set offset
         if tags.OFFSET in kwargs.keys():
+            obj_inst.logger.info(f"set offset {kwargs[tags.OFFSET]}")
             obj_inst.set_offset(kwargs[tags.OFFSET])
         else:
+            obj_inst.logger.info("set offset NONE")
             obj_inst.set_offset('NONE')
 
-        logger.info("set before")
+        # set before
         if tags.BEFORE in kwargs.keys():
+            obj_inst.logger.info(f"set before {kwargs[tags.BEFORE]}")
             obj_inst.set_before(kwargs[tags.BEFORE])
         else:
+            obj_inst.logger.info("set before NONE")
             obj_inst.set_before('NONE')
 
-        logger.info("set timestamp")
+        # set timestamp
         if tags.TIMESTAMP in kwargs.keys():
+            obj_inst.logger.info(f"set timestamp {kwargs[tags.TIMESTAMP]}")
             obj_inst.set_timestamp(kwargs[tags.TIMESTAMP])
         else:
+            obj_inst.logger.info("set timestamp NONE")
             obj_inst.set_timestamp('NONE')
 
-        logger.info("set append_only")
+        # set append_only
         if tags.APPEND_ONLY in kwargs.keys():
+            obj_inst.logger.info(f"set append_only {kwargs[tags.APPEND_ONLY]}")
             obj_inst.set_append_only(kwargs[tags.APPEND_ONLY])
         else:
+            obj_inst.logger.info("set append_only NONE")
             obj_inst.set_append_only('NONE')
 
-        logger.info("set insert_only")
+        # set insert_only
         if tags.INSERT_ONLY in kwargs.keys():
+            obj_inst.logger.info(f"set insert_only {kwargs[tags.INSERT_ONLY]}")
             obj_inst.set_insert_only(kwargs[tags.INSERT_ONLY])
         else:
+            obj_inst.logger.info("set insert_only NONE")
             obj_inst.set_insert_only('NONE')
 
-        logger.info("set show_initial_rows")
+        # set show_initial_rows
         if tags.SHOW_INITIAL_ROWS in kwargs.keys():
+            obj_inst.logger.info(f"set show_initial_rows {kwargs[tags.SHOW_INITIAL_ROWS]}")
             obj_inst.set_show_initial_rows(kwargs[tags.SHOW_INITIAL_ROWS])
         else:
+            obj_inst.logger.info("set show_initial_rows NONE")
             obj_inst.set_show_initial_rows('NONE')
 
-        logger.info("set comment")
+        # set comment
         if tags.COMMENT in kwargs.keys():
+            obj_inst.logger.info(f"set comment {kwargs[tags.COMMENT]}")
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
+            obj_inst.logger.info("set comment NONE")
             obj_inst.set_comment('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
-
 
     @classmethod
     def get_attributes(cls):

@@ -233,4 +233,9 @@ class InvalidHostPort(SnowchainException):
     def __init__(self, object_type,attr_name):
         error_message=f"{attr_name} of {object_type} is not in correct format."
         super().__init__(error_message)
+
+class InvalidObjectTypeForAllowedDatabases(SnowchainException):
+    def __init__(self, attr_name,object_name):
+        error_message=f"Databases needs to be in the list of allowed objects for configuring {attr_name}, while creating {object_name}. Please ask user for the clarification."
+        super().__init__(error_message)
     
