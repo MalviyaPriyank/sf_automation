@@ -1,0 +1,14 @@
+{
+    "type": "service_account",
+    "project_id": "openflow-477017",
+    "private_key_id": "34c1a132b7f5cb6acce97c7add5849256931b4e7",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDEblRWtItkcQe4\n7eZN9VG/wfxY3U7p3Q97+0JUTTOCNt7jPTLA96F+duFoig2tKoWQ6trak90r1/by\nl9iB8SFW8JmiZT1f07DMJAhzrC4yJqPFoNjfwNKhtI0vbzUkWSE8+rbmoqcgQBpe\nqXp1DdRYcH5DB0U879zAh6bazY9gJJjfaUvXngeUhHcgPfDNryKzClelJgRIdLT2\nu3XJylUNlqCcl2E31zNwhZZaC/NLM1gOL1BGbVqcmMZKbJ0tWaiuq+6TFPltMBe2\nJhfHeKcRANDkIpIxjmd8OGdP1LvR8hvEEeFTQrZ9TmTIW61+VAAIx1qPlc9nDcbm\n628XYm3ZAgMBAAECggEAAZzyjFWv+2X9ZaWgfFUJBLR4Ok64mPiX8hmk7t/3d62H\nspYs+MBf1sXy86QMPSkTw9NLeLugqaF5/HMJDmAIIBGHBia8cbxerbBlf1QG8AC7\nr3QUOcPRxDSj/ApmLFph2Wr3WdN9DRjTDpzA9kMj/vn46FXlgN45FhxRgLUoPg1q\n2rI/Tov0bNq+/abzVhSgJoQk5P1zUCW4lGgBgqvG+HGO/op86kNyBWh+Qco1TB4u\nfNbZsEkfiirTyLarNUuqad4gsjMh9wA78wUf4eEZ/WIE1Ny7CipxcEHv7zVJPyRL\nh01oe6a3bQ/xh8q4WYsYnIeQoCBhrhu8ZSBS1c82jQKBgQDhqQweieIuOPearUGV\ndXMcTny4hf+9C8JV4CjDEr5fZjlORnGC+2awfZIneXkQs2aMcu2lsBlkXSlc5bCM\n2vqozKX9z3cS7Zna1XUxWdXNA0fVglnHDN/ZvmJDDtIGTIGTbQfP2UZTXqPWUJ9a\n6HKLvCAasy5m3HF5KEGFK2WPHQKBgQDe1z47G7ci/yg8nqbIVNXDqKLPkkOHD14V\ntkFLUmniXd/vC0tzoLZslvP8Prd7FmlTBMMqWW2M5I6YurmBZiKlC2Rt8r5MEDyF\nAeQWKhPa+eaGH4HKAjAujYbhuuvGMEeJ3DtoXf80WGn8f/tqlHLIERGkzHiAINV8\ne7EFSY2w7QKBgQDUEP6vsFqbn7Opa8rnfzHHV0dETcFxUpy2AWutL28yzilqky7X\nrhTqJYf1iuWoOUBVGyiUffLO6/IUOFL7fEr12SThalf3tMzS56kz0L3o5X1bfB2M\nv1+bDJzhcgsUGk/nUR53STQa4yTLIocvcqU7BneRP/SKe/4zow437PmLTQKBgCd3\naZ8gVnwNQrwRwSoj1EQ13rfyiKEn+JrRz5iefQBJbfqxPmi5IvXyej3Hgcl7+6Vn\nZ4Vdl0hnxlWIZIhlZWdjsCLE5i0khwNrhVDjnOagcdJ5TAxR/OSRzjy2VUGhlVn2\nNlNSqntD2WmN5SJILlf+pehRClpu9kB4y65LC5w1AoGBAK2c8wLsT28uPcTU9LUo\nkPib5yjv9ExzuoygOtarPsOJpjqJ721TKEKkIcAbr4XqpAjbQ0Ja4dAg70rVbhOS\nBNHS9oiT4NFMx4NbT4qNWvnaiBqC4Knp8UU3uxRftVN3jvw3SoNv91x1GP76Lhci\ndn1FV2MuVOT3CAlrC+lBH04/\n-----END PRIVATE KEY-----\n",
+    "client_email": "openflow@openflow-477017.iam.gserviceaccount.com",
+    "client_id": "116923039776253737628",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/openflow%40openflow-477017.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+  
