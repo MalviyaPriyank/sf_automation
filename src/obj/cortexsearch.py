@@ -113,7 +113,7 @@ class CortexSearch(BaseObject):
     def __init__(self,session,user_id,logger):
         self.attr=CortexSearchAttrs()
         self.session=session
-        self.logger=logger
+        self.logger=logger.getChild(self.__class__.__name__)
         self.user_id=user_id
 
     def set_name(self,val=None):

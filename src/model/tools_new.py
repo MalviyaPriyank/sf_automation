@@ -68,7 +68,7 @@ class LLMTools:
         self.chat_model_id = chat_model_id
         self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
         self.bedrock_obj = bedrock_obj
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
@@ -103,12 +103,14 @@ class LLMTools:
 
     def import_module(self, obj_type):
         module_path = f"src.obj.{obj_type.lower()}"
+        self.logger.info(f"module path : {module_path}")
         module = importlib.import_module(module_path)
         OperationClass = getattr(module, "Operation")
         return OperationClass()
 
     def get_object_params(self, obj_type):
         operation = self.import_module(obj_type)
+        self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
 
     # def get_obj_dependency(self, obj_type):
@@ -166,9 +168,15 @@ class LLMTools:
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
     
     def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name="NONE",schema="NONE"):
+        self.logger.info(f" Inside to grant privilege on  {object_type}: {object_identifier}, privilege:{privilege} to role : {role} at db.schema: {database_name}.{schema}")
+        self.logger.info(f"type of db {type(database_name)}")
         if object_type.upper() != 'DATABASE':
-            self.logger(f"switching to {database_name} database")
-            self.sf_session.sql(f"USE DATABASE {database_name}").collect()
+            if database_name.upper() == 'NONE' or database_name == None:
+                self.logger.info("since database is none using DB_CONFIG")
+                self.sf_session.sql(f"USE DATABASE DB_CONFIG").collect()
+            else:
+                self.logger.info(f"switching to {database_name} database")
+                self.sf_session.sql(f"USE DATABASE {database_name}").collect()
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database_name,schema=schema)
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'

@@ -338,7 +338,7 @@ class Admin:
         self.attr = AdminAttrs(self)
         self.session = session
         self.qry = ""
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
 
     def set_account_name(self, value):
         self.attr.account_name = value

@@ -45,9 +45,9 @@ class ObjectType:
         return instance._object_type
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__) 
-        vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.OBJECT_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-        instance._object_type = value
+        #vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__) 
+        #vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.OBJECT_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+        instance._object_type = 'TABLE'
     
     def __delete__(self,instance):
         del instance._object_type
@@ -520,7 +520,14 @@ class Operation:
         obj_inst.execute_final_query()
 
         obj_inst.logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
 
     @classmethod
     def get_attributes(cls):

@@ -310,6 +310,7 @@ class ExternalStageAttrs:
 
 class ExternalStage(BaseObject):
     def __init__(self, session, user_id, logger):
+        logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.sf_object_tag = "STAGE"
         self.attr = ExternalStageAttrs(self)

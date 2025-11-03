@@ -63,7 +63,7 @@ class ExternalVolume(BaseObject):
         self.attr = ExternalVolumeAttrs()
         self.session = session
         self.user_id = user_id
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
 
 
     def set_name(self, value): self.attr.name = value

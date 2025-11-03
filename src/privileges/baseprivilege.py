@@ -42,7 +42,7 @@ class BasePrivilegeAttrs:
 class BasePrivilege:
     def __init__(self,session,logger):
         self.session=session
-        self.logger=logger
+        self.logger=logger.getChild(self.__class__.__name__)
         self.attr=BasePrivilegeAttrs(self)
 
     def set_object_type(self,val):
@@ -54,6 +54,7 @@ class BasePrivilege:
     def grant_privilege_on_object_to_role(self,privlege_type,role) -> str: 
         self.logger.info(f"inside to grant {privlege_type} privilege to role {role}")     
         qry = f"GRANT {privlege_type} ON {self.attr.object_type} {self.attr.object_identifier} TO ROLE {role}"
+        self.logger.info(f"qry for grant : {qry}")
         self.session.sql(qry).collect()
         self.logger.info("privilege granted")
         return qry

@@ -177,7 +177,7 @@ class ReplicationGroup(BaseObject):
     def __init__(self, session, user_id, logger):
         self.attr = ReplicationGroupAttrs()
         self.session = session
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
         self.user_id = user_id
 
     # setter methods

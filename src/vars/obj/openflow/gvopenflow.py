@@ -5,10 +5,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../base'))
 
 from base.basetag import BaseTag
 
-class NotificationIntegrationEmailTag(BaseTag):
-    NAME = "NAME"
-    ENABLED = "ENABLED"
-    TYPE="TYPE"
+class OpenFlowTag(BaseTag):
+    OPEN_FLOW_ADMIN_ROLE = "OPEN_FLOW_ADMIN_ROLE"
+    OPEN_FLOW_USER_ROLE = "OPEN_FLOW_USER_ROLE"
+    OPEN_FLOW_USER="OPEN_FLOW_USER"
+    OPEN_FLOW_DATABASE="OPEN_FLOW_DATABASE"
+    OPEN_FLOW_IMAGE="OPEN_FLOW_IMAGE"
     ALLOWED_RECIPIENTS = "ALLOWED_RECIPIENTS"
     DEFAULT_RECIPIENTS="DEFAULT_RECIPIENTS"
     DEFAULT_SUBJECT="DEFAULT_SUBJECT"
@@ -34,7 +36,7 @@ class NotificationIntegrationEmailTag(BaseTag):
             "COMMENT": "Optional description or comment for the notification integration. (str)",
             "IS_CREATE": "Set this to 'TRUE' if creating the object. Set to 'FALSE' if altering the object."
         }
-        
+
     @classmethod
     def allowed_value_list(cls):
         return {

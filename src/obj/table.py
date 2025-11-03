@@ -127,6 +127,7 @@ class TableAttrs:
 class Table(BaseObject):
 
     def __init__(self,session,user_id,logger):
+        logger=logger.getChild(self.__class__.__name__)
         super().__init__(session=session,user_id=user_id,logger=logger)
         self.attr = TableAttrs(self)
 
@@ -279,6 +280,14 @@ class Operation:
         obj_inst.set_qualified_name()
         obj_inst.get_create_table_query()
         obj_inst.session.sql(obj_inst.qry).collect()
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
 
 
     @classmethod

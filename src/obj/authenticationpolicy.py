@@ -123,7 +123,7 @@ class AuthenticationPolicy(BaseObject):
         self.attr = AuthenticationPolicyAttrs()
         self.session = session
         self.user_id = user_id
-        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+        self.logger = logger.getChild(self.__class__.__name__)
 
     # setters
     def set_name(self, v): self.attr.name = v

@@ -176,6 +176,7 @@ class SnowpipeAttrs:
 
 class Snowpipe(BaseObject):
     def __init__(self, session, user_id, logger):
+        logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.attr = SnowpipeAttrs(self)
 

@@ -84,7 +84,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
-        instance._type = 'EMAIL'
+        instance._type = value
     
     def __delete__(self,instance):
         del instance._type
@@ -285,11 +285,14 @@ class Operation:
         else:
             obj_inst.set_enabled('NONE')
 
+        obj_inst.set_type('EMAIL')
+        '''
         logger.info(f"set type {kwargs[tags.TYPE]}")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
+        '''
 
         logger.info(f"set allowed_recipients {kwargs[tags.ALLOWED_RECIPIENTS]}")
         if tags.ALLOWED_RECIPIENTS in kwargs.keys():

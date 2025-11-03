@@ -44,6 +44,7 @@ class TablePrivileges(BasePrivilege):
         super().__init__(session=session,logger=logger)
         super().set_object_type(val='TABLE')
         vo.table_exist(session=session,database_name=database,schema_name=schema,table_name=object_identifier)
+        object_identifier=f"{database}.{schema}.{object_identifier}"
         super().set_object_identifier(val=object_identifier)
     
 class FileFormatPrivileges(BasePrivilege):
@@ -51,6 +52,7 @@ class FileFormatPrivileges(BasePrivilege):
         super().__init__(session=session,logger=logger)
         super().set_object_type(val='FILE_FORMAT')
         vo.file_format_exist(session=session,database_name=database,schema_name=schema,file_format_name=object_identifier)
+        object_identifier=f"{database}.{schema}.{object_identifier}"
         super().set_object_identifier(val=object_identifier)
     
 class SnowpipePrivileges(BasePrivilege):

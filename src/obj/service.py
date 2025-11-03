@@ -144,7 +144,7 @@ class Service(BaseObject):
         self.attr = ServiceAttrs()
         self.session = session
         self.user_id = user_id
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
 
     # Setter methods
     def set_name(self, v): self.attr.name = v

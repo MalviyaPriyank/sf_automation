@@ -99,7 +99,7 @@ class ComputePool(BaseObject):
         self.attr = ComputePoolAttrs()
         self.session = session
         self.user_id = user_id
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
 
     # setter methods
     def set_name(self, v): self.attr.name = v

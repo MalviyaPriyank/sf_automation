@@ -22,6 +22,7 @@ from exception.privilegeexception import ObjectNotSupported
 class Privilege:
     def __init__(self,session,logger,object_type,object_identifier,database,schema):
         object_type = object_type.replace(' ','')
+        logger=logger.getChild(self.__class__.__name__)
         logger.info(f"inside privilege for {object_type} : {object_identifier}")
         logger.info(f" database {database}: , schema: {schema}")
         if object_type.upper()=='DATABASE':

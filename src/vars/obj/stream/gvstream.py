@@ -21,7 +21,7 @@ class StreamTag(BaseTag):
     @classmethod
     def get_attributes_with_description(cls):
         attr_dict=super().get_attributes_with_description()
-        attr_dict["TABLE_NAME"]="Name of the table on which stream is created."
+        attr_dict["TABLE_NAME"]="Name of the table on which stream is created. This is required attribute and must always be passed"
         attr_dict["OBJECT_TYPE"]="Specifies what type of object stream is created on."
         attr_dict["AT"]="Creates a stream at a specific time/point in the past. This should be timestamp."
         attr_dict["APPEND_ONLY"]="""
@@ -38,6 +38,7 @@ class StreamTag(BaseTag):
         the historical records for files in cloud storage is not governed by or guaranteed to Snowflake.
         """
         attr_dict["SHOW_INITIAL_ROWS"]="Specifies the records to return the first time the stream is consumed."
+        return attr_dict
         
     @classmethod
     def allowed_value_list(cls):
