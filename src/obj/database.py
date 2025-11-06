@@ -329,39 +329,39 @@ class Database(BaseObject):
     def alter_object(self):        
         for prop in self.property_lst:
             if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days}"
                 self.execute_final_query()
             if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days}"
                 self.execute_final_query()
             if prop == tags.EXTERNAL_VOLUME:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.EXTERNAL_VOLUME} = {self.attr.external_volume}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.EXTERNAL_VOLUME} = {self.attr.external_volume}"
                 self.execute_final_query()
             if prop == tags.CATALOG:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CATALOG} = {self.attr.catalog}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.CATALOG} = {self.attr.catalog}"
                 self.execute_final_query()
             if prop == tags.REPLACE_INVALID_CHARACTERS:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
                 self.execute_final_query()
             if prop == tags.DEFAULT_DDL_COLLATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
                 self.execute_final_query()
             if prop == tags.LOG_LEVEL:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.LOG_LEVEL} = {self.attr.log_level}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.LOG_LEVEL} = {self.attr.log_level}"
                 self.execute_final_query()
             if prop == tags.TRACE_LEVEL:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TRACE_LEVEL} = {self.attr.trace_level}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.TRACE_LEVEL} = {self.attr.trace_level}"
                 self.execute_final_query()
             if prop == tags.STORAGE_SERIALIZATION_POLICY:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
             self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming database {self.attr.name[0]} to {self.attr.name[1]}")
+            self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
         
     

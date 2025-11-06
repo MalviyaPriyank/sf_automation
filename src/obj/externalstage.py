@@ -395,50 +395,51 @@ class ExternalStage(BaseObject):
 
 
     def alter_object(self):        
+        alter_object_name='STAGE'
         for prop in self.property_lst:
             if prop == tags.FILE_FORMAT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
             if prop == tags.URL:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
                 self.execute_final_query()
             if prop == tags.AWS_ACCESS_POINT_ARN:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn}"
                 self.execute_final_query()
             if prop == tags.STORAGE_INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration}"
                 self.execute_final_query()
             if prop == tags.ENCRYPTION_TYPE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type}"
                 self.execute_final_query()
             if prop == tags.ENCRYPTION_MASTER_KEY:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key}"
                 self.execute_final_query()
             if prop == tags.ENCRYPTION_KMS_KEY_ID:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id}"
                 self.execute_final_query()
             if prop == tags.USE_PRIVATELINK_ENDPOINT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint}"
                 self.execute_final_query()
             if prop == tags.ENABLE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ENABLE} = {self.attr.enable}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENABLE} = {self.attr.enable}"
                 self.execute_final_query()
             if prop == tags.REFRESH_ON_CREATE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
                 self.execute_final_query()
             if prop == tags.AUTO_REFRESH:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AUTO_REFRESH} = {self.attr.auto_refresh}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.AUTO_REFRESH} = {self.attr.auto_refresh}"
                 self.execute_final_query()
             if prop == tags.NOTIFICATION_INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming external stage {self.attr.name[0]} to {self.attr.name[1]}")
+            self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming {self.__class__.__name__} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
 

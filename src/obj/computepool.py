@@ -225,15 +225,35 @@ class ComputePool(BaseObject):
         if tags.COMMENT in self.property_lst:
             self.qry += f"COMMENT = '{self.attr.comment}' "
 
-    def alter_object(self):
+    def alter_object(self):        
         for prop in self.property_lst:
-            self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {getattr(self.attr, prop.lower())}"
-            self.execute_final_query()
+            if prop == tags.MIN_NODES:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.MIN_NODES} = {self.attr.min_nodes}"
+                self.execute_final_query()
+            if prop == tags.MAX_NODES:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.MAX_NODES} = {self.attr.max_nodes}"
+                self.execute_final_query()
+            if prop == tags.INSTANCE_FAMILY:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.INSTANCE_FAMILY} = {self.attr.instance_family}"
+                self.execute_final_query()
+            if prop == tags.AUTO_RESUME:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.AUTO_RESUME} = {self.attr.auto_resume}"
+                self.execute_final_query()
+            if prop == tags.INITIALLY_SUSPENDED:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.INITIALLY_SUSPENDED} = {self.attr.initially_suspended}"
+                self.execute_final_query()
+            if prop == tags.AUTO_SUSPEND_SECS:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.AUTO_SUSPEND_SECS} = {self.attr.auto_suspend_secs}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
 
         if tags.NAME in self.property_lst:
             self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming compute pool {self.attr.name[0]} to {self.attr.name[1]}")
+            self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
+
 
     def prepare_query(self):
         self.set_object_properties_flag()
