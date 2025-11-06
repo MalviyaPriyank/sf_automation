@@ -58,7 +58,8 @@ from valueexception import (
     DataTypeNotAllowed,
     InvalidCIDRNotation,
     InvalidVPCEID,
-    InvalidHostName
+    InvalidHostName,
+    BaseValueMustBeGreaterThanOrEqualReferenceValue
 )
 
 class ValidateValue:
@@ -314,6 +315,15 @@ class ValidateValue:
             return True
         else:
             raise BaseValueMustBeLessThanOrEqualReferenceValue(object_type,attr_name,value_ref)
+        
+    @staticmethod
+    def is_greater_than_or_equal_to(value_base,value_ref,object_type,attr_name):
+        logger.info(f"inside to check {value_base} >= {value_ref}")
+        if value_base>=value_ref:
+            return True
+        else:
+            raise BaseValueMustBeGreaterThanOrEqualReferenceValue(object_type,attr_name,value_ref)
+        
         
     @staticmethod
     def is_conflicting_parameter_null(original_parameter_val,conflicting_parameter_val,original_parameter,conflicting_parameter,object_type):

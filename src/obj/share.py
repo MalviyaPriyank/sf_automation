@@ -13,7 +13,7 @@ from vars.obj.share.gvshare import ShareTag as tags
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)

@@ -18,7 +18,8 @@ from exception.objectexception import (
     DuplicateObject,
     ColumnDoesNotExist,
     MustBeAnAdmin,
-    InvalidAttributesToAlter
+    InvalidAttributesToAlter,
+    IncompatibleValueForChildAttr
 )
 
 
@@ -130,6 +131,8 @@ class ValidateObject:
             qry="SHOW MASKING POLICIES"
         elif object_type=="EXTERNALACCESSINTEGRATION":
             qry="SHOW NETWORK RULES"
+        elif object_type=="AUTHENTICATIONPOLICY":
+            qry="SHOW AUTHENTICATION POLICIES"
         else:    
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -161,6 +164,8 @@ class ValidateObject:
             qry="SHOW MASKING POLICIES"
         elif object_type=="FAILOVER GROUP":
             qry="SHOW FAILOVER GROUPS"
+        elif object_type=="AUTHENTICATIONPOLICY":
+            qry="SHOW AUTHENTICATION POLICIES"
         else:
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -380,4 +385,48 @@ class ValidateObject:
         else:
             return True
         
+    @staticmethod
+    def get_allowed_instance_families(session):
+        df = session.sql("  SHOW COMPUTE POOL INSTANCE FAMILIES")
+        df=df.select(col("*")).collect()
+        df=session.create_dataframe(df)
+        df_users=df.select(col("name"))
+        famli_list=[i for j in df_users.collect() for i in j]
+        return famli_list
+
         
+class ValidateDependentAttributes:
+    def __init__(self,object_type):
+        self.object_type=object_type
+
+    def __set_parent_attribute(self,parent_attr):
+        self.parent_attr=parent_attr
+
+    def __set_child_attribute(self,child_attr):
+        self.child_attr=child_attr
+
+    def __set_compatible_parent_attr(self,compatible_values):
+        self.compatible_values=compatible_values
+    
+    def __set_parent_attr_value(self,value):
+        self.parent_attr_value=value
+
+    def __is_child_compatible(self):
+        if self.parent_attr_value not in self.compatible_values:
+            raise IncompatibleValueForChildAttr(object_type=self.object_type,
+                                                child_attr_name=self.child_attr,
+                                                parent_attr_name=self.parent_attr,
+                                                compatible_value=self.compatible_values)
+        else:
+            return True
+        
+    
+    def validate_parent_dependency(self,parent_attr_name,child_attr_name,parent_attr_value,parent_attr_compatible_values):
+        self.__set_parent_attribute(parent_attr=parent_attr_name)
+        self.__set_child_attribute(child_attr=child_attr_name)
+        self.__set_compatible_parent_attr(compatible_values=parent_attr_compatible_values)
+        self.__set_parent_attr_value(value=parent_attr_value)
+        self.__is_child_compatible()
+        return True
+
+

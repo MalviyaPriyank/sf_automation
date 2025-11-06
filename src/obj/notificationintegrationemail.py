@@ -21,7 +21,7 @@ from vars.obj.notificationintegrationemail.gvnotificationintegrationemai import 
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
+        return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -227,7 +227,7 @@ class NotificationIntegrationEmail(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE NOTIFICATION INTEGRATION  {self.attr.name} TYPE = {self.attr.type} ENABLED = {self.attr.enabled} "
+        self.qry = f"CREATE NOTIFICATION INTEGRATION  {self.attr.name[0]} TYPE = {self.attr.type} ENABLED = {self.attr.enabled} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :

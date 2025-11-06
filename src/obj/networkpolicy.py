@@ -14,7 +14,7 @@ class NPName:
     def __delete__(self, instance):
         del instance._name
 
-class NPAllowedNetworkRuleList:
+class AllowedNetworkRuleList:
     def __get__(self, instance, owner):
         return instance._allowed_network_rule_list
     def __set__(self, instance, value):
@@ -26,7 +26,7 @@ class NPAllowedNetworkRuleList:
     def __delete__(self, instance):
         del instance._allowed_network_rule_list
 
-class NPBlockedNetworkRuleList:
+class BlockedNetworkRuleList:
     def __get__(self, instance, owner):
         return instance._blocked_network_rule_list
     def __set__(self, instance, value):
@@ -37,7 +37,7 @@ class NPBlockedNetworkRuleList:
     def __delete__(self, instance):
         del instance._blocked_network_rule_list
 
-class NPAllowedIPList:
+class AllowedIPList:
     def __get__(self, instance, owner):
         return instance._allowed_ip_list
     def __set__(self, instance, value):
@@ -48,7 +48,7 @@ class NPAllowedIPList:
     def __delete__(self, instance):
         del instance._allowed_ip_list
 
-class NPBlockedIPList:
+class BlockedIPList:
     def __get__(self, instance, owner):
         return instance._blocked_ip_list
     def __set__(self, instance, value):
@@ -59,7 +59,7 @@ class NPBlockedIPList:
     def __delete__(self, instance):
         del instance._blocked_ip_list
 
-class NPComment:
+class Comment:
     def __get__(self, instance, owner):
         return instance._comment
     def __set__(self, instance, value):
@@ -67,29 +67,15 @@ class NPComment:
     def __delete__(self, instance):
         del instance._comment
 
-class NPTagClause:
-    def __get__(self, instance, owner):
-        return instance._tag_clause
-    def __set__(self, instance, value):
-        # expects dict of tag_name: tag_value
-        if isinstance(value, dict):
-            clause = ", ".join(f"{k} = '{v}'" for k, v in value.items())
-        else:
-            # single tag: {k:v}
-            k, v = next(iter(value.items()))
-            clause = f"{k} = '{v}'"
-        instance._tag_clause = f"TAG {clause}"
-    def __delete__(self, instance):
-        del instance._tag_clause
 
 class NetworkPolicyAttrs:
     name = NPName()
-    allowed_network_rule_list = NPAllowedNetworkRuleList()
-    blocked_network_rule_list = NPBlockedNetworkRuleList()
-    allowed_ip_list = NPAllowedIPList()
-    blocked_ip_list = NPBlockedIPList()
-    comment = NPComment()
-    tag_clause = NPTagClause()
+    allowed_network_rule_list = AllowedNetworkRuleList()
+    blocked_network_rule_list = BlockedNetworkRuleList()
+    allowed_ip_list = AllowedIPList()
+    blocked_ip_list = BlockedIPList()
+    comment = Comment()
+
 
 class NetworkPolicy(BaseObject):
     def __init__(self, session, user_id, logger):

@@ -238,4 +238,9 @@ class InvalidObjectTypeForAllowedDatabases(SnowchainException):
     def __init__(self, attr_name,object_name):
         error_message=f"Databases needs to be in the list of allowed objects for configuring {attr_name}, while creating {object_name}. Please ask user for the clarification."
         super().__init__(error_message)
+
+class BaseValueMustBeGreaterThanOrEqualReferenceValue(AttributeValidationError):
+    def __init__(self, object_type, attr_name,value_ref):
+        message=f"should be set to a value greater than or equal to {value_ref}"
+        super().__init__(object_type, attr_name,message)
     

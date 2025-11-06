@@ -10,7 +10,7 @@ class ObjectException(SnowchainException):
     def __init__(self, object_type, message):
         self.object_type = object_type
         self.message = message
-        self.error_message = f"{self.object_type} object {self.message}. Please ask user to provide the right input."
+        self.error_message = f"{self.object_type} object {self.message}."
         super().__init__(self.error_message)
     
 class ObjectDoesNotExist(ObjectException):
@@ -37,4 +37,10 @@ class MustBeAnAdmin(ObjectException):
 class InvalidAttributesToAlter(ObjectException):
     def __init__(self, object_type, attribute_list):
         message = f" does not have following properties to alter {attribute_list}"
+        super().__init__(object_type, message)
+
+
+class IncompatibleValueForChildAttr(ObjectException):
+    def __init__(self, object_type, child_attr_name,parent_attr_name,compatible_value):
+        message=f" can have {child_attr_name} only when {parent_attr_name} is one of the following {compatible_value}"
         super().__init__(object_type, message)

@@ -6,117 +6,193 @@ import logging
 logger = logging.getLogger('authentication policy logs')
 from .baseobj import BaseObject
 from vars.obj.authenticationpolicy.gvauthenticationpolicy import AuthenticationPolicyTag as tags
+from src.validation.validateobject import ValidateObject as vo,ValidateDependentAttributes as vda
+from src.validation.validatevalue import ValidateValue as vv
 
-# ========== Descriptors ==========
 
-class AuthName:
-    def __get__(self, instance, owner):
-        return instance._name
-    def __set__(self, instance, value):
-        instance._name = value
-    def __delete__(self, instance):
+class Name:
+    def __get__(self,instance,owner):
+        return (instance._name,instance._rename_to)
+
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.__class__.__name__,
+                             object_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.object_exist(session=instance.parent.session,
+                                object_type=instance.parent.__class__.__name__,
+                                object_name=old_name)
+                vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.__class__.__name__,
+                             object_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
+
+    def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
-class AuthComment:
+
+class AuthenticationMethods:
     def __get__(self, instance, owner):
-        return instance._comment
+        return instance._authentication_methods
+    
     def __set__(self, instance, value):
-        instance._comment = f"COMMENT = '{value}'"
-    def __delete__(self, instance):
-        del instance._comment
+        vv.is_list(value=value,
+                   object_type=instance.parent.__class__.__name__,
+                   attr_name=self.__class__.__name__)
+        final_value="("
+        for i in range(0,len(value)):
+            vv.is_allowed_value(value=value[i],
+                                allowed_list=tags.allowed_value_list().get("AUTHENTICATION_METHODS"),
+                                object_type=instance.parent.__class__.__name__,
+                                attr_name=self.__class__.__name__)
+            if i != len(value)-1:
+                final_value=final_value+f"'{value[i]}', "
+            elif i == len(value)-1:
+                final_value=final_value+f"'{value[i]}'"
+        final_value=final_value+")"
+        instance._authentication_methods = final_value
 
-class AuthSamlIdp:
+    def __delete__(self, instance):
+        del instance._authentication_methods
+'''
+class MFAAuthenticationMethods:
     def __get__(self, instance, owner):
-        return instance._saml_idp
+        return instance._mfa_authentication_methods
     def __set__(self, instance, value):
-        instance._saml_idp = f"SAML_IDENTITY_PROVIDER = '{value}'"
+        #validation to ensure this is only set if parent attribute is of the allowed type for this attribute
+        validate_parent=vda(object_type=instance.parent.__class__.__name__)
+        validate_parent.validate_parent_dependency(parent_attr_name="AUTHENTICATION_METHODS",
+                                                   child_attr_name="MFA_AUTHENTICATION_METHODS",
+                                                   parent_attr_value=instance.parent._authentication_methods,
+                                                   parent_attr_compatible_values=["SAML","PASSWORD"])
+        vv.is_list(value=value,
+                   object_type=instance.parent.__class__.__name__,
+                   attr_name=self.__class__.__name__)
+        
+        instance._mfa_authentication_methods = value
     def __delete__(self, instance):
-        del instance._saml_idp
-
-class AuthSamlSpInit:
-    def __get__(self, instance, owner):
-        return instance._saml_sp_init
-    def __set__(self, instance, value):
-        instance._saml_sp_init = f"SAML_ENABLE_SP_INITIATED = {value}"
-    def __delete__(self, instance):
-        del instance._saml_sp_init
-
-class AuthSamlIdpInit:
-    def __get__(self, instance, owner):
-        return instance._saml_idp_init
-    def __set__(self, instance, value):
-        instance._saml_idp_init = f"SAML_ENABLE_IDP_INITIATED = {value}"
-    def __delete__(self, instance):
-        del instance._saml_idp_init
-
-class AuthOauthClientId:
-    def __get__(self, instance, owner):
-        return instance._oauth_client_id
-    def __set__(self, instance, value):
-        instance._oauth_client_id = f"OAUTH_CLIENT_ID = '{value}'"
-    def __delete__(self, instance):
-        del instance._oauth_client_id
-
-class AuthOauthClientSecret:
-    def __get__(self, instance, owner):
-        return instance._oauth_client_secret
-    def __set__(self, instance, value):
-        instance._oauth_client_secret = f"OAUTH_CLIENT_SECRET = '{value}'"
-    def __delete__(self, instance):
-        del instance._oauth_client_secret
-
-class AuthOauthRedirectUri:
-    def __get__(self, instance, owner):
-        return instance._oauth_redirect_uri
-    def __set__(self, instance, value):
-        instance._oauth_redirect_uri = f"OAUTH_REDIRECT_URI = '{value}'"
-    def __delete__(self, instance):
-        del instance._oauth_redirect_uri
-
-class AuthMfaEnrollment:
+        del instance._mfa_authentication_methods
+'''
+class MFAEnrollment:
     def __get__(self, instance, owner):
         return instance._mfa_enrollment
     def __set__(self, instance, value):
-        instance._mfa_enrollment = f"MFA_ENROLLMENT = {value}"
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(tags.MFA_ENROLLMENT),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._mfa_enrollment = value
     def __delete__(self, instance):
         del instance._mfa_enrollment
 
-class AuthMfaEnrollmentGrace:
+class MFAPolicy:
     def __get__(self, instance, owner):
-        return instance._mfa_enrollment_grace
+        return instance._mfa_policy
     def __set__(self, instance, value):
-        instance._mfa_enrollment_grace = f"MFA_ENROLLMENT_GRACE_PERIOD_DAYS = {value}"
+        vv.is_list(value=value,
+                   object_type=instance.parent.__class__.__name__,
+                   attr_name=self.__class__.__name__)
+        final_policy=f"(ALLOWED_METHODS=("
+        for i in range(0,len(value)):
+            vv.is_allowed_value(value=value[i],
+                                allowed_list=tags.allowed_value_list().get(tags.MFA_POLICY),
+                                object_type=instance.parent.__class__.__name__,
+                                attr_name=self.__class__.__name__)
+            if i != len(value)-1:
+                final_policy=final_policy+f"'{value[i]}',"
+            elif i == len(value)-1:
+                final_policy=final_policy+f"'{value[i]}'"
+        final_policy=final_policy+"))"
+        instance._mfa_policy = final_policy
+        
     def __delete__(self, instance):
-        del instance._mfa_enrollment_grace
+        del instance._mfa_policy
 
-class AuthTagClause:
+class ClientTypes:
     def __get__(self, instance, owner):
-        return instance._tag_clause
+        return instance._client_types
     def __set__(self, instance, value):
-        if isinstance(value, dict):
-            clause = ", ".join(f"{k} = '{v}'" for k, v in value.items())
-        else:
-            k, v = next(iter(value.items()))
-            clause = f"{k} = '{v}'"
-        instance._tag_clause = f"TAG {clause}"
+        instance._client_types = value
     def __delete__(self, instance):
-        del instance._tag_clause
+        del instance._client_types
+
+class ClientPolicy:
+    def __get__(self, instance, owner):
+        return instance._client_policy
+    def __set__(self, instance, value):
+        instance._client_policy = value
+    def __delete__(self, instance):
+        del instance._client_policy
+
+class SecurityIntegrations:
+    def __get__(self, instance, owner):
+        return instance._security_integrations
+    def __set__(self, instance, value):
+        instance._security_integrations = value
+    def __delete__(self, instance):
+        del instance._security_integrations
+
+class PATPolicy:
+    def __get__(self, instance, owner):
+        return instance._pat_policy
+    def __set__(self, instance, value):
+        instance._pat_policy = value
+    def __delete__(self, instance):
+        del instance._pat_policy
+
+class WorkloadIdentityPolicy:
+    def __get__(self, instance, owner):
+        return instance._workload_identity_policy
+    def __set__(self, instance, value):
+        instance._workload_identity_policy = value
+    def __delete__(self, instance):
+        del instance._workload_identity_policy
 
 
-# ========== Attr container ==========
+class Comment:
+    def __get__(self, instance, owner):
+        return instance._comment
+    def __set__(self, instance, value):
+        instance._comment = value
+    def __delete__(self, instance):
+        del instance._comment
 
 class AuthenticationPolicyAttrs:
-    name = AuthName()
-    saml_idp = AuthSamlIdp()
-    saml_sp_init = AuthSamlSpInit()
-    saml_idp_init = AuthSamlIdpInit()
-    oauth_client_id = AuthOauthClientId()
-    oauth_client_secret = AuthOauthClientSecret()
-    oauth_redirect_uri = AuthOauthRedirectUri()
-    mfa_enrollment = AuthMfaEnrollment()
-    mfa_enrollment_grace = AuthMfaEnrollmentGrace()
-    comment = AuthComment()
-    tag_clause = AuthTagClause()
+    name = Name()
+    authentication_methods = AuthenticationMethods()
+    #mfa_authentication_methods = MFAAuthenticationMethods()
+    mfa_enrollment = MFAEnrollment()
+    mfa_policy = MFAPolicy()
+    client_types = ClientTypes()
+    client_policy = ClientPolicy()
+    security_integrations = SecurityIntegrations()
+    pat_policy = PATPolicy()
+    workload_identity_policy = WorkloadIdentityPolicy()
+    comment = Comment()
 
 class AuthenticationPolicy(BaseObject):
     def __init__(self, session, user_id, logger):
@@ -127,32 +203,32 @@ class AuthenticationPolicy(BaseObject):
 
     # setters
     def set_name(self, v): self.attr.name = v
-    def set_saml_idp(self, v): self.attr.saml_idp = v
-    def set_saml_sp_init(self, v): self.attr.saml_sp_init = v
-    def set_saml_idp_init(self, v): self.attr.saml_idp_init = v
-    def set_oauth_client_id(self, v): self.attr.oauth_client_id = v
-    def set_oauth_client_secret(self, v): self.attr.oauth_client_secret = v
-    def set_oauth_redirect_uri(self, v): self.attr.oauth_redirect_uri = v
-    def set_mfa_enrollment(self, v): self.attr.mfa_enrollment = v
-    def set_mfa_enrollment_grace(self, v): self.attr.mfa_enrollment_grace = v
-    def set_comment(self, v): self.attr.comment = v
-    def set_tag_clause(self, v): self.attr.tag_clause = v
+    def set_authentication_methods(self, val): self.attr.authentication_methods = val
+    #def set_mfa_authentication_methods(self, val): self.attr.mfa_authentication_methods = val
+    def set_mfa_enrollment(self, val): self.attr.mfa_enrollment = val
+    def set_mfa_policy(self, val): self.attr.mfa_policy = val
+    def set_client_types(self,val):self.attr.client_types=val
+    def set_client_policy(self,val): self.attr.client_policy=val
+    def set_security_integrations(self,val): self.attr.security_integrations=val
+    def set_pat_policy(self,val) : self.attr.pat_policy=val
+    def set_workload_identity_policy(self,val) : self.attr.workload_identity_policy=val
+    def set_comment(self,val): self.attr.comment=val
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
         def set_flag(tag, attrname):
             self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) is not None else 0
 
-        set_flag(tags.SAML_IDENTITY_PROVIDER, "saml_idp")
-        set_flag(tags.SAML_ENABLE_SP_INITIATED, "saml_sp_init")
-        set_flag(tags.SAML_ENABLE_IDP_INITIATED, "saml_idp_init")
-        set_flag(tags.OAUTH_CLIENT_ID, "oauth_client_id")
-        set_flag(tags.OAUTH_CLIENT_SECRET, "oauth_client_secret")
-        set_flag(tags.OAUTH_REDIRECT_URI, "oauth_redirect_uri")
+        set_flag(tags.AUTHENTICATION_METHODS, "authentication_methods")
+        #set_flag(tags.MFA_AUTHENTICATION_METHODS, "mfa_authentication_methods")
         set_flag(tags.MFA_ENROLLMENT, "mfa_enrollment")
-        set_flag(tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS, "mfa_enrollment_grace")
+        set_flag(tags.MFA_POLICY, "mfa_policy")
+        set_flag(tags.CLIENT_TYPES, "client_types")
+        set_flag(tags.CLIENT_POLICY, "client_policy")
+        set_flag(tags.SECURITY_INTEGRATIONS, "security_integrations")
+        set_flag(tags.PAT_POLICY, "pat_policy")
+        set_flag(tags.WORKLOAD_IDENTITY_POLICY, "workload_identity_policy")
         set_flag(tags.COMMENT, "comment")
-        set_flag(tags.TAG_CLAUSE, "tag_clause")
 
     def check_properties_to_set(self):
         self.property_lst = [prop for prop, flag in self.flag_dic.items() if flag == 1]
@@ -189,72 +265,65 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set saml_idp")
-        if tags.SAML_IDENTITY_PROVIDER in kwargs.keys():
-            obj_inst.set_saml_idp(kwargs[tags.SAML_IDENTITY_PROVIDER])
+        obj_inst.logger.info(f"set authentication methods {kwargs[tags.AUTHENTICATION_METHODS]}")
+        if tags.AUTHENTICATION_METHODS in kwargs.keys():
+            obj_inst.set_authentication_methods(kwargs[tags.AUTHENTICATION_METHODS])
         else:
-            obj_inst.set_saml_idp('NONE')
-
-        logger.info("set saml_sp_init")
-        if tags.SAML_ENABLE_SP_INITIATED in kwargs.keys():
-            obj_inst.set_saml_sp_init(kwargs[tags.SAML_ENABLE_SP_INITIATED])
+            obj_inst.set_authentication_methods('NONE')
+        '''
+        obj_inst.logger.info(f"set mfa_authentication_methods {kwargs[tags.MFA_AUTHENTICATION_METHODS]}")
+        if tags.MFA_AUTHENTICATION_METHODS in kwargs.keys():
+            obj_inst.set_mfa_authentication_methods(kwargs[tags.MFA_AUTHENTICATION_METHODS])
         else:
-            obj_inst.set_saml_sp_init('NONE')
-
-        logger.info("set saml_idp_init")
-        if tags.SAML_ENABLE_IDP_INITIATED in kwargs.keys():
-            obj_inst.set_saml_idp_init(kwargs[tags.SAML_ENABLE_IDP_INITIATED])
-        else:
-            obj_inst.set_saml_idp_init('NONE')
-
-        logger.info("set oauth_client_id")
-        if tags.OAUTH_CLIENT_ID in kwargs.keys():
-            obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
-        else:
-            obj_inst.set_oauth_client_id('NONE')
-
-        logger.info("set oauth_client_secret")
-        if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
-            obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
-        else:
-            obj_inst.set_oauth_client_secret('NONE')
-
-        logger.info("set oauth_redirect_uri")
-        if tags.OAUTH_REDIRECT_URI in kwargs.keys():
-            obj_inst.set_oauth_redirect_uri(kwargs[tags.OAUTH_REDIRECT_URI])
-        else:
-            obj_inst.set_oauth_redirect_uri('NONE')
-
-        logger.info("set mfa_enrollment")
+            obj_inst.set_mfa_authentication_methods('NONE')
+        '''
+        obj_inst.logger.info(f"set mfa_enrollment {kwargs[tags.MFA_ENROLLMENT]}")
         if tags.MFA_ENROLLMENT in kwargs.keys():
             obj_inst.set_mfa_enrollment(kwargs[tags.MFA_ENROLLMENT])
         else:
             obj_inst.set_mfa_enrollment('NONE')
 
-        logger.info("set mfa_enrollment_grace")
-        if tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS in kwargs.keys():
-            obj_inst.set_mfa_enrollment_grace(kwargs[tags.MFA_ENROLLMENT_GRACE_PERIOD_DAYS])
+        obj_inst.logger.info(f"set mfa_policy {kwargs[tags.MFA_POLICY]}")
+        if tags.MFA_POLICY in kwargs.keys():
+            obj_inst.set_mfa_policy(kwargs[tags.MFA_POLICY])
         else:
-            obj_inst.set_mfa_enrollment_grace('NONE')
+            obj_inst.set_mfa_policy('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info(f"set client_types {kwargs[tags.CLIENT_TYPES]}")
+        if tags.CLIENT_TYPES in kwargs.keys():
+            obj_inst.set_client_types(kwargs[tags.CLIENT_TYPES])
+        else:
+            obj_inst.set_client_types('NONE')
+
+        obj_inst.logger.info(f"set client_policy {kwargs[tags.CLIENT_POLICY]}")
+        if tags.CLIENT_POLICY in kwargs.keys():
+            obj_inst.set_client_policy(kwargs[tags.CLIENT_POLICY])
+        else:
+            obj_inst.set_client_policy('NONE')
+
+        obj_inst.logger.info(f"set security_integrations {kwargs[tags.SECURITY_INTEGRATIONS]}")
+        if tags.MFA_ENROLLMENT in kwargs.keys():
+            obj_inst.set_security_integrations(kwargs[tags.SECURITY_INTEGRATIONS])
+        else:
+            obj_inst.set_security_integrations('NONE')
+
+        obj_inst.logger.info(f"set pat_policy {kwargs[tags.PAT_POLICY]}")
+        if tags.PAT_POLICY in kwargs.keys():
+            obj_inst.set_pat_policy(kwargs[tags.PAT_POLICY])
+        else:
+            obj_inst.set_pat_policy('NONE')
+
+        obj_inst.logger.info(f"set comment {kwargs[tags.COMMENT]}")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
-
-        logger.info("set tag_clause")
-        if tags.TAG_CLAUSE in kwargs.keys():
-            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
-        else:
-            obj_inst.set_tag_clause('NONE')
-
 
         logger.info('prepare query')
         obj_inst.prepare_query()
@@ -263,8 +332,10 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
-
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
 
     @classmethod
     def get_attributes(cls):
