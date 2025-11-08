@@ -8,7 +8,7 @@ from .baseobj import BaseObject
 from vars.obj.authenticationpolicy.gvauthenticationpolicy import AuthenticationPolicyTag as tags
 from src.validation.validateobject import ValidateObject as vo,ValidateDependentAttributes as vda
 from src.validation.validatevalue import ValidateValue as vv
-
+from src.usr.user import ChatHistory
 
 class Name:
     def __get__(self,instance,owner):
@@ -128,7 +128,7 @@ class MFAPolicy:
                 final_policy=final_policy+f"'{value[i]}'"
         final_policy=final_policy+"))"
         instance._mfa_policy = final_policy
-        
+
     def __delete__(self, instance):
         del instance._mfa_policy
 
@@ -256,7 +256,7 @@ class AuthenticationPolicy(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=AuthenticationPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -336,6 +336,10 @@ class Operation:
                                    object_type=obj_inst.__class__.__name__,
                                    object_database='NA',
                                    object_schema='NA')
+        
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                           object_identifier=obj_inst.attr.name[0],
+                                           qry=obj_inst.qry)
 
     @classmethod
     def get_attributes(cls):

@@ -14,7 +14,7 @@ from validation.validateobject import ValidateObject as vo
 from setup import privilege
 from .baseobj import BaseObject 
 from vars.obj.snowpipe.gvsnowpipe import SnowpipeTag as tags
-
+from src.usr.user import ChatHistory
 
 
 class Database:
@@ -320,7 +320,7 @@ class Snowpipe(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=Snowpipe(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -394,7 +394,9 @@ class Operation:
                                          object_database=obj_inst.attr.database,
                                          object_schema=obj_inst.attr.schema)
 
-
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                        object_identifier=obj_inst.attr.name[0],
+                                        qry=obj_inst.qry)
     @classmethod
     def get_attributes(cls):
         return tags().get_attributes_with_description()

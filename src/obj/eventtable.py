@@ -18,7 +18,7 @@ from dep import deploy
 from setup import privilege 
 from .baseobj import BaseObject 
 
-
+from src.usr.user import ChatHistory
 
 class Database:
     def __get__(self,instance,owner):
@@ -490,7 +490,7 @@ class EventTable(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=EventTable(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -586,6 +586,10 @@ class Operation:
 
         logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
+
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                        object_identifier=obj_inst.attr.name[0],
+                                        qry=obj_inst.qry)
 
 
     @classmethod

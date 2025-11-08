@@ -30,7 +30,8 @@ class BaseObject(AbstractObject):
         
         self.session.sql(self.qry).collect()
     
-
+    def print_query(self):
+        self.logger.info(f" Query : {self.qry}")
     def create_deployment_entry(self,object_name,object_type,object_database,object_schema):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment database object : {object_name}")

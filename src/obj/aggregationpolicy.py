@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger('Aggregation policy logs')
 from .baseobj import BaseObject
 from vars.obj.aggregationpolicy.gvaggregationpolicy import AggregationPolicyTag as tags
+from src.usr.user import ChatHistory
 
 class AggregationPolicyName:
     def __get__(self, instance, owner):
@@ -37,7 +38,7 @@ class AggregationPolicyAttrs:
     comment = AggregationPolicyComment()
 
 class AggregationPolicy(BaseObject):
-    def __init__(self, session, user_id, logger):
+    def __init__(self,session, user_id, logger):
         self.attr = AggregationPolicyAttrs()
         self.session = session
         self.user_id = user_id
@@ -92,7 +93,7 @@ class AggregationPolicy(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         agg_policy_inst=AggregationPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -127,6 +128,10 @@ class Operation:
 
             logger.info('writing file to git')
             agg_policy_inst.write_file_to_git(object_name=agg_policy_inst.attr.name[0],object_type=agg_policy_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+            user_chat_inst.add_to_chat_history(object_type=agg_policy_inst.__class__.__name__,
+                                            object_identifier=agg_policy_inst.attr.name[0],
+                                            qry=agg_policy_inst.qry)
 
     @classmethod
     def get_attributes(cls):

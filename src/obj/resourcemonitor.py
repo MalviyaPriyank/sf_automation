@@ -8,7 +8,7 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from vars.obj.resourcemonitor.gvresourcemonitor import ResourceMonitorTag as tags
 from .baseobj import BaseObject 
-
+from src.usr.user import ChatHistory
 class Name:   
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -103,8 +103,8 @@ class NotifyUsers:
         return instance._notify_users
     
     def __set__(self,instance,value):
-        if value=="NONE":
-            instance._notify_users=value
+        if value=="NONE" or len(value)==0:
+            instance._notify_users="NONE"
         else:
             for names in value:
                 vo.user_exist(session=instance.parent.session,user_name=names)
@@ -237,20 +237,34 @@ class ResourceMonitor(BaseObject):
         if len(self.property_lst) != 0 :
             self.qry = f"{self.qry} WITH "
             for prop in self.property_lst:
+                
                 if prop == tags.CREDIT_QUOTA:
+                    self.logger.info("adding credit quota")
                     self.qry = f" {self.qry} {tags.CREDIT_QUOTA}  = {self.attr.credit_quota} "
+                self.print_query()
                 if prop == tags.FREQUENCY:
+                    self.logger.info("adding frequency")
                     self.qry = f" {self.qry} {tags.FREQUENCY} = {self.attr.frequency} "
+                self.print_query()
                 if prop == tags.START_TIMESTAMP:
+                    self.logger.info("adding start timestamp")
                     self.qry = f" {self.qry} {tags.START_TIMESTAMP} = {self.attr.start_timestamp} "
+                self.print_query()
                 if prop == tags.END_TIMESTAMP:
+                    self.logger.info("adding end timestamp")
                     self.qry = f" {self.qry} {tags.END_TIMESTAMP} = {self.attr.end_timestamp} "
+                self.print_query()
                 if prop == tags.NOTIFY_USERS:
+                    self.logger.info("adding notify users")
                     self.qry = f" {self.qry} {tags.NOTIFY_USERS} = {self.attr.notify_users} "
+                self.print_query()
                 if prop == tags.TRIGGERS:
+                    self.logger.info("adding triggers")
                     self.qry=f" {self.qry} TRIGGERS "
+                    self.print_query()
                     for i in range(0,len(self.attr.action)):
                         self.qry = f" {self.qry} ON {self.attr.threshold[i]}  PERCENT DO {self.attr.action[i] } "
+                        self.print_query()
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -280,72 +294,74 @@ class ResourceMonitor(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=ResourceMonitor(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set credit_quota")
+        obj_inst.logger.info(f"set credit_quota {kwargs[tags.CREDIT_QUOTA]}")
         if tags.CREDIT_QUOTA in kwargs.keys():
             obj_inst.set_credit_quota(kwargs[tags.CREDIT_QUOTA])
         else:
             obj_inst.set_credit_quota('NONE')
 
-        logger.info("set frequency")
+        obj_inst.logger.info(f"set frequency {kwargs[tags.FREQUENCY]}")
         if tags.FREQUENCY in kwargs.keys():
             obj_inst.set_frequency(kwargs[tags.FREQUENCY])
         else:
             obj_inst.set_frequency('NONE')
 
-        logger.info("set start_timestamp")
+        obj_inst.logger.info(f"set start_timestamp {kwargs[tags.START_TIMESTAMP]}")
         if tags.START_TIMESTAMP in kwargs.keys():
             obj_inst.set_start_timestmap(kwargs[tags.START_TIMESTAMP])
         else:
             obj_inst.set_start_timestmap('NONE')
 
-        logger.info("set end_timestamp")
+        obj_inst.logger.info(f"set end_timestamp {kwargs[tags.END_TIMESTAMP]}")
         if tags.END_TIMESTAMP in kwargs.keys():
             obj_inst.set_end_timestamp(kwargs[tags.END_TIMESTAMP])
         else:
             obj_inst.set_end_timestamp('NONE')
 
-        logger.info("set notify_users")
+        obj_inst.logger.info(f"set notify_users {kwargs[tags.NOTIFY_USERS]}")
         if tags.NOTIFY_USERS in kwargs.keys():
             obj_inst.set_notify_users(kwargs[tags.NOTIFY_USERS])
         else:
             obj_inst.set_notify_users('NONE')
 
-        logger.info("set triggers")
+        obj_inst.logger.info(f"set triggers {kwargs[tags.TRIGGERS]}")
         if tags.TRIGGERS in kwargs.keys():
             logger.info("setting to true")
             obj_inst.set_triggers("TRUE")
             for i in range(0,len(kwargs[tags.TRIGGERS])):
-                logger.info(f"set threshold and action {kwargs[tags.TRIGGERS][i]}")
+                obj_inst.logger.info(f"set threshold and action {kwargs[tags.TRIGGERS][i]}")
                 obj_inst.set_threshold(kwargs[tags.TRIGGERS][i][tags.THRESHOLD])
                 obj_inst.set_action(kwargs[tags.TRIGGERS][i][tags.ACTION])
         else:
             obj_inst.set_triggers("NONE")
             obj_inst.set_action("NONE")
             obj_inst.set_threshold("NONE")
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
         obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
         obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
-
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                        object_identifier=obj_inst.attr.name[0],
+                                        qry=obj_inst.qry)
     @classmethod
     def get_attributes(cls):
         return tags().get_attributes_with_description()

@@ -57,6 +57,7 @@ class LLMTools:
                     sf_session,
                     root,
                     bedrock_obj,
+                    user_chat_inst,
                     retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
@@ -64,12 +65,14 @@ class LLMTools:
                  ):
         self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
+        self.query_count=0
         self.root = root
         self.chat_model_id = chat_model_id
         self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
         self.logger = logger.getChild(self.__class__.__name__)
         self.bedrock_obj = bedrock_obj
+        self.user_chat_inst=user_chat_inst
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
                                     aws_access_key_id=llm_config.ACCESS_KEY,
@@ -100,6 +103,9 @@ class LLMTools:
                                   ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.USER_OBJ: user.User(self.sf_session, self.user_id, logger=self.logger)
                                   }
+    
+    def __increment_query_count(self):
+        self.query_count+=1
 
     def import_module(self, obj_type):
         module_path = f"src.obj.{obj_type.lower()}"
@@ -121,9 +127,10 @@ class LLMTools:
             print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
             operation = self.import_module(obj_type)
-            qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
+            qry = operation.create_object(user_chat_inst=self.user_chat_inst,session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_type}, query returned: {qry}")
             self.logger.info(f'Object {obj_type} created successfully.')
+            self.__increment_query_count()
             return f'Object {obj_type} created successfully, and returned {qry}'
         except (SnowchainException,SnowparkSQLException) as e:
             self.logger.warn(f"inside Snowchainexception")

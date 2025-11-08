@@ -18,6 +18,7 @@ from setup import privilege
 from processing.stage import Stage
 from .baseobj import BaseObject 
 from vars.obj.notificationintegrationemail.gvnotificationintegrationemai import NotificationIntegrationEmailTag as tags
+from src.usr.user import ChatHistory
 
 class Name:
     def __get__(self,instance,owner):
@@ -265,7 +266,7 @@ class NotificationIntegrationEmail(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=NotificationIntegrationEmail(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -330,6 +331,11 @@ class Operation:
                                    object_type=obj_inst.__class__.__name__,
                                    object_database='NA',
                                    object_schema='NA')
+
+        
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                        object_identifier=obj_inst.attr.name[0],
+                                        qry=obj_inst.qry)
         #obj_inst.create_deployment_entry()
 
 

@@ -12,7 +12,7 @@ from vars.obj.copyinto.gvcopyinto import CopyIntoTag as tags
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
-
+from src.usr.user import ChatHistory
 
 
 class Database:
@@ -567,7 +567,7 @@ class CopyInto(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=CopyInto(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -640,6 +640,10 @@ class Operation:
 
         obj_inst.logger.info(f"preparing copy into for {obj_inst.attr.table}")
         obj_inst.prepare_query()
+
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                           object_identifier=obj_inst.attr.name[0],
+                                           qry=obj_inst.qry)
 
         return obj_inst.qry
     

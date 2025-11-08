@@ -11,11 +11,12 @@ import traceback
 sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
-from src.obj import session
+from src.obj import session as snowflake_session
 
 #from src.obj import connection,account,database,share,internalstage,externalstage,role,fileformat,resourcemonitor,user,warehouse,session
 from conf import readconf
 from src.utils import helper
+from src.usr.user import User,ChatHistory,Session
 #from src.model.tools import LLMTools
 from src.model.tools_new import LLMTools
 from src.model.bedrock import Bedrock
@@ -44,7 +45,7 @@ def get_new_files_since(start_time, folder='analysis'):
 def run(body, say):
     try:
         global chat_history
-        session_inst = session.Session()
+        session_inst = snowflake_session.Session()
 
         session_inst.set_user('frosty')
         session_inst.set_password('Hellopehlaadmi@24')
@@ -56,11 +57,24 @@ def run(body, say):
         
         logger.info('session started')
 
+        #User
+
+
         session_state = session_inst.get_session()
         root = session_inst.get_root_object()
+
+        user=User(user_name='frosty')
+        user_session=Session()
+        user_session.register_session(user,session_state)
+        chat_inst=ChatHistory(user=user,session=user_session)
         bedrock_obj = Bedrock()
         retrieval_workflow = bedrock_obj.get_retriever_obj()
-        tools = LLMTools(sf_session=session_state,retrieval_workflow = retrieval_workflow,root = root, logger=logger, bedrock_obj=bedrock_obj)
+        tools = LLMTools(sf_session=session_state,
+                         retrieval_workflow = retrieval_workflow,
+                         root = root, 
+                         logger=logger, 
+                         bedrock_obj=bedrock_obj,
+                         user_chat_inst=chat_inst)
         # say('Logged in to snowflake')
         # print(body)
         prompt = body['event']['text']
@@ -89,6 +103,7 @@ def run(body, say):
                     print(f'Error processing file {filename}: {e}')
         
         prompt = body['event']['text']
+        chat_inst.add_prompt(prompt=prompt)
         chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
         response = bedrock_obj.converse(messages=chat_history)
         chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
@@ -100,16 +115,18 @@ def run(body, say):
         
         tool_start_time = time.time()
         while len(response)>0:
-            print(chat_history)
+            logger.info(chat_history)
             tool_result = []
             done_tool_call = False
             for content in response:
                 if (ss.TEXT in content) and (len(response)==1): 
                     done_tool_call = True
+                    if tools.query_count !=0:
+                        chat_inst.store_chat_history(snowflake_session=session_state)
                     break
                 if lcs.TOOL_USE in content:
                     try:
-                        tool_result = tools.tool_call(content, tool_result)
+                        tool_result = tools.tool_call(content, tool_result)                            
                     except SnowchainException as e:
                         logger.info('attr-error')
                         say(str(e))
@@ -133,7 +150,6 @@ def run(body, say):
         
             if done_tool_call: 
                 break 
-
         new_files = get_new_files_since(tool_start_time)
         for file_path in new_files:
             app.client.files_upload_v2(
@@ -142,8 +158,8 @@ def run(body, say):
                 title=os.path.basename(file_path)
             )   
     except Exception as e:
-        logger.info(f"{traceback.print_exc()}")
-        logger.info(e)
+        print(f"{traceback.print_exc()}")
+        print(e)
         chat_history=[]
         say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.')
         chat_history = []
