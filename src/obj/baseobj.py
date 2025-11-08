@@ -35,17 +35,15 @@ class BaseObject(AbstractObject):
     def create_deployment_entry(self,object_name,object_type,object_database,object_schema):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment database object : {object_name}")
-        deploy_inst.insert_into_deployment_script_table(obj_qry=self.qry, user_id=self.user_id)
-        deploy_inst.set_object_type(object_type)
-        deploy_inst.set_object_database(object_database)
-        deploy_inst.set_object_schema(object_schema)
-        deploy_inst.set_object_name(object_name)
-        deploy_inst.set_modified_by(self.user_id)
-        deploy_inst.set_deployment_status(cfg._deployment_status_in_development)
-        deploy_inst.set_deployment_id('NA')
-        deploy_inst.insert_into_deploy_control_table()
+        deploy_inst.track_development(qry=self.qry,
+                                      user_id=self.user_id,
+                                      object_type=object_type,
+                                      object_database=object_database,
+                                      object_schema=object_schema,
+                                      object_name=object_name)
 
     def write_file_to_git(self,object_name,object_type,object_database,object_schema):
+        self.logger.info(f" BEGIN: write_file_to_git")
         commit_msg=f"Modify {object_type} {object_name} by {self.user_id}"
         self.logger.info(f"{commit_msg}")
         if object_database != 'NA' and object_schema != 'NA':
@@ -56,12 +54,8 @@ class BaseObject(AbstractObject):
             filepath=f"Database/{object_name}/DDL/{object_name}.sql"
         elif object_database =='NA' and object_schema == 'NA':
             filepath=f"{object_type}/{object_name}/DDL/{object_name}.sql"
-        repo = Repository()
         self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} and schema {object_schema} to repo")
         self.logger.info("Before cloning")
-        repo.clone_repo()
-        self.logger.info("After cloning")
-        repo.instantiate_repo()
-        repo.write_file_to_local(filepath=filepath,content=self.qry)
-        repo.add_file_for_push(filepath=filepath,commit_msg=commit_msg)
-        repo.push_file_to_remote()
+        repo = Repository(self.logger)
+        repo.sync_repo(filepath=filepath,qry=self.qry,commit_msg=commit_msg)
+        self.logger.info(f" EXIT: write_file_to_git")

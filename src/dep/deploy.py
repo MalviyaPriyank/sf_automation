@@ -279,3 +279,14 @@ class Deploy:
         self.logger.info('Deployment complete')
         self.logger.info('Cleaning the table')
         self.clean_deployment_table()
+
+    def track_development(self,qry,user_id,object_type,object_database,object_schema,object_name):
+        self.insert_into_deployment_script_table(obj_qry=qry, user_id=user_id)
+        self.set_object_type(object_type)
+        self.set_object_database(object_database)
+        self.set_object_schema(object_schema)
+        self.set_object_name(object_name)
+        self.set_modified_by(user_id)
+        self.set_deployment_status(cfg._deployment_status_in_development)
+        self.set_deployment_id('NA')
+        self.insert_into_deploy_control_table()
