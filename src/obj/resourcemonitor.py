@@ -102,13 +102,23 @@ class NotifyUsers:
     def __get__(self,instance,owner):
         return instance._notify_users
     
+    
     def __set__(self,instance,value):
+
+        name_string=""
         if value=="NONE" or len(value)==0:
             instance._notify_users="NONE"
         else:
             for names in value:
+                instance.parent.logger.info(f"validating user {names}")
                 vo.user_exist(session=instance.parent.session,user_name=names)
-            instance._notify_users=f"({value})"
+            for i in range(0,len(value)):
+                if i != len(value)-1:
+                    name_string=f"'{value[i]}',"
+                elif i == len(value)-1:
+                    name_string=f"'{value[i]}'"
+            instance.parent.logger.info(f"setting notify users {name_string}")
+            instance._notify_users=f"({name_string})"
     
     def __delete__(self,instance):
         del instance._notify_users
@@ -118,11 +128,18 @@ class Threshold:
         return instance._threshold
     
     def __set__(self,instance,value):
-        instance._threshold=[]
-        vv.is_positive_number(value=value,
-                                 object_type=instance.parent.__class__.__name__,
-                                 attr_name=self.__class__.__name__)
-        instance._threshold.append(value)
+        if isinstance(value,list):
+            for vals in value:
+                vv.is_positive_number(value=vals,
+                                        object_type=instance.parent.__class__.__name__,
+                                        attr_name=self.__class__.__name__)
+        if isinstance(value,list):    
+            instance._threshold = value
+        else:
+            vv.is_positive_number(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+            instance._threshold = [value]
         
     def __delete__(self,instance):
         del instance._threshold
@@ -146,12 +163,19 @@ class Action:
         return instance._action
     
     def __set__(self,instance,value):
-        instance._action=[]
-        vv.is_allowed_value(value=value,
-                            allowed_list=tags.allowed_value_list().get(tags.ACTION),
-                            object_type=instance.parent.__class__.__name__,
-                            attr_name=self.__class__.__name__)
-        instance._action.append(value)
+        if isinstance(value,list):
+            for vals in value:
+                vv.is_allowed_value(value=vals,
+                                    allowed_list=tags.allowed_value_list().get(tags.ACTION),
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        if isinstance(value,list):    
+            instance._action = value
+        else:
+            vv.is_positive_number(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+            instance._action = [value]
         
     def __delete__(self,instance):
         del instance._action
@@ -262,6 +286,8 @@ class ResourceMonitor(BaseObject):
                     self.logger.info("adding triggers")
                     self.qry=f" {self.qry} TRIGGERS "
                     self.print_query()
+                    self.logger.info(f"actions : {self.attr.action}")
+                    self.logger.info(f"thresholds : {self.attr.threshold}")
                     for i in range(0,len(self.attr.action)):
                         self.qry = f" {self.qry} ON {self.attr.threshold[i]}  PERCENT DO {self.attr.action[i] } "
                         self.print_query()
@@ -302,50 +328,60 @@ class Operation:
         obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
+        
         if tags.NAME in kwargs.keys():
+            obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        obj_inst.logger.info(f"set credit_quota {kwargs[tags.CREDIT_QUOTA]}")
+        
         if tags.CREDIT_QUOTA in kwargs.keys():
+            obj_inst.logger.info(f"set credit_quota {kwargs[tags.CREDIT_QUOTA]}")
             obj_inst.set_credit_quota(kwargs[tags.CREDIT_QUOTA])
         else:
             obj_inst.set_credit_quota('NONE')
 
-        obj_inst.logger.info(f"set frequency {kwargs[tags.FREQUENCY]}")
+
         if tags.FREQUENCY in kwargs.keys():
+            obj_inst.logger.info(f"set frequency {kwargs[tags.FREQUENCY]}")
             obj_inst.set_frequency(kwargs[tags.FREQUENCY])
         else:
             obj_inst.set_frequency('NONE')
 
-        obj_inst.logger.info(f"set start_timestamp {kwargs[tags.START_TIMESTAMP]}")
         if tags.START_TIMESTAMP in kwargs.keys():
+            obj_inst.logger.info(f"set start_timestamp {kwargs[tags.START_TIMESTAMP]}")
             obj_inst.set_start_timestmap(kwargs[tags.START_TIMESTAMP])
         else:
             obj_inst.set_start_timestmap('NONE')
 
-        obj_inst.logger.info(f"set end_timestamp {kwargs[tags.END_TIMESTAMP]}")
+        
         if tags.END_TIMESTAMP in kwargs.keys():
+            obj_inst.logger.info(f"set end_timestamp {kwargs[tags.END_TIMESTAMP]}")
             obj_inst.set_end_timestamp(kwargs[tags.END_TIMESTAMP])
         else:
             obj_inst.set_end_timestamp('NONE')
 
-        obj_inst.logger.info(f"set notify_users {kwargs[tags.NOTIFY_USERS]}")
+        
         if tags.NOTIFY_USERS in kwargs.keys():
+            obj_inst.logger.info(f"set notify_users {kwargs[tags.NOTIFY_USERS]}")
             obj_inst.set_notify_users(kwargs[tags.NOTIFY_USERS])
         else:
             obj_inst.set_notify_users('NONE')
 
-        obj_inst.logger.info(f"set triggers {kwargs[tags.TRIGGERS]}")
+        
         if tags.TRIGGERS in kwargs.keys():
+            threshold_lst=[]
+            action_lst=[]
+            obj_inst.logger.info(f"set triggers {kwargs[tags.TRIGGERS]}")
             logger.info("setting to true")
             obj_inst.set_triggers("TRUE")
             for i in range(0,len(kwargs[tags.TRIGGERS])):
                 obj_inst.logger.info(f"set threshold and action {kwargs[tags.TRIGGERS][i]}")
-                obj_inst.set_threshold(kwargs[tags.TRIGGERS][i][tags.THRESHOLD])
-                obj_inst.set_action(kwargs[tags.TRIGGERS][i][tags.ACTION])
+                threshold_lst.append(kwargs[tags.TRIGGERS][i][tags.THRESHOLD])
+                action_lst.append(kwargs[tags.TRIGGERS][i][tags.ACTION])
+            obj_inst.set_action(action_lst)
+            obj_inst.set_threshold(threshold_lst)
         else:
             obj_inst.set_triggers("NONE")
             obj_inst.set_action("NONE")

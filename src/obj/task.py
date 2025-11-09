@@ -624,44 +624,44 @@ class Task(BaseObject):
     def alter_object(self):
         for prop in self.property_lst:
             if prop == tags.WAREHOUSE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.WAREHOUSE} = {self.attr.warehouse}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.qualified_name} SET {tags.WAREHOUSE} = {self.attr.warehouse}"
                 self.execute_final_query()
             if prop == tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE} = {self.attr.user_task_managed_initial_warehouse_size}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.qualified_name} SET {tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE} = {self.attr.user_task_managed_initial_warehouse_size}"
                 self.execute_final_query()
             if prop == tags.SCHEDULE:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SCHEDULE} = {self.attr.schedule}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.qualified_name} SET {tags.SCHEDULE} = {self.attr.schedule}"
                 self.execute_final_query()
             if prop == tags.CONFIG:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CONFIG} = {self.attr.config}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.CONFIG} = {self.attr.config}"
                 self.execute_final_query()
             if prop == tags.ALLOW_OVERLAPPING_EXECUTION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ALLOW_OVERLAPPING_EXECUTION} = {self.attr.allow_overlapping_execution}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.ALLOW_OVERLAPPING_EXECUTION} = {self.attr.allow_overlapping_execution}"
                 self.execute_final_query()
             if prop == tags.USER_TASK_TIMEOUT_MS:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.USER_TASK_TIMEOUT_MS} = {self.attr.user_task_timeout_ms}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.USER_TASK_TIMEOUT_MS} = {self.attr.user_task_timeout_ms}"
                 self.execute_final_query()
             if prop == tags.SUSPEND_TASK_AFTER_NUM_FAILURES:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SUSPEND_TASK_AFTER_NUM_FAILURES} = {self.attr.suspend_task_after_num_failures}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.SUSPEND_TASK_AFTER_NUM_FAILURES} = {self.attr.suspend_task_after_num_failures}"
                 self.execute_final_query()
             if prop == tags.ERROR_INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
                 self.execute_final_query()
             if prop == tags.SUCCESS_INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.SUCCESS_INTEGRATION} = {self.attr.success_integration}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.SUCCESS_INTEGRATION} = {self.attr.success_integration}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
             if prop == tags.AFTER:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AFTER} = {self.attr.after}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.AFTER} = {self.attr.after}"
                 self.execute_final_query()
             if prop == tags.AFTER:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AFTER} = {self.attr.after}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.qualified_name} SET {tags.AFTER} = {self.attr.after}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.qualified_name} RENAME TO {self.attr.database}.{self.attr.schema}.{self.attr.name[1]}"
             self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
         
@@ -910,6 +910,7 @@ class Operation:
             obj_inst.logger.info(f"set serverless_task_max_statement_size: NONE")
             obj_inst.set_serverless_task_max_statement_size('NONE')
 
+        obj_inst.set_qualified_name()
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         

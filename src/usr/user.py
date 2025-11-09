@@ -71,7 +71,7 @@ class ChatHistory:
             '{self.session_id}',
             '{self.user_name}',
             '{self.chat_id}',
-            PARSE_JSON('{work_dict}'),
+            PARSE_JSON($${work_dict}$$),
             '{self.prompt}'
         """
 
