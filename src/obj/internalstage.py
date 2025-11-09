@@ -221,23 +221,23 @@ class InternalStage(BaseObject):
         alter_object_name='STAGE'        
         for prop in self.property_lst:
             if prop == tags.FILE_FORMAT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
             if prop == tags.ENCRYPTION:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENCRYPTION} = {self.attr.encryption}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ENCRYPTION} = {self.attr.encryption}"
                 self.execute_final_query()
             if prop == tags.ENABLE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENABLE} = {self.attr.enable}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ENABLE} = {self.attr.enable}"
                 self.execute_final_query()
             if prop == tags.REFRESH_ON_CREATE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} RENAME TO {self.attr.database}.{self.attr.schema}.{self.attr.name[1]}"
             self.logger.info(f"Renaming {self.__class__.__name__} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 

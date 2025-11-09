@@ -251,23 +251,23 @@ class Snowpipe(BaseObject):
     def alter_object(self):
         for prop in self.property_lst:
             if prop == tags.AUTO_INGEST:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AUTO_INGEST} = {self.attr.auto_ingest}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.AUTO_INGEST} = {self.attr.auto_ingest}"
                 self.execute_final_query()
             if prop == tags.ERROR_INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ERROR_INTEGRATION} = {self.attr.error_integration}"
                 self.execute_final_query()
             if prop == tags.AWS_SNS_TOPIC:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.AWS_SNS_TOPIC} = {self.attr.aws_sns_topic}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.AWS_SNS_TOPIC} = {self.attr.aws_sns_topic}"
                 self.execute_final_query()
             if prop == tags.INTEGRATION:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.INTEGRATION} = {self.attr.integration}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.INTEGRATION} = {self.attr.integration}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {self.__class__.__name__}.upper() {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} RENAME TO {self.attr.database}.{self.attr.schema}.{self.attr.name[1]}"
             self.logger.info(f"Renaming {self.__class__.__name__.upper()} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 

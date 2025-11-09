@@ -1227,116 +1227,116 @@ class FileFormat(BaseObject):
         alter_object_name='FILE FORMAT'
         for prop in self.property_lst:
             if prop == tags.TYPE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.TYPE} = {self.attr.type}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.TYPE} = {self.attr.type}"
                 self.execute_final_query()
             if prop == tags.COMPRESSION:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.COMPRESSION} = {self.attr.compression}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMPRESSION} = {self.attr.compression}"
                 self.execute_final_query()
             if prop == tags.RECORD_DELIMITER:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.RECORD_DELIMITER} = {self.attr.record_delimiter}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.RECORD_DELIMITER} = {self.attr.record_delimiter}"
                 self.execute_final_query()
             if prop == tags.FIELD_DELIMITER:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.FIELD_DELIMITER} = {self.attr.field_delimiter}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.FIELD_DELIMITER} = {self.attr.field_delimiter}"
                 self.execute_final_query()
             if prop == tags.MULTI_LINE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.MULTI_LINE} = {self.attr.multi_line}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.MULTI_LINE} = {self.attr.multi_line}"
                 self.execute_final_query()
             if prop == tags.FILE_EXTENSION:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.FILE_EXTENSION} = {self.attr.file_extension}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.FILE_EXTENSION} = {self.attr.file_extension}"
                 self.execute_final_query()
             if prop == tags.PARSE_HEADER:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.PARSE_HEADER} = {self.attr.parse_header}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.PARSE_HEADER} = {self.attr.parse_header}"
                 self.execute_final_query()
             if prop == tags.SKIP_HEADER:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.SKIP_HEADER} = {self.attr.skip_header}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.SKIP_HEADER} = {self.attr.skip_header}"
                 self.execute_final_query()
             if prop == tags.SKIP_BLANK_LINES:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.SKIP_BLANK_LINES} = {self.attr.skip_blank_lines}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.SKIP_BLANK_LINES} = {self.attr.skip_blank_lines}"
                 self.execute_final_query()
             if prop == tags.DATE_FORMAT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.DATE_FORMAT} = {self.attr.date_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.DATE_FORMAT} = {self.attr.date_format}"
                 self.execute_final_query()
             if prop == tags.TIME_FORMAT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.TIME_FORMAT} = {self.attr.time_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.TIME_FORMAT} = {self.attr.time_format}"
                 self.execute_final_query()
             if prop == tags.TIMESTAMP_FORMAT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.TIMESTAMP_FORMAT} = {self.attr.timestamp_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.TIMESTAMP_FORMAT} = {self.attr.timestamp_format}"
                 self.execute_final_query()
             if prop == tags.BINARY_FORMAT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.BINARY_FORMAT} = {self.attr.binary_format}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.BINARY_FORMAT} = {self.attr.binary_format}"
                 self.execute_final_query()
             if prop == tags.ESCAPE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ESCAPE} = {self.attr.escape}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ESCAPE} = {self.attr.escape}"
                 self.execute_final_query()
             if prop == tags.ESCAPE_UNENCLOSED_FIELD:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ESCAPE_UNENCLOSED_FIELD} = {self.attr.escape_unenclosed_field}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ESCAPE_UNENCLOSED_FIELD} = {self.attr.escape_unenclosed_field}"
                 self.execute_final_query()
             if prop == tags.TRIM_SPACE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.TRIM_SPACE} = {self.attr.trim_space}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.TRIM_SPACE} = {self.attr.trim_space}"
                 self.execute_final_query()
             if prop == tags.FIELD_OPTIONALLY_ENCLOSED_BY:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.FIELD_OPTIONALLY_ENCLOSED_BY} = {self.attr.field_optionally_enclosed_by}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.FIELD_OPTIONALLY_ENCLOSED_BY} = {self.attr.field_optionally_enclosed_by}"
                 self.execute_final_query()
             if prop == tags.NULL_IF:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.NULL_IF} = {self.attr.null_if}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.NULL_IF} = {self.attr.null_if}"
                 self.execute_final_query()
             if prop == tags.ERROR_ON_COLUMN_COUNT_MISMATCH:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ERROR_ON_COLUMN_COUNT_MISMATCH} = {self.attr.error_on_column_count_mismatch}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ERROR_ON_COLUMN_COUNT_MISMATCH} = {self.attr.error_on_column_count_mismatch}"
                 self.execute_final_query()
             if prop == tags.REPLACE_INVALID_CHARACTERS:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
                 self.execute_final_query()
             if prop == tags.EMPTY_FIELD_AS_NULL:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.EMPTY_FIELD_AS_NULL} = {self.attr.empty_field_as_null}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.EMPTY_FIELD_AS_NULL} = {self.attr.empty_field_as_null}"
                 self.execute_final_query()
             if prop == tags.SKIP_BYTE_ORDER_MARK:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.SKIP_BYTE_ORDER_MARK} = {self.attr.skip_byte_order_mark}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.SKIP_BYTE_ORDER_MARK} = {self.attr.skip_byte_order_mark}"
                 self.execute_final_query()
             if prop == tags.ENCODING:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENCODING} = {self.attr.encoding}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ENCODING} = {self.attr.encoding}"
                 self.execute_final_query()
             if prop == tags.ENABLE_OCTAL:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ENABLE_OCTAL} = {self.attr.enable_octal}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ENABLE_OCTAL} = {self.attr.enable_octal}"
                 self.execute_final_query()
             if prop == tags.ALLOW_DUPLICATE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.ALLOW_DUPLICATE} = {self.attr.allow_duplicate}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.ALLOW_DUPLICATE} = {self.attr.allow_duplicate}"
                 self.execute_final_query()
             if prop == tags.STRIP_OUTER_ARRAY:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.STRIP_OUTER_ARRAY} = {self.attr.strip_outer_array}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.STRIP_OUTER_ARRAY} = {self.attr.strip_outer_array}"
                 self.execute_final_query()
             if prop == tags.STRIP_NULL_VALUES:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.STRIP_NULL_VALUES} = {self.attr.strip_null_values}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.STRIP_NULL_VALUES} = {self.attr.strip_null_values}"
                 self.execute_final_query()
             if prop == tags.IGNORE_UTF8_ERRORS:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.IGNORE_UTF8_ERRORS} = {self.attr.ignore_utf8_errors}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.IGNORE_UTF8_ERRORS} = {self.attr.ignore_utf8_errors}"
                 self.execute_final_query()
             if prop == tags.SNAPPY_COMPRESSION:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.SNAPPY_COMPRESSION} = {self.attr.snappy_compression}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.SNAPPY_COMPRESSION} = {self.attr.snappy_compression}"
                 self.execute_final_query()
             if prop == tags.BINARY_AS_TEXT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.BINARY_AS_TEXT} = {self.attr.binary_as_text}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.BINARY_AS_TEXT} = {self.attr.binary_as_text}"
                 self.execute_final_query()
             if prop == tags.USE_LOGICAL_TYPE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.USE_LOGICAL_TYPE} = {self.attr.use_logical_type}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.USE_LOGICAL_TYPE} = {self.attr.use_logical_type}"
                 self.execute_final_query()
             if prop == tags.USE_VECTORIZED_SCANNER:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.USE_VECTORIZED_SCANNER} = {self.attr.use_vectorized_scanner}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.USE_VECTORIZED_SCANNER} = {self.attr.use_vectorized_scanner}"
                 self.execute_final_query()
             if prop == tags.PRESERVE_SPACE:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.PRESERVE_SPACE} = {self.attr.preserve_space}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.PRESERVE_SPACE} = {self.attr.preserve_space}"
                 self.execute_final_query()
             if prop == tags.STRIP_OUTER_ELEMENT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.STRIP_OUTER_ELEMENT} = {self.attr.strip_outer_element}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.STRIP_OUTER_ELEMENT} = {self.attr.strip_outer_element}"
                 self.execute_final_query()
             if prop == tags.DISABLE_SNOWFLAKE_DATA:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data}"
                 self.execute_final_query()
             if prop == tags.DISABLE_AUTO_CONVERT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} SET {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER {alter_object_name} {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} RENAME TO {self.attr.database}.{self.attr.schema}.{self.attr.name[1]}"
             self.logger.info(f"Renaming {self.__class__.__name__} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
