@@ -5,24 +5,62 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.networkpolicy.gvnetworkpolicy import NetworkPolicyTag as tags
+from src.validation.validateobject import ValidateObject as vo
+from src.validation.validatevalue import ValidateValue as vv
+from src.usr.user import ChatHistory
 
-class NPName:
-    def __get__(self, instance, owner):
-        return instance._name
-    def __set__(self, instance, value):
-        instance._name = value
-    def __delete__(self, instance):
+class Name:
+    def __get__(self,instance,owner):
+        return (instance._name,instance._rename_to)
+
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.database_exist(session=instance.parent.session,database_name=old_name)
+                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
+
+    def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
+
 
 class AllowedNetworkRuleList:
     def __get__(self, instance, owner):
         return instance._allowed_network_rule_list
     def __set__(self, instance, value):
-        # expects list of rule names
-        if isinstance(value, list):
-            instance._allowed_network_rule_list = value
-        else:
-            instance._allowed_network_rule_list = value
+        vv.is_list(value=value,
+                   object_type=instance.parent.__class__.__name__,
+                   attr_name=self.__class__.__name__)
+        for rules in value:
+            vo.object_exist(session=instance.parent.session,
+                            object_type='NETWORK RULE',
+                            object_name=rules)
+        instance._allowed_network_rule_list = value
+
     def __delete__(self, instance):
         del instance._allowed_network_rule_list
 
@@ -30,10 +68,19 @@ class BlockedNetworkRuleList:
     def __get__(self, instance, owner):
         return instance._blocked_network_rule_list
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._blocked_network_rule_list = value
+        if value=="NONE":
+            instance._blocked_network_rule_list="NONE"
         else:
+            vv.is_list(value=value,
+                    object_type=instance.parent.__class__.__name__,
+                    attr_name=self.__class__.__name__)
+            
+            for rules in value:
+                vo.object_exist(session=instance.parent.session,
+                                object_type='NETWORK RULE',
+                                object_name=rules)
             instance._blocked_network_rule_list = value
+
     def __delete__(self, instance):
         del instance._blocked_network_rule_list
 
@@ -41,10 +88,11 @@ class AllowedIPList:
     def __get__(self, instance, owner):
         return instance._allowed_ip_list
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._allowed_ip_list = value
+        if value=="NONE":
+            instance._allowed_ip_list="NONE"
         else:
-            instance._allowed_ip_list = f"ALLOWED_IP_LIST = ('{value}')"
+            vo.operation_on_object_not_suppported("Recommendation is to configure Network Rule with ALLOWED_NETWORK_RULE_LIST instead of setting this in network policy.")
+
     def __delete__(self, instance):
         del instance._allowed_ip_list
 
@@ -52,10 +100,11 @@ class BlockedIPList:
     def __get__(self, instance, owner):
         return instance._blocked_ip_list
     def __set__(self, instance, value):
-        if isinstance(value, list):
-            instance._blocked_ip_list = value
+        if value=="NONE":
+            instance._blocked_ip_list="NONE"
         else:
-            instance._blocked_ip_list = f"BLOCKED_IP_LIST = ('{value}')"
+            vo.operation_on_object_not_suppported("Recommendation is to configure Network Rule with BLOCKED_NETWORK_RULE_LIST instead of setting this in network policy.")
+
     def __delete__(self, instance):
         del instance._blocked_ip_list
 
@@ -69,7 +118,7 @@ class Comment:
 
 
 class NetworkPolicyAttrs:
-    name = NPName()
+    name = Name()
     allowed_network_rule_list = AllowedNetworkRuleList()
     blocked_network_rule_list = BlockedNetworkRuleList()
     allowed_ip_list = AllowedIPList()
@@ -110,7 +159,6 @@ class NetworkPolicy(BaseObject):
         set_flag(tags.ALLOWED_IP_LIST, "allowed_ip_list")
         set_flag(tags.BLOCKED_IP_LIST, "blocked_ip_list")
         set_flag(tags.COMMENT, "comment")
-        set_flag(tags.TAG_CLAUSE, "tag_clause")
 
     def check_properties_to_set(self):
         self.property_lst = [prop for prop, flag in self.flag_dic.items() if flag == 1]
@@ -130,18 +178,24 @@ class NetworkPolicy(BaseObject):
                 self.qry += f" {self.attr.blocked_ip_list}"
             if prop == tags.COMMENT:
                 self.qry += f" {self.attr.comment}"
-            if prop == tags.TAG_CLAUSE:
-                self.qry += f" {self.attr.tag_clause}"
+
 
     def alter_object(self):
         for prop in self.property_lst:
-            if prop in (tags.ALLOWED_NETWORK_RULE_LIST, tags.BLOCKED_NETWORK_RULE_LIST,
-                        tags.ALLOWED_IP_LIST, tags.BLOCKED_IP_LIST, tags.COMMENT):
-                self.qry = f"ALTER NETWORK POLICY {self.attr.name[0]} SET {getattr(self.attr, prop.lower())}"
+            if prop == tags.ALLOWED_NETWORK_RULE_LIST:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.ALLOWED_NETWORK_RULE_LIST} = {self.attr.allowed_network_rule_list}"
                 self.execute_final_query()
-
-            if prop == tags.TAG_CLAUSE:
-                self.qry = f"ALTER NETWORK POLICY {self.attr.name[0]} SET {self.attr.tag_clause}"
+            if prop == tags.BLOCKED_NETWORK_RULE_LIST:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.BLOCKED_NETWORK_RULE_LIST} = {self.attr.blocked_network_rule_list}"
+                self.execute_final_query()
+            if prop == tags.ALLOWED_IP_LIST:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.ALLOWED_IP_LIST} = {self.attr.allowed_ip_list}"
+                self.execute_final_query()
+            if prop == tags.BLOCKED_IP_LIST:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.name[0]} SET {tags.BLOCKED_IP_LIST} = {self.attr.blocked_ip_list}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER NETWORK POLICY {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -187,7 +241,7 @@ class NetworkPolicy(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=NetworkPolicy(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -195,47 +249,41 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set allowed_network_rule_list")
+        obj_inst.logger.info("set allowed_network_rule_list")
         if tags.ALLOWED_NETWORK_RULE_LIST in kwargs.keys():
             obj_inst.set_allowed_network_rule_list(kwargs[tags.ALLOWED_NETWORK_RULE_LIST])
         else:
             obj_inst.set_allowed_network_rule_list('NONE')
 
-        logger.info("set blocked_network_rule_list")
+        obj_inst.logger.info("set blocked_network_rule_list")
         if tags.BLOCKED_NETWORK_RULE_LIST in kwargs.keys():
             obj_inst.set_blocked_network_rule_list(kwargs[tags.BLOCKED_NETWORK_RULE_LIST])
         else:
             obj_inst.set_blocked_network_rule_list('NONE')
 
-        logger.info("set allowed_ip_list")
+        obj_inst.logger.info("set allowed_ip_list")
         if tags.ALLOWED_IP_LIST in kwargs.keys():
             obj_inst.set_allowed_ip_list(kwargs[tags.ALLOWED_IP_LIST])
         else:
             obj_inst.set_allowed_ip_list('NONE')
 
-        logger.info("set blocked_ip_list")
+        obj_inst.logger.info("set blocked_ip_list")
         if tags.BLOCKED_IP_LIST in kwargs.keys():
             obj_inst.set_blocked_ip_list(kwargs[tags.BLOCKED_IP_LIST])
         else:
             obj_inst.set_blocked_ip_list('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
-
-        logger.info("set tag_clause")
-        if tags.TAG_CLAUSE in kwargs.keys():
-            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
-        else:
-            obj_inst.set_tag_clause('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
@@ -244,7 +292,14 @@ class Operation:
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
+        
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                           object_identifier=obj_inst.attr.name[0],
+                                           qry=obj_inst.qry)
 
 
     @classmethod

@@ -64,7 +64,7 @@ def run(body, say):
         session_state = session_inst.get_session()
         root = session_inst.get_root_object()
 
-        user=User(user_name='frosty')
+        user=User(user_name='Priyank')
         user_session=Session()
         user_session.register_session(user,session_state)
         chat_inst=ChatHistory(user=user,session=user_session)

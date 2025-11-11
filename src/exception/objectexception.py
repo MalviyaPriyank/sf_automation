@@ -44,3 +44,8 @@ class IncompatibleValueForChildAttr(ObjectException):
     def __init__(self, object_type, child_attr_name,parent_attr_name,compatible_value):
         message=f" can have {child_attr_name} only when {parent_attr_name} is one of the following {compatible_value}"
         super().__init__(object_type, message)
+
+class OperationNotSupported(SnowchainException):
+    def __init__(self, error_message):
+        super().__init__(error_message)
+

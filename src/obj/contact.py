@@ -47,6 +47,8 @@ class ContactComment:
         del instance._comment
 
 class ContactAttrs:
+    def __init__(self,parent):
+        self.parent=parent
     name = ContactName()
     users = ContactUsers()
     email_distribution_list = ContactEmailDistributionList()
@@ -55,7 +57,7 @@ class ContactAttrs:
 
 class Contact(BaseObject):
     def __init__(self, session, user_id, logger):
-        self.attr = ContactAttrs()
+        self.attr = ContactAttrs(self)
         self.session = session
         self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)

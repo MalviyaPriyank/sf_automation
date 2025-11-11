@@ -54,6 +54,9 @@ class BaseObject(AbstractObject):
             filepath=f"Database/{object_name}/DDL/{object_name}.sql"
         elif object_database =='NA' and object_schema == 'NA':
             filepath=f"{object_type}/{object_name}/DDL/{object_name}.sql"
+        object_database=object_database.upper()
+        object_schema=object_schema.upper()
+        object_name=object_name.upper()
         self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} and schema {object_schema} to repo")
         self.logger.info("Before cloning")
         repo = Repository(self.logger)

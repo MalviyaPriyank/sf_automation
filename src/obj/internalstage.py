@@ -250,7 +250,7 @@ class InternalStage(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE OR REPLACE STAGE  {self.attr.database}.{self.attr.schema}.{self.attr.name} "
+        self.qry = f"CREATE OR REPLACE STAGE  {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -258,7 +258,7 @@ class InternalStage(BaseObject):
                 if prop == tags.FILE_FORMAT:
                     self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.file_format} "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
                 if prop == tags.ENCRYPTION:
                     self.qry = f" {self.qry} {tags.ENCRYPTION} = {self.attr.encryption} "
                 if prop == tags.ENABLE:

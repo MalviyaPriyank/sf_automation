@@ -160,6 +160,8 @@ class Comment:
 
 
 class ComputePoolAttrs:
+    def __init__(self,parent):
+        self.parent=parent
     name = Name()
     for_application=ForApplication()
     min_nodes = MinNodes()
@@ -172,7 +174,7 @@ class ComputePoolAttrs:
 
 class ComputePool(BaseObject):
     def __init__(self, session, user_id, logger):
-        self.attr = ComputePoolAttrs()
+        self.attr = ComputePoolAttrs(self)
         self.session = session
         self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)

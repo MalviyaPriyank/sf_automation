@@ -11,25 +11,70 @@ from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
 from vars.obj.networkrule.gvnetworkrule import NetworkRuleTag as tags
+from src.usr.user import ChatHistory
 
-class Name:
+class Database:
     def __get__(self,instance,owner):
-        return instance._name
+        return instance._database
     
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
+
+
+class Name:
+    def __get__(self,instance,owner):
+        return (instance._name,instance._rename_to)
+
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_database(session=instance.parent.session, database_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.database_exist(session=instance.parent.session,database_name=old_name)
+                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
             else:
-                instance._name = value
+                instance._name=old_name
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
 class Type:
     def __get__(self,instance,owner):
@@ -72,6 +117,8 @@ class ValueList:
                                   attribute_name=self.__class__.__name__,
                                   value=value)
             instance._value_list=value
+        elif instance._type=="AZURELINKID":
+            vo.operation_on_object_not_suppported(f"Creating {instance.parent.__class__.__name__} for {self.__class__.__name__} is not supported.") 
     
     def __delete__(self,instance):
         del instance._value_list
@@ -111,11 +158,12 @@ class NetworkRuleAttrs:
         self.parent = parent
 
     name = Name()
+    database=Database()
+    schema=Schema()
     type=Type()
     value_list=ValueList()
     mode=Mode()
-    comment = Comment()
-
+    comment=Comment()
 
 class NetworkRule(BaseObject):
     def __init__(self, session, user_id, logger):
@@ -126,6 +174,12 @@ class NetworkRule(BaseObject):
 
     def set_name(self,val):
         self.attr.name = val
+
+    def set_database(self,val):
+        self.attr.database=val
+
+    def set_schema(self,val):
+        self.attr.schema=val
 
     def set_type(self,val):
         self.attr.type = val
@@ -149,8 +203,11 @@ class NetworkRule(BaseObject):
 
     def alter_object(self):        
         for prop in self.property_lst:
+            if prop == tags.VALUE_LIST:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.VALUE_LIST} = {self.attr.value_list}"
+                self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -212,7 +269,7 @@ class NetworkRule(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=NetworkRule(session=session,
                          user_id=user_id,
                          logger=logger)
@@ -225,6 +282,20 @@ class Operation:
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
+
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.logger.info(f"set database {kwargs[tags.DATABASE]}")
+            obj_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            obj_inst.logger.info(f"set database NONE")
+            obj_inst.set_database('NONE')
+
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.logger.info(f"set schema {kwargs[tags.SCHEMA]}")
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.logger.info(f"set schema NONE")
+            obj_inst.set_schema('NONE')
 
         logger.info("set type")
         if tags.TYPE in kwargs.keys():
@@ -256,8 +327,22 @@ class Operation:
         logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
+        
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
+        
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                        object_identifier=obj_inst.attr.name[0],
+                                        qry=obj_inst.qry)
+
+        
+
 
 
     @classmethod

@@ -130,7 +130,7 @@ class ValidateValue:
         
     @staticmethod
     def is_allowed_value(value,allowed_list,object_type,attr_name):
-        if value.upper() not in allowed_list:
+        if value.lower() not in [item.lower() for item in allowed_list]:
             raise ValueNotAllowed(object_type,attr_name,allowed_list)
 
         

@@ -19,7 +19,8 @@ from exception.objectexception import (
     ColumnDoesNotExist,
     MustBeAnAdmin,
     InvalidAttributesToAlter,
-    IncompatibleValueForChildAttr
+    IncompatibleValueForChildAttr,
+    OperationNotSupported
 )
 
 
@@ -133,6 +134,8 @@ class ValidateObject:
             qry="SHOW NETWORK RULES"
         elif object_type=="AUTHENTICATIONPOLICY":
             qry="SHOW AUTHENTICATION POLICIES"
+        elif object_type=="CORTEXSEARCH":
+            qry="SHOW CORTEX SEARCH SERVICES"
         else:    
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -166,6 +169,10 @@ class ValidateObject:
             qry="SHOW FAILOVER GROUPS"
         elif object_type=="AUTHENTICATIONPOLICY":
             qry="SHOW AUTHENTICATION POLICIES"
+        elif object_type=="COMPUTEPOOL":
+            qry="SHOW COMPUTE POOLS"
+        elif object_type=="CORTEXSEARCH":
+            qry="SHOW CORTEX SEARCH SERVICES"
         else:
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -393,6 +400,10 @@ class ValidateObject:
         df_users=df.select(col("name"))
         famli_list=[i for j in df_users.collect() for i in j]
         return famli_list
+    
+    @staticmethod
+    def operation_on_object_not_suppported(message):
+        raise OperationNotSupported(message)
 
         
 class ValidateDependentAttributes:
