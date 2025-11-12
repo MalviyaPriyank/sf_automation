@@ -13,3 +13,4 @@ slack_bolt
 matplotlib
 seaborn
 scikit-learn
+simple-salesforce
