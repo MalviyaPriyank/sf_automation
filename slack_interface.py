@@ -43,6 +43,7 @@ def get_new_files_since(start_time, folder='analysis'):
     return new_files
 
 def run(body, say):
+    thread_ts = body['event'].get('ts')
     try:
         global chat_history
         session_inst = snowflake_session.Session()
@@ -111,7 +112,7 @@ def run(body, say):
         
         for content in response:
             if ss.TEXT in content:
-                say(content[ss.TEXT])
+                say(content[ss.TEXT], thread_ts=thread_ts)
         
         tool_start_time = time.time()
         while len(response)>0:
@@ -129,7 +130,7 @@ def run(body, say):
                         tool_result = tools.tool_call(content, tool_result)                            
                     except SnowchainException as e:
                         logger.info('attr-error')
-                        say(str(e))
+                        say(str(e), thread_ts=thread_ts)
                         tool_result.append({lcs.TOOL_RESULT:{
                             lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
                             lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
@@ -145,7 +146,7 @@ def run(body, say):
                     
                     for content in response:
                         if ss.TEXT in content:
-                            say(content[ss.TEXT])
+                            say(content[ss.TEXT], thread_ts=thread_ts)
         
         
             if done_tool_call: 
@@ -161,7 +162,7 @@ def run(body, say):
         print(f"{traceback.print_exc()}")
         print(e)
         chat_history=[]
-        say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.')
+        say('There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.', thread_ts=thread_ts)
         chat_history = []
         SocketModeHandler(app, "xapp-1-A095SRHCLJZ-9196877250133-bbac21ac7e626fedc0734a6dc3bf027c79eed9b43d1ef70fc3c392cbadde797d").start()
 
