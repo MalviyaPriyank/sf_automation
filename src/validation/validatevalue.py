@@ -401,13 +401,13 @@ class ValidateValue:
             raise InvalidCIDRNotation(object_type,attribute_name,cidr_str)
         
     @staticmethod
-    def is_valid_vpce_id(object_type,attr_name,vpce_id):
+    def is_valid_vpce_id(object_type,attribute_name,vpce_id):
         pattern = r"^vpce-[0-9a-f]{17}$"
         is_valid=bool(re.match(pattern, vpce_id))
         if is_valid:
             return True
         else:
-            raise InvalidVPCEID(object_type,attr_name)
+            raise InvalidVPCEID(object_type,attribute_name)
 
 
     def is_valid_host_port(object_type,attribute_name,value):

@@ -103,20 +103,64 @@ class ValueList:
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
         if instance._type=="IPV4":
-            vv.is_valid_cidr(object_type=instance.parent.__class__.__name__,
-                             attribute_name=self.__class__.__name__,
-                             cidr_str=value)
-            instance._value_list=value
+            if isinstance(value,list):
+                instance.parent.logger.info("Value received as list")
+                val_string=""
+                for i in range(0,len(value)):
+                    instance.parent.logger.info(f"Validating {value[i]} for CIDR notation")
+                    vv.is_valid_cidr(object_type=instance.parent.__class__.__name__,
+                                    attribute_name=self.__class__.__name__,
+                                    cidr_str=value[i])
+                    if i != len(value)-1:
+                        val_string=val_string+f"'{value[i]}',"
+                    elif i == len(value)-1:
+                        val_string=val_string+f"'{value[i]}'"
+                instance.parent.logger.info(f" final value string : {val_string}")
+                instance._value_list=f"({val_string})"
+            elif isinstance(value,str):
+                vv.is_valid_cidr(object_type=instance.parent.__class__.__name__,
+                                    attribute_name=self.__class__.__name__,
+                                    cidr_str=value)
+                instance._value_list=f"('{value}')"
         elif instance._type=="AWSVPCEID":
-            vv.is_valid_vpce_id(object_type=instance.parent.__class__.__name__,
-                             attribute_name=self.__class__.__name__,
-                             vpce_id=value)
-            instance._value_list=value
+            if isinstance(value,list):
+                val_string=""
+                for i in range(0,len(value)):
+                    vv.is_valid_vpce_id(object_type=instance.parent.__class__.__name__,
+                                    attribute_name=self.__class__.__name__,
+                                    vpce_id=value[i])
+                    if i != len(value)-1:
+                        val_string=val_string+f"'{value[i]}',"
+                    elif i == len(value)-1:
+                        val_string=val_string+f"'{value[i]}'"
+                instance.parent.logger.info(f" final value string : {val_string}")
+                instance._value_list=f"({val_string})"
+            if isinstance(value,str):
+                vv.is_valid_vpce_id(object_type=instance.parent.__class__.__name__,
+                                    attribute_name=self.__class__.__name__,
+                                    vpce_id=value)
+                instance._value_list=f"('{value}')"
         elif instance._type=="HOST_PORT":
-            vv.is_valid_host_port(object_type=instance.parent.__class__.__name__,
-                                  attribute_name=self.__class__.__name__,
-                                  value=value)
-            instance._value_list=value
+            instance.parent.logger.info("for host port")
+            if isinstance(value,list):
+                instance.parent.logger.info(f" value is a list: {value}")
+                val_string=""
+                for i in range(0,len(value)):
+                    instance.parent.logger.info(f"validating {value[i]}")
+                    vv.is_valid_host_port(object_type=instance.parent.__class__.__name__,
+                                        attribute_name=self.__class__.__name__,
+                                        value=value[i])
+                    if i != len(value)-1:
+                        val_string=val_string+f"'{value[i]}',"
+                    elif i == len(value)-1:
+                        val_string=val_string+f"'{value[i]}'"
+                instance.parent.logger.info(f" final value string : {val_string}")
+                instance._value_list=f"({val_string})"
+            if isinstance(value,str):
+                vv.is_valid_host_port(object_type=instance.parent.__class__.__name__,
+                                        attribute_name=self.__class__.__name__,
+                                        value=value)
+                instance._value_list=f"('{value}')"
         elif instance._type=="AZURELINKID":
             vo.operation_on_object_not_suppported(f"Creating {instance.parent.__class__.__name__} for {self.__class__.__name__} is not supported.") 
     
@@ -148,7 +192,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance._comment = value
+        instance._comment = f"'{value}'"
     
     def __delete__(self,instance):
         del instance._comment
@@ -223,7 +267,7 @@ class NetworkRule(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_network_rule_qry(self):
-        self.qry = f"CREATE NETWORK RULE  {self.attr.name} {tags.TYPE} = {self.attr.type} {tags.VALUE_LIST} = {self.attr.value_list} {tags.MODE} = {self.attr.mode}"
+        self.qry = f"CREATE NETWORK RULE  {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} {tags.TYPE} = {self.attr.type} {tags.VALUE_LIST} = {self.attr.value_list} {tags.MODE} = {self.attr.mode}"
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :

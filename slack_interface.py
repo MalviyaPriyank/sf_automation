@@ -65,7 +65,7 @@ def run(body, say):
         root = session_inst.get_root_object()
 
         user=User(user_name='Priyank')
-        user_session=Session()
+        user_session=Session(thread_ts)
         user_session.register_session(user,session_state)
         chat_inst=ChatHistory(user=user,session=user_session)
         bedrock_obj = Bedrock()

@@ -4,7 +4,7 @@ from snowflake.snowpark.functions import col
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../inf_schema'))
-
+import logging
 
 from infschema.databases import Databases as db
 from infschema.schemata import Schemata as sch
@@ -23,6 +23,9 @@ from exception.objectexception import (
     OperationNotSupported
 )
 
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger(__name__).setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ValidateObject:
     @staticmethod
@@ -125,9 +128,10 @@ class ValidateObject:
             raise ObjectDoesNotExist(object_type='WAREHOUSE',object_name=warehouse_name)
 
     @staticmethod
-    def object_exist(session,object_type,object_name):
+    def object_exist(session,object_type,object_name,**kwargs):
         object_type=object_type.upper()
         object_name=object_name.upper()
+        logger.info(f" validating if  {object_type} {object_name} exist")
         if object_type == "MASKINGPOLICY":
             qry="SHOW MASKING POLICIES"
         elif object_type=="EXTERNALACCESSINTEGRATION":
@@ -136,6 +140,9 @@ class ValidateObject:
             qry="SHOW AUTHENTICATION POLICIES"
         elif object_type=="CORTEXSEARCH":
             qry="SHOW CORTEX SEARCH SERVICES"
+        elif object_type=="NETWORK RULE":
+            db=kwargs["DATABASE"]
+            schema=kwargs["SCHEMA"]
         else:    
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -144,6 +151,8 @@ class ValidateObject:
             df=df.select(col("*")).filter(col("mode")=="EGRESS").collect()
         else:
             df=df.select(col("*")).collect()
+        
+        logger.info(f" value collected :{df}")
 
         if len(df)==0:
             raise ObjectDoesNotExist(object_type=object_type,object_name=object_name)
