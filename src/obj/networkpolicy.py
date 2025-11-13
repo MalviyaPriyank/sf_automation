@@ -52,13 +52,24 @@ class AllowedNetworkRuleList:
     def __get__(self, instance, owner):
         return instance._allowed_network_rule_list
     def __set__(self, instance, value):
+        vv.required_attribute_check(value=instance._allowed_network_rule_database,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name="AllowedNetworkRuleDatabase")
+        vv.required_attribute_check(value=instance._allowed_network_rule_schema,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name="AllowedNetworkRuleSchema")
+        
         vv.is_list(value=value,
                    object_type=instance.parent.__class__.__name__,
                    attr_name=self.__class__.__name__)
-        for rules in value:
-            vo.object_exist(session=instance.parent.session,
-                            object_type='NETWORK RULE',
-                            object_name=rules)
+
+        vo.object_exist(session=instance.parent.session,
+                        object_type='NETWORK RULE',
+                        object_name=rules,
+                        kwargs={
+                            "DATABASE":instance._allowed_network_rule_database,
+                            "SCHEMA":instance._allowed_network_rule_schema
+                        })
         instance._allowed_network_rule_list = value
 
     def __delete__(self, instance):
@@ -79,7 +90,7 @@ class BlockedNetworkRuleList:
                 vo.object_exist(session=instance.parent.session,
                                 object_type='NETWORK RULE',
                                 object_name=rules,
-                                kwargs={"DATABASE":instance.})
+                                kwargs={"DATABASE":instance._allowed_network_rule_database})
             instance._blocked_network_rule_list = value
 
     def __delete__(self, instance):
@@ -111,33 +122,55 @@ class BlockedIPList:
 
 class AllowedNetworkRuleDatabase:
     def __get__(self, instance, owner):
-        return instance._network_rule_database
+        return instance._allowed_network_rule_database
     def __set__(self, instance, value):
-        if instance._allowed_network_rule_list != "NONE":
-            vv.required_attribute_check(value=value,
-                                        object_type=instance.parent.__class__.__name__,
-                                        attr_name=self.__class__.__name__)
-            vo.database_exist(session=instance.parent.session,
-                              database_name=value)
-            instance._network_rule_database = value
+        vo.database_exist(session=instance.parent.session,
+                            database_name=value)
+        instance._allowed_network_rule_database = value
     def __delete__(self, instance):
-        del instance._network_rule_database
+        del instance._allowed_network_rule_database
 
-class NetworkRuleSchema:
+class AllowedNetworkRuleSchema:
     def __get__(self, instance, owner):
-        return instance._network_rule_schema
+        return instance._allowed_network_rule_schema
+    
     def __set__(self, instance, value):
-        if instance._allowed_network_rule_list != "NONE":
-            vv.required_attribute_check(value=value,
-                                        object_type=instance.parent.__class__.__name__,
-                                        attr_name=self.__class__.__name__)
-            vo.schema_exist(session=instance.parent.session,
-                            database_name=instance._network_rule_database,
-                            schema_name=value)
-            instance._network_rule_schema = value
-        instance._network_rule_schema = value
+        vo.schema_exist(session=instance.parent.session,
+                        database_name=instance._allowed_network_rule_database,
+                        schema_name=value)
+        instance._allowed_network_rule_schema = value
+
     def __delete__(self, instance):
-        del instance._network_rule_schema
+        del instance._allowed_network_rule_schema
+
+class BlockedNetworkRuleSchema:
+    def __get__(self, instance, owner):
+        return instance._blocked_network_rule_schema
+    
+    def __set__(self, instance, value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session,
+                        database_name=instance._blocked_network_rule_database,
+                        schema_name=value)
+        instance._blocked_network_rule_schema = value
+
+    def __delete__(self, instance):
+        del instance._allowed_network_rule_schema
+
+class BlockedNetworkRuleDatabase:
+    def __get__(self, instance, owner):
+        return instance._blocked_network_rule_database
+    def __set__(self, instance, value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session,
+                            database_name=value)
+        instance._blocked_network_rule_database = value
+    def __delete__(self, instance):
+        del instance._blocked_network_rule_database
 
 class Comment:
     def __get__(self, instance, owner):
@@ -152,6 +185,10 @@ class NetworkPolicyAttrs:
     def __init__(self,parent):
         self.parent=parent
     name = Name()
+    allowed_network_rule_database=AllowedNetworkRuleDatabase()
+    allowed_network_rule_schema=AllowedNetworkRuleSchema()
+    blocked_network_rule_database=BlockedNetworkRuleDatabase()
+    blocked_network_rule_schema=BlockedNetworkRuleSchema()
     allowed_network_rule_list = AllowedNetworkRuleList()
     blocked_network_rule_list = BlockedNetworkRuleList()
     allowed_ip_list = AllowedIPList()
@@ -174,6 +211,19 @@ class NetworkPolicy(BaseObject):
         self.attr.allowed_network_rule_list = val
     def set_blocked_network_rule_list(self, val=None):
         self.attr.blocked_network_rule_list = val
+
+    def set_allowed_network_rule_database(self,val):
+        self.attr.allowed_network_rule_database=val
+
+    def set_allowed_network_rule_schema(self,val):
+        self.attr.allowed_network_rule_schema=val
+
+    def set_blocked_network_rule_database(self,val):
+        self.attr.blocked_network_rule_database=val
+
+    def set_blocked_network_rule_schema(self,val):
+        self.attr.blocked_network_rule_schema=val
+
     def set_allowed_ip_list(self, val=None):
         self.attr.allowed_ip_list = val
     def set_blocked_ip_list(self, val=None):
@@ -188,6 +238,10 @@ class NetworkPolicy(BaseObject):
         def set_flag(tag, attrname):
             self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) is not None else 0
 
+        set_flag(tags.ALLOWED_NETWORK_RULE_DATABASE , "allowed_network_rule_database")
+        set_flag(tags.ALLOWED_NETWORK_RULE_SCHEMA,"allowed_network_rule_schema")
+        set_flag(tags.BLOCKED_NETWORK_RULE_DATABASE,"blocked_network_rule_database")
+        set_flag(tags.BLOCKED_NETWORK_RULE_SCHEMA,"blocked_network_rule_schema")
         set_flag(tags.ALLOWED_NETWORK_RULE_LIST, "allowed_network_rule_list")
         set_flag(tags.BLOCKED_NETWORK_RULE_LIST, "blocked_network_rule_list")
         set_flag(tags.ALLOWED_IP_LIST, "allowed_ip_list")
@@ -212,7 +266,6 @@ class NetworkPolicy(BaseObject):
                 self.qry += f" {self.attr.blocked_ip_list}"
             if prop == tags.COMMENT:
                 self.qry += f" {self.attr.comment}"
-
 
     def alter_object(self):
         for prop in self.property_lst:

@@ -10,8 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
-from vars.obj.securityintegration.gvsecurityintegration import SecurityIntegrationTag as tags
-
+from vars.obj.securityintegrationaws.gvsecurityintegrationaws  import SecurityIntegrationAWSTag as tags
+from src.usr.user import ChatHistory
 
 class Name:
     def __get__(self,instance,owner):
@@ -61,6 +61,16 @@ class Type:
     def __delete__(self,instance):
         del instance._type
 
+class IntegrationType:
+    def __get__(self,instance,owner):
+        return instance._integration_type
+    
+    def __set__(self,instance,value):
+        instance._integration_type = "API_AUTHENTICATION"
+    
+    def __delete__(self,instance):
+        del instance._integration_type
+
 
 class AuthType:
     def __get__(self,instance,owner):
@@ -89,6 +99,26 @@ class Enabled:
             
     def __delete__(self,instance):
         del instance._enabled
+
+class AWSRoleARN:
+    def __get__(self,instance,owner):
+        return instance._aws_role_arn
+    
+    def __set__(self,instance,value):
+            vv.required_attribute_check(value=value,
+                                        object_type=instance.parent.__class__.__name__,
+                                        attr_name=self.__class__.__name__
+                                        )
+            vv.is_bool(value=value,
+                       object_type=instance.parent.__class__.__name__,
+                       attr_name=self.__class__.__name__
+                       )
+            instance._aws_role_arn=value
+            
+    def __delete__(self,instance):
+        del instance._aws_role_arn
+
+
 
 class OauthTokenEndpoint:
     def __get__(self,instance,owner):
@@ -216,7 +246,7 @@ class OauthAllowedScopes:
     def __delete__(self,instance):
         del instance._oauth_allowed_scopes
 
-class Comment:
+class OauthAuthorizationEndpoints:
     def __get__(self,instance,owner):
         return instance._comment
     
@@ -226,27 +256,31 @@ class Comment:
     def __delete__(self,instance):
         del instance._comment
 
-class SecurityIntegrationAttrs:
+
+class OauthRefreshTokenValidity:
+    def __get__(self,instance,owner):
+        return instance._oauth_refresh_token_validity
+    
+    def __set__(self,instance,value):
+        instance._oauth_refresh_token_validity = value
+    
+    def __delete__(self,instance):
+        del instance._oauth_refresh_token_validity
+
+class SecurityIntegrationAWSAttrs:
     def __init__(self,parent):
         self.parent=parent
     name=Name()
     type=Type()
     auth_type=AuthType()
     enabled=Enabled()
-    oauth_token_endpoint = OauthTokenEndpoint()
-    oauth_client_auth_method=OauthClientAuthMethod()
-    oauth_client_id=OauthClientID()
-    oauth_client_secret=OauthClientSecret()
-    oauth_grant=OauthGrant()
-    oauth_access_token_validity=OauthAccessTokenValidity()
-    oauth_allowed_scopes=OauthAllowedScopes()
-    comment=Comment()
+    aws_role_arn=AWSRoleARN()
 
-class SecurityIntegration(BaseObject):
+class SecurityIntegrationAWS(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
-        self.attr=SecurityIntegrationAttrs(self)
+        self.attr=SecurityIntegrationAWSAttrs(self)
 
     def set_name(self,val):
         self.attr.name = val
@@ -260,29 +294,8 @@ class SecurityIntegration(BaseObject):
     def set_enabled(self,val):
         self.attr.enabled = val
 
-    def set_oauth_token_endpoint(self,val):
-        self.attr.oauth_token_endpoint=val
-
-    def set_oauth_client_auth_method(self,val):
-        self.attr.oauth_client_auth_method=val
-
-    def set_oauth_client_id(self,val):
-        self.attr.oauth_client_id=val
-
-    def set_oauth_client_secret(self,val):
-        self.attr.oauth_client_secret=val
-
-    def set_oauth_grant(self,val):
-        self.attr.oauth_grant=val
-
-    def set_oauth_access_token_validity(self,val):
-        self.attr.oauth_access_token_validity=val
-
-    def set_oauth_allowed_scopes(self,val):
-        self.attr.oauth_allowed_scopes=val
-
-    def set_comment(self,val):
-        self.attr.comment = val
+    def set_aws_role_arn(self,val):
+        self.attr.aws_role_arn=val
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -311,17 +324,19 @@ class SecurityIntegration(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_security_integration_qry(self):
-        self.qry = f"CREATE SECURITY INTEGRATION {self.attr.name} {tags.ALLOWED_NETWORK_RULES} = {self.attr.allowed_network_rules} {tags.ENABLED} = {self.attr.enabled} "
+        self.qry = f"""
+        CREATE SECURITY INTEGRATION {self.attr.name[0]} 
+        {tags.TYPE} = {self.attr.type} 
+        {tags.AUTH_TYPE} = {self.attr.auth_type} 
+        {tags.AWS_ROLE_ARN} = {self.attr.aws_role_arn} 
+        {tags.ENABLED} = {self.attr.enabled}
+        """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
-                if prop==tags.ALLOWED_API_AUTHENTICATION_INTEGRATIONS:
-                    self.qry = f" {self.qry} {tags.ALLOWED_API_AUTHENTICATION_INTEGRATIONS} = {self.attr.allowed_api_authentication_integrations} "
-                if prop==tags.ALLOWED_AUTHENTICATION_SECRETS:
-                    self.qry = f" {self.qry} {tags.ALLOWED_AUTHENTICATION_SECRETS} = {self.attr.allowed_authentication_secrets} "
                 if prop==tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -334,122 +349,67 @@ class SecurityIntegration(BaseObject):
             if self.attr.name[1] != "NONE":
                 self.property_lst.append(tags.NAME)
             self.alter_object()
-    
-    def create_database_role(self):
-        self.execute_final_query()
-
-    def create_object(self,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-
-        self.set_name(kwargs[tags.NAME])
-        self.set_type(kwargs[tags.TYPE])
-        self.set_value_list(kwargs[tags.VALUE_LIST])
-        self.set_mode(kwargs[tags.MODE])
-        self.set_comment(kwargs[tags.COMMENT])
-
-        self.prepare_query()
-        self.create_database_role()
-
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
-        self.logger.info('writing file to git')
-        self.write_file_to_git(object_name=self.attr.name[0],object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
-        obj_inst=SecurityIntegration(session=session,
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
+        obj_inst=SecurityIntegrationAWS(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set type")
+        obj_inst.logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set auth_type")
+        obj_inst.logger.info("set auth_type")
         if tags.AUTH_TYPE in kwargs.keys():
             obj_inst.set_auth_type(kwargs[tags.AUTH_TYPE])
         else:
             obj_inst.set_auth_type('NONE')
 
-        logger.info("set enabled")
+        obj_inst.logger.info("set aws_role_arn")
+        if tags.AUTH_TYPE in kwargs.keys():
+            obj_inst.set_aws_role_arn(kwargs[tags.AWS_ROLE_ARN])
+        else:
+            obj_inst.set_aws_role_arn('NONE')
+
+        obj_inst.logger.info("set enabled")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
 
-        logger.info("set oauth_token_endpoint")
-        if tags.OAUTH_TOKEN_ENDPOINT in kwargs.keys():
-            obj_inst.set_oauth_token_endpoint(kwargs[tags.OAUTH_TOKEN_ENDPOINT])
-        else:
-            obj_inst.set_oauth_token_endpoint('NONE')
-
-        logger.info("set oauth_client_auth_method")
-        if tags.OAUTH_CLIENT_AUTH_METHOD in kwargs.keys():
-            obj_inst.set_oauth_client_auth_method(kwargs[tags.OAUTH_CLIENT_AUTH_METHOD])
-        else:
-            obj_inst.set_oauth_client_auth_method('NONE')
-
-        logger.info("set oauth_client_id")
-        if tags.OAUTH_CLIENT_ID in kwargs.keys():
-            obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
-        else:
-            obj_inst.set_oauth_client_id('NONE')
-
-        logger.info("set oauth_client_secret")
-        if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
-            obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
-        else:
-            obj_inst.set_oauth_client_secret('NONE')
-
-        logger.info("set oauth_grant")
-        if tags.OAUTH_GRANT in kwargs.keys():
-            obj_inst.set_oauth_grant(kwargs[tags.OAUTH_GRANT])
-        else:
-            obj_inst.set_oauth_grant('NONE')
-
-        logger.info("set oauth_access_token_validity")
-        if tags.OAUTH_ACCESS_TOKEN_VALIDITY in kwargs.keys():
-            obj_inst.set_oauth_access_token_validity(kwargs[tags.OAUTH_ACCESS_TOKEN_VALIDITY])
-        else:
-            obj_inst.set_oauth_access_token_validity('NONE')
-
-        logger.info("set oauth_allowed_scopes")
-        if tags.OAUTH_ALLOWED_SCOPES in kwargs.keys():
-            obj_inst.set_oauth_allowed_scopes(kwargs[tags.OAUTH_ALLOWED_SCOPES])
-        else:
-            obj_inst.set_oauth_allowed_scopes('NONE')
-
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.logger.info('write file to git')
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                   object_type=obj_inst.__class__.__name__,
+                                   object_database='NA',
+                                   object_schema='NA')
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                           object_identifier=obj_inst.attr.name[0],
+                                           qry=obj_inst.qry)
 
 
     @classmethod

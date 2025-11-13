@@ -11,8 +11,10 @@ class NetworkPolicyTag(BaseTag):
     BLOCKED_NETWORK_RULE_LIST = "BLOCKED_NETWORK_RULE_LIST"
     ALLOWED_IP_LIST = "ALLOWED_IP_LIST"
     BLOCKED_IP_LIST = "BLOCKED_IP_LIST"
-    NETWORK_RULE_DATABASE="NETWORK_RULE_DATABASE"
-    NETWORK_RULE_SCHEMA="NETWORK_RULE_SCHEMA"
+    ALLOWED_NETWORK_RULE_DATABASE="ALLOWED_NETWORK_RULE_DATABASE"
+    ALLOWED_NETWORK_RULE_SCHEMA="ALLOWED_NETWORK_RULE_SCHEMA"
+    BLOCKED_NETWORK_RULE_DATABASE="BLOCKED_NETWORK_RULE_DATABASE"
+    BLOCKED_NETWORK_RULE_SCHEMA="BLOCKED_NETWORK_RULE_SCHEMA"
     COMMENT = "COMMENT"
     TAG = "TAG"
     IS_CREATE = "IS_CREATE"
@@ -34,8 +36,10 @@ class NetworkPolicyTag(BaseTag):
             Specifies a list of IPv4 addresses that are denied access to your Snowflake account. This is referred to as the blocked list. To unset this parameter, specify a different CIDR block range, a series of IPv4 addresses, or a single IPv4 address.
             Snowflake recommends using network rules in conjunction with network policies rather than using this parameter.
             """,
-            "NETWORK_RULE_DATABASE":"Database of the network rule to be used.",
-            "NETWORK_RULE_SCHEMA":"Schema of the network rule to be used.",
+            "ALLOWED_NETWORK_RULE_DATABASE":"Database of the allowed network rule.",
+            "ALLOWED_NETWORK_RULE_SCHEMA":"Schema of the allowed network rule.",
+            "BLOCKED_NETWORK_RULE_DATABASE":"Database of the blocekd network rule.",
+            "BLOCKED_NETWORK_RULE_SCHEMA":"Schema of the blocked network rule.",
             "COMMENT":"This will be user defined comment for the object. If user does not define one add a proper comment as per your understanding and inform the user.",
             "IS_CREATE":"Set this to 'TRUE' if create object. set to 'FALSE' if alter object."
         }

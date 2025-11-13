@@ -243,4 +243,9 @@ class BaseValueMustBeGreaterThanOrEqualReferenceValue(AttributeValidationError):
     def __init__(self, object_type, attr_name,value_ref):
         message=f"should be set to a value greater than or equal to {value_ref}"
         super().__init__(object_type, attr_name,message)
+
+class InvalidEmail(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message=f"should be a valid email address."
+        super().__init__(object_type, attr_name, message)
     

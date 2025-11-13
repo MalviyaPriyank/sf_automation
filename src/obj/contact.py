@@ -5,61 +5,163 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.contact.gvcontact import ContactTag as tags
+from src.validation.validatevalue import ValidateValue as vv
+from src.validation.validateobject import ValidateObject as vo
+from src.usr.user import ChatHistory
 
-class ContactName:
-    def __get__(self, instance, owner):
-        return instance._name
-    def __set__(self, instance, value):
-        instance._name = value
-    def __delete__(self, instance):
+class Name:
+    def __get__(self,instance,owner):
+        return (instance._name,instance._rename_to)
+
+    def __set__(self,instance,value):
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.__class__.__name__,
+                             object_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.object_exist(session=instance.parent.session,
+                                object_type=instance.parent.__class__.__name__,
+                                object_name=old_name)
+                vo.is_new_object(session=instance.parent.session,
+                                 object_type=instance.parent.__class__.__name__,
+                                 object_name=new_name)
+                instance._name=old_name
+                instance._rename_to=new_name
+            else:
+                instance._name=old_name
+                instance._rename_to="NONE"
+
+    def __delete__(self,instance):
         del instance._name
+        del instance._rename_to
 
-class ContactUsers:
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
+
+
+
+class Users:
     def __get__(self, instance, owner):
         return instance._users
     def __set__(self, instance, value):
-        instance._users = value
+        if value=="NONE":
+            instance._users="NONE"
+        elif isinstance(value,list) and len(value):
+            instance.parent.logger.info("Value received as list")
+            val_string=""
+            for i in range(0,len(value)):
+                instance.parent.logger.info(f"Validating {value[i]} user")
+                vo.object_exist(session=instance.parent.session,
+                                object_type="USER",
+                                object_name=value[i])
+                if i != len(value)-1:
+                    val_string=val_string+f"'{value[i]}',"
+                elif i == len(value)-1:
+                    val_string=val_string+f"'{value[i]}'"
+            instance.parent.logger.info(f" final value string : {val_string}")
+            instance._users=f"({val_string})"
+        elif isinstance(value,str):
+            vo.object_exist(session=instance.parent.session,
+                                object_type="USER",
+                                object_name=value)
+            instance._users=f"('{value}')"
+
     def __delete__(self, instance):
         del instance._users
 
-class ContactEmailDistributionList:
+class EmailDistributionList:
     def __get__(self, instance, owner):
         return instance._email_distribution_list
     def __set__(self, instance, value):
-        instance._email_distribution_list = value
+        if value=="NONE":
+            instance._email_distribution_list="NONE"
+        else:
+            if instance._users != "NONE":
+                vo.operation_on_object_not_suppported(message="Only one of Email,Users or distribution list can be used.")
+            elif instance._users=="NONE":
+                vv.is_valid_email(object_type=instance.parent.__class__.__name__,
+                                attribute_name=self.__class__.__name__,
+                                email=value)
+                instance._email_distribution_list = f"'{value}'"
     def __delete__(self, instance):
         del instance._email_distribution_list
 
-class ContactUrl:
+class Url:
     def __get__(self, instance, owner):
         return instance._url
     def __set__(self, instance, value):
+        if value=="NONE":
+            instance._url=value
+        else:
+            vv.is_valid_url_for_contact(object_type=instance.parent.__class__.__name__,
+                                        attr_name=self.__class__.__name__,
+                                        url=value)
         instance._url = value
     def __delete__(self, instance):
         del instance._url
 
-class ContactComment:
+class Comment:
     def __get__(self, instance, owner):
         return instance._comment
     def __set__(self, instance, value):
-        instance._comment = value
+        instance._comment = f"'{value}'"
     def __delete__(self, instance):
         del instance._comment
 
 class ContactAttrs:
     def __init__(self,parent):
         self.parent=parent
-    name = ContactName()
-    users = ContactUsers()
-    email_distribution_list = ContactEmailDistributionList()
-    url = ContactUrl()
-    comment = ContactComment()
+    name = Name()
+    database=Database()
+    schema=Schema()
+    users = Users()
+    email_distribution_list = EmailDistributionList()
+    url = Url()
+    comment = Comment()
 
 class Contact(BaseObject):
     def __init__(self, session, user_id, logger):
+        super().__init__(session=session,user_id=user_id,logger=logger)
         self.attr = ContactAttrs(self)
-        self.session = session
-        self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)
 
     # Setter methods
@@ -72,37 +174,50 @@ class Contact(BaseObject):
     # Object property flags
     def set_object_properties_flag(self):
         self.flag_dic = {}
-        for attr, tag in [
-            ("users", tags.USERS),
-            ("email_distribution_list", tags.EMAIL_DISTRIBUTION_LIST),
-            ("url", tags.URL),
-            ("comment", tags.COMMENT),
-        ]:
-            self.flag_dic[tag] = 1 if getattr(self.attr, attr) is not None else 0
+
+        def set_flag(attribute_tag,attribute_name):
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+        set_flag(tags.USERS,"users")
+        set_flag(tags.EMAIL_DISTRIBUTION_LIST,"email_distribution_list")
+        set_flag(tags.URL,"url")
+
 
     def check_properties_to_set(self):
         self.property_lst = [prop for prop, flag in self.flag_dic.items() if flag == 1]
 
     def set_create_contact_qry(self):
-        self.qry = f"CREATE CONTACT {self.attr.name[0]} "
+        self.qry = f"CREATE CONTACT {self.base_attrs.database}.{self.base_attrs.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
-        if tags.USERS in self.property_lst:
-            self.qry += f"USERS = ({', '.join(self.attr.users)}) "
-        if tags.EMAIL_DISTRIBUTION_LIST in self.property_lst:
-            self.qry += f"EMAIL_DISTRIBUTION_LIST = '{self.attr.email_distribution_list}' "
-        if tags.URL in self.property_lst:
-            self.qry += f"URL = '{self.attr.url}' "
-        if tags.COMMENT in self.property_lst:
-            self.qry += f"COMMENT = '{self.attr.comment}' "
+        if len(self.property_lst) != 0 :
+            for prop in self.property_lst:
+                if prop == tags.USERS:
+                    self.qry = f" {self.qry} {tags.USERS} = {self.attr.users} "
+                if prop == tags.EMAIL_DISTRIBUTION_LIST:
+                    self.qry = f" {self.qry} {tags.EMAIL_DISTRIBUTION_LIST} = {self.attr.email_distribution_list} "
+                if prop == tags.URL:
+                    self.qry = f" {self.qry} {tags.URL} = {self.attr.url} "
+                if prop == tags.COMMENT:
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
-    def alter_object(self):
+    def alter_object(self):        
         for prop in self.property_lst:
-            self.qry = f"ALTER CONTACT {self.attr.name[0]} SET {getattr(self.attr, prop.lower())}"
-            self.execute_final_query()
+            if prop == tags.USERS:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.USERS} = {self.attr.users}"
+                self.execute_final_query()
+            if prop == tags.EMAIL_DISTRIBUTION_LIST:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.EMAIL_DISTRIBUTION_LIST} = {self.attr.email_distribution_list}"
+                self.execute_final_query()
+            if prop == tags.URL:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
+                self.execute_final_query()
+            if prop == tags.COMMENT:
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.execute_final_query()
+
         if tags.NAME in self.property_lst:
-            self.qry = f"ALTER CONTACT {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
-            self.logger.info(f"Renaming contact {self.attr.name[0]} to {self.attr.name[1]}")
+            self.qry = f"ALTER  {self.__class__.__name__.upper()}  {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
+            self.logger.info(f"Renaming {self.__class__.__name__} {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
 
     def prepare_query(self):
@@ -116,53 +231,77 @@ class Contact(BaseObject):
 
 class Operation:
     @staticmethod
-    def create_object(session,user_id,logger,kwargs,*largs):
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=Contact(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set name")
+        obj_inst.logger.info("set schema")
+        if tags.DATABASE in kwargs.keys():
+            obj_inst.set_database(kwargs[tags.DATABASE])
+        else:
+            obj_inst.set_database('NONE')
+
+        obj_inst.logger.info("set schema")
+        if tags.SCHEMA in kwargs.keys():
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        else:
+            obj_inst.set_schema('NONE')
+
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set users")
+        obj_inst.logger.info("set users")
         if tags.USERS in kwargs.keys():
             obj_inst.set_users(kwargs[tags.USERS])
         else:
             obj_inst.set_users('NONE')
 
-        logger.info("set email_distribution_list")
+        obj_inst.logger.info("set email_distribution_list")
         if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
             obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
         else:
             obj_inst.set_email_distribution_list('NONE')
 
-        logger.info("set url")
+        obj_inst.logger.info("set url")
         if tags.URL in kwargs.keys():
             obj_inst.set_url(kwargs[tags.URL])
         else:
             obj_inst.set_url('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.logger.info('create deployment entry')
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.base_attrs.database,
+                                         object_schema=obj_inst.base_attrs.schema)
+        
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.base_attrs.database,
+                                         object_schema=obj_inst.base_attrs.schema)
+
+        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                           object_identifier=obj_inst.attr.name[0],
+                                           qry=obj_inst.qry)
 
 
     @classmethod

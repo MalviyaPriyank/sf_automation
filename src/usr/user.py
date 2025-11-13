@@ -25,8 +25,8 @@ class User:
         pass
 
 class Session:
-    def __init__(self,slack_thread_id):
-        self.session_id=slack_thread_id
+    def __init__(self):
+        self.session_id=str(uuid.uuid4())
 
     def __register_session(self,user:User):
         qry=f"""

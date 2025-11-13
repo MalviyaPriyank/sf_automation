@@ -59,7 +59,8 @@ from valueexception import (
     InvalidCIDRNotation,
     InvalidVPCEID,
     InvalidHostName,
-    BaseValueMustBeGreaterThanOrEqualReferenceValue
+    BaseValueMustBeGreaterThanOrEqualReferenceValue,
+    InvalidEmail
 )
 
 class ValidateValue:
@@ -283,6 +284,23 @@ class ValidateValue:
         else:
             raise UrlMustStartWith(object_type,attr_name)
         
+
+    @staticmethod
+    def is_valid_url_for_contact(object_type,attr_name,url: str) -> bool:
+        """
+        Returns True if the given string is a valid URL, otherwise False.
+        """
+        pattern = re.compile(
+            r'^(https?:\/\/)?'              # optional http or https
+            r'([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}'  # domain name
+            r'(\/[a-zA-Z0-9._~:/?#[@]!$&\'()*+,;=%-]*)?$'  # optional path/query
+        )
+        if re.match(pattern, url.strip()):
+            return True
+        else:
+            return False
+
+        
     @staticmethod
     def is_s3_alias(object_type,attr_name,url):
         if url.endswith('s3alias'):
@@ -408,8 +426,16 @@ class ValidateValue:
             return True
         else:
             raise InvalidVPCEID(object_type,attribute_name)
+        
+    @staticmethod
+    def is_valid_email(object_type,attribute_name,email: str) -> bool:
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if re.match(pattern, email):
+            return True
+        else:
+            raise InvalidEmail(object_type,attribute_name)
 
-
+    @staticmethod
     def is_valid_host_port(object_type,attribute_name,value):
         if ":" in value:
             host_part, port_part = value.rsplit(":", 1)

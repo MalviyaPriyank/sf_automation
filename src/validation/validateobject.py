@@ -4,7 +4,7 @@ from snowflake.snowpark.functions import col
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../inf_schema'))
-import logging
+
 
 from infschema.databases import Databases as db
 from infschema.schemata import Schemata as sch
@@ -23,9 +23,9 @@ from exception.objectexception import (
     OperationNotSupported
 )
 
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logging.getLogger(__name__).setLevel(logging.INFO)
-logger = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+#logging.getLogger(__name__).setLevel(logging.INFO)
+#logger = logging.getLogger(__name__)
 
 class ValidateObject:
     @staticmethod
@@ -131,7 +131,7 @@ class ValidateObject:
     def object_exist(session,object_type,object_name,**kwargs):
         object_type=object_type.upper()
         object_name=object_name.upper()
-        logger.info(f" validating if  {object_type} {object_name} exist")
+        #logger.info(f" validating if  {object_type} {object_name} exist")
         if object_type == "MASKINGPOLICY":
             qry="SHOW MASKING POLICIES"
         elif object_type=="EXTERNALACCESSINTEGRATION":
@@ -152,15 +152,17 @@ class ValidateObject:
         else:
             df=df.select(col("*")).collect()
         
-        logger.info(f" value collected :{df}")
+        #logger.info(f" value collected :{df}")
 
         if len(df)==0:
             raise ObjectDoesNotExist(object_type=object_type,object_name=object_name)
         df=session.create_dataframe(df)
         df_count=df.filter(col("NAME")==object_name).count()
         if df_count:
+            #logger.info(f"{object_type} found")
             return True
         else:
+            #logger.info(f"{object_type} not found")
             raise ObjectDoesNotExist(object_type=object_type,object_name=object_name)
 
     @staticmethod

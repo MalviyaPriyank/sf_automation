@@ -12,6 +12,8 @@ from setup import privilege
 from .baseobj import BaseObject 
 from dep import deploy
 from snowflake.snowpark.functions import col
+from src.vars.obj.openflow.gvopenflow import OpenFlowTag as tags
+from src.usr.user import ChatHistory
 
 class OpenFlowAdminRole:
     def __get__(self,instance,owner):
@@ -21,6 +23,8 @@ class OpenFlowAdminRole:
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
+        vo.role_exist(session=instance.parent.session,
+                      role_name=value)
         instance._open_flow_admin_role=value
 
     def __del__(self,instance):
@@ -34,6 +38,8 @@ class OpenFlowUserRole:
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
+        vo.role_exist(session=instance.parent.session,
+                      role_name=value)
         instance._open_flow_user_role=value
 
     def __del__(self,instance):
@@ -73,8 +79,9 @@ class EventTableSchema:
         return instance._event_table_schema
     
     def __set__(self,instance,value):
-        vo.database_exist(session=instance.parent.session,
-                          database_name=value)
+        vo.schema_exist(session=instance.parent.session,
+                        database_name=instance._event_table_database,
+                        schema_name=value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -284,6 +291,116 @@ class OpenFlow:
 
         #craete runtime role
         self.configure_runtime_role()
+
+class Operation:
+    @staticmethod
+    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
+        obj_inst=OpenFlow(session=session,
+                         user_id=user_id,
+                         logger=logger)
+        
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
+
+
+        if len(largs) != 0:
+            obj_inst.logger.info(' list args passed')
+            obj_inst.qry = f"CREATE OR REPLACE DATABASE {kwargs[tags.NAME]}"
+            obj_inst.logger.info('calling create database')
+            obj_inst.create_database()
+            obj_inst.logger.info('granting default privileges')
+            #self.grant_default_privileges(*['initial'])
+        else:
+            obj_inst.logger.info('set name')
+            obj_inst.set_name(kwargs[tags.NAME])
+
+            obj_inst.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
+            if tags.DATA_RETENTION_TIME_IN_DAYS in  kwargs.keys(): 
+                obj_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
+            else:
+                obj_inst.set_data_retention_time_in_days("NONE")
+
+            obj_inst.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
+            if tags.MAX_DATA_EXTENSION_TIME_IN_DAYS in kwargs.keys():
+                obj_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
+            else:
+                obj_inst.set_max_data_extension_time_in_days("NONE")
+
+            obj_inst.logger.info('set EXTERNAL_VOLUME')
+            if tags.EXTERNAL_VOLUME in kwargs.keys():
+                obj_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+            else:
+                obj_inst.set_external_volume("NONE")
+
+            obj_inst.logger.info('set CATALOG')
+            if tags.CATALOG in kwargs.keys():
+                obj_inst.set_catalog(kwargs[tags.CATALOG])
+            else:
+                obj_inst.set_catalog("NONE")
+
+            obj_inst.logger.info('set REPLACE_INVALID_CHARACTERS')
+            if tags.REPLACE_INVALID_CHARACTERS in kwargs.keys():
+                obj_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
+            else:
+                obj_inst.set_replace_invalid_characters("NONE")
+
+            obj_inst.logger.info('set DEFAULT_DDL_COLLATION')
+            if tags.DEFAULT_DDL_COLLATION in kwargs.keys():
+                obj_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
+            else:
+                obj_inst.set_default_ddl_collation("NONE")
+
+            obj_inst.logger.info('set LOG_LEVEL')
+            if tags.LOG_LEVEL in kwargs.keys():
+                obj_inst.set_log_level(kwargs[tags.LOG_LEVEL])
+            else:
+                obj_inst.set_log_level("NONE")
+
+            obj_inst.logger.info('set TRACE_LEVEL')
+            if tags.TRACE_LEVEL in kwargs.keys():
+                obj_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
+            else:
+                obj_inst.set_trace_level("NONE")
+
+            obj_inst.logger.info('set STORAGE_SERIALIZATION_POLICY')
+            if tags.STORAGE_SERIALIZATION_POLICY in kwargs.keys():
+                obj_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
+            else:
+                obj_inst.set_storage_serialization_policy("NONE")
+
+            obj_inst.logger.info('set COMMENT')
+            if tags.COMMENT in kwargs.keys():
+                obj_inst.set_comment(kwargs[tags.COMMENT])
+            else:
+                obj_inst.set_comment("NONE")
+
+            obj_inst.logger.info('preapare query')
+            obj_inst.prepare_query()
+
+            if kwargs[tags.IS_CREATE] == "TRUE":
+                obj_inst.logger.info('execute query')
+                obj_inst.create_database()
+
+                obj_inst.logger.info('grant default priv')
+                #self.grant_default_privileges()
+                
+                obj_inst.logger.info('create deployment entry')
+                obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+                obj_inst.logger.info('writing file to git')
+                obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],object_type=obj_inst.__class__.__name__,object_database='NA',object_schema='NA')
+
+                user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
+                                                object_identifier=obj_inst.attr.name[0],
+                                                qry=obj_inst.qry)
+
+    @classmethod
+    def get_attributes(cls):
+        return tags().get_attributes_with_description()
+
+
+
 
 
 

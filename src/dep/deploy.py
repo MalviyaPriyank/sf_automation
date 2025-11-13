@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 
 from vars.gvobject import Config as cfg
+import uuid
 
 _dev_env = 'DEV'
 _test_env = 'TEST'
@@ -99,6 +100,7 @@ class Deploy:
         self.attr = DeployAttr()
         self.session = session
         self.logger = logger
+        self.deploy_id=str(uuid.uuid4())
 
     def set_object_type(self,value):
         self.attr.object_type = value

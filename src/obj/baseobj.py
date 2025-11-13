@@ -8,6 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../git'))
 from dep import deploy
 from vars.gvobject import Config as cfg
 from repository import Repository   
+from src.validation.validateobject import ValidateObject as vo
+from src.validation.validatevalue import ValidateValue as vv
 
 class AbstractObject(ABC):
     def __init__(self,session,user_id,logger):
@@ -20,15 +22,67 @@ class AbstractObject(ABC):
     def execute_final_query(self):
         pass
 
+
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
+
+class Comment:
+    def __get__(self,instance,owner):
+        return instance._comment
+    
+    def __set__(self,instance,value):
+        instance._comment = f"'{value}'"
+    
+    def __delete__(self,instance):
+        del instance._comment
+
+
+class BaseAttrs:
+    def __init__(self,parent):
+        self.parent=parent
+    database=Database()
+    schema=Schema()
+    comment=Comment()
+
 class BaseObject(AbstractObject):
     def __init__(self, session, user_id, logger):
         super().__init__(session = session, user_id = user_id, logger = logger)
-    
+        self.base_attrs=BaseAttrs(self)
     def execute_final_query(self,**kwargs):
         if 'DATABASE' in kwargs.keys():
             self.session.sql(f"USE DATABASE {kwargs['DATABASE']}").collect()
         
         self.session.sql(self.qry).collect()
+
+    def set_database(self,val):
+        self.base_attrs.database=val
+    
+    def set_schema(self,val):
+        self.base_attrs.schema=val
+
+    def set_comment(self,val):
+        self.base_attrs.comment=val
     
     def print_query(self):
         self.logger.info(f" Query : {self.qry}")
