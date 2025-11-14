@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject 
-from vars.obj.securityintegrationaws.gvsecurityintegrationaws  import SecurityIntegrationAWSTag as tags
+from vars.obj.securityintegrationexternalapiauthentication.gvsecurityintegrationexternalapiauthentication  import SecurityIntegrationExternalApiAuthentication as tags
 from src.usr.user import ChatHistory
 
 class Name:
@@ -50,6 +50,23 @@ class Name:
     def __delete__(self,instance):
         del instance._name
         del instance._rename_to
+
+class APIType:
+    def __get__(self,instance,owner):
+        return instance._api_type
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(tags.API_TYPE),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._api_type = value
+    
+    def __delete__(self,instance):
+        del instance._api_type
 
 class Type:
     def __get__(self,instance,owner):
@@ -100,19 +117,21 @@ class Enabled:
     def __delete__(self,instance):
         del instance._enabled
 
-class AWSRoleARN:
+
+
+class OauthTokenEndpoint:
     def __get__(self,instance,owner):
-        return instance._aws_role_arn
+        return instance._oauth_token_endpoint
     
     def __set__(self,instance,value):
             vv.required_attribute_check(value=value,
                                         object_type=instance.parent.__class__.__name__,
                                         attr_name=self.__class__.__name__
                                         )
-            instance._aws_role_arn=f"'{value}'"
+            instance._oauth_token_endpoint=f"'{value}'"
             
     def __delete__(self,instance):
-        del instance._aws_role_arn
+        del instance._oauth_token_endpoint
 
 class Comment:
     def __get__(self,instance,owner):
@@ -132,9 +151,19 @@ class SecurityIntegrationAWSAttrs:
         self.parent=parent
     name=Name()
     type=Type()
+    api_type=APIType()
     auth_type=AuthType()
     enabled=Enabled()
-    aws_role_arn=AWSRoleARN()
+    oauth_token_endpoint=OauthTokenEndpoint()
+    oauth_client_auth_method=OauthClientAuthMethod()
+    oauth_client_id=OauthClientID()
+    oauth_client_secret=OauthClientSecret()
+    oauth_grant=OauthGrant()
+    oauth_access_token_validity=OauthAccessTokenValidity()
+    oauth_allowed_scopes=OauthAllowedScopes()
+    oauth_authorization_endpoint=OauthAuthorizationEndpoint()
+    oauth_refresh_token_validity=OauthRefreshTokenValidity()
+    comment=Comment()
 
 class SecurityIntegrationAWS(BaseObject):
     def __init__(self, session, user_id, logger):
@@ -236,7 +265,7 @@ class Operation:
         obj_inst.set_type("API_AUTHENTICATION")
 
         obj_inst.logger.info("set auth_type")
-        obj_inst.set_auth_type("AWS_IAM")
+        obj_inst.set_auth_type("OAUTH2")
 
         obj_inst.logger.info("set aws_role_arn")
         if tags.AUTH_TYPE in kwargs.keys():
