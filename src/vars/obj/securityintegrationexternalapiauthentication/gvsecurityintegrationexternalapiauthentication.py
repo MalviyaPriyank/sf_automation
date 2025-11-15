@@ -32,7 +32,12 @@ class SecurityIntegrationExternalApiAuthentication(BaseTag):
             "AUTH_TYPE": "Specifies that the integration uses OAuth 2.0 to authenticate to the external service. Always OUATH2",
             "ENABLED": "Specifies whether this security integration is enabled or disabled.",
             "OAUTH_TOKEN_ENDPOINT": "Specifies the token endpoint used by the client to obtain an access token by presenting its authorization grant or refresh token. The token endpoint is used with every authorization grant except for the implicit grant type (since an access token is issued directly).",
-            "OAUTH_CLIENT_AUTH_METHOD": "Controls how client credentials are sent to the external service. Only following values allowed : CLIENT_SECRET_BASIC, CLIENT_SECRET_POST",
+            "OAUTH_CLIENT_AUTH_METHOD": """
+            Controls how client credentials are sent to the external service. 
+            Only following values allowed 
+            CLIENT_SECRET_BASIC : Specifies that client credentials are sent using the HTTP Basic Authentication Scheme.
+            CLIENT_SECRET_POST : Specifies that client credentials are sent in the HTTP request body of a POST request.
+            """,
             "OAUTH_CLIENT_ID": "Specifies the client ID for the OAuth application in the external service.",
             "OAUTH_CLIENT_SECRET":"""
             It is the OAuth application password issued by the external identity provider. 
@@ -68,7 +73,7 @@ class SecurityIntegrationExternalApiAuthentication(BaseTag):
         return {
             "OAUTH_CLIENT_AUTH_METHOD":["CLIENT_SECRET_BASIC","CLIENT_SECRET_POST"],
             "OAUTH_GRANT":["CLIENT_CREDENTIALS","AUTHORIZATION_CODE","JWT_BEARER"],
-            "INTEGRATION_TYPE":["CLIENT_CREDENTIALS","AUTHORIZATION_CODE","JWT_BEARER"]
+            "API_TYPE":["CLIENT_CREDENTIALS","AUTHORIZATION_CODE","JWT_BEARER"]
         }
 
     @classmethod

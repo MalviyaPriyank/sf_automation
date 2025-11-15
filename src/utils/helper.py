@@ -61,3 +61,12 @@ def get_create_table_query(database : str, schema : str, tbl : str,column_names 
         
     
         return qry
+    
+def get_data_from_a_table(session,db :str ,schema : str, tbl:str):
+    qry=f"""
+    SELECT * 
+    FROM 
+    {db}.{schema}.{tbl}
+    """
+    return session.sql(qry).collect()
+    

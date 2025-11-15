@@ -124,14 +124,130 @@ class OauthTokenEndpoint:
         return instance._oauth_token_endpoint
     
     def __set__(self,instance,value):
-            vv.required_attribute_check(value=value,
-                                        object_type=instance.parent.__class__.__name__,
-                                        attr_name=self.__class__.__name__
-                                        )
-            instance._oauth_token_endpoint=f"'{value}'"
+        instance._oauth_token_endpoint=f"'{value}'"
             
     def __delete__(self,instance):
         del instance._oauth_token_endpoint
+
+class OauthClientAuthMethod:
+    def __get__(self,instance,owner):
+        return instance._oauth_client_auth_method
+    
+    def __set__(self,instance,value):
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(tags.OAUTH_CLIENT_AUTH_METHOD),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
+        instance._oauth_client_auth_method=f"'{value}'"
+            
+    def __delete__(self,instance):
+        del instance._oauth_client_auth_method
+
+class OauthClientID:
+    def __get__(self,instance,owner):
+        return instance._oauth_client_id
+    
+    def __set__(self,instance,value):
+        instance._oauth_client_id=f"'{value}'"
+            
+    def __delete__(self,instance):
+        del instance._oauth_client_id
+
+class OauthClientSecret:
+    def __get__(self,instance,owner):
+        return instance._oauth_client_secret
+    
+    def __set__(self,instance,value):
+        instance._oauth_client_secret=f"'{value}'"
+            
+    def __delete__(self,instance):
+        del instance._oauth_client_secret
+
+class OauthGrant:
+    def __get__(self,instance,owner):
+        return instance._oauth_grant
+    
+    def __set__(self,instance,value):
+        instance._oauth_grant=f"'{value}'"
+            
+    def __delete__(self,instance):
+        del instance._oauth_grant
+
+class OauthAccessTokenValidity:
+    def __get__(self,instance,owner):
+        return instance._oauth_access_token_validity
+    
+    def __set__(self,instance,value):
+        vv.is_positive_number(value=value,
+                              object_type=instance.parent.__class__.__name__,
+                              attr_name=self.__class__.__name__)
+        instance._oauth_access_token_validity=value
+            
+    def __delete__(self,instance):
+        del instance._oauth_access_token_validity
+
+class OauthAllowedScopes:
+    def __get__(self,instance,owner):
+        return instance._oauth_allowed_scopes
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._oauth_allowed_scopes="NONE"
+        else:
+            if instance._api_type=="CLIENT_CREDENTIALS":
+                if isinstance(value,list):
+                    instance.parent.logger.info(f" value is a list: {value}")
+                    val_string=""
+                    for i in range(0,len(value)):
+                        instance.parent.logger.info(f"adding {value[i]}")
+                        if i != len(value)-1:
+                            val_string=val_string+f"'{value[i]}',"
+                        elif i == len(value)-1:
+                            val_string=val_string+f"'{value[i]}'"
+                    instance.parent.logger.info(f" final value string : {val_string}")
+                    instance._oauth_allowed_scopes=f"({val_string})"
+                if isinstance(value,str):
+                    instance._oauth_allowed_scopes=f"('{value}')"
+            else:
+                vo.operation_on_object_not_suppported(message=f"{self.__class__.__name__} can only be used for CLIENT_CREDENTIALS api type.")
+            
+    def __delete__(self,instance):
+        del instance._oauth_allowed_scopes   
+
+class OauthAuthorizationEndpoint: 
+    def __get__(self,instance,owner):
+        return instance._oauth_authorization_endpoint
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._oauth_authorization_endpoint="NONE"
+        else:
+            if instance._api_type=="CLIENT_CREDENTIALS":
+                vo.operation_on_object_not_suppported(message=f"{self.__class__.__name__} is not supported parameter for CLIENT_CREDENTIALS api type.")
+            else:
+                instance._oauth_authorization_endpoint=f"'{value}'"
+            
+    def __delete__(self,instance):
+        del instance._oauth_authorization_endpoint
+
+class OauthRefreshTokenValidity:
+    def __get__(self,instance,owner):
+        return instance._oauth_refresh_token_validity
+    
+    def __set__(self,instance,value):
+        if value=="NONE":
+            instance._oauth_refresh_token_validity="NONE"
+        else:
+            if instance._api_type=="CLIENT_CREDENTIALS":
+                vo.operation_on_object_not_suppported(message=f"{self.__class__.__name__} is not supported parameter for CLIENT_CREDENTIALS api type.")
+            else:
+                vv.is_positive_number(value=value,
+                                      object_type=instance.parent.__class__.__name__,
+                                      attr_name=self.__class__.__name__)
+                instance._oauth_refresh_token_validity=value
+            
+    def __delete__(self,instance):
+        del instance._oauth_refresh_token_validity
 
 class Comment:
     def __get__(self,instance,owner):
@@ -141,7 +257,7 @@ class Comment:
         if value=="NONE":
             instance._comment="NONE"
         else:
-            instance._comment=value
+            instance._comment=f"'{value}'"
             
     def __delete__(self,instance):
         del instance._comment
@@ -174,8 +290,14 @@ class SecurityIntegrationAWS(BaseObject):
     def set_name(self,val):
         self.attr.name = val
 
+    def set_api_type(self,val):
+        self.attr.api_type=val
+
     def set_type(self,val):
         self.attr.type = val
+    
+    def set_oauth_grant(self,val):
+        self.attr.oauth_grant=val
 
     def set_auth_type(self,val):
         self.attr.auth_type = val
@@ -183,8 +305,29 @@ class SecurityIntegrationAWS(BaseObject):
     def set_enabled(self,val):
         self.attr.enabled = val
 
-    def set_aws_role_arn(self,val):
-        self.attr.aws_role_arn=val
+    def set_oauth_token_endpoint(self,val):
+        self.attr.oauth_token_endpoint=val
+    
+    def set_oauth_client_auth_method(self,val):
+        self.attr.oauth_client_auth_method=val
+
+    def set_oauth_client_id(self,val):
+        self.attr.oauth_client_id=val
+
+    def set_oauth_client_secret(self,val):
+        self.attr.oauth_client_secret=val
+
+    def set_oauth_access_token_validity(self,val):
+        self.attr.oauth_access_token_validity=val
+    
+    def set_oauth_allowed_scopes(self,val):
+        self.attr.oauth_allowed_scopes=val
+
+    def set_oauth_authorization_endpoint(self,val):
+        self.attr.oauth_authorization_endpoint=val
+
+    def set_oauth_refresh_token_validity(self,val):
+        self.attr.oauth_refresh_token_validity=val
 
     def set_comment(self, val):
         super().set_comment(val)
@@ -193,10 +336,32 @@ class SecurityIntegrationAWS(BaseObject):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
-            if attribute_tag != tags.COMMENT:
+            if attribute_tag == tags.OAUTH_TOKEN_ENDPOINT:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_CLIENT_AUTH_METHOD:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_CLIENT_ID:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_CLIENT_SECRET:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_ACCESS_TOKEN_VALIDITY:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_ALLOWED_SCOPES:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_AUTHORIZATION_ENDPOINT:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag == tags.OAUTH_REFRESH_TOKEN_VALIDITY:
                 self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
             if attribute_tag == tags.COMMENT:
                 self.flag_dic[attribute_tag] = 1 if getattr(self.base_attrs, attribute_name) != "NONE" else 0
+        set_flag(tags.OAUTH_TOKEN_ENDPOINT,"_oauth_token_endpoint")
+        set_flag(tags.OAUTH_CLIENT_AUTH_METHOD,"_oauth_client_auth_method")
+        set_flag(tags.OAUTH_CLIENT_ID,"_oauth_client_id")
+        set_flag(tags.OAUTH_CLIENT_SECRET,"_oauth_client_secret")
+        set_flag(tags.OAUTH_ACCESS_TOKEN_VALIDITY,"_oauth_access_token_validity")
+        set_flag(tags.OAUTH_ALLOWED_SCOPES,"_oauth_allowed_scopes")
+        set_flag(tags.OAUTH_AUTHORIZATION_ENDPOINT,"_oauth_authorization_endpoint")
+        set_flag(tags.OAUTH_REFRESH_TOKEN_VALIDITY,"_oauth_refresh_token_validity")     
         set_flag(tags.COMMENT,"_comment")
 
 
@@ -223,13 +388,28 @@ class SecurityIntegrationAWS(BaseObject):
         CREATE SECURITY INTEGRATION {self.attr.name[0]} 
         {tags.TYPE} = {self.attr.type} 
         {tags.AUTH_TYPE} = {self.attr.auth_type} 
-        {tags.AWS_ROLE_ARN} = {self.attr.aws_role_arn} 
         {tags.ENABLED} = {self.attr.enabled}
         """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
+                if prop==tags.OAUTH_TOKEN_ENDPOINT:
+                    self.qry= f" {self.qry} {tags.OAUTH_TOKEN_ENDPOINT} = {self.attr.oauth_token_endpoint}"
+                if prop==tags.OAUTH_CLIENT_AUTH_METHOD:
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_AUTH_METHOD} = {self.attr.oauth_client_auth_method}"
+                if prop==tags.OAUTH_CLIENT_ID:
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_ID} = {self.attr.oauth_client_id}"
+                if prop==tags.OAUTH_CLIENT_SECRET:
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_SECRET} = {self.attr.oauth_client_secret}"
+                if prop==tags.OAUTH_ACCESS_TOKEN_VALIDITY:
+                    self.qry= f" {self.qry} {tags.OAUTH_ACCESS_TOKEN_VALIDITY} = {self.attr.oauth_access_token_validity}"
+                if prop==tags.OAUTH_ALLOWED_SCOPES:
+                    self.qry= f" {self.qry} {tags.OAUTH_ALLOWED_SCOPES} = {self.attr.oauth_allowed_scopes}"
+                if prop==tags.OAUTH_AUTHORIZATION_ENDPOINT:
+                    self.qry= f" {self.qry} {tags.OAUTH_AUTHORIZATION_ENDPOINT} = {self.attr.oauth_authorization_endpoint}"
+                if prop==tags.OAUTH_REFRESH_TOKEN_VALIDITY:
+                    self.qry= f" {self.qry} {tags.OAUTH_REFRESH_TOKEN_VALIDITY} = {self.attr.oauth_refresh_token_validity}"
                 if prop==tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
 
@@ -264,20 +444,72 @@ class Operation:
         obj_inst.logger.info("set type")
         obj_inst.set_type("API_AUTHENTICATION")
 
+
+
         obj_inst.logger.info("set auth_type")
         obj_inst.set_auth_type("OAUTH2")
 
-        obj_inst.logger.info("set aws_role_arn")
-        if tags.AUTH_TYPE in kwargs.keys():
-            obj_inst.set_aws_role_arn(kwargs[tags.AWS_ROLE_ARN])
+        obj_inst.logger.info("set api_type and oauth grant")
+        if tags.API_TYPE in kwargs.keys():                
+            obj_inst.set_api_type(kwargs[tags.API_TYPE])
+            obj_inst.set_oauth_grant(kwargs[tags.API_TYPE])
         else:
-            obj_inst.set_aws_role_arn('NONE')
+            obj_inst.set_api_type('NONE')
 
         obj_inst.logger.info("set enabled")
         if tags.ENABLED in kwargs.keys():
             obj_inst.set_enabled(kwargs[tags.ENABLED])
         else:
             obj_inst.set_enabled('NONE')
+
+
+        obj_inst.logger.info("set OAUTH_TOKEN_ENDPOINT")
+        if tags.OAUTH_TOKEN_ENDPOINT in kwargs.keys():
+            obj_inst.set_oauth_token_endpoint(kwargs[tags.OAUTH_TOKEN_ENDPOINT])
+        else:
+            obj_inst.set_oauth_token_endpoint('NONE')
+
+        obj_inst.logger.info("set OAUTH_CLIENT_AUTH_METHOD")
+        if tags.OAUTH_CLIENT_AUTH_METHOD in kwargs.keys():
+            obj_inst.set_oauth_client_auth_method(kwargs[tags.OAUTH_CLIENT_AUTH_METHOD])
+        else:
+            obj_inst.set_oauth_client_auth_method('NONE')
+
+        obj_inst.logger.info("set OAUTH_CLIENT_ID")
+        if tags.OAUTH_CLIENT_ID in kwargs.keys():
+            obj_inst.set_oauth_client_id(kwargs[tags.OAUTH_CLIENT_ID])
+        else:
+            obj_inst.set_oauth_client_id('NONE')
+
+        obj_inst.logger.info("set OAUTH_CLIENT_SECRET")
+        if tags.OAUTH_CLIENT_SECRET in kwargs.keys():
+            obj_inst.set_oauth_client_secret(kwargs[tags.OAUTH_CLIENT_SECRET])
+        else:
+            obj_inst.set_oauth_client_secret('NONE')
+
+        obj_inst.logger.info("set OAUTH_ACCESS_TOKEN_VALIDITY")
+        if tags.OAUTH_ACCESS_TOKEN_VALIDITY in kwargs.keys():
+            obj_inst.set_oauth_access_token_validity(kwargs[tags.OAUTH_ACCESS_TOKEN_VALIDITY])
+        else:
+            obj_inst.set_oauth_access_token_validity('NONE')
+
+        obj_inst.logger.info("set OAUTH_ALLOWED_SCOPES")
+        if tags.OAUTH_ALLOWED_SCOPES in kwargs.keys():
+            obj_inst.set_oauth_allowed_scopes(kwargs[tags.OAUTH_ALLOWED_SCOPES])
+        else:
+            obj_inst.set_oauth_allowed_scopes('NONE')
+
+        obj_inst.logger.info("set OAUTH_AUTHORIZATION_ENDPOINT")
+        if tags.OAUTH_AUTHORIZATION_ENDPOINT in kwargs.keys():
+            obj_inst.set_oauth_authorization_endpoint(kwargs[tags.OAUTH_AUTHORIZATION_ENDPOINT])
+        else:
+            obj_inst.set_oauth_authorization_endpoint('NONE')
+
+        obj_inst.logger.info("set OAUTH_REFRESH_TOKEN_VALIDITY")
+        if tags.OAUTH_REFRESH_TOKEN_VALIDITY in kwargs.keys():
+            obj_inst.set_oauth_refresh_token_validity(kwargs[tags.OAUTH_REFRESH_TOKEN_VALIDITY])
+        else:
+            obj_inst.set_oauth_refresh_token_validity('NONE')
 
         obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
