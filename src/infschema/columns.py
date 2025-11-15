@@ -30,7 +30,7 @@ class Columns:
         """
         lst=[]
         df=self.session.table(self.col._view)\
-            .select(col(self.col._table_name),col(self.col._column_name))\
+            .select(col(self.col._table_name),col(self.col._column_name),col(self.col._data_type))\
             .filter((col(self.col._table_catalog)==database_name.upper())\
                     & (col(self.col._table_schema)==schema_name.upper())\
                     & (col(self.col._table_name)==table_name.upper()))

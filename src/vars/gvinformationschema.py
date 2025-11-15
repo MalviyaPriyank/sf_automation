@@ -156,6 +156,7 @@ class ColumnColumnList:
     _table_schema="TABLE_SCHEMA"
     _table_name="TABLE_NAME"
     _column_name="COLUMN_NAME"
+    _data_type="DATA_TYPE"
 
 class Column:
     def __init__(self):
