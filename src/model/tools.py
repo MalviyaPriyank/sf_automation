@@ -809,38 +809,7 @@ class LLMTools:
             except Exception as e:
                 return f"Error:\n{traceback.format_exc()}"
         return output.getvalue()
-    
-
-    def perform_data_analysis(self, query, table_name='Customer_Loyalty_History'):
-            table_name = (table_name.replace(' ', '_')).lower()
-            self.logger.info(f'table_name: {table_name}')
-            table_data = pd.read_csv(f'analysis/sales_pipeline.csv')
-    
-            prompt = f"""Write a Python script for: {query.lower()}. table data is in file analysis/sales_pipeline.csv, do not attempt to read from any other file. The columns are opportunity_id, sales_agent, product, account, deal_stage, engage_date, close_date, close_value. Only return code inside <python></python> tags. Handle missing values. if creating any visualizations or output csv, save them inside 'analysis' folder. be sure to check for and handle missing data."""
-
-            client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
-                                   aws_access_key_id=llm_config.ACCESS_KEY,
-                                   aws_secret_access_key=llm_config.SECRET_KEY, 
-                                   region_name=self.region)
-            response = client.converse(
-                modelId=self.chat_model_id,
-                messages=[{"role": "user", "content": [{ss.TEXT: prompt}]}]
-            )
-            output_message = response[ss.OUTPUT][ss.MESSAGE]
-            content = output_message[ss.CONTENT]
-            self.logger.info('content',content)
-            xml_code_response = content[0][ss.TEXT]
-            self.logger.info(f'code:\n {xml_code_response}')
-            code = self.extract_python_code(xml_code_response)
-            if code is None:
-                raise SnowchainException("Claude did not return code inside <python> tags.")
-            
-            self.logger.info(f"Generated code:\n{code}")
-            
-            result = self.execute_python_code(code, {"pd": pd, "table_data": table_data})
-            self.logger.info(f'\n\n result: {result}')
-            return result
-
+        
     
     def create_role_object(self, NAME, COMMENT=""):
         frame = inspect.currentframe()
