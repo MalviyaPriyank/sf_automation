@@ -143,6 +143,16 @@ class ValidateObject:
         elif object_type=="NETWORK RULE":
             db=kwargs["DATABASE"]
             schema=kwargs["SCHEMA"]
+        elif object_type=="DATABASEROLE":
+            db=kwargs["DATABASE"]
+            qry=f"SHOW DATABASE ROLES IN DATABASE {db}"
+        elif object_type=="EVENTTABLE":
+            if "SCHEMA" not in kwargs.keys():
+                qry=f"SHOW EVENT TABLES IN DATABASE {kwargs['DATABASE']}"
+            elif "SCHEMA" in kwargs.keys():
+                qry=f"SHOW EVENT TABLES IN SCHEMA {kwargs['DATABASE']}.{kwargs['SCHEMA']}"
+        elif object_type=="EXTERNALVOLUME":
+            qry=f"SHOW EXTERNAL VOLUMES"
         else:    
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -171,7 +181,7 @@ class ValidateObject:
         return qry
         
     @staticmethod
-    def is_new_object(session,object_type,object_name):
+    def is_new_object(session,object_type,object_name,**kwargs):
         object_type=object_type.upper()
         object_name=object_name.upper()        
         if object_type == "MASKINGPOLICY":
@@ -184,6 +194,16 @@ class ValidateObject:
             qry="SHOW COMPUTE POOLS"
         elif object_type=="CORTEXSEARCH":
             qry="SHOW CORTEX SEARCH SERVICES"
+        elif object_type=="DATABASEROLE":
+            database_name=kwargs["DATABASE"]
+            qry=f"SHOW DATABASE ROLES IN DATABASE {database_name}"
+        elif object_type=="EVENTTABLE":
+            if "SCHEMA" not in kwargs.keys():
+                qry=f"SHOW EVENT TABLES IN DATABASE {kwargs['DATABASE']}"
+            elif "SCHEMA" in kwargs.keys():
+                qry=f"SHOW EVENT TABLES IN SCHEMA {kwargs['DATABASE']}.{kwargs['SCHEMA']}"
+        elif object_type=="EXTERNALVOLUME":
+            qry=f"SHOW EXTERNAL VOLUMES"
         else:
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -450,5 +470,4 @@ class ValidateDependentAttributes:
         self.__set_parent_attr_value(value=parent_attr_value)
         self.__is_child_compatible()
         return True
-
 

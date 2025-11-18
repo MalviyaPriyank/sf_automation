@@ -519,6 +519,7 @@ class Operation:
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.print_query()
         
         obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()

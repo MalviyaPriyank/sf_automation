@@ -263,7 +263,7 @@ class Deploy:
         """
         self.session.sql(clean_table).collect()
 
-    def deploy_from_dev_to_test(self):
+    def deploy_from_dev_to_test(self,**kwargs):
         #dev_db = self.get_db_name_of_environment(_dev_env)
         #test_db = self.get_db_name_of_environment(_test_env)
         self.logger.info("before getting scripts to deploy")

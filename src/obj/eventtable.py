@@ -25,7 +25,9 @@ class Database:
         return instance._database
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.object_type,
+                                    attr_name=self.__class__.__name__)
         vo.database_exist(session=instance.parent.session, database_name=value)
         instance._database = value
     
@@ -37,9 +39,11 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        instance._schema = value
+        if value=="NONE":
+            instance._schema="NONE"
+        else:
+            vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+            instance._schema = value
     
     def __delete__(self,instance):
         del instance._schema
@@ -52,12 +56,24 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_pipe(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=name)
+            if instance._schema == "NONE":
+                vo.is_new_object(session=instance.parent.session,
+                                object_type=instance.parent.object_type,
+                                object_name=name,
+                                DATABASE=instance._database)
+            elif instance._schema !="NONE":
+                vo.is_new_object(
+                    session=instance.parent.session,
+                    object_type=instance.parent.object_type,
+                    object_name=name,
+                    DATABASE=instance._database,
+                    SCHEMA=instance._schema
+                    )
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 ):
-                instance._name = value
+                instance._name = name
                 instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for rename operation")
@@ -66,8 +82,35 @@ class Name:
             instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
             if new_name != "NONE":
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.pipe_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=old_name)
-                vo.is_new_pipe(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,pipe_name=new_name)
+                if instance._schema =="NONE":
+                    vo.object_exist(
+                        session=instance.parent.session,
+                        object_type=instance.parent.object_type,
+                        object_name=old_name,
+                        DATABASE=instance._database
+                    )
+                    vo.is_new_object(
+                        session=instance.parent.session,
+                        object_type=instance.parent.object_type,
+                        object_name=new_name,
+                        DATABASE=instance._database,
+                    )
+                elif instance._schema != "NONE":
+                    vo.object_exist(
+                        session=instance.parent.session,
+                        object_type=instance.parent.object_type,
+                        object_name=old_name,
+                        DATABASE=instance._database,
+                        SCHEMA=instance._schema
+                    )
+                    vo.is_new_object(
+                        session=instance.parent.session,
+                        object_type=instance.parent.object_type,
+                        object_name=new_name,
+                        DATABASE=instance._database,
+                        SCHEMA=instance._schema
+                    )
+                    
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -84,7 +127,13 @@ class ClusterBy:
     def __set__(self,instance,value):
         if value == "NONE":
             instance._cluster_by = value
-        else:
+        else:   
+            vv.is_allowed_value(
+                value=value,
+                allowed_list=tags.allowed_value_list().get(tags.CLUSTER_BY),
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
             instance._cluster_by = value
 
     def __delete__(self,instance):
@@ -122,124 +171,42 @@ class MaxDataExtensionTimeInDays:
     def __delete__(self,instance):
         del instance._max_data_extension_time_in_days
 
-
-class ExternalVolume:
+class ChangeTracking:
     def __get__(self,instance,owner):
-        return instance._external_volume
+        return instance._change_tracking
     
     def __set__(self,instance,value):
         if value=="NONE":
-            instance._external_volume = value
+            instance._change_tracking = value
         else:
-            vo.is_valid_external_volume(session=instance.parent.session,external_volume_identifier=value,object_type=self.__class__.__name__)
-            instance._external_volume=value
+            vv.is_bool(
+                value=value,
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
+            instance._change_tracking=value
 
     def __delete__(self,instance):
-        del instance._external_volume
+        del instance._change_tracking
 
-class Catalog:
-    def __get__(self,instance,owner):
-        return instance._catalog
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._catalog=value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vo.is_valid_catalog(session=instance.parent.session,catalog_identifier=value,object_type=self.__class__.__name__)
-            instance._catalog=value
-
-    def __delete__(self,instance):
-        del instance._catalog
-
-
-class ReplaceInvalidCharacters:
-    def __get__(self,instance,owner):
-        return instance._replace_invalid_characters
-    
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._replace_invalid_characters = value
-        elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
-            instance._replace_invalid_characters = value
-
-    def __delete__(self,instance):
-        del instance._replace_invalid_characters
-
-
-class DefaultDdlCollation:
+class DefaultDDLCollation:
     def __get__(self,instance,owner):
         return instance._default_ddl_collation
     
     def __set__(self,instance,value):
         if value=="NONE":
-            instance._default_ddl_collation=value
+            instance._default_ddl_collation = value
         else:
-            vv.is_valid_collation_specifier(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,valid_specifiers=tags.allowed_value_list().get(tags.DEFAULT_DDL_COLLATION))
-            instance._default_ddl_collation = f"'{value}'"
+            vv.is_allowed_value(
+                value=value,
+                allowed_list=tags.allowed_value_list().get(tags.DEFAULT_DDL_COLLATION),
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
+            instance._default_ddl_collation=value
 
     def __delete__(self,instance):
         del instance._default_ddl_collation
-
-
-class LogLevel:
-    def __get__(self,instance,owner):
-        return instance._log_level
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._log_level=value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.LOG_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._log_level = f"'{value}'"
-
-    def __delete__(self,instance):
-        del instance._log_level
-
-class TraceLevel:
-    def __get__(self,instance,owner):
-        return instance._trace_level
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._trace_level=value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.TRACE_LEVEL),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._trace_level = f"'{value}'"
-
-    def __delete__(self,instance):
-        del instance._trace_level
-
-class StorageSerializationPolicy:
-    def __get__(self,instance,owner):
-        return instance._storage_serialization_policy
-    
-    def __set__(self,instance,value):
-        if value == "NONE":
-            instance._storage_serialization_policy = value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.STORAGE_SERIALIZATION_POLICY),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._storage_serialization_policy = value
-
-    def __delete__(self,instance):
-        del instance._storage_serialization_policy
-
-
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._comment = value
-        else:
-            instance._comment = f"'{value}'"
-    
-    def __delete__(self,instance):
-        del instance._comment
 
 class EventTableAttrs:
     def __init__(self,parent):
@@ -249,25 +216,10 @@ class EventTableAttrs:
     schema=Schema()
     name = Name()
     cluster_by=ClusterBy()
-
     data_retention_time_in_days = DataRetentionTimeInDays()
-
     max_data_extension_time_in_days = MaxDataExtensionTimeInDays()
-
-    external_volume = ExternalVolume()
-
-    catalog = Catalog()
-
-    replace_invalid_characters = ReplaceInvalidCharacters()
-
-    default_ddl_collation = DefaultDdlCollation()
-
-    log_level=LogLevel()
-    trace_level=TraceLevel()
-
-    storage_serialization_policy = StorageSerializationPolicy()
-
-    comment = Comment()
+    change_tracking=ChangeTracking()
+    default_ddl_collation=DefaultDDLCollation()
 
 
 class EventTable(BaseObject):
@@ -275,6 +227,7 @@ class EventTable(BaseObject):
         logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.attr = EventTableAttrs(self) 
+        self.object_type=self.__class__.__name__
 
     def set_database(self,value):
         self.attr.database=value
@@ -294,47 +247,30 @@ class EventTable(BaseObject):
     def set_max_data_extension_time_in_days(self, value):
         self.attr.max_data_extension_time_in_days = value
 
-    def set_external_volume(self, value):
-        self.attr.external_volume = value
+    def set_change_tracking(self, value):
+        self.attr.change_tracking = value
 
-
-    def set_catalog(self, value):
-        self.attr.catalog = value
-
-    def set_replace_invalid_characters(self, value):
-        self.attr.replace_invalid_characters = value
-
-    def set_default_ddl_collation(self, value):
-        self.attr.default_ddl_collation = value
-
-    def set_log_level(self, value):
-        self.attr.log_level = value
-
-    def set_trace_level(self, value):
-        self.attr.trace_level = value
-
-    def set_storage_serialization_policy(self, value):
-        self.attr.storage_serialization_policy = value
+    def set_default_ddl_collation(self,value):
+        self.attr.default_ddl_collation=value
 
     def set_comment(self, value):
-        self.attr.comment = value
-
+        self.base_attrs.comment=value
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
-            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag != tags.COMMENT:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            elif attribute_tag==tags.COMMENT:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.base_attrs, attribute_name) != "NONE" else 0
 
+        set_flag(tags.SCHEMA,"_schema")
+        set_flag(tags.CLUSTER_BY,"_cluster_by")       
         set_flag(tags.DATA_RETENTION_TIME_IN_DAYS,"_data_retention_time_in_days")
         set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
-        set_flag(tags.EXTERNAL_VOLUME,"_external_volume")
-        set_flag(tags.CATALOG,"_catalog")
-        set_flag(tags.REPLACE_INVALID_CHARACTERS,"_replace_invalid_characters")
+        set_flag(tags.CHANGE_TRACKING,"_change_tracking")
         set_flag(tags.DEFAULT_DDL_COLLATION,"_default_ddl_collation")
-        set_flag(tags.LOG_LEVEL,"_log_level")
-        set_flag(tags.TRACE_LEVEL,"_trace_level")
-        set_flag(tags.STORAGE_SERIALIZATION_POLICY,"_storage_serialization_policy")
         set_flag(tags.COMMENT,"_comment")
 
 
@@ -344,61 +280,45 @@ class EventTable(BaseObject):
             if self.flag_dic[prop] == 1:
                 self.property_lst.append(prop)
 
-    def set_create_account_qry(self):
-        self.qry = f"CREATE OR REPLACE DATABASE  {self.attr.name[0]} "
+    def set_create_qry(self):
+        self.session.sql(f"USE DATABASE {self.attr.database}").collect()
+        if self.attr.schema=="NONE":
+            self.qry = f"CREATE OR REPLACE EVENT TABLE  {self.attr.name[0]} "
+        elif self.attr.schema!="NONE":
+            self.qry = f"CREATE OR REPLACE EVENT TABLE  {self.attr.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
-            for prop in self.property_lst:
+            for prop in self.property_lst:                
+                if prop == tags.CLUSTER_BY:
+                    self.qry = f" {self.qry} {tags.CLUSTER_BY} = ({self.attr.cluster_by}) "
                 if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
                     self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} "
                 if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
                     self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} "
-                if prop == tags.EXTERNAL_VOLUME:
-                    self.qry = f" {self.qry} {tags.EXTERNAL_VOLUME} = {self.attr.external_volume} "
-                if prop == tags.CATALOG:
-                    self.qry = f" {self.qry} {tags.CATALOG} = {self.attr.catalog} "
-                if prop == tags.REPLACE_INVALID_CHARACTERS:
-                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} "
+                if prop == tags.CHANGE_TRACKING:
+                    self.qry = f" {self.qry} {tags.CHANGE_TRACKING} = {self.attr.change_tracking} "
                 if prop == tags.DEFAULT_DDL_COLLATION:
-                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation} "
-                if prop == tags.LOG_LEVEL:
-                    self.qry = f" {self.qry} {tags.LOG_LEVEL} = {self.attr.log_level} "
-                if prop == tags.TRACE_LEVEL:
-                    self.qry = f" {self.qry} {tags.TRACE_LEVEL} = {self.attr.trace_level} "
-                if prop == tags.STORAGE_SERIALIZATION_POLICY:
-                    self.qry = f" {self.qry} {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy} "
+                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = '{self.attr.default_ddl_collation}' "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
 
     def alter_object(self):        
         for prop in self.property_lst:
+            if prop == tags.CLUSTER_BY:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CLUSTER_BY} = ({self.attr.cluster_by})"
+                self.execute_final_query()
             if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days}"
                 self.execute_final_query()
             if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days}"
                 self.execute_final_query()
-            if prop == tags.EXTERNAL_VOLUME:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.EXTERNAL_VOLUME} = {self.attr.external_volume}"
-                self.execute_final_query()
-            if prop == tags.CATALOG:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CATALOG} = {self.attr.catalog}"
-                self.execute_final_query()
-            if prop == tags.REPLACE_INVALID_CHARACTERS:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters}"
+            if prop == tags.CHANGE_TRACKING:
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.CHANGE_TRACKING} = {self.attr.change_tracking}"
                 self.execute_final_query()
             if prop == tags.DEFAULT_DDL_COLLATION:
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
-                self.execute_final_query()
-            if prop == tags.LOG_LEVEL:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.LOG_LEVEL} = {self.attr.log_level}"
-                self.execute_final_query()
-            if prop == tags.TRACE_LEVEL:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TRACE_LEVEL} = {self.attr.trace_level}"
-                self.execute_final_query()
-            if prop == tags.STORAGE_SERIALIZATION_POLICY:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
@@ -414,7 +334,7 @@ class EventTable(BaseObject):
         self.set_object_properties_flag()
         self.check_properties_to_set()
         if self.is_create == 'TRUE':
-            self.set_create_account_qry()
+            self.set_create_qry()
             self.add_properties_to_query()
         elif self.is_create=='FALSE':
             self.logger.info(f"inside alter patch while preparing query rename to : {self.attr.name[1]}")
@@ -422,10 +342,7 @@ class EventTable(BaseObject):
                 self.property_lst.append(tags.NAME)
             self.alter_object()
 
-    def create_database(self):
-        self.execute_final_query()
-
-
+    '''
     def create_object(self,*largs,**kwargs):
         self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         self.logger.info(f'dictionary passed {kwargs}')
@@ -487,88 +404,64 @@ class EventTable(BaseObject):
 
                 self.logger.info('writing file to git')
                 self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
+    '''
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=EventTable(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
+        obj_inst.logger.info("set database")
         if tags.DATABASE in kwargs.keys():
             obj_inst.set_database(kwargs[tags.DATABASE])
         else:
             obj_inst.set_database('NONE')
 
-        logger.info("set schema")
+        obj_inst.logger.info("set schema")
         if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.SCHEMA])
+            obj_inst.set_schema(kwargs[tags.SCHEMA])
         else:
-            obj_inst.set_database('NONE')
+            obj_inst.set_schema('NONE')
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set data_retention_time_in_days")
+        obj_inst.logger.info("set cluster by")
+        if tags.CLUSTER_BY in kwargs.keys():
+            obj_inst.set_cluster_by(kwargs[tags.CLUSTER_BY])
+        else:
+            obj_inst.set_cluster_by('NONE')
+
+        obj_inst.logger.info("set data_retention_time_in_days")
         if tags.DATA_RETENTION_TIME_IN_DAYS in kwargs.keys():
             obj_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
         else:
             obj_inst.set_data_retention_time_in_days('NONE')
 
-        logger.info("set max_data_extension_time_in_days")
+        obj_inst.logger.info("set max_data_extension_time_in_days")
         if tags.MAX_DATA_EXTENSION_TIME_IN_DAYS in kwargs.keys():
             obj_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
         else:
             obj_inst.set_max_data_extension_time_in_days('NONE')
 
-        logger.info("set external_volume")
-        if tags.EXTERNAL_VOLUME in kwargs.keys():
-            obj_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
+        obj_inst.logger.info("set change tracking")
+        if tags.CHANGE_TRACKING in kwargs.keys():
+            obj_inst.set_change_tracking(kwargs[tags.CHANGE_TRACKING])
         else:
-            obj_inst.set_external_volume('NONE')
+            obj_inst.set_change_tracking('NONE')
 
-        logger.info("set catalog")
-        if tags.CATALOG in kwargs.keys():
-            obj_inst.set_catalog(kwargs[tags.CATALOG])
-        else:
-            obj_inst.set_catalog('NONE')
-
-        logger.info("set replace_invalid_characters")
-        if tags.REPLACE_INVALID_CHARACTERS in kwargs.keys():
-            obj_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
-        else:
-            obj_inst.set_replace_invalid_characters('NONE')
-
-        logger.info("set default_ddl_collation")
+        obj_inst.logger.info("set default_ddl_collation")
         if tags.DEFAULT_DDL_COLLATION in kwargs.keys():
             obj_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
         else:
             obj_inst.set_default_ddl_collation('NONE')
-
-        logger.info("set log_level")
-        if tags.LOG_LEVEL in kwargs.keys():
-            obj_inst.set_log_level(kwargs[tags.LOG_LEVEL])
-        else:
-            obj_inst.set_log_level('NONE')
-
-        logger.info("set trace_level")
-        if tags.TRACE_LEVEL in kwargs.keys():
-            obj_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
-        else:
-            obj_inst.set_trace_level('NONE')
-
-        logger.info("set storage_serialization_policy")
-        if tags.STORAGE_SERIALIZATION_POLICY in kwargs.keys():
-            obj_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
-        else:
-            obj_inst.set_storage_serialization_policy('NONE')
 
         logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
@@ -576,16 +469,44 @@ class Operation:
         else:
             obj_inst.set_comment('NONE')
 
-
-
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.print_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.logger.info('create deployment entry')
+        if obj_inst.attr.schema=="NONE":
+            obj_inst.create_deployment_entry(
+                object_name=obj_inst.attr.name[0],
+                object_type=obj_inst.object_type,
+                object_database=obj_inst.attr.database,
+                object_schema='NA'
+            )
+        else:
+            obj_inst.create_deployment_entry(
+                object_name=obj_inst.attr.name[0],
+                object_type=obj_inst.object_type,
+                object_database=obj_inst.attr.database,
+                object_schema=obj_inst.attr.schema
+            )
+
+        obj_inst.logger.info("Write to git")
+        if obj_inst.attr.schema=="NONE":
+            obj_inst.write_file_to_git(
+                object_name=obj_inst.attr.name[0],
+                object_type=obj_inst.object_type,
+                object_database=obj_inst.attr.database,
+                object_schema='NA'
+            )
+        else:
+            obj_inst.write_file_to_git(
+                object_name=obj_inst.attr.name[0],
+                object_type=obj_inst.object_type,
+                object_database=obj_inst.attr.database,
+                object_schema=obj_inst.attr.schema
+            )    
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],

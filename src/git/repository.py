@@ -4,7 +4,7 @@ import os
 clone_dir = "/Users/priyankmalviya/snowchain/agentic/repo"
 
 # Repo URL
-repo_url = "https://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@github.com/MalviyaPriyank/Snowchain.git"
+repo_url = "https://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@github.com/MalviyaPriyank/Snowchain.git"
 #repo_url="https://github.com/MalviyaPriyank/gyrusdemo.git"
 #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
 

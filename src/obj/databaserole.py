@@ -27,47 +27,64 @@ class Database:
 
 class Name:
     def __get__(self,instance,owner):
-        return instance._name
-    
+        return (instance._name,instance._rename_to)
+
     def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        if not vv.starts_with_alphabet(value):
-            raise ValueError
-        elif not vv.is_enclosed_in_double_quotes(value):
-            if vv.has_space(value):
-                raise ValueError
-            if vv.has_special_characters(value):
-                raise ValueError
+        instance.parent.logger.info(f"inside to set name {value}")
+        if instance.parent.is_create=="TRUE":
+            name=value["NAME"]
+            instance.parent.logger.info(f" for create operation setting name: {name}")
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            vo.is_new_object(session=instance.parent.session,
+                             object_type=instance.parent.object_type,
+                             object_name=self.__class__.__name__,
+                             DATABASE=instance._database)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
+        else:
+            instance.parent.logger.info(f" for alter operation")
+            old_name=value["NAME"]
+            instance.parent.logger.info(f"old name {old_name}")
+            new_name=value.get("RENAME_TO","NONE")
+            instance.parent.logger.info(f"new name {new_name}")
+            if new_name!="NONE":
+                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                vo.object_exist(session=instance.parent.session,
+                                object_type=instance.parent.object_type,
+                                object_name=old_name,
+                                DATABASE=instance._database)
+                vo.is_new_object(session=instance.parent.session,
+                                 object_type=instance.parent.object_type,
+                                 object_name=new_name,
+                                 DATABASE=instance._database)
+                instance._name=old_name
+                instance._rename_to=new_name
             else:
-                instance._name = value
+                instance._name=old_name
+                instance._rename_to="NONE"
 
     def __delete__(self,instance):
         del instance._name
-
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        instance._comment = value
-    
-    def __delete__(self,instance):
-        del instance._comment
+        del instance._rename_to
 
 class ShareAttrs:
     def __init__(self,parent):
         self.parent = parent
-
+        
     database=Database()
     name = Name()
-    comment = Comment()
-
 
 class DatabaseRole(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
         super().__init__(session, user_id, logger)
         self.attr = ShareAttrs(self)
+        self.object_type=self.__class__.__name__
 
     def set_database(self,val):
         self.attr.database = val
@@ -76,13 +93,16 @@ class DatabaseRole(BaseObject):
         self.attr.name = val
 
     def set_comment(self,val):
-        self.attr.comment = val
+        self.base_attrs.comment=val
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
-            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            if attribute_tag != tags.COMMENT:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
+            else:
+                self.flag_dic[attribute_tag] = 1 if getattr(self.base_attrs, attribute_name) != "NONE" else 0
 
         set_flag(tags.COMMENT,"_comment")
 
@@ -90,7 +110,7 @@ class DatabaseRole(BaseObject):
     def alter_object(self):        
         for prop in self.property_lst:
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.base_attrs.comment}"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -106,13 +126,13 @@ class DatabaseRole(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE DATABASE ROLE  {self.attr.name} "
+        self.qry = f"CREATE DATABASE ROLE  {self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -159,12 +179,20 @@ class Operation:
 
         logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.print_query()
         
         logger.info('execute query')
         obj_inst.execute_final_query()
 
         logger.info('create deployment entry')
-        obj_inst.create_deployment_entry()
+        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema='NA')
+        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
+                                         object_type=obj_inst.__class__.__name__,
+                                         object_database=obj_inst.attr.database,
+                                         object_schema='NA')
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],
