@@ -25,23 +25,16 @@ if __name__=='__main__':
     session_inst.set_account('kzekzkb-pm40264')
     session_state = session_inst.get_session()
     #SQL Server connection
-    cdc_inst=CDC(session=session_state,logger=logger)
     conn=SSConn(logger=logger)
     conn=conn.get_sql_server_connection()
     operation=SSOpr(connection=conn,logger=logger)
-
+    cdc_inst=CDC(session=session_state,logger=logger)
     #User : Pull data from table ABC to Snowflake
     #Response : Is it first time load or incremental.
     #If its first time then ZEUS need to enable cdc
-    #Tool to enable CDC
+    #Tool to enable CDC on Datbase (requires database name)
     operation.enable_cdc_on_database(db=db)
-    res=cdc_inst.get_latest_identifier(server='MSSQL',object_name=table_name,database_name=db)
-    if len(res)==0:
-        logger.info(f" FIRST TIME CDC")
-        df,from_lsn,to_lsn=operation.get_incremental_data(table_name=table_name)
-    else:
-        logger.info(f"getting incremental data ")
-        df,from_lsn,to_lsn=operation.get_incremental_data(table_name=table_name,**{'FROM_LSN':res[0]})
+    df,from_lsn,to_lsn=operation.get_incremental_data(cdc_inst=cdc_inst,table_name=table_name,db_name=db)
     df = df.drop(columns=['__$start_lsn','__$seqval','__$update_mask','__$operation'])
     util.write_pandas_df_to_snowflake(session=session_state,df=df,database='SQL_SERVER_CDC_DB',schema='CDC_LANDING',table=table_name)
     cdc_inst.log_cdc(server='MSSQL',**{'DATABASE':db,'OBJECT':table_name,'LSN':to_lsn.hex().upper()})

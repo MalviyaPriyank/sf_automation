@@ -1,6 +1,7 @@
 import pyodbc
 import pandas as pd
 from src.exception.operationexception import NoCDCRecordsFound
+from src.cdc.cdc import CDC
 
 OPERATION_MAP = {
     1: "DELETE",
@@ -26,6 +27,9 @@ class SqlServerOperations:
             rows = self.cursor.fetchall()
             columns=[col[0] for col in self.cursor.description]
             return rows,columns
+        elif 'INCREMENT_LSN' in kwargs:
+            lsn=kwargs['INCREMENT_LSN']
+            self.cursor.execute(qry,lsn)
         else:
             self.cursor.execute(qry)
         result=self.cursor.fetchone()
@@ -67,15 +71,29 @@ class SqlServerOperations:
     def __use_database(self,db):
         qry=f"USE {db};"
         self.__execute_query_and_commit(qry=qry)
+
+    def __increment_lsn(self,lsn):
+        qry=f"""
+        SELECT sys.fn_cdc_increment_lsn(?)
+        """
+        res=self.__execute_query_and_get_result(qry=qry,**{'INCREMENT_LSN':lsn})
+        self.logger.info(f" LSN incremented succefully")
+        return res[0]
+        
     
-    def get_incremental_data(self,table_name,**kwargs):
-        if 'FROM_LSN' in kwargs:
-            self.logger.info(f" CDC Record exist , last LSN recorded : {kwargs['FROM_LSN']}")
-            from_lsn=kwargs['FROM_LSN']
-            from_lsn = SqlServerOperations.convert_to_binary(from_lsn)
-        else:
+    def get_incremental_data(self,cdc_inst:CDC,table_name,db_name):
+        res=cdc_inst.get_latest_identifier(server='MSSQL',object_name=table_name,database_name=db_name)
+        if len(res)==0:
+            self.logger.info(f" NO EXISTING CDC RECORD : FIRST TIME LOAD ")
             self.logger.info(f"first time CDC getting minimum LSN of {table_name}")
             from_lsn=self.__get_minimum_lsn_of_table(table=table_name)
+        else:
+            from_lsn=res[0]
+            self.logger.info(f" CDC Record exist , last LSN recorded : {from_lsn}")
+            from_lsn = SqlServerOperations.convert_to_binary(from_lsn)
+            self.logger.info(" Incrementing LSN to get the next LSN to pull from")
+            from_lsn=self.__increment_lsn(lsn=from_lsn)
+
         to_lsn=self.__get_current_lsn()
         self.logger.info("after current_lsn")
         capture_instance=self.__get_capture_instance_of_a_table(table=table_name)
