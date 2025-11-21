@@ -11,6 +11,30 @@ from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject
 from vars.obj.secret.gvsecret import SecretTag as tags
 
+class Database:
+    def __get__(self,instance,owner):
+        return instance._database
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.database_exist(session=instance.parent.session, database_name=value)
+        instance._database = value
+    
+    def __delete__(self,instance):
+        del instance._database
+
+class Schema:
+    def __get__(self,instance,owner):
+        return instance._schema
+    
+    def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+        instance._schema = value
+
+    def __del__(self,instance):
+        del instance._schema
+
 class Name:
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)

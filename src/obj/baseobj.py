@@ -70,8 +70,11 @@ class BaseObject(AbstractObject):
         super().__init__(session = session, user_id = user_id, logger = logger)
         self.base_attrs=BaseAttrs(self)
     def execute_final_query(self,**kwargs):
+        self.logger.info(f" dictionary passed {kwargs}")
         if 'DATABASE' in kwargs.keys():
             self.session.sql(f"USE DATABASE {kwargs['DATABASE']}").collect()
+            if 'SCHEMA' in kwargs.keys():
+                self.session.sql(f"USE SCHEMA {kwargs['SCHEMA']}").collect()
         
         self.session.sql(self.qry).collect()
 

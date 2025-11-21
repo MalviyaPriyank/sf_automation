@@ -60,7 +60,8 @@ from valueexception import (
     InvalidVPCEID,
     InvalidHostName,
     BaseValueMustBeGreaterThanOrEqualReferenceValue,
-    InvalidEmail
+    InvalidEmail,
+    MustBeADict
 )
 
 class ValidateValue:
@@ -227,6 +228,13 @@ class ValidateValue:
             raise MustBeAList(object_type,attr_name)
         
     @staticmethod
+    def is_dict(value,object_type,attr_name):
+        if isinstance(value,dict):
+            return True
+        else:
+            raise MustBeADict(object_type,attr_name)
+        
+    @staticmethod
     def is_tuple(value,object_type,object_name):
         if isinstance(value,tuple):
             return True
@@ -286,19 +294,16 @@ class ValidateValue:
         
 
     @staticmethod
-    def is_valid_url_for_contact(object_type,attr_name,url: str) -> bool:
+    def is_valid_url_for_contact(object_type, attr_name, url: str) -> bool:
         """
         Returns True if the given string is a valid URL, otherwise False.
         """
         pattern = re.compile(
-            r'^(https?:\/\/)?'              # optional http or https
-            r'([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}'  # domain name
-            r'(\/[a-zA-Z0-9._~:/?#[@]!$&\'()*+,;=%-]*)?$'  # optional path/query
+            r'^(https?://)?'                          # optional http or https
+            r'([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}'        # domain name
+            r'([/?#][\w.~:/?#\[\]@!$&\'()*+,;=%-]*)?$'  # optional path/query
         )
-        if re.match(pattern, url.strip()):
-            return True
-        else:
-            return False
+        return bool(re.match(pattern, url.strip()))
 
         
     @staticmethod

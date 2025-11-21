@@ -52,6 +52,8 @@ class MustBeBetween(AttributeValidationError):
 
 class IsARequiredAttribute(AttributeValidationError):
     def __init__(self,object_type,attr_name,*largs):
+        if object_type.upper()=='APIINTEGRATION' and attr_name.upper()=='APIAWSROLEARN':
+            super().__init__(object_type=object_type,attr_name=attr_name,message=f" is required for AMAZON API_TYPE")
         if len(largs)==0:
             super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL")
         else:
@@ -173,6 +175,11 @@ class MustBeOfLength(AttributeValidationError):
 class MustBeATuple(AttributeValidationError):
     def __init__(self, object_type, attr_name):
         message="must be a Tuple"
+        super().__init__(object_type, attr_name, message)
+
+class MustBeADict(AttributeValidationError):
+    def __init__(self, object_type, attr_name):
+        message="must be a Dictionary"
         super().__init__(object_type, attr_name, message)
 
 class InvalidTimestamp(AttributeValidationError):

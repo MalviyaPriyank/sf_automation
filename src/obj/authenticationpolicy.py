@@ -60,52 +60,121 @@ class AuthenticationMethods:
         return instance._authentication_methods
     
     def __set__(self, instance, value):
-        vv.is_list(value=value,
-                   object_type=instance.parent.__class__.__name__,
-                   attr_name=self.__class__.__name__)
-        final_value="("
-        for i in range(0,len(value)):
-            vv.is_allowed_value(value=value[i],
-                                allowed_list=tags.allowed_value_list().get("AUTHENTICATION_METHODS"),
-                                object_type=instance.parent.__class__.__name__,
-                                attr_name=self.__class__.__name__)
-            if i != len(value)-1:
-                final_value=final_value+f"'{value[i]}', "
-            elif i == len(value)-1:
-                final_value=final_value+f"'{value[i]}'"
-        final_value=final_value+")"
-        instance._authentication_methods = final_value
+        if isinstance(value,list):
+                instance.parent.logger.info("Value received as list")
+                val_string=""
+                for i in range(0,len(value)):
+                    instance.parent.logger.info(f"Validating {value[i]} for {self.__class__.__name__}")
+                    vv.is_allowed_value(
+                        value=value,
+                        allowed_list=tags.allowed_value_list().get(tags.AUTHENTICATION_METHODS),
+                        object_type=instance.parent.object_type,
+                        attr_name=self.__class__.__name__
+                    )
+                    if i != len(value)-1:
+                        val_string=val_string+f"'{value[i]}',"
+                    elif i == len(value)-1:
+                        val_string=val_string+f"'{value[i]}'"
+                instance.parent.logger.info(f" final value string : {val_string}")
+                instance._authentication_methods=f"({val_string})"
+        elif isinstance(value,str):
+            vv.is_allowed_value(
+                value=value,
+                allowed_list=tags.allowed_value_list().get(tags.AUTHENTICATION_METHODS),
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
+            instance._authentication_methods=f"('{value}')"
 
     def __delete__(self, instance):
         del instance._authentication_methods
-'''
-class MFAAuthenticationMethods:
+
+class ClientTypes:
     def __get__(self, instance, owner):
-        return instance._mfa_authentication_methods
+        return instance._client_types
+    
     def __set__(self, instance, value):
-        #validation to ensure this is only set if parent attribute is of the allowed type for this attribute
-        validate_parent=vda(object_type=instance.parent.__class__.__name__)
-        validate_parent.validate_parent_dependency(parent_attr_name="AUTHENTICATION_METHODS",
-                                                   child_attr_name="MFA_AUTHENTICATION_METHODS",
-                                                   parent_attr_value=instance.parent._authentication_methods,
-                                                   parent_attr_compatible_values=["SAML","PASSWORD"])
-        vv.is_list(value=value,
-                   object_type=instance.parent.__class__.__name__,
-                   attr_name=self.__class__.__name__)
-        
-        instance._mfa_authentication_methods = value
+        if value=="NONE":
+            instance._client_types="NONE"
+        else:
+            vv.is_list(
+                value=value,
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
+            instance._orig_value_client_types=value
+            if instance._mfa_enrollment.upper()=='REQUIRED' and 'SNOWFLAKE_UI' not in value:
+                vo.operation_on_object_not_suppported(message="If you set MFA_ENROLLMENT to REQUIRED, then you must include SNOWFLAKE_UI in the CLIENT_TYPES list to allow users to enroll in MFA.")
+            instance.parent.logger.info("Value received as list")
+            val_string=""
+            for i in range(0,len(value)):
+                instance.parent.logger.info(f"Validating {value[i]} for {self.__class__.__name__}")
+                vv.is_allowed_value(
+                    value=value,
+                    allowed_list=tags.allowed_value_list().get(tags.AUTHENTICATION_METHODS),
+                    object_type=instance.parent.object_type,
+                    attr_name=self.__class__.__name__
+                )
+                if i != len(value)-1:
+                    val_string=val_string+f"'{value[i]}',"
+                elif i == len(value)-1:
+                    val_string=val_string+f"'{value[i]}'"
+            instance.parent.logger.info(f" final value string : {val_string}")
+            instance._client_types=f"({val_string})"
+
     def __delete__(self, instance):
-        del instance._mfa_authentication_methods
-'''
+        del instance._client_types
+
+class ClientPolicy:
+    def __get__(self, instance, owner):
+        return instance._client_policy
+    
+    def __set__(self, instance, value):
+        if value=="NONE":
+            instance._client_policy="NONE"
+        else:
+            val_string=" ( "
+            if ('ALL' in instance._orig_value_client_types or 
+                'all' in instance._orig_value_client_types or
+                'DRIVER' in instance._orig_value_client_types ) or (
+                    len(instance._orig_value_client_types)==0
+                ):
+                vv.is_dict(
+                    value=value,
+                    object_type=instance.parent.object_type,
+                    attr_name=self.__class__.__name__
+                )
+                keys=list(value.keys())
+                for i in range(0,len(keys)):
+                    driver=keys[i]
+                    vv.is_allowed_value(
+                        value=driver,
+                        allowed_list=tags.ALLOWED_DRIVERS
+                    )
+                    if i != len(keys) -1:
+                        val_string=val_string + f" {driver} = ( MINIMUM_VERSION = '{value[keys[i]]}'),"
+                    elif i == len(keys)-1:
+                        val_string=val_string + f" {keys} = ( MINIMUM_VERSION = '{value[keys[i]]}')"
+                val_string=val_string + " ) "
+            else:
+                vo.operation_on_object_not_suppported(message=f" To setup client policy Client type should have either ALL or DRIVER in it.")
+
+    def __delete__(self, instance):
+        del instance._client_types
+
+
 class MFAEnrollment:
     def __get__(self, instance, owner):
         return instance._mfa_enrollment
     def __set__(self, instance, value):
-        vv.is_allowed_value(value=value,
-                            allowed_list=tags.allowed_value_list().get(tags.MFA_ENROLLMENT),
-                            object_type=instance.parent.__class__.__name__,
-                            attr_name=self.__class__.__name__)
+        vv.is_allowed_value(
+            value=value,
+            allowed_list=tags.allowed_value_list().get(tags.MFA_ENROLLMENT),
+            object_type=instance.parent.__class__.__name__,
+            attr_name=self.__class__.__name__
+        )
         instance._mfa_enrollment = value
+
     def __delete__(self, instance):
         del instance._mfa_enrollment
 
@@ -113,21 +182,31 @@ class MFAPolicy:
     def __get__(self, instance, owner):
         return instance._mfa_policy
     def __set__(self, instance, value):
-        vv.is_list(value=value,
-                   object_type=instance.parent.__class__.__name__,
-                   attr_name=self.__class__.__name__)
-        final_policy=f"(ALLOWED_METHODS=("
-        for i in range(0,len(value)):
-            vv.is_allowed_value(value=value[i],
-                                allowed_list=tags.allowed_value_list().get(tags.MFA_POLICY),
-                                object_type=instance.parent.__class__.__name__,
-                                attr_name=self.__class__.__name__)
-            if i != len(value)-1:
-                final_policy=final_policy+f"'{value[i]}',"
-            elif i == len(value)-1:
-                final_policy=final_policy+f"'{value[i]}'"
-        final_policy=final_policy+"))"
-        instance._mfa_policy = final_policy
+        if isinstance(value,list):
+                instance.parent.logger.info("Value received as list")
+                val_string=""
+                for i in range(0,len(value)):
+                    instance.parent.logger.info(f"Validating {value[i]} for {self.__class__.__name__}")
+                    vv.is_allowed_value(
+                        value=value,
+                        allowed_list=tags.allowed_value_list().get(tags.MFA_POLICY),
+                        object_type=instance.parent.object_type,
+                        attr_name=self.__class__.__name__
+                    )
+                    if i != len(value)-1:
+                        val_string=val_string+f"'{value[i]}',"
+                    elif i == len(value)-1:
+                        val_string=val_string+f"'{value[i]}'"
+                instance.parent.logger.info(f" final value string : {val_string}")
+                instance._mfa_policy=f"({val_string})"
+        elif isinstance(value,str):
+            vv.is_allowed_value(
+                value=value,
+                allowed_list=tags.allowed_value_list().get(tags.MFA_POLICY),
+                object_type=instance.parent.object_type,
+                attr_name=self.__class__.__name__
+            )
+            instance._mfa_policy=f"('{value}')"
 
     def __delete__(self, instance):
         del instance._mfa_policy
@@ -182,6 +261,8 @@ class Comment:
         del instance._comment
 
 class AuthenticationPolicyAttrs:
+    def __init__(self,parent):
+        self.parent=parent
     name = Name()
     authentication_methods = AuthenticationMethods()
     #mfa_authentication_methods = MFAAuthenticationMethods()
@@ -196,7 +277,7 @@ class AuthenticationPolicyAttrs:
 
 class AuthenticationPolicy(BaseObject):
     def __init__(self, session, user_id, logger):
-        self.attr = AuthenticationPolicyAttrs()
+        self.attr = AuthenticationPolicyAttrs(self)
         self.session = session
         self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)
@@ -217,7 +298,10 @@ class AuthenticationPolicy(BaseObject):
     def set_object_properties_flag(self):
         self.flag_dic = {}
         def set_flag(tag, attrname):
-            self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) is not None else 0
+            if tag != tags.COMMENT:
+                self.flag_dic[tag] = 1 if getattr(self.attr, attrname) !="NONE" else 0
+            elif tag == tags.COMMENT:
+                self.flag_dic[tag] = 1 if getattr(self.attr, attrname) != "NONE" else 0
 
         set_flag(tags.AUTHENTICATION_METHODS, "authentication_methods")
         #set_flag(tags.MFA_AUTHENTICATION_METHODS, "mfa_authentication_methods")
