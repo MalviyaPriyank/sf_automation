@@ -270,11 +270,8 @@ class SchemaAttrs:
 class Schema(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=False)
         self.attr = SchemaAttrs(self)
-
-    def set_database(self, value):
-        self.attr.database = value
 
     def set_name(self, value):
         self.attr.name = value
@@ -430,158 +427,96 @@ class Schema(BaseObject):
                 self.property_lst.append(tags.NAME)
             self.alter_object()
 
-    def create_schema(self):
-        self.session.sql(self.qry).collect()
-
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        self.logger.info('set database')
-        self.set_database(kwargs[tags.DATABASE])
-        self.logger.info('set name')
-        self.set_name(kwargs[tags.NAME])
-        self.logger.info('set with managed access')
-        self.set_with_managed_access(kwargs[tags.WITH_MANAGED_ACCESS])
-        self.logger.info('set data retention time in days')
-        self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
-        self.logger.info('set max data extension time in days')
-        self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
-        self.logger.info('set external volume')
-        self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
-        self.logger.info('set catalog')
-        self.set_catalog(kwargs[tags.CATALOG])
-        self.logger.info('set replace invalid characters')
-        self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
-        self.logger.info('set default ddl collation')
-        self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
-        self.logger.info('set log level')
-        self.set_log_level(kwargs[tags.LOG_LEVEL])
-        self.logger.info('set trace level')
-        self.set_trace_level(kwargs[tags.TRACE_LEVEL])
-        self.logger.info('set storage serialization policy')
-        self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
-        self.logger.info('set classification profile')
-        self.set_classification_profile(kwargs[tags.CLASSIFICATION_PROFILE])
-        self.logger.info('set comment')
-        self.set_comment(kwargs[tags.COMMENT])
-        self.logger.info('set qualified name')
-        self.set_qualified_name()
-        self.logger.info('pepaer query')
-        self.prepare_query()
-        self.logger.info('call create schema')
-        self.create_schema()
-        self.logger.info(f'schema {self.attr.name} created successfully')
-        #self.grant_default_privileges()
-        if len(largs) == 0:
-            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema='NA')
-            self.logger.info('writing file to git')
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema='NA')
-
-
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=Schema(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
-
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set with_managed_access")
+        obj_inst.logger.info("set with_managed_access")
         if tags.WITH_MANAGED_ACCESS in kwargs.keys():
             obj_inst.set_with_managed_access(kwargs[tags.WITH_MANAGED_ACCESS])
         else:
             obj_inst.set_with_managed_access('NONE')
 
-        logger.info("set data_retention_time_in_days")
+        obj_inst.logger.info("set data_retention_time_in_days")
         if tags.DATA_RETENTION_TIME_IN_DAYS in kwargs.keys():
             obj_inst.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
         else:
             obj_inst.set_data_retention_time_in_days('NONE')
 
-        logger.info("set max_data_extension_time_in_days")
+        obj_inst.logger.info("set max_data_extension_time_in_days")
         if tags.MAX_DATA_EXTENSION_TIME_IN_DAYS in kwargs.keys():
             obj_inst.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
         else:
             obj_inst.set_max_data_extension_time_in_days('NONE')
 
-        logger.info("set external_volume")
+        obj_inst.logger.info("set external_volume")
         if tags.EXTERNAL_VOLUME in kwargs.keys():
             obj_inst.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
         else:
             obj_inst.set_external_volume('NONE')
 
-        logger.info("set catalog")
+        obj_inst.logger.info("set catalog")
         if tags.CATALOG in kwargs.keys():
             obj_inst.set_catalog(kwargs[tags.CATALOG])
         else:
             obj_inst.set_catalog('NONE')
 
-        logger.info("set replace_invalid_characters")
+        obj_inst.logger.info("set replace_invalid_characters")
         if tags.REPLACE_INVALID_CHARACTERS in kwargs.keys():
             obj_inst.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
         else:
             obj_inst.set_replace_invalid_characters('NONE')
 
-        logger.info("set default_ddl_collation")
+        obj_inst.logger.info("set default_ddl_collation")
         if tags.DEFAULT_DDL_COLLATION in kwargs.keys():
             obj_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
         else:
             obj_inst.set_default_ddl_collation('NONE')
 
-        logger.info("set log_level")
+        obj_inst.logger.info("set log_level")
         if tags.LOG_LEVEL in kwargs.keys():
             obj_inst.set_log_level(kwargs[tags.LOG_LEVEL])
         else:
             obj_inst.set_log_level('NONE')
 
-        logger.info("set trace_level")
+        obj_inst.logger.info("set trace_level")
         if tags.TRACE_LEVEL in kwargs.keys():
             obj_inst.set_trace_level(kwargs[tags.TRACE_LEVEL])
         else:
             obj_inst.set_trace_level('NONE')
 
-        logger.info("set storage_serialization_policy")
+        obj_inst.logger.info("set storage_serialization_policy")
         if tags.STORAGE_SERIALIZATION_POLICY in kwargs.keys():
             obj_inst.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
         else:
             obj_inst.set_storage_serialization_policy('NONE')
 
-        logger.info("set classification_profile")
+        obj_inst.logger.info("set classification_profile")
         if tags.CLASSIFICATION_PROFILE in kwargs.keys():
             obj_inst.set_classification_profile(kwargs[tags.CLASSIFICATION_PROFILE])
         else:
             obj_inst.set_classification_profile('NONE')
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
-
-
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
+        obj_inst.print_query()
 
-        logger.info('create deployment entry')
+        obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
                                          object_type=obj_inst.__class__.__name__,
                                          object_database=obj_inst.attr.database,

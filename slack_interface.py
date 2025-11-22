@@ -57,9 +57,6 @@ def run(body, say):
         
         logger.info('session started')
 
-        #User
-
-
         session_state = session_inst.get_session()
         root = session_inst.get_root_object()
 

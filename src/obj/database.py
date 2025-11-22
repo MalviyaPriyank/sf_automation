@@ -237,7 +237,7 @@ class DatabaseAttrs:
 class Database(BaseObject):
     def __init__(self,session,user_id,logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger, database_required=False, schema_required=False)
         self.attr = DatabaseAttrs(self)
 
     def set_name(self, value):
@@ -390,7 +390,7 @@ class Operation:
         
         db_inst.logger.info(f"Operating on {db_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         db_inst.logger.info(f'dictionary passed {kwargs}')
-        db_inst.is_create=kwargs[tags.IS_CREATE]
+        db_inst.set_base_attributes(kwargs=kwargs)
 
 
         if len(largs) != 0:
