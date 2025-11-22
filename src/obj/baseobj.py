@@ -110,7 +110,7 @@ class BaseObject(AbstractObject):
         self.logger.info(f"SCHEMA : {self.attr.schema}")
 
         if tags.COMMENT in kwargs.keys():
-            self.set_comment(kwargs[tags.SCHEMA])
+            self.set_comment(kwargs[tags.COMMENT])
         else:
             self.set_comment('NONE')
         self.logger.info(f"COMMENT : {self.attr.comment}")

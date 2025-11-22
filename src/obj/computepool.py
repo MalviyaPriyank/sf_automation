@@ -150,13 +150,6 @@ class AutoSuspendSecs:
     def __delete__(self, instance):
         del instance._auto_suspend_secs
 
-class Comment:
-    def __get__(self, instance, owner):
-        return instance._comment
-    def __set__(self, instance, value):
-        instance._comment = value
-    def __delete__(self, instance):
-        del instance._comment
 
 
 class ComputePoolAttrs:
@@ -170,13 +163,11 @@ class ComputePoolAttrs:
     auto_resume = AutoResume()
     initially_suspended = InitiallySuspended()
     auto_suspend_secs = AutoSuspendSecs()
-    comment = Comment()
 
 class ComputePool(BaseObject):
     def __init__(self, session, user_id, logger):
+        super().__init__(session=session,user_id=user_id,logger=logger,database_required=False,schema_required=False)
         self.attr = ComputePoolAttrs(self)
-        self.session = session
-        self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)
 
     # setter methods
@@ -275,13 +266,15 @@ class Operation:
         
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
+        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
 
         obj_inst.logger.info(f"set min_nodes {kwargs[tags.MIN_NODES]}")
         if tags.MIN_NODES in kwargs.keys():
@@ -318,12 +311,6 @@ class Operation:
             obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
         else:
             obj_inst.set_auto_suspend_secs('NONE')
-
-        obj_inst.logger.info(f"set comment {kwargs[tags.COMMENT]}")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
