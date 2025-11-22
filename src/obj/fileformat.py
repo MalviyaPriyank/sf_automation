@@ -16,31 +16,6 @@ from .baseobj import BaseObject
 from dep import deploy
 from src.usr.user import ChatHistory
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        #if vo.database_exist(value):
-        instance._database = value
-
-    def __del__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        #if vo.schema_exist(instance._database,value):
-        instance._schema = value
-
-    def __del__(self,instance):
-        del instance._schema
 
 
 class Name:   
@@ -49,11 +24,13 @@ class Name:
     
     def __set__(self,instance,value):
         instance.parent.logger.info(f"inside to set name {value}")
+        database_name=instance.parent.attr.database
+        schema_name=instance.parent.attr.schema
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=name)
+            vo.is_new_file_format(session=instance.parent.session,database_name=database_name,schema_name=schema_name,file_format_name=name)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -69,8 +46,8 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.file_format_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=old_name)
-                vo.is_new_file_format(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=new_name)
+                vo.file_format_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,file_format_name=old_name)
+                vo.is_new_file_format(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,file_format_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -905,25 +882,11 @@ class DisableAutoConvert:
     def __del__(self,instance):
         del instance._disable_auto_convert
 
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._comment = value
-        else:
-            instance._comment = f"'{value}'"
-    
-    def __delete__(self,instance):
-        del instance._comment
 
 class FileFormatAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database = Database()
-    schema = Schema()
     type = Type()
     name = Name()
     compression = Compression()
@@ -961,22 +924,15 @@ class FileFormatAttrs:
     strip_outer_element = StripOuterElement()
     disable_snowflake_data = DisableSnowflakeData()
     disable_auto_convert = DisableAutoConvert()
-    comment=Comment()
 
 class FileFormat(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
         self.attr = FileFormatAttrs(self)
 
     def set_name(self,val):
         self.attr.name = val
-    
-    def set_database(self,val):
-        self.attr.database = val
-    
-    def set_schema(self,val):
-        self.attr.schema = val
 
     def set_type(self,type):
         self.attr.type = type
@@ -1086,9 +1042,6 @@ class FileFormat(BaseObject):
     def set_disable_auto_convert(self, val):
         self.attr.disable_auto_convert = val
 
-    def set_comment(self,val):
-        self.attr.comment=val
-
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
 
@@ -1134,7 +1087,7 @@ class FileFormat(BaseObject):
         set_flag(tags.STRIP_OUTER_ELEMENT, "_strip_outer_element")
         set_flag(tags.DISABLE_SNOWFLAKE_DATA, "_disable_snowflake_data")
         set_flag(tags.DISABLE_AUTO_CONVERT, "_disable_auto_convert")
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
 
     def check_properties_to_set(self): 
         self.property_lst = []
@@ -1355,147 +1308,6 @@ class FileFormat(BaseObject):
     def create_file_format(self):
         self.execute_final_query()
 
-
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        self.logger.info('set database')
-        self.set_database(kwargs[tags.DATABASE])
-
-        self.logger.info('set SCHEMA')
-        self.set_schema(kwargs[tags.SCHEMA])
-
-        self.logger.info('set NAME')
-        self.set_name(kwargs[tags.NAME])
-
-        self.logger.info('set TYPE')
-        self.set_type(kwargs[tags.TYPE])
-
-        self.logger.info('set COMPRESSION')
-        self.set_compression(kwargs[tags.COMPRESSION])
-
-        self.logger.info('set RECORD_DELIMITER')
-        self.set_record_delimiter(kwargs[tags.RECORD_DELIMITER])
-
-        self.logger.info('set FIELD_DELIMITER')
-        self.set_field_delimiter(kwargs[tags.FIELD_DELIMITER])
-
-        self.logger.info('set MULTI_LINE')
-        self.set_multi_line(kwargs[tags.MULTI_LINE])
-
-        self.logger.info('set FILE_EXTENSION')
-        self.set_file_extension(kwargs[tags.FILE_EXTENSION])
-
-        self.logger.info('set PARSE_HEADER')
-        self.set_parse_header(kwargs[tags.PARSE_HEADER])
-
-        self.logger.info('set SKIP_HEADER')
-        self.set_skip_header(kwargs[tags.SKIP_HEADER])
-
-        self.logger.info('set SKIP_BLANK_LINES')
-        self.set_skip_blank_lines(kwargs[tags.SKIP_BLANK_LINES])
-
-        self.logger.info('set DATE_FORMAT')
-        self.set_date_format(kwargs[tags.DATE_FORMAT])
-
-        self.logger.info('set TIME_FORMAT')
-        self.set_time_format(kwargs[tags.TIME_FORMAT])
-
-        self.logger.info('set TIMESTAMP_FORMAT')
-        self.set_timestamp_format(kwargs[tags.TIMESTAMP_FORMAT])
-
-        self.logger.info('set BINARY_FORMAT')
-        self.set_binary_format(kwargs[tags.BINARY_FORMAT])
-
-        self.logger.info('set ESCAPE')
-        self.set_escape(kwargs[tags.ESCAPE])
-
-        self.logger.info('set ESCAPE_UNENCLOSED_FIELD')
-        self.set_escape_unenclosed_field(kwargs[tags.ESCAPE_UNENCLOSED_FIELD])
-
-        self.logger.info('set TRIM_SPACE')
-        self.set_trim_space(kwargs[tags.TRIM_SPACE])
-
-        self.logger.info('set FIELD_OPTIONALLY_ENCLOSED_BY')
-        self.set_field_optionally_enclosed_by(kwargs[tags.FIELD_OPTIONALLY_ENCLOSED_BY])
-
-        self.logger.info('set NULL_IF')
-        self.set_null_if(kwargs[tags.NULL_IF])
-
-        self.logger.info('set ERROR_ON_COLUMN_COUNT_MISMATCH')
-        self.set_error_on_column_count_mismatch(kwargs[tags.ERROR_ON_COLUMN_COUNT_MISMATCH])
-
-        self.logger.info('set REPLACE_INVALID_CHARACTERS')
-        self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
-
-        self.logger.info('set EMPTY_FIELD_AS_NULL')
-        self.set_empty_field_as_null(kwargs[tags.EMPTY_FIELD_AS_NULL])
-
-        self.logger.info('set SKIP_BYTE_ORDER_MARK')
-        self.set_skip_byte_order_mark(kwargs[tags.SKIP_BYTE_ORDER_MARK])
-
-        self.logger.info('set ENCODING')
-        self.set_encoding(kwargs[tags.ENCODING])
-
-        self.logger.info('set ENABLE_OCTAL')
-        self.set_enable_octal(kwargs[tags.ENABLE_OCTAL])
-
-        self.logger.info('set ALLOW_DUPLICATE')
-        self.set_allow_duplicate(kwargs[tags.ALLOW_DUPLICATE])
-
-        self.logger.info('set STRIP_OUTER_ARRAY')
-        self.set_strip_outer_array(kwargs[tags.STRIP_OUTER_ARRAY])
-
-        self.logger.info('set STRIP_NULL_VALUES')
-        self.set_strip_null_values(kwargs[tags.STRIP_NULL_VALUES])
-
-        self.logger.info('set IGNORE_UTF8_ERRORS')
-        self.set_ignore_utf8_errors(kwargs[tags.IGNORE_UTF8_ERRORS])
-
-        self.logger.info('set SNAPPY_COMPRESSION')
-        self.set_snappy_compression(kwargs[tags.SNAPPY_COMPRESSION])
-
-        self.logger.info('set BINARY_AS_TEXT')
-        self.set_binary_as_text(kwargs[tags.BINARY_AS_TEXT])
-
-        self.logger.info('set USE_LOGICAL_TYPE')
-        self.set_use_logical_type(kwargs[tags.USE_LOGICAL_TYPE])
-
-        self.logger.info('set USE_VECTORIZED_SCANNER')
-        self.set_use_vectorized_scanner(kwargs[tags.USE_VECTORIZED_SCANNER])
-
-        self.logger.info('set PRESERVE_SPACE')
-        self.set_preserve_space(kwargs[tags.PRESERVE_SPACE])
-
-        self.logger.info('set STRIP_OUTER_ELEMENT')
-        self.set_strip_outer_element(kwargs[tags.STRIP_OUTER_ELEMENT])
-
-        self.logger.info('set DISABLE_SNOWFLAKE_DATA')
-        self.set_disable_snowflake_data(kwargs[tags.DISABLE_SNOWFLAKE_DATA])
-
-        self.logger.info('set DISABLE_AUTO_CONVERT')
-        self.set_disable_auto_convert(kwargs[tags.DISABLE_AUTO_CONVERT])
-
-        self.logger.info('set COMMENT')
-        self.set_comment(kwargs[tags.COMMENT])
-
-        self.logger.info('set qualified name')
-        self.set_qualified_name()
-
-        self.logger.info('prepare query')
-        self.prepare_query()
-
-        self.logger.info(f"execute query")
-        self.create_file_format()
-
-        if len(largs) == 0:
-            self.logger.info('create deployment entry')
-            self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
-
-
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
@@ -1506,109 +1318,99 @@ class Operation:
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        logger.info("set schema")
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
-
-        logger.info("set type")
+        obj_inst.logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set compression")
+        obj_inst.logger.info("set compression")
         if tags.COMPRESSION in kwargs.keys():
             obj_inst.set_compression(kwargs[tags.COMPRESSION])
         else:
             obj_inst.set_compression('NONE')
 
-        logger.info("set record_delimiter")
+        obj_inst.logger.info("set record_delimiter")
         if tags.RECORD_DELIMITER in kwargs.keys():
             obj_inst.set_record_delimiter(kwargs[tags.RECORD_DELIMITER])
         else:
             obj_inst.set_record_delimiter('NONE')
 
-        logger.info("set field_delimiter")
+        obj_inst.logger.info("set field_delimiter")
         if tags.FIELD_DELIMITER in kwargs.keys():
             obj_inst.set_field_delimiter(kwargs[tags.FIELD_DELIMITER])
         else:
             obj_inst.set_field_delimiter('NONE')
 
-        logger.info("set multi_line")
+        obj_inst.logger.info("set multi_line")
         if tags.MULTI_LINE in kwargs.keys():
             obj_inst.set_multi_line(kwargs[tags.MULTI_LINE])
         else:
             obj_inst.set_multi_line('NONE')
 
-        logger.info("set file_extension")
+        obj_inst.logger.info("set file_extension")
         if tags.FILE_EXTENSION in kwargs.keys():
             obj_inst.set_file_extension(kwargs[tags.FILE_EXTENSION])
         else:
             obj_inst.set_file_extension('NONE')
 
-        logger.info("set parse_header")
+        obj_inst.logger.info("set parse_header")
         if tags.PARSE_HEADER in kwargs.keys():
             obj_inst.set_parse_header(kwargs[tags.PARSE_HEADER])
         else:
             obj_inst.set_parse_header('NONE')
 
-        logger.info("set skip_header")
+        obj_inst.logger.info("set skip_header")
         if tags.SKIP_HEADER in kwargs.keys():
             obj_inst.set_skip_header(kwargs[tags.SKIP_HEADER])
         else:
             obj_inst.set_skip_header('NONE')
 
-        logger.info("set skip_blank_lines")
+        obj_inst.logger.info("set skip_blank_lines")
         if tags.SKIP_BLANK_LINES in kwargs.keys():
             obj_inst.set_skip_blank_lines(kwargs[tags.SKIP_BLANK_LINES])
         else:
             obj_inst.set_skip_blank_lines('NONE')
 
-        logger.info("set date_format")
+        obj_inst.logger.info("set date_format")
         if tags.DATE_FORMAT in kwargs.keys():
             obj_inst.set_date_format(kwargs[tags.DATE_FORMAT])
         else:
             obj_inst.set_date_format('NONE')
 
-        logger.info("set time_format")
+        obj_inst.logger.info("set time_format")
         if tags.TIME_FORMAT in kwargs.keys():
             obj_inst.set_time_format(kwargs[tags.TIME_FORMAT])
         else:
             obj_inst.set_time_format('NONE')
 
-        logger.info("set timestamp_format")
+        obj_inst.logger.info("set timestamp_format")
         if tags.TIMESTAMP_FORMAT in kwargs.keys():
             obj_inst.set_timestamp_format(kwargs[tags.TIMESTAMP_FORMAT])
         else:
             obj_inst.set_timestamp_format('NONE')
 
-        logger.info("set binary_format")
+        obj_inst.logger.info("set binary_format")
         if tags.BINARY_FORMAT in kwargs.keys():
             obj_inst.set_binary_format(kwargs[tags.BINARY_FORMAT])
         else:
             obj_inst.set_binary_format('NONE')
 
-        logger.info("set escape")
+        obj_inst.logger.info("set escape")
         if tags.ESCAPE in kwargs.keys():
             obj_inst.set_escape(kwargs[tags.ESCAPE])
         else:
             obj_inst.set_escape('NONE')
 
-        logger.info("set escape_unenclosed_field")
+        obj_inst.logger.info("set escape_unenclosed_field")
         if tags.ESCAPE_UNENCLOSED_FIELD in kwargs.keys():
             obj_inst.set_escape_unenclosed_field(kwargs[tags.ESCAPE_UNENCLOSED_FIELD])
         else:
@@ -1739,12 +1541,6 @@ class Operation:
             obj_inst.set_disable_auto_convert(kwargs[tags.DISABLE_AUTO_CONVERT])
         else:
             obj_inst.set_disable_auto_convert('NONE')
-
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
