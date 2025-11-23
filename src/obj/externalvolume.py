@@ -366,7 +366,7 @@ class ExternalVolumeAttrs:
 class ExternalVolume(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False,schema_required=False)
         self.attr = ExternalVolumeAttrs(self)
         self.object_type=self.__class__.__name__
 
@@ -391,11 +391,8 @@ class ExternalVolume(BaseObject):
     def set_object_properties_flag(self):
         self.flag_dic = {}
         def set_flag(tag, attrname):
-            if tag != tags.COMMENT:
-                self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) != "NONE" else 0
-            else:
-                self.flag_dic[tag] = 1 if getattr(self.base_attrs, attrname, None) != "NONE" else 0
-                
+            self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) != "NONE" else 0
+
         if self.attr.storage_provider in ['S3','S3GOV']:
             set_flag(tags.STORAGE_AWS_ACCESS_POINT_ARN, "_storage_aws_access_point_arn")
             set_flag(tags.STORAGE_AWS_EXTERNAL_ID, "_storage_aws_external_id")
@@ -471,7 +468,7 @@ class ExternalVolume(BaseObject):
         if tags.ALLOW_WRITES in self.property_lst:
             self.qry+= f" {tags.ALLOW_WRITES} = {self.attr.allow_writes} "
         if tags.COMMENT in self.property_lst:
-            self.qry+= f" {tags.COMMENT} = {self.base_attrs.comment} "
+            self.qry+= f" {tags.COMMENT} = {self.attr.comment} "
 
     def alter_object(self):
         for prop in self.property_lst:
@@ -503,7 +500,8 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
 
         if tags.NAME in kwargs.keys():
@@ -636,13 +634,6 @@ class Operation:
         else:
             obj_inst.set_allow_writes('NONE')
         obj_inst.logger.info(f"ALLOW_WRITES : {obj_inst.attr.allow_writes}")
-
-        obj_inst.logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
-        obj_inst.logger.info(f"COMMENT : {obj_inst.base_attrs.comment}")
 
         logger.info('prepare query')
         obj_inst.prepare_query()    

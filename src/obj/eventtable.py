@@ -20,34 +20,6 @@ from .baseobj import BaseObject
 
 from src.usr.user import ChatHistory
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value=value,
-                                    object_type=instance.parent.object_type,
-                                    attr_name=self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        instance._database = value
-    
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._schema="NONE"
-        else:
-            vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-            instance._schema = value
-    
-    def __delete__(self,instance):
-        del instance._schema
-
 class Name:
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -212,8 +184,6 @@ class EventTableAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database=Database()
-    schema=Schema()
     name = Name()
     cluster_by=ClusterBy()
     data_retention_time_in_days = DataRetentionTimeInDays()
@@ -221,19 +191,12 @@ class EventTableAttrs:
     change_tracking=ChangeTracking()
     default_ddl_collation=DefaultDDLCollation()
 
-
 class EventTable(BaseObject):
     def __init__(self,session,user_id,logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
-        self.attr = EventTableAttrs(self) 
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
+        self.attr = EventTableAttrs(self)
         self.object_type=self.__class__.__name__
-
-    def set_database(self,value):
-        self.attr.database=value
-
-    def set_schema(self,value):
-        self.attr.schema=value
 
     def set_name(self, value):
         self.attr.name = value
@@ -254,18 +217,14 @@ class EventTable(BaseObject):
         self.attr.default_ddl_collation=value
 
     def set_comment(self, value):
-        self.base_attrs.comment=value
+        self.attr.comment=value
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
         def set_flag(attribute_tag,attribute_name):
-            if attribute_tag != tags.COMMENT:
-                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
-            elif attribute_tag==tags.COMMENT:
-                self.flag_dic[attribute_tag] = 1 if getattr(self.base_attrs, attribute_name) != "NONE" else 0
+            self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
-        set_flag(tags.SCHEMA,"_schema")
         set_flag(tags.CLUSTER_BY,"_cluster_by")       
         set_flag(tags.DATA_RETENTION_TIME_IN_DAYS,"_data_retention_time_in_days")
         set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
@@ -342,69 +301,7 @@ class EventTable(BaseObject):
                 self.property_lst.append(tags.NAME)
             self.alter_object()
 
-    '''
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
 
-        if len(largs) != 0:
-            self.logger.info(' list args passed')
-            self.qry = f"CREATE OR REPLACE DATABASE {kwargs[tags.NAME]}"
-            self.logger.info('calling create database')
-            self.create_database()
-            self.logger.info('granting default privileges')
-            #self.grant_default_privileges(*['initial'])
-        else:
-            self.logger.info('set name')
-            self.set_name(kwargs[tags.NAME])
-            self.set_cluster_by(kwargs[tags.CL])
-            self.logger.info('set DATA_RETENTION_TIME_IN_DAYS')
-            self.set_data_retention_time_in_days(kwargs[tags.DATA_RETENTION_TIME_IN_DAYS])
-
-            self.logger.info('set MAX_DATA_EXTENSION_TIME_IN_DAYS')
-            self.set_max_data_extension_time_in_days(kwargs[tags.MAX_DATA_EXTENSION_TIME_IN_DAYS])
-
-            self.logger.info('set EXTERNAL_VOLUME')
-            self.set_external_volume(kwargs[tags.EXTERNAL_VOLUME])
-
-            self.logger.info('set CATALOG')
-            self.set_catalog(kwargs[tags.CATALOG])
-
-            self.logger.info('set REPLACE_INVALID_CHARACTERS')
-            self.set_replace_invalid_characters(kwargs[tags.REPLACE_INVALID_CHARACTERS])
-
-            self.logger.info('set DEFAULT_DDL_COLLATION')
-            self.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
-
-            self.logger.info('set LOG_LEVEL')
-            self.set_log_level(kwargs[tags.LOG_LEVEL])
-
-            self.logger.info('set TRACE_LEVEL')
-            self.set_trace_level(kwargs[tags.TRACE_LEVEL])
-
-            self.logger.info('set STORAGE_SERIALIZATION_POLICY')
-            self.set_storage_serialization_policy(kwargs[tags.STORAGE_SERIALIZATION_POLICY])
-
-            self.logger.info('set COMMENT')
-            self.set_comment(kwargs[tags.COMMENT])
-
-            self.logger.info('preapare query')
-            self.prepare_query(is_create=kwargs[tags.IS_CREATE])
-
-            if kwargs[tags.IS_CREATE] == "TRUE":
-                self.logger.info('execute query')
-                self.create_database()
-
-                self.logger.info('grant default priv')
-                #self.grant_default_privileges()
-                
-                self.logger.info('create deployment entry')
-                self.create_deployment_entry(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-
-                self.logger.info('writing file to git')
-                self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database='NA',object_schema='NA')
-    '''
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
@@ -413,19 +310,8 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        obj_inst.logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
-
-        obj_inst.logger.info("set schema")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
@@ -462,12 +348,6 @@ class Operation:
             obj_inst.set_default_ddl_collation(kwargs[tags.DEFAULT_DDL_COLLATION])
         else:
             obj_inst.set_default_ddl_collation('NONE')
-
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
