@@ -241,7 +241,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_cdc",
-                "description":"pull incremental data from SQL Server to Snowflake.",
+                "description":"pull incremental data from SQL Server to Snowflake, one-time load not a pipeline.",
                 "inputSchema": {
                     "json":{
                         "type":"object",
