@@ -14,33 +14,6 @@ from setup import privilege
 from .baseobj import BaseObject 
 from src.usr.user import ChatHistory
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        #if vo.database_exist(value):
-        instance._database = value
-
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        #if vo.schema_exist(instance._database,value):
-        instance._schema = value
-
-    def __delete__(self,instance):
-        del instance._schema
-
-
 class Name:
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -51,7 +24,7 @@ class Name:
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._schema,stage=name,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
+            vo.is_new_stage(session=instance.parent.session,database=instance.parent.attr.database,schema=instance.parent.attr.schema,stage=name,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -67,8 +40,8 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.stage_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,stage_name=old_name)
-                vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._schema,stage=new_name,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
+                vo.stage_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,stage_name=old_name)
+                vo.is_new_stage(session=instance.parent.session,database=instance.parent.attr.database,schema=instance.parent.attr.schema,stage=new_name,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -88,7 +61,7 @@ class FileFormat:
             instance._file_format=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vo.file_format_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,file_format_name=value)
+            vo.file_format_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,file_format_name=value)
             instance._file_format = value
 
     def __delete__(self,instance):
@@ -291,8 +264,6 @@ class ExternalStageAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database=Database()
-    schema=Schema()
     name = Name()
     file_format = FileFormat()
     comment = Comment()
@@ -311,15 +282,9 @@ class ExternalStageAttrs:
 class ExternalStage(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
         self.sf_object_tag = "STAGE"
         self.attr = ExternalStageAttrs(self)
-
-    def set_database(self,val):
-        self.attr.database=val
-
-    def set_schema(self,val):
-        self.attr.schema=val
 
     def set_name(self,val):
         self.attr.name = val
@@ -327,8 +292,6 @@ class ExternalStage(BaseObject):
     def set_file_format(self,val):
         self.attr.file_format = val
 
-    def set_comment(self,val):
-        self.attr.comment = val
 
     def set_url(self,val):
         self.attr.url = val
@@ -373,7 +336,7 @@ class ExternalStage(BaseObject):
             self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
 
         set_flag(tags.FILE_FORMAT,"_file_format")
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
         set_flag(tags.URL,"_url")
         set_flag(tags.AWS_ACCESS_POINT_ARN,"_aws_access_point_arn")
         set_flag(tags.STORAGE_INTEGRATION,"_storage_integration")
@@ -492,191 +455,113 @@ class ExternalStage(BaseObject):
     def create_external_stage(self):
         self.execute_final_query()
 
-    def create_object(self,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-
-        self.logger.info('set DATABASE')
-        self.set_database(kwargs[tags.DATABASE])
-
-        self.logger.info('set SCHEMA')
-        self.set_schema(kwargs[tags.SCHEMA])
-        
-        self.logger.info('set NAME')
-        self.set_name(kwargs[tags.NAME])
-
-        self.logger.info('set FILE_FORMAT')
-        self.set_file_format(kwargs[tags.FILE_FORMAT])
-
-        self.logger.info('set COMMENT')
-        self.set_comment(kwargs[tags.COMMENT])
-
-        self.logger.info('set URL')
-        self.set_url(kwargs[tags.URL])
-
-        self.logger.info('set AWS_ACCESS_POINT_ARN')
-        self.set_aws_access_point_arn(kwargs[tags.AWS_ACCESS_POINT_ARN])
-
-        self.logger.info('set STORAGE_INTEGRATION')
-        self.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
-
-        self.logger.info('set ENCRYPTION TYPE')
-        self.set_encryption_type(kwargs[tags.ENCRYPTION_TYPE])
-
-        self.logger.info('set ENCRYPTION_MASTER_KEY')
-        self.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
-
-        self.logger.info('set ENCRYPTION_KMS_KEY_ID')
-        self.set_encryption_kms_key_id(kwargs[tags.ENCRYPTION_KMS_KEY_ID])
-
-        self.logger.info('set USE_PRIVATELINK_ENDPOINT')
-        self.set_use_privatelink_endpoint(kwargs[tags.USE_PRIVATELINK_ENDPOINT])
-
-        self.logger.info('set ENABLE')
-        self.set_enable(kwargs[tags.ENABLE])
-
-        self.logger.info('set REFRESH_ON_CREATE')
-        self.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
-
-        self.logger.info('set AUTO_REFRESH')
-        self.set_auto_refresh(kwargs[tags.AUTO_REFRESH])
-
-        self.logger.info('set NOTIFICATION_INTEGRATION')
-        self.set_notification_integration(kwargs[tags.NOTIFICATION_INTEGRATION])
-
-        self.logger.info('set qualified name')
-        self.set_qualified_name()
-
-        self.logger.info('prepare query')
-        self.prepare_query()
-        self.execute_final_query()
-
-        self.logger.info('execute query')
-        self.create_external_stage()
-
-        self.logger.info('grant default priv')
-
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry(object_name=self.attr.name[0],
-                                     object_type=self.__class__.__name__,
-                                     object_database=self.attr.database,
-                                     object_schema=self.attr.schema)
-        self.write_file_to_git(object_name=self.attr.name[0],
-                               object_type=self.__class__.__name__,
-                               object_database=self.attr.database,
-                               object_schema=self.attr.schema)
-            
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
         obj_inst=ExternalStage(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
-
-        logger.info("set schema")
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
-
-        logger.info("set name")
+        
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
+        obj_inst.logger.info(f"set name {obj_inst.attr.name[0]}")
 
-        logger.info("set file_format")
+        
         if tags.FILE_FORMAT in kwargs.keys():
             obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
         else:
             obj_inst.set_file_format('NONE')
+        obj_inst.logger.info(f"set file_format {obj_inst.attr.file_format}")
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
-        logger.info("set url")
+        
         if tags.URL in kwargs.keys():
             obj_inst.set_url(kwargs[tags.URL])
         else:
             obj_inst.set_url('NONE')
+        obj_inst.logger.info(f"set url {obj_inst.attr.url}")
 
-        logger.info("set aws_access_point_arn")
+        
         if tags.AWS_ACCESS_POINT_ARN in kwargs.keys():
             obj_inst.set_aws_access_point_arn(kwargs[tags.AWS_ACCESS_POINT_ARN])
         else:
             obj_inst.set_aws_access_point_arn('NONE')
+        obj_inst.logger.info(f"set aws_access_point_arn {obj_inst.attr.aws_access_point_arn}")
 
-        logger.info("set storage_integration")
+        
         if tags.STORAGE_INTEGRATION in kwargs.keys():
             obj_inst.set_storage_integration(kwargs[tags.STORAGE_INTEGRATION])
         else:
             obj_inst.set_storage_integration('NONE')
+        obj_inst.logger.info(f"set storage_integration {obj_inst.attr.storage_integration}")
 
-        logger.info("set encryption_type")
+        
         if tags.ENCRYPTION_TYPE in kwargs.keys():
             obj_inst.set_encryption_type(kwargs[tags.ENCRYPTION_TYPE])
         else:
             obj_inst.set_encryption_type('NONE')
+        obj_inst.logger.info(f"set encryption_type {obj_inst.attr.encryption_type}")
 
-        logger.info("set encryption_master_key")
+        
         if tags.ENCRYPTION_MASTER_KEY in kwargs.keys():
             obj_inst.set_encryption_master_key(kwargs[tags.ENCRYPTION_MASTER_KEY])
         else:
             obj_inst.set_encryption_master_key('NONE')
+        obj_inst.logger.info(f"set encryption_master_key {obj_inst.attr.encryption_master_key}")
 
-        logger.info("set encryption_kms_key_id")
+        
         if tags.ENCRYPTION_KMS_KEY_ID in kwargs.keys():
             obj_inst.set_encryption_kms_key_id(kwargs[tags.ENCRYPTION_KMS_KEY_ID])
         else:
             obj_inst.set_encryption_kms_key_id('NONE')
+        obj_inst.logger.info(f"set encryption_kms_key_id {obj_inst.attr.encryption_kms_key_id}")
 
-        logger.info("set use_privatelink_endpoint")
+        
         if tags.USE_PRIVATELINK_ENDPOINT in kwargs.keys():
             obj_inst.set_use_privatelink_endpoint(kwargs[tags.USE_PRIVATELINK_ENDPOINT])
         else:
             obj_inst.set_use_privatelink_endpoint('NONE')
+        obj_inst.logger.info(f"set use_privatelink_endpoint {obj_inst.attr.use_privatelink_endpoint}")
 
-        logger.info("set enable")
+        
         if tags.ENABLE in kwargs.keys():
             obj_inst.set_enable(kwargs[tags.ENABLE])
         else:
             obj_inst.set_enable('NONE')
+        obj_inst.logger.info(f"set enable {obj_inst.attr.enable}")
 
-        logger.info("set refresh_on_create")
+        
         if tags.REFRESH_ON_CREATE in kwargs.keys():
             obj_inst.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
         else:
             obj_inst.set_refresh_on_create('NONE')
+        obj_inst.logger.info(f"set refresh_on_create {obj_inst.attr.refresh_on_create}")
 
-        logger.info("set auto_refresh")
+        
         if tags.AUTO_REFRESH in kwargs.keys():
             obj_inst.set_auto_refresh(kwargs[tags.AUTO_REFRESH])
         else:
             obj_inst.set_auto_refresh('NONE')
+        obj_inst.logger.info(f"set auto_refresh {obj_inst.attr.auto_refresh}")
 
-        logger.info("set notification_integration")
+        
         if tags.NOTIFICATION_INTEGRATION in kwargs.keys():
             obj_inst.set_notification_integration(kwargs[tags.NOTIFICATION_INTEGRATION])
         else:
             obj_inst.set_notification_integration('NONE')
+        obj_inst.logger.info(f"set notification_integration {obj_inst.attr.notification_integration}")
 
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         obj_inst.execute_final_query()
+        obj_inst.print_query()
         
         obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
