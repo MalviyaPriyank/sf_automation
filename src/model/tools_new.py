@@ -180,7 +180,7 @@ class LLMTools:
     def create_cdc(self,db,table_name):
         conn=SSConn(logger=self.logger)
         conn=conn.get_sql_server_connection()
-        operation=SSOpr(connection=conn,logger=logger)
+        operation=SSOpr(connection=conn,logger=self.logger)
         cdc_inst=CDC(session=self.sf_session,logger=self.logger)
         df, from_lsn, to_lsn = operation.get_incremental_data(cdc_inst=cdc_inst, table_name=table_name, db_name=db)
         df = df.drop(columns=['__$start_lsn','__$seqval','__$update_mask','__$operation']) 

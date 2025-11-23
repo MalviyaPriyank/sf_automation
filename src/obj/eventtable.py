@@ -25,21 +25,24 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        db_name=instance.parent.attr.database
+        schema_name=instance.parent.attr.schema
+
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            if instance._schema == "NONE":
+            if schema_name == "NONE":
                 vo.is_new_object(session=instance.parent.session,
                                 object_type=instance.parent.object_type,
                                 object_name=name,
-                                DATABASE=instance._database)
-            elif instance._schema !="NONE":
+                                DATABASE=db_name)
+            elif schema_name !="NONE":
                 vo.is_new_object(
                     session=instance.parent.session,
                     object_type=instance.parent.object_type,
                     object_name=name,
-                    DATABASE=instance._database,
-                    SCHEMA=instance._schema
+                    DATABASE=db_name,
+                    SCHEMA=schema_name
                     )
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -54,33 +57,33 @@ class Name:
             instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
             if new_name != "NONE":
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                if instance._schema =="NONE":
+                if schema_name =="NONE":
                     vo.object_exist(
                         session=instance.parent.session,
                         object_type=instance.parent.object_type,
                         object_name=old_name,
-                        DATABASE=instance._database
+                        DATABASE=db_name
                     )
                     vo.is_new_object(
                         session=instance.parent.session,
                         object_type=instance.parent.object_type,
                         object_name=new_name,
-                        DATABASE=instance._database,
+                        DATABASE=db_name,
                     )
-                elif instance._schema != "NONE":
+                elif schema_name != "NONE":
                     vo.object_exist(
                         session=instance.parent.session,
                         object_type=instance.parent.object_type,
                         object_name=old_name,
-                        DATABASE=instance._database,
-                        SCHEMA=instance._schema
+                        DATABASE=db_name,
+                        SCHEMA=schema_name
                     )
                     vo.is_new_object(
                         session=instance.parent.session,
                         object_type=instance.parent.object_type,
                         object_name=new_name,
-                        DATABASE=instance._database,
-                        SCHEMA=instance._schema
+                        DATABASE=db_name,
+                        SCHEMA=schema_name
                     )
                     
                 instance._name=old_name
@@ -230,7 +233,7 @@ class EventTable(BaseObject):
         set_flag(tags.MAX_DATA_EXTENSION_TIME_IN_DAYS,"_max_data_extension_time_in_days")
         set_flag(tags.CHANGE_TRACKING,"_change_tracking")
         set_flag(tags.DEFAULT_DDL_COLLATION,"_default_ddl_collation")
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
 
 
     def check_properties_to_set(self): 
@@ -260,7 +263,7 @@ class EventTable(BaseObject):
                 if prop == tags.DEFAULT_DDL_COLLATION:
                     self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = '{self.attr.default_ddl_collation}' "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 
     def alter_object(self):        
         for prop in self.property_lst:
