@@ -29,6 +29,7 @@ from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 #from salesforce import salesforceextract
+import src.obj.utils as util
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
@@ -41,6 +42,9 @@ from src.pipeline import fullload
 from vars.gvobject import Config as cfg
 import traceback
 from snowflake.snowpark.exceptions import SnowparkSQLException
+from src.sqlserver.sqlserverconnection import SqlServerConnection as SSConn
+from src.sqlserver.sqlserverconnection import SqlServerOperations as SSOpr
+from src.cdc.cdc import CDC
 
 from valueexception import (
     AttributeValidationError,
@@ -57,6 +61,7 @@ class LLMTools:
                     sf_session,
                     root,
                     bedrock_obj,
+                    user_chat_inst,
                     retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
@@ -64,12 +69,14 @@ class LLMTools:
                  ):
         self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
+        self.query_count=0
         self.root = root
         self.chat_model_id = chat_model_id
         self.user_id = self.sf_session.sql("select current_user()").collect()[0][0]
         self.region = region
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
         self.bedrock_obj = bedrock_obj
+        self.user_chat_inst=user_chat_inst
         self.chat_llm = ChatBedrock(model_id=chat_model_id,
                                     model_kwargs=dict(temperature=temperature),
                                     aws_access_key_id=llm_config.ACCESS_KEY,
@@ -100,15 +107,20 @@ class LLMTools:
                                   ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger),
                                   ss.USER_OBJ: user.User(self.sf_session, self.user_id, logger=self.logger)
                                   }
+    
+    def __increment_query_count(self):
+        self.query_count+=1
 
     def import_module(self, obj_type):
         module_path = f"src.obj.{obj_type.lower()}"
+        self.logger.info(f"module path : {module_path}")
         module = importlib.import_module(module_path)
         OperationClass = getattr(module, "Operation")
         return OperationClass()
 
     def get_object_params(self, obj_type):
         operation = self.import_module(obj_type)
+        self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
 
     # def get_obj_dependency(self, obj_type):
@@ -119,9 +131,10 @@ class LLMTools:
             print(f"data dictioary : {data_dict}")
             data_dict = json.loads(data_dict)
             operation = self.import_module(obj_type)
-            qry = operation.create_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
+            qry = operation.create_object(user_chat_inst=self.user_chat_inst,session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
             self.logger.info(f"For {obj_type}, query returned: {qry}")
             self.logger.info(f'Object {obj_type} created successfully.')
+            self.__increment_query_count()
             return f'Object {obj_type} created successfully, and returned {qry}'
         except (SnowchainException,SnowparkSQLException) as e:
             self.logger.warn(f"inside Snowchainexception")
@@ -164,11 +177,28 @@ class LLMTools:
     def find_privileges(self, object_type, object_identifier,database="NONE",schema="NONE"):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database,schema=schema)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
+
+    def create_cdc(self,db,table_name):
+        conn=SSConn(logger=self.logger)
+        conn=conn.get_sql_server_connection()
+        operation=SSOpr(connection=conn,logger=logger)
+        cdc_inst=CDC(session=self.sf_session,logger=self.logger)
+        df, from_lsn, to_lsn = operation.get_incremental_data(cdc_inst=cdc_inst, table_name=table_name, db_name=db)
+        df = df.drop(columns=['__$start_lsn','__$seqval','__$update_mask','__$operation']) 
+        util.write_pandas_df_to_snowflake(session=self.sf_session, df=df, database='SQL_SERVER_CDC_DB', schema='CDC_LANDING', table=table_name) 
+        cdc_inst.log_cdc(server='MSSQL', **{'DATABASE':db, 'OBJECT':table_name, 'LSN':to_lsn.hex().upper()})
+        return "incremental data from SQL Server to Snowflake pulled successfully"
     
     def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name="NONE",schema="NONE"):
+        self.logger.info(f" Inside to grant privilege on  {object_type}: {object_identifier}, privilege:{privilege} to role : {role} at db.schema: {database_name}.{schema}")
+        self.logger.info(f"type of db {type(database_name)}")
         if object_type.upper() != 'DATABASE':
-            self.logger(f"switching to {database_name} database")
-            self.sf_session.sql(f"USE DATABASE {database_name}").collect()
+            if database_name.upper() == 'NONE' or database_name == None:
+                self.logger.info("since database is none using DB_CONFIG")
+                self.sf_session.sql(f"USE DATABASE DB_CONFIG").collect()
+            else:
+                self.logger.info(f"switching to {database_name} database")
+                self.sf_session.sql(f"USE DATABASE {database_name}").collect()
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database_name,schema=schema)
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'

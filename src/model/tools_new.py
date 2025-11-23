@@ -29,6 +29,7 @@ from privileges.baseprivilege import BasePrivilege
 from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 #from salesforce import salesforceextract
+import src.obj.utils as util
 from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
@@ -41,6 +42,9 @@ from src.pipeline import fullload
 from vars.gvobject import Config as cfg
 import traceback
 from snowflake.snowpark.exceptions import SnowparkSQLException
+from src.sqlserver.sqlserverconnection import SqlServerConnection as SSConn
+from src.sqlserver.sqlserverconnection import SqlServerOperations as SSOpr
+from src.cdc.cdc import CDC
 
 from valueexception import (
     AttributeValidationError,
@@ -150,39 +154,6 @@ class LLMTools:
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
-    def extract_insights(self, query, ):
-        to get all tables in a schema use :
- in src/infschema/tables.py
-
-to get all columns in a table use :
-get_all_columns_of_a_table in src/infschema/columns.py
-        prompt = f"""Write a Python script for: {query.lower()}.
-        here is the list of all tables in schema: {get_all_tables_in_schema(self,db_name,schema_name)}.
-        table data is in file analysis/sales_pipeline.csv, do not attempt to read from any other file. The columns are opportunity_id, sales_agent, product, account, deal_stage, engage_date, close_date, close_value. Only return code inside <python></python> tags. Handle missing values. if creating any visualizations or output csv, save them inside 'analysis' folder. be sure to check for and handle missing data."""
-
-        client = boto3.client(llm_config.BEDROCK_RUNTIME_SERVICE,
-                               aws_access_key_id=llm_config.ACCESS_KEY,
-                               aws_secret_access_key=llm_config.SECRET_KEY, 
-                               region_name=self.region)
-        response = client.converse(
-            modelId=self.chat_model_id,
-            messages=[{"role": "user", "content": [{ss.TEXT: prompt}]}]
-        )
-        output_message = response[ss.OUTPUT][ss.MESSAGE]
-        content = output_message[ss.CONTENT]
-        self.logger.info('content',content)
-        xml_code_response = content[0][ss.TEXT]
-        self.logger.info(f'code:\n {xml_code_response}')
-        code = self.extract_python_code(xml_code_response)
-        if code is None:
-            raise SnowchainException("Claude did not return code inside <python> tags.")
-        
-        self.logger.info(f"Generated code:\n{code}")
-        
-        result = self.execute_python_code(code, {"pd": pd, "table_data": table_data})
-        self.logger.info(f'\n\n result: {result}')
-        return result
-
     '''
     def get_salesforce_cols(self, object_type, object_identifier):
         salesforce_obj = salesforceextract.SForce()
@@ -206,6 +177,17 @@ get_all_columns_of_a_table in src/infschema/columns.py
     def find_privileges(self, object_type, object_identifier,database="NONE",schema="NONE"):
         privilege_obj = Privilege(session=self.sf_session,logger=self.logger,object_type=object_type,object_identifier=object_identifier,database=database,schema=schema)
         return f'Available privilege options are: {privilege_obj.find_privileges()}'
+
+    def create_cdc(self,db,table_name):
+        conn=SSConn(logger=self.logger)
+        conn=conn.get_sql_server_connection()
+        operation=SSOpr(connection=conn,logger=logger)
+        cdc_inst=CDC(session=self.sf_session,logger=self.logger)
+        df, from_lsn, to_lsn = operation.get_incremental_data(cdc_inst=cdc_inst, table_name=table_name, db_name=db)
+        df = df.drop(columns=['__$start_lsn','__$seqval','__$update_mask','__$operation']) 
+        util.write_pandas_df_to_snowflake(session=self.sf_session, df=df, database='SQL_SERVER_CDC_DB', schema='CDC_LANDING', table=table_name) 
+        cdc_inst.log_cdc(server='MSSQL', **{'DATABASE':db, 'OBJECT':table_name, 'LSN':to_lsn.hex().upper()})
+        return "incremental data from SQL Server to Snowflake pulled successfully"
     
     def grant_privilege_on_object(self, object_type, object_identifier, privilege, role,database_name="NONE",schema="NONE"):
         self.logger.info(f" Inside to grant privilege on  {object_type}: {object_identifier}, privilege:{privilege} to role : {role} at db.schema: {database_name}.{schema}")

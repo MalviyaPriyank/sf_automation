@@ -9,8 +9,8 @@ SECRET_KEY = 'USV5co+PxWqhOF6njUxC2Dn9gu6SIxPfcE9tAPKA' #'ys7JM4BClYXWTpjzOv1C2a
 TEMPERATURE = 0
 REGION = 'us-west-2'
 BEDROCK_RUNTIME_SERVICE = 'bedrock-runtime'
-CHAT_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'
-KB_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'
+CHAT_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
+KB_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'#'us.anthropic.claude-3-7-sonnet-20250219-v1:0'#'global.anthropic.claude-sonnet-4-20250514-v1:0'#'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 EMBEDDINGS_MODEL_ID ='us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 
 ALLOWED_OBJS = helper.get_obj_names()
@@ -148,6 +148,78 @@ tools = {
         },
         {
             "toolSpec": {
+                "name":"find_privileges",
+                "description":"retrieves list of allowed privileges on an object",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                          "database": {
+                                "type":"string",
+                                "description":"name for the database. Default value is NONE"
+                            },
+                          "schema": {
+                                "type":"string",
+                                "description":"name for the schema. Default value is NONE"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier","database","schema"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"grant_privilege_on_object",
+                "description":"grants privileges on an object. use find_privileges tool to get the list of allowed privileges on the object. you then choose from the retrieved list of allowed privileges by interpreting user request. for example if user request interprets to USAGE privilege, you select USAGE, you dont select the entire list of privileges returned from find_privileges tool but select one from the list that applies.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "object_type": {
+                                "type":"string",
+                                "description":"alowed values are DATABASE, SCHEMA, WAREHOUSE, STAGE, TABLE, FILEFORMAT, SNOWPIPE, STREAM, TASK, USER"
+                            },
+                            "object_identifier": {
+                                "type":"string",
+                                "description":"name for the object"
+                            },
+                            "role": {
+                                "type":"string",
+                                "description":"role to grant privileges to"
+                            },
+                            "privilege": {
+                                "type":"string",
+                                "description":"one privilege to be granted from the list of allowed privileges"
+                            },
+                            "database_name": {
+                                "type":"string",
+                                "description":"name of database. this is set to 'None' if object type is DATABASE, otherwise request it from user."
+                            },
+                            "schema": {
+                                "type":"string",
+                                "description":"name for the schema. Default value is NONE"
+                            },
+                        },
+                        "required":[
+                            "object_type","object_identifier","role","privilege","database_name","schema"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
                 "name":"deploy_all_dev_to_test",
                 "description":"deploys all objects from dev environment to test environment.",
                 "inputSchema": {
@@ -158,6 +230,30 @@ tools = {
                                 "type":"string",
                                 "description":"user query"
                             }
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"create_cdc",
+                "description":"pull incremental data from SQL Server to Snowflake.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "db": {
+                                "type":"string",
+                                "description":"user provided database name"
+                            },
+                            "table_name": {
+                                "type":"string",
+                                "description":"user provided table name"
+                            },
                         },
                         "required":[
                             "query"

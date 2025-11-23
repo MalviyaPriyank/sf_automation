@@ -238,5 +238,29 @@ tools = {
                 }
             }
         },
+        {
+            "toolSpec": {
+                "name":"create_cdc",
+                "description":"pull incremental data from SQL Server to Snowflake.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "db": {
+                                "type":"string",
+                                "description":"user provided database name"
+                            },
+                            "table_name": {
+                                "type":"string",
+                                "description":"user provided table name"
+                            },
+                        },
+                        "required":[
+                            "query"
+                        ]
+                    }
+                }
+            }
+        },
     ]
 }
