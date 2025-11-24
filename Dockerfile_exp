@@ -1,0 +1,37 @@
+# ===== FRONTEND BUILD =====
+FROM node:20 AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+COPY frontend ./
+RUN npm install && npm run build
+
+
+# ===== BACKEND BUILD =====
+FROM python:3.11-slim AS backend-build
+WORKDIR /app/backend
+COPY backend/server.py .
+
+
+# ===== FINAL IMAGE =====
+FROM debian:stable-slim
+
+# Install python + nginx
+RUN apt-get update && \
+    apt-get install -y python3 nginx && \
+    apt-get clean
+
+WORKDIR /app
+
+# Copy backend
+COPY --from=backend-build /app/backend /app/backend
+
+# Copy frontend build
+COPY --from=frontend-build /app/frontend/dist /app/frontend
+
+# Copy nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+# Start backend and nginx
+CMD python3 /app/backend/server.py & nginx -g "daemon off;"

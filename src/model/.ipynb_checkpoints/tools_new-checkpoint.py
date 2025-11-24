@@ -62,12 +62,10 @@ class LLMTools:
                     root,
                     bedrock_obj,
                     user_chat_inst,
-                    retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
                     chat_model_id=llm_config.CHAT_MODEL_ID
                  ):
-        self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
         self.query_count=0
         self.root = root
@@ -82,30 +80,29 @@ class LLMTools:
                                     aws_access_key_id=llm_config.ACCESS_KEY,
                                     aws_secret_access_key=llm_config.SECRET_KEY,
                                     region_name=self.region)
-        self.obj_class_mapping = {ss.ACCOUNT_OBJ: account.Admin(self.sf_session, logger=self.logger),
+        self.obj_class_mapping = {#ss.ACCOUNT_OBJ: account.Admin(self.sf_session, logger=self.logger),
                                   ss.DATABASE_OBJ: database.Database(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.EXTERNAL_STAGE_OBJ: externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.ROLE_OBJ: role.Role(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.SNOWPIPE_OBJ: snowpipe.Snowpipe(self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.RESOURCE_MONITOR_OBJ: resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
+                                  #ss.EXTERNAL_STAGE_OBJ: externalstage.ExternalStage(self.sf_session,self.user_id, logger=self.logger),
+                                  #ss.ROLE_OBJ: role.Role(self.sf_session,self.user_id, logger=self.logger),
+                                  #ss.COPYINTO_OBJ:copyinto.CopyInto(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.INTERNAL_STAGE_OBJ: internalstage.InternalStage(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.SNOWPIPE_OBJ: snowpipe.Snowpipe(self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.FILEFORMAT_OBJ: fileformat.FileFormat(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.RESOURCE_MONITOR_OBJ: resourcemonitor.ResourceMonitor(self.sf_session,self.user_id, logger=self.logger),
+                                  #ss.WAREHOUSE_OBJ: warehouse.Warehouse(self.sf_session,self.user_id, logger=self.logger),
                                   ss.SCHEMA_OBJ: schema.Schema(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  #'share': share.Share(self.sf_session,self.user_id, logger=self.logger),
-                                  ss.TABLE_OBJ: table.Table(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
-                                  ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id,logger=self.logger),
-                                  ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
-                                  ss.STREAM_OBJ: stream.Stream(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
-                                  ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger),
-                                  ss.USER_OBJ: user.User(self.sf_session, self.user_id, logger=self.logger)
+                                  #ss.TABLE_OBJ: table.Table(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.MASKING_POLICY_OBJ: maskingpolicy.MaskingPolicy(session=self.sf_session, user_id=self.user_id, logger=self.logger),
+                                  #ss.TASK_OBJ: task.Task(session=self.sf_session, user_id=self.user_id,logger=self.logger),
+                                  #ss.COPY_HISTORY_OBJ: copyhistory.CopyHistory(session=self.sf_session),
+                                  #ss.STREAM_OBJ: stream.Stream(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.ALERT_OBJ: alert.Alerts(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.NOTIFICATION_OBJ: notificationintegrationemail.NotificationIntegrationEmail(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.STORAGE_INTEGRATION_OBJ: storageintegration.StorageIntegration(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.STORED_PROCEDURE_OBJ: storedprocedure.StoredProcedure(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.FULL_LOAD_OBJ: fullload.FullLoad(session=self.sf_session,logger=self.logger),
+                                  #ss.CORTEX_SEARCH_OBJ: cortexsearch.CortexSearch(session=self.sf_session,user_id=self.user_id,logger=self.logger),
+                                  #ss.USER_OBJ: user.User(self.sf_session, self.user_id, logger=self.logger)
                                   }
     
     def __increment_query_count(self):
@@ -181,7 +178,7 @@ class LLMTools:
     def create_cdc(self,db,table_name):
         conn=SSConn(logger=self.logger)
         conn=conn.get_sql_server_connection()
-        operation=SSOpr(connection=conn,logger=logger)
+        operation=SSOpr(connection=conn,logger=self.logger)
         cdc_inst=CDC(session=self.sf_session,logger=self.logger)
         df, from_lsn, to_lsn = operation.get_incremental_data(cdc_inst=cdc_inst, table_name=table_name, db_name=db)
         df = df.drop(columns=['__$start_lsn','__$seqval','__$update_mask','__$operation']) 

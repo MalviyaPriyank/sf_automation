@@ -14,3 +14,7 @@ matplotlib
 seaborn
 scikit-learn
 simple-salesforce
+pyodbc
+fastapi
+uvicorn
+requests

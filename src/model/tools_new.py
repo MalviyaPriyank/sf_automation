@@ -62,12 +62,10 @@ class LLMTools:
                     root,
                     bedrock_obj,
                     user_chat_inst,
-                    retrieval_workflow,
                     region=llm_config.REGION,
                     temperature=llm_config.TEMPERATURE,
                     chat_model_id=llm_config.CHAT_MODEL_ID
                  ):
-        self.retrieval_workflow = retrieval_workflow
         self.sf_session = sf_session
         self.query_count=0
         self.root = root
