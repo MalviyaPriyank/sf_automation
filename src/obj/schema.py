@@ -343,7 +343,10 @@ class Schema(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE OR REPLACE SCHEMA {self.attr.database}.{self.attr.name[0]} "
+        self.qry = f"""
+        CREATE OR REPLACE SCHEMA 
+        {self.attr.database}.{self.attr.name[0]} 
+        """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :

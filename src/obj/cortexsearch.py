@@ -11,33 +11,6 @@ from src.validation.validateobject import ValidateObject as vo
 from src.validation.validatevalue import ValidateValue as vv
 
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        #if vo.database_exist(value):
-        instance._database = value
-
-    def __del__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        #if vo.schema_exist(instance._database,value):
-        instance._schema = value
-
-    def __del__(self,instance):
-        del instance._schema
-
-
 class Name:
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -86,8 +59,8 @@ class BaseTable:
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
         vo.table_exist(session=instance.parent.session,
-                       database_name=instance._database,
-                       schema_name=instance._schema,
+                       database_name=instance.parent.attr.database,
+                       schema_name=instance.parent.attr.schema,
                        table_name=value)
         instance._base_table = value
 
@@ -104,8 +77,8 @@ class On:
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
         vo.column_exist(session=instance.parent.session,
-                        database=instance._database,
-                        schema=instance._schema,
+                        database=instance.parent.attr.database,
+                        schema=instance.parent.attr.schema,
                         table=instance._base_table,
                         column=value)
         instance._on = value
@@ -128,8 +101,8 @@ class Attributes:
                    attr_name=self.__class__.__name__)
         for i in range(0,len(value)):
             vo.column_exist(session=instance.parent.session,
-                            database=instance._database,
-                            schema=instance._schema,
+                            database=instance.parent.attr.database,
+                            schema=instance.parent.attr.schema,
                             table=instance._base_table,
                             column=value[i])
             if i != len(value)-1:
@@ -239,25 +212,10 @@ class ServiceQuery:
     def __delete__(self,instance):
         del instance._service_query
 
-
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        instance._comment = value
-
-
-    def __delete__(self,instance):
-        del instance._comment
-
-
 class CortexSearchAttrs:
     def __init__(self,parent):
         self.parent=parent
     name=Name()
-    database=Database()
-    schema=Schema()
     on=On()
     attributes=Attributes()
     warehouse=Warehouse()
@@ -267,13 +225,13 @@ class CortexSearchAttrs:
     service_query=ServiceQuery()
     target_lag_unit=TargetLagUnit()
     base_table=BaseTable()
-    comment=Comment()
 
 class CortexSearch(BaseObject):
     def __init__(self,session,user_id,logger):
-        self.attr=CortexSearchAttrs(self)
-        self.session=session
         self.logger=logger.getChild(self.__class__.__name__)
+        super().__init__(session=session,user_id=user_id,logger=logger,database_required=True,schema_required=True)
+        self.attr=CortexSearchAttrs(self)
+
         self.user_id=user_id
 
     def set_name(self,val):
@@ -300,17 +258,8 @@ class CortexSearch(BaseObject):
     def set_target_lag_unit(self,val):
         self.attr.target_lag_unit=val
 
-    def set_database(self,val):
-        self.attr.database=val
-
-    def set_schema(self,val):
-        self.attr.schema=val
-
     def set_service_query(self,val):
         self.attr.service_query=val
-
-    def set_comment(self,val):
-        self.attr.comment=val
 
     def set_base_table(self,val):
         self.attr.base_table=val
@@ -337,7 +286,7 @@ class CortexSearch(BaseObject):
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.TARGET_LAG} = {self.attr.target_lag}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -393,9 +342,9 @@ class Operation:
         obj_inst=CortexSearch(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
@@ -403,20 +352,6 @@ class Operation:
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
-
-        obj_inst.logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.logger.info(f"{kwargs[tags.DATABASE]}")
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
-
-        obj_inst.logger.info("set schema")
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.logger.info(f"{kwargs[tags.SCHEMA]}")
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
 
         obj_inst.logger.info("set base table")
         if tags.BASE_TABLE in kwargs.keys():
@@ -465,13 +400,7 @@ class Operation:
         if tags.INITIALIZE in kwargs.keys():
             obj_inst.set_initialize(kwargs[tags.INITIALIZE])
         else:
-            obj_inst.set_initialize('NONE')
-
-        obj_inst.logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')       
+            obj_inst.set_initialize('NONE') 
 
         obj_inst.logger.info("set QUERY")
         if tags.SERVICE_QUERY in kwargs.keys():

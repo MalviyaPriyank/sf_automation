@@ -300,7 +300,10 @@ class Database(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_account_qry(self):
-        self.qry = f"CREATE OR REPLACE DATABASE  {self.attr.name[0]} "
+        self.qry = f"""
+        CREATE OR REPLACE DATABASE  
+        {self.attr.name[0]} 
+        """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :

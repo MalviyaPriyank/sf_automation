@@ -179,7 +179,7 @@ class ComputePool(BaseObject):
     def set_auto_resume(self, v): self.attr.auto_resume = v
     def set_initially_suspended(self, v): self.attr.initially_suspended = v
     def set_auto_suspend_secs(self, v): self.attr.auto_suspend_secs = v
-    def set_comment(self, v): self.attr.comment = v
+
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -239,7 +239,7 @@ class ComputePool(BaseObject):
                 self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.AUTO_SUSPEND_SECS} = {self.attr.auto_suspend_secs}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER COMPUTE POOL {self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -269,48 +269,53 @@ class Operation:
 
         obj_inst.set_base_attributes(kwargs=kwargs)
 
-        obj_inst.logger.info(f"set name {kwargs[tags.NAME]}")
+
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
         obj_inst.logger.info(f"set name {obj_inst.attr.name}")
 
-        obj_inst.logger.info(f"set min_nodes {kwargs[tags.MIN_NODES]}")
+
         if tags.MIN_NODES in kwargs.keys():
             obj_inst.set_min_nodes(kwargs[tags.MIN_NODES])
         else:
             obj_inst.set_min_nodes('NONE')
+        obj_inst.logger.info(f"set min_nodes {obj_inst.attr.min_nodes}")
 
-        obj_inst.logger.info(f"set max_nodes {kwargs[tags.MAX_NODES]}")
+
         if tags.MAX_NODES in kwargs.keys():
             obj_inst.set_max_nodes(kwargs[tags.MAX_NODES])
         else:
             obj_inst.set_max_nodes('NONE')
+        obj_inst.logger.info(f"set max_nodes {obj_inst.attr.max_nodes}")
 
-        obj_inst.logger.info(f"set instance_family {kwargs[tags.INSTANCE_FAMILY]}")
+
         if tags.INSTANCE_FAMILY in kwargs.keys():
             obj_inst.set_instance_family(kwargs[tags.INSTANCE_FAMILY])
         else:
             obj_inst.set_instance_family('NONE')
+        obj_inst.logger.info(f"set instance_family {obj_inst.attr.instance_family}")
 
-        obj_inst.logger.info(f"set auto_resume {kwargs[tags.AUTO_RESUME]}")
         if tags.AUTO_RESUME in kwargs.keys():
             obj_inst.set_auto_resume(kwargs[tags.AUTO_RESUME])
         else:
             obj_inst.set_auto_resume('NONE')
+        obj_inst.logger.info(f"set auto_resume {obj_inst.attr.auto_resume}")
 
-        obj_inst.logger.info(f"set initially_suspended {kwargs[tags.INITIALLY_SUSPENDED]}")
+
         if tags.INITIALLY_SUSPENDED in kwargs.keys():
             obj_inst.set_initially_suspended(kwargs[tags.INITIALLY_SUSPENDED])
         else:
             obj_inst.set_initially_suspended('NONE')
+        obj_inst.logger.info(f"set initially_suspended {obj_inst.attr.initially_suspended}")
 
-        obj_inst.logger.info(f"set auto_suspend_secs {kwargs[tags.AUTO_SUSPEND_SECS]}")
+
         if tags.AUTO_SUSPEND_SECS in kwargs.keys():
             obj_inst.set_auto_suspend_secs(kwargs[tags.AUTO_SUSPEND_SECS])
         else:
             obj_inst.set_auto_suspend_secs('NONE')
+        obj_inst.logger.info(f"set auto_suspend_secs {obj_inst.attr.auto_suspend_secs}")
 
         logger.info('prepare query')
         obj_inst.prepare_query()

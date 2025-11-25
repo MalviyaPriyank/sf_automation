@@ -20,30 +20,6 @@ from .baseobj import BaseObject
 from vars.obj.table.gvtable import Table as tags
 from src.usr.user import ChatHistory
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        #if vo.database_exist(value):
-        instance._database  = value
-
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        #if vo.schema_exist(instance._database,value):
-        instance._schema = value
-
-    def __delete__(self,instance):
-        del instance._schema
-
 class Name:
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -54,7 +30,12 @@ class Name:
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_database(session=instance.parent.session, database_name=name)
+            vo.is_new_table(
+                session=instance.parent.session,
+                database_name=instance.parent.attr.database,
+                schema_name=instance.parent.attr.schema,
+                table_name=name
+            )
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -70,8 +51,18 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.database_exist(session=instance.parent.session,database_name=old_name)
-                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                vo.table_exist(
+                    session=instance.parent.session,
+                    database_name=instance.parent.attr.database,
+                    schema_name=instance.parent.attr.schema,
+                    table_name=old_name
+                )
+                vo.is_new_table(
+                    session=instance.parent.session,
+                    database_name=instance.parent.attr.database,
+                    schema_name=instance.parent.attr.schema,
+                    table_name=new_name
+                )
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -114,10 +105,6 @@ class TableAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database = Database()
-
-    schema = Schema()
-
     name = Name()
 
     column_name_list = ColumnNameList()
@@ -128,14 +115,8 @@ class Table(BaseObject):
 
     def __init__(self,session,user_id,logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session=session,user_id=user_id,logger=logger)
+        super().__init__(session=session,user_id=user_id,logger=logger,database_required=True,schema_required=True)
         self.attr = TableAttrs(self)
-
-    def set_database(self,database):
-        self.attr.database = database
-
-    def set_schema(self,schema):
-        self.attr.schema = schema
 
     def set_name(self,name):
         self.attr.name = name
@@ -245,19 +226,7 @@ class Operation:
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
-
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database(kwargs[tags.DATABASE])
-
-        logger.info("set schema")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         logger.info("set name")
         if tags.NAME in kwargs.keys():

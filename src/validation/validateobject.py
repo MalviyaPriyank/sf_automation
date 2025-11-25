@@ -101,9 +101,9 @@ class ValidateObject:
             raise DuplicateObject('PIPE', schema_name)
 
     @staticmethod 
-    def is_new_table(session,database_name,schema_name):
+    def is_new_table(session,database_name,schema_name,table_name):
         tbl_inst = tbl(session=session)
-        if tbl_inst.is_new_table(database_name,schema_name):
+        if tbl_inst.is_new_table(db_name=database_name,schema_name=schema_name,table_name=table_name):
             return True
         else:
             raise DuplicateObject('TABLE', schema_name)
@@ -134,6 +134,8 @@ class ValidateObject:
         #logger.info(f" validating if  {object_type} {object_name} exist")
         if object_type == "MASKINGPOLICY":
             qry="SHOW MASKING POLICIES"
+        elif object_type=="NETWORKPOLICY":
+            qry="SHOW NETWORK POLICIES"
         elif object_type=="EXTERNALACCESSINTEGRATION":
             qry="SHOW NETWORK RULES"
         elif object_type=="AUTHENTICATIONPOLICY":
@@ -188,6 +190,8 @@ class ValidateObject:
             qry="SHOW MASKING POLICIES"
         elif object_type=="FAILOVER GROUP":
             qry="SHOW FAILOVER GROUPS"
+        elif object_type=="NETWORKPOLICY":
+            qry="SHOW NETWORK POLICIES"
         elif object_type=="AUTHENTICATIONPOLICY":
             qry="SHOW AUTHENTICATION POLICIES"
         elif object_type=="COMPUTEPOOL":

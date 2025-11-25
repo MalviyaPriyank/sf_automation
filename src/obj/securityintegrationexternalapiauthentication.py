@@ -23,7 +23,11 @@ class Name:
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_database(session=instance.parent.session, database_name=name)
+            vo.is_new_object(
+                session=instance.parent.session,
+                object_type="SECURITY INTEGRATION",
+                object_name=name
+            )
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -39,8 +43,16 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.database_exist(session=instance.parent.session,database_name=old_name)
-                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                vo.object_exist(
+                    session=instance.parent.session,
+                    object_type="SECURITY INTEGRATION",
+                    object_name=old_name
+                )
+                vo.is_new_object(
+                    session=instance.parent.session,
+                    object_type="SECURITY INTEGRATION",
+                    object_name=new_name
+                )
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -249,19 +261,6 @@ class OauthRefreshTokenValidity:
     def __delete__(self,instance):
         del instance._oauth_refresh_token_validity
 
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._comment="NONE"
-        else:
-            instance._comment=f"'{value}'"
-            
-    def __delete__(self,instance):
-        del instance._comment
-
 class SecurityIntegrationAWSAttrs:
     def __init__(self,parent):
         self.parent=parent
@@ -279,12 +278,12 @@ class SecurityIntegrationAWSAttrs:
     oauth_allowed_scopes=OauthAllowedScopes()
     oauth_authorization_endpoint=OauthAuthorizationEndpoint()
     oauth_refresh_token_validity=OauthRefreshTokenValidity()
-    comment=Comment()
+
 
 class SecurityIntegrationAWS(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False,schema_required=False)
         self.attr=SecurityIntegrationAWSAttrs(self)
 
     def set_name(self,val):
@@ -329,9 +328,6 @@ class SecurityIntegrationAWS(BaseObject):
     def set_oauth_refresh_token_validity(self,val):
         self.attr.oauth_refresh_token_validity=val
 
-    def set_comment(self, val):
-        super().set_comment(val)
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -353,7 +349,7 @@ class SecurityIntegrationAWS(BaseObject):
             if attribute_tag == tags.OAUTH_REFRESH_TOKEN_VALIDITY:
                 self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
             if attribute_tag == tags.COMMENT:
-                self.flag_dic[attribute_tag] = 1 if getattr(self.base_attrs, attribute_name) != "NONE" else 0
+                self.flag_dic[attribute_tag] = 1 if getattr(self.attr, attribute_name) != "NONE" else 0
         set_flag(tags.OAUTH_TOKEN_ENDPOINT,"_oauth_token_endpoint")
         set_flag(tags.OAUTH_CLIENT_AUTH_METHOD,"_oauth_client_auth_method")
         set_flag(tags.OAUTH_CLIENT_ID,"_oauth_client_id")
@@ -362,13 +358,13 @@ class SecurityIntegrationAWS(BaseObject):
         set_flag(tags.OAUTH_ALLOWED_SCOPES,"_oauth_allowed_scopes")
         set_flag(tags.OAUTH_AUTHORIZATION_ENDPOINT,"_oauth_authorization_endpoint")
         set_flag(tags.OAUTH_REFRESH_TOKEN_VALIDITY,"_oauth_refresh_token_validity")     
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
 
 
     def alter_object(self):        
         for prop in self.property_lst:
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -411,7 +407,7 @@ class SecurityIntegrationAWS(BaseObject):
                 if prop==tags.OAUTH_REFRESH_TOKEN_VALIDITY:
                     self.qry= f" {self.qry} {tags.OAUTH_REFRESH_TOKEN_VALIDITY} = {self.attr.oauth_refresh_token_validity}"
                 if prop==tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.base_attrs.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -433,7 +429,7 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
@@ -510,12 +506,6 @@ class Operation:
             obj_inst.set_oauth_refresh_token_validity(kwargs[tags.OAUTH_REFRESH_TOKEN_VALIDITY])
         else:
             obj_inst.set_oauth_refresh_token_validity('NONE')
-
-        obj_inst.logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()

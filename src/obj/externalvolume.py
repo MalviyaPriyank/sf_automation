@@ -386,7 +386,6 @@ class ExternalVolume(BaseObject):
     def set_aws_secret_key(self,value):self.attr.aws_secret_key=value
     def set_storage_end_point(self,value):self.attr.storage_end_point=value
     def set_allow_writes(self,value): self.attr.allow_writes=value
-    def set_comment(self, val):super().set_comment(val=val)
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -468,7 +467,7 @@ class ExternalVolume(BaseObject):
         if tags.ALLOW_WRITES in self.property_lst:
             self.qry+= f" {tags.ALLOW_WRITES} = {self.attr.allow_writes} "
         if tags.COMMENT in self.property_lst:
-            self.qry+= f" {tags.COMMENT} = {self.attr.comment} "
+            self.qry+= f" {tags.COMMENT} = '{self.attr.comment}' "
 
     def alter_object(self):
         for prop in self.property_lst:
@@ -646,8 +645,8 @@ class Operation:
         obj_inst.write_file_to_git(
             object_name=obj_inst.attr.name[0],
             object_type=obj_inst.object_type,
-            object_database='NA',
-            object_schema='NA'
+            object_database=obj_inst.attr.database,
+            object_schema=obj_inst.attr.schema
         )
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],

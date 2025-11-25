@@ -219,9 +219,6 @@ class EventTable(BaseObject):
     def set_default_ddl_collation(self,value):
         self.attr.default_ddl_collation=value
 
-    def set_comment(self, value):
-        self.attr.comment=value
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -263,7 +260,7 @@ class EventTable(BaseObject):
                 if prop == tags.DEFAULT_DDL_COLLATION:
                     self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = '{self.attr.default_ddl_collation}' "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 
     def alter_object(self):        
         for prop in self.property_lst:
@@ -283,7 +280,7 @@ class EventTable(BaseObject):
                 self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__} {self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:

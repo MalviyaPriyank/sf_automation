@@ -19,7 +19,11 @@ class Name:
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_database(session=instance.parent.session, database_name=name)
+            vo.is_new_object(
+                session=instance.parent.session,
+                object_type=instance.parent.__class__.__name__,
+                object_name=name
+            )
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
                 and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -35,8 +39,16 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.database_exist(session=instance.parent.session,database_name=old_name)
-                vo.is_new_database(session=instance.parent.session,database_name=new_name)
+                vo.object_exist(
+                    session=instance.parent.session,
+                    object_type=instance.parent.__class__.__name__,
+                    object_name=old_name
+                )
+                vo.is_new_object(
+                    session=instance.parent.session,
+                    object_type=instance.parent.__class__.__name__,
+                    object_name=new_name
+                )
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -172,14 +184,6 @@ class BlockedNetworkRuleDatabase:
     def __delete__(self, instance):
         del instance._blocked_network_rule_database
 
-class Comment:
-    def __get__(self, instance, owner):
-        return instance._comment
-    def __set__(self, instance, value):
-        instance._comment = f"COMMENT = '{value}'"
-    def __delete__(self, instance):
-        del instance._comment
-
 
 class NetworkPolicyAttrs:
     def __init__(self,parent):
@@ -193,15 +197,14 @@ class NetworkPolicyAttrs:
     blocked_network_rule_list = BlockedNetworkRuleList()
     allowed_ip_list = AllowedIPList()
     blocked_ip_list = BlockedIPList()
-    comment = Comment()
 
 
 class NetworkPolicy(BaseObject):
     def __init__(self, session, user_id, logger):
-        self.attr = NetworkPolicyAttrs(self)
-        self.session = session
-        self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)
+        super().__init__(session=session,user_id=user_id,logger=logger,database_required=False,schema_required=False)
+        self.attr = NetworkPolicyAttrs(self)
+
 
     # setter methods
     def set_name(self, val=None):
@@ -301,31 +304,6 @@ class NetworkPolicy(BaseObject):
                 self.property_lst.append(tags.NAME)
             self.alter_object()
 
-    def create_object(self, *largs, **kwargs):
-        """
-        kwargs expects:
-          tags.IS_CREATE : "TRUE" / "FALSE"
-          tags.NAME : [name, new_name?]
-          tags.ALLOWED_NETWORK_RULE_LIST : list or single
-          tags.BLOCKED_NETWORK_RULE_LIST : list or single
-          tags.ALLOWED_IP_LIST : list or single
-          tags.BLOCKED_IP_LIST : list or single
-          tags.COMMENT : comment string
-          tags.TAG_CLAUSE : dict of tag: value
-        """
-        self.logger.info(f"Operate on {self.__class__.__name__}, create flag : {kwargs.get(tags.IS_CREATE)}")
-        self.is_create = kwargs.get(tags.IS_CREATE)
-        self.set_name(kwargs.get(tags.NAME))
-        self.set_allowed_network_rule_list(kwargs.get(tags.ALLOWED_NETWORK_RULE_LIST))
-        self.set_blocked_network_rule_list(kwargs.get(tags.BLOCKED_NETWORK_RULE_LIST))
-        self.set_allowed_ip_list(kwargs.get(tags.ALLOWED_IP_LIST))
-        self.set_blocked_ip_list(kwargs.get(tags.BLOCKED_IP_LIST))
-        self.set_comment(kwargs.get(tags.COMMENT))
-        self.set_tag_clause(kwargs.get(tags.TAG_CLAUSE))
-
-        self.prepare_query()
-        self.execute_final_query()
-
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
@@ -334,7 +312,7 @@ class Operation:
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
@@ -366,11 +344,6 @@ class Operation:
         else:
             obj_inst.set_blocked_ip_list('NONE')
 
-        obj_inst.logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
 
         logger.info('prepare query')
         obj_inst.prepare_query()
@@ -381,8 +354,8 @@ class Operation:
         logger.info('create deployment entry')
         obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
                                    object_type=obj_inst.__class__.__name__,
-                                   object_database='NA',
-                                   object_schema='NA')
+                                   object_database=obj_inst.attr.database,
+                                   object_schema=obj_inst.attr.schema)
         
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                            object_identifier=obj_inst.attr.name[0],

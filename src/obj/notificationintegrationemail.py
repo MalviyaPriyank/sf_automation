@@ -155,20 +155,6 @@ class DefaultSubject:
     def __delete__(self,instance):
         del instance._default_subject
 
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        if value=='NONE':
-            instance._comment=value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._comment = f"'{value}'"
-
-    def __delete__(self,instance):
-        del instance._comment
-
 class NotificationIntegrationEmailAttr:
     def __init__(self,parent):
         self.parent = parent
@@ -179,13 +165,12 @@ class NotificationIntegrationEmailAttr:
     allowed_recipients = AllowedRecipients()
     default_recipients = DefaultRecipients()
     default_subject = DefaultSubject()
-    comment = Comment()
 
 
 class NotificationIntegrationEmail(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False,schema_required=False)
         self.attr = NotificationIntegrationEmailAttr(self)
 
     def set_name(self, value):
@@ -206,9 +191,6 @@ class NotificationIntegrationEmail(BaseObject):
     def set_default_subject(self, value):
         self.attr.default_subject = value
 
-    def set_comment(self, value):
-        self.attr.comment = value
-
     def set_object_properties_flag(self):
         self.flag_dic = {}
 
@@ -218,7 +200,7 @@ class NotificationIntegrationEmail(BaseObject):
         set_flag(gv._allowed_recepients_tag,"_allowed_recipients")
         set_flag(gv._default_recepients_tag,"default_recipients")
         set_flag(gv._default_subject_tag,"_default_subject")
-        set_flag(gv._comment_tag,"_comment")
+        set_flag(gv._comment_tag,"comment")
 
 
     def check_properties_to_set(self): 
@@ -240,7 +222,7 @@ class NotificationIntegrationEmail(BaseObject):
                 if prop == gv._default_subject_tag:
                     self.qry = f" {self.qry} {gv._default_subject_tag} = {self.attr.default_subject} "
                 if prop == gv._comment_tag:
-                    self.qry = f" {self.qry} {gv._comment_tag} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {gv._comment_tag} = '{self.attr.comment}' "
     
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -251,18 +233,6 @@ class NotificationIntegrationEmail(BaseObject):
     def create_notification_integration(self):
         self.execute_final_query()
 
-    def create_object(self,*largs,**kwargs):
-
-        self.set_name(kwargs[gv._name_tag])
-        self.set_enabled(kwargs[gv._enabled_tag])
-        self.set_type(kwargs[gv._type_tag])
-        self.set_allowed_recipients(kwargs[gv._allowed_recepients_tag])
-        self.set_default_recipients(kwargs[gv._default_recepients_tag])
-        self.set_default_subject(kwargs[gv._default_subject_tag])
-        self.set_comment(kwargs[gv._comment_tag])
-
-        self.prepare_query()
-        self.create_notification_integration()
 
 class Operation:
     @staticmethod
@@ -272,7 +242,7 @@ class Operation:
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         logger.info(f"set name {kwargs[tags.NAME]}")
         if tags.NAME in kwargs.keys():
@@ -312,13 +282,6 @@ class Operation:
             obj_inst.set_default_subject(kwargs[tags.DEFAULT_SUBJECT])
         else:
             obj_inst.set_default_subject('NONE')
-
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
-
 
         logger.info('prepare query')
         obj_inst.prepare_query()

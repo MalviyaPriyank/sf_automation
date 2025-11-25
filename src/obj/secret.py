@@ -5,7 +5,6 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../validation'))
 
-from vars.gvobject import ApiIntegration as gv
 from validation.validatevalue import ValidateValue as vv
 from validation.validateobject import ValidateObject as vo
 from .baseobj import BaseObject

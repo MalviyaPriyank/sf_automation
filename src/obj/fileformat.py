@@ -1174,7 +1174,7 @@ class FileFormat(BaseObject):
                 if prop == tags.DISABLE_AUTO_CONVERT:
                     self.qry = f" {self.qry} {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert} "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 
     def alter_object(self):
         alter_object_name='FILE FORMAT'

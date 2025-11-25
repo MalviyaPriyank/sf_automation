@@ -67,18 +67,6 @@ class FileFormat:
     def __delete__(self,instance):
         del instance._file_format
 
-class Comment:
-    def __get__(self,instance,owner):
-        return instance._comment
-    
-    def __set__(self,instance,value):
-        if value=="NONE":
-            instance._comment=value
-        else:
-            instance._comment = f"'{value}'"
-
-    def __delete__(self,instance):
-        del instance._comment
 
 class Url:
     def __get__(self,instance,owner):
@@ -266,7 +254,6 @@ class ExternalStageAttrs:
 
     name = Name()
     file_format = FileFormat()
-    comment = Comment()
     url = Url()
     aws_access_point_arn=AwsAccessPointArn()
     storage_integration = StorageIntegration()
@@ -364,7 +351,7 @@ class ExternalStage(BaseObject):
                 self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.FILE_FORMAT} = {self.attr.file_format}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
             if prop == tags.URL:
                 self.qry = f"ALTER {alter_object_name} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
@@ -415,7 +402,7 @@ class ExternalStage(BaseObject):
                 if prop == tags.FILE_FORMAT:
                     self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
                 if prop == tags.URL:
                     self.qry = f" {self.qry} {tags.URL} = {self.attr.url} "
                 if prop == tags.AWS_ACCESS_POINT_ARN:

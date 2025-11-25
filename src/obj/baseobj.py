@@ -93,18 +93,26 @@ class BaseObject(AbstractObject):
         
         self.session.sql(self.qry).collect()
 
+    def run_query(self,qry):
+        self.session.sql(qry).collect()
+
     def set_base_attributes(self,kwargs):
         self.logger.info("Setting base attributes")
         self.is_create=kwargs[tags.IS_CREATE]
         
         if tags.DATABASE in kwargs.keys():
             self.set_database(kwargs[tags.DATABASE])
+            self.logger.info(f"setting database for {self.__class__.__name__}")
+            if self.__class__.__name__.upper()=='NETWORKRULE':
+                self.run_query(qry=f"USE DATABASE {kwargs[tags.DATABASE]}")
         else:
             self.set_database('NA')
         self.logger.info(f"DATABASE : {self.attr.database}")
 
         if tags.SCHEMA in kwargs.keys():
             self.set_schema(kwargs[tags.SCHEMA])
+            if self.__class__.__name__.upper()=='NETWORKRULE':
+                self.run_query(qry=f"USE SCHEMA {kwargs[tags.SCHEMA]}")
         else:
             self.set_schema('NA')
         self.logger.info(f"SCHEMA : {self.attr.schema}")
@@ -138,6 +146,9 @@ class BaseObject(AbstractObject):
                                       object_name=object_name)
 
     def write_file_to_git(self,object_name,object_type,object_database,object_schema):
+        object_database=object_database.upper()
+        object_schema=object_schema.upper()
+        object_name=object_name.upper()
         self.logger.info(f" BEGIN: write_file_to_git")
         commit_msg=f"Modify {object_type} {object_name} by {self.user_id}"
         self.logger.info(f"{commit_msg}")
@@ -149,9 +160,6 @@ class BaseObject(AbstractObject):
             filepath=f"Database/{object_name}/DDL/{object_name}.sql"
         elif object_database =='NA' and object_schema == 'NA':
             filepath=f"{object_type}/{object_name}/DDL/{object_name}.sql"
-        object_database=object_database.upper()
-        object_schema=object_schema.upper()
-        object_name=object_name.upper()
         self.logger.info(f"Writing file for {object_type} {object_name} in database {object_database} and schema {object_schema} to repo")
         self.logger.info("Before cloning")
         repo = Repository(self.logger)

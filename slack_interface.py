@@ -65,9 +65,9 @@ def run(body, say):
         user_session.register_session(user,session_state)
         chat_inst=ChatHistory(user=user,session=user_session)
         bedrock_obj = Bedrock()
-        retrieval_workflow = bedrock_obj.get_retriever_obj()
+        #retrieval_workflow = bedrock_obj.get_retriever_obj()
         tools = LLMTools(sf_session=session_state,
-                         retrieval_workflow = retrieval_workflow,
+                         #retrieval_workflow = retrieval_workflow,
                          root = root, 
                          logger=logger, 
                          bedrock_obj=bedrock_obj,

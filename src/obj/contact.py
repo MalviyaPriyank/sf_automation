@@ -53,32 +53,6 @@ class Name:
         del instance._name
         del instance._rename_to
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        instance._database = value
-    
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        instance._schema = value
-
-    def __del__(self,instance):
-        del instance._schema
-
-
-
 class Users:
     def __get__(self, instance, owner):
         return instance._users
@@ -139,28 +113,17 @@ class Url:
     def __delete__(self, instance):
         del instance._url
 
-class Comment:
-    def __get__(self, instance, owner):
-        return instance._comment
-    def __set__(self, instance, value):
-        instance._comment = f"'{value}'"
-    def __delete__(self, instance):
-        del instance._comment
-
 class ContactAttrs:
     def __init__(self,parent):
         self.parent=parent
     name = Name()
-    database=Database()
-    schema=Schema()
     users = Users()
     email_distribution_list = EmailDistributionList()
     url = Url()
-    comment = Comment()
 
 class Contact(BaseObject):
     def __init__(self, session, user_id, logger):
-        super().__init__(session=session,user_id=user_id,logger=logger)
+        super().__init__(session=session,user_id=user_id,logger=logger,database_required=True,schema_required=True)
         self.attr = ContactAttrs(self)
         self.logger = logger.getChild(self.__class__.__name__)
 
@@ -169,7 +132,6 @@ class Contact(BaseObject):
     def set_users(self, v): self.attr.users = v
     def set_email_distribution_list(self, v): self.attr.email_distribution_list = v
     def set_url(self, v): self.attr.url = v
-    def set_comment(self, v): self.attr.comment = v
 
     # Object property flags
     def set_object_properties_flag(self):
@@ -186,7 +148,7 @@ class Contact(BaseObject):
         self.property_lst = [prop for prop, flag in self.flag_dic.items() if flag == 1]
 
     def set_create_contact_qry(self):
-        self.qry = f"CREATE CONTACT {self.base_attrs.database}.{self.base_attrs.schema}.{self.attr.name[0]} "
+        self.qry = f"CREATE CONTACT {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} "
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -196,9 +158,9 @@ class Contact(BaseObject):
                 if prop == tags.EMAIL_DISTRIBUTION_LIST:
                     self.qry = f" {self.qry} {tags.EMAIL_DISTRIBUTION_LIST} = {self.attr.email_distribution_list} "
                 if prop == tags.URL:
-                    self.qry = f" {self.qry} {tags.URL} = {self.attr.url} "
+                    self.qry = f" {self.qry} {tags.URL} = '{self.attr.url}' "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 
     def alter_object(self):        
         for prop in self.property_lst:
@@ -212,7 +174,7 @@ class Contact(BaseObject):
                 self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.URL} = {self.attr.url}"
                 self.execute_final_query()
             if prop == tags.COMMENT:
-                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = {self.attr.comment}"
+                self.qry = f"ALTER {self.__class__.__name__.upper()} {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} SET {tags.COMMENT} = '{self.attr.comment}'"
                 self.execute_final_query()
 
         if tags.NAME in self.property_lst:
@@ -237,53 +199,38 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        obj_inst.logger.info("set schema")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
-
-        obj_inst.logger.info("set schema")
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
-
-        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
+        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
 
-        obj_inst.logger.info("set users")
+        
         if tags.USERS in kwargs.keys():
             obj_inst.set_users(kwargs[tags.USERS])
         else:
             obj_inst.set_users('NONE')
+        obj_inst.logger.info(f"set users {obj_inst.attr.users}")
 
-        obj_inst.logger.info("set email_distribution_list")
+        
         if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
             obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
         else:
             obj_inst.set_email_distribution_list('NONE')
+        obj_inst.logger.info(f"set email_distribution_list {obj_inst.attr.email_distribution_list}")
 
-        obj_inst.logger.info("set url")
+        
         if tags.URL in kwargs.keys():
             obj_inst.set_url(kwargs[tags.URL])
         else:
             obj_inst.set_url('NONE')
-
-        obj_inst.logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
-
+        obj_inst.logger.info(f"set url {obj_inst.attr.url}")
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.print_query()
         
         obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
@@ -291,13 +238,13 @@ class Operation:
         obj_inst.logger.info('create deployment entry')
         obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
                                          object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.base_attrs.database,
-                                         object_schema=obj_inst.base_attrs.schema)
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
         
         obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
                                          object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.base_attrs.database,
-                                         object_schema=obj_inst.base_attrs.schema)
+                                         object_database=obj_inst.attr.database,
+                                         object_schema=obj_inst.attr.schema)
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                            object_identifier=obj_inst.attr.name[0],

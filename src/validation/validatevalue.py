@@ -138,8 +138,13 @@ class ValidateValue:
         
     @staticmethod
     def required_attribute_check(value,object_type,attr_name,*largs):
-        if value == "NONE":
-            raise IsARequiredAttribute(object_type,attr_name,largs)
+        if isinstance(value,str):
+            if value.upper() == "NONE":
+                raise IsARequiredAttribute(object_type,attr_name,largs)
+        elif isinstance(value,list):
+            if len(value) == 0:
+                raise IsARequiredAttribute(object_type,attr_name,largs)
+            
         
     @staticmethod
     def is_enclosed_in_single_quotes(value,object_type,attr_name):
