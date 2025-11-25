@@ -144,7 +144,25 @@ class BaseObject(AbstractObject):
                                       object_database=object_database,
                                       object_schema=object_schema,
                                       object_name=object_name)
-
+        
+    def write_file_to_git(self):
+        self.logger.info(f" BEGIN: write_file_to_git")
+        commit_msg=f"Modify {self.__class__.__name__} {self.attr.name[0]} by {self.user_id}"
+        self.logger.info(f"{commit_msg}")
+        if self.attr.database != 'NA' and self.attr.schema != 'NA':
+            filepath=f"Database/{self.attr.database.upper()}/Schemas/{self.attr.schema.upper()}/{self.__class__.__name__}/{self.attr.name[0]}.sql"
+        elif self.attr.database !='NA' and self.attr.schema == 'NA':
+            filepath=f"Database/{self.attr.database.upper()}/Schemas/DDL/{self.attr.name[0]}.sql"
+        elif self.attr.database =='NA' and self.attr.schema != 'NA':
+            filepath=f"Database/{self.attr.name[0]}/DDL/{self.attr.name[0]}.sql"
+        elif self.attr.database =='NA' and self.attr.schema == 'NA':
+            filepath=f"{self.__class__.__name__}/{self.attr.name[0]}/DDL/{self.attr.name[0]}.sql"
+        self.logger.info(f"Writing file for {self.attr.__class__.__name__} {self.attr.name[0]} in database {self.attr.database} and schema {self.attr.schema} to repo")
+        self.logger.info("Before cloning")
+        repo = Repository(self.logger)
+        repo.sync_repo(filepath=filepath,qry=self.qry,commit_msg=commit_msg)
+        self.logger.info(f" EXIT: write_file_to_git")
+    '''
     def write_file_to_git(self,object_name,object_type,object_database,object_schema):
         object_database=object_database.upper()
         object_schema=object_schema.upper()
@@ -165,3 +183,4 @@ class BaseObject(AbstractObject):
         repo = Repository(self.logger)
         repo.sync_repo(filepath=filepath,qry=self.qry,commit_msg=commit_msg)
         self.logger.info(f" EXIT: write_file_to_git")
+    '''

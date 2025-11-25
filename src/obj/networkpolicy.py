@@ -77,7 +77,7 @@ class AllowedNetworkRuleList:
 
         vo.object_exist(session=instance.parent.session,
                         object_type='NETWORK RULE',
-                        object_name=rules,
+                        object_name=value,
                         kwargs={
                             "DATABASE":instance._allowed_network_rule_database,
                             "SCHEMA":instance._allowed_network_rule_schema
@@ -115,7 +115,7 @@ class AllowedIPList:
         if value=="NONE":
             instance._allowed_ip_list="NONE"
         else:
-            vo.operation_on_object_not_suppported("Recommendation is to configure Network Rule with ALLOWED_NETWORK_RULE_LIST instead of setting this in network policy.")
+            vo.operation_on_object_not_suppported(f"Recommendation is to create a Network Rule and configure with ALLOWED_NETWORK_RULE_LIST instead of setting {self.__class__.__name__}.")
 
     def __delete__(self, instance):
         del instance._allowed_ip_list
@@ -127,7 +127,7 @@ class BlockedIPList:
         if value=="NONE":
             instance._blocked_ip_list="NONE"
         else:
-            vo.operation_on_object_not_suppported("Recommendation is to configure Network Rule with BLOCKED_NETWORK_RULE_LIST instead of setting this in network policy.")
+            vo.operation_on_object_not_suppported(f"Recommendation is to create a Network Rule and configure with BLOCKED_NETWORK_RULE_LIST instead of setting {self.__class__.__name__}.")
 
     def __delete__(self, instance):
         del instance._blocked_ip_list
