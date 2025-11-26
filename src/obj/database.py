@@ -478,11 +478,10 @@ class Operation:
                 #self.grant_default_privileges()
                 
                 db_inst.logger.info('create deployment entry')
-                db_inst.create_deployment_entry(object_name=db_inst.attr.name[0],object_type=db_inst.__class__.__name__,object_database='NA',object_schema='NA')
-
+                db_inst.create_deployment_entry()
                 db_inst.logger.info('writing file to git')
                 db_inst.write_file_to_git()
-                
+
                 user_chat_inst.add_to_chat_history(object_type=db_inst.__class__.__name__,
                                                 object_identifier=db_inst.attr.name[0],
                                                 qry=db_inst.qry)

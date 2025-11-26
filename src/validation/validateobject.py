@@ -201,6 +201,10 @@ class ValidateObject:
         elif object_type=="DATABASEROLE":
             database_name=kwargs["DATABASE"]
             qry=f"SHOW DATABASE ROLES IN DATABASE {database_name}"
+        elif object_type=="STOREDPROCEDURE":
+            database = kwargs['DATABASE']
+            schema=kwargs['SCHEMA']
+            qry=f"SHOW USER PROCEDURES IN SCHEMA {database}.{schema}"
         elif object_type=="EVENTTABLE":
             if "SCHEMA" not in kwargs.keys():
                 qry=f"SHOW EVENT TABLES IN DATABASE {kwargs['DATABASE']}"

@@ -300,6 +300,7 @@ class Operation:
 
         logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
+        obj_inst.write_file_to_git()
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],

@@ -36,7 +36,7 @@ class Database:
             vo.database_exist(session=instance.parent.session, database_name=value)
             instance._database = value
         else:
-            instance._database=value
+            instance._database='NA'
     
     def __delete__(self,instance):
         del instance._database
@@ -51,7 +51,7 @@ class Schema:
             vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
             instance._schema = value
         else:
-            instance._schema=value
+            instance._schema='NA'
 
     def __del__(self,instance):
         del instance._schema
@@ -135,15 +135,15 @@ class BaseObject(AbstractObject):
     def print_query(self):
         self.logger.info(f" Query : {self.qry}")
 
-    def create_deployment_entry(self,object_name,object_type,object_database,object_schema):
+    def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)
-        self.logger.info(f"Tracking for deployment database object : {object_name}")
+        self.logger.info(f"Tracking for deployment database object : {self.__class__.__name__}")
         deploy_inst.track_development(qry=self.qry,
                                       user_id=self.user_id,
-                                      object_type=object_type,
-                                      object_database=object_database,
-                                      object_schema=object_schema,
-                                      object_name=object_name)
+                                      object_type=self.__class__.__name__,
+                                      object_database=self.attr.database,
+                                      object_schema=self.attr.schema,
+                                      object_name=self.attr.name[0])
         
     def write_file_to_git(self):
         self.logger.info(f" BEGIN: write_file_to_git")

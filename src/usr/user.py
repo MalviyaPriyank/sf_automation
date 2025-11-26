@@ -58,7 +58,12 @@ class ChatHistory:
         self.work_dict[f"{object_type}"][f"{object_identifier}"]=f"{qry}"
 
     def __log_chat_details(self):
-        work_dict=json.dumps(self.work_dict).replace("'", "''")
+        # Produce valid compact JSON string
+        work_dict = json.dumps(self.work_dict)
+
+        # Escape $$ so that PARSE_JSON($$ ... $$) is safe
+        work_dict = work_dict.replace('$$', '\\$\\$')
+
         qry = f"""
         INSERT INTO db_config.sch_config.frosty_work_log (
             session_id,
@@ -72,17 +77,28 @@ class ChatHistory:
             '{self.user_name}',
             '{self.chat_id}',
             PARSE_JSON($${work_dict}$$),
-            '{self.prompt}'
+            '{self.prompt.replace("'", "''")}'
         """
-
         return qry
+
     
     def add_prompt(self,prompt):
         self.prompt=prompt
 
-    def add_to_chat_history(self,object_type,object_identifier,qry):
-        qry=qry.replace("'","''")
-        self.__add_object_to_work_dict(object_type=object_type,object_identifier=object_identifier,qry=qry)
+    def add_to_chat_history(self, object_type, object_identifier, qry):
+        cleaned = (
+            qry
+            .replace('\\', '\\\\')     # escape backslashes
+            .replace('\n', '\\n')       # escape newlines
+            .replace('$$', '\\$\\$')    # escape Snowflake $$ blocks
+        )
+
+        self.__add_object_to_work_dict(
+            object_type=object_type,
+            object_identifier=object_identifier,
+            qry=cleaned
+        )
+
 
     def store_chat_history(self,snowflake_session):
         qry=self.__log_chat_details()

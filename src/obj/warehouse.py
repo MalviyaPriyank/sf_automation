@@ -571,16 +571,15 @@ class Operation:
         
         obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
+        
+        obj_inst.logger.info('write to git')
+        obj_inst.write_file_to_git()
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                            object_identifier=obj_inst.attr.name[0],
                                            qry=obj_inst.qry)
 
-        obj_inst.logger.info('write to git')
-        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
-                                   object_type=obj_inst.__class__.__name__,
-                                   object_database='NA',
-                                   object_schema='NA')
+ 
 
 
     @classmethod

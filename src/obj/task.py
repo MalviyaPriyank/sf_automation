@@ -16,30 +16,6 @@ from .baseobj import BaseObject
 from vars.obj.task.gvtask import TaskTag as tags
 from src.usr.user import ChatHistory
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        instance._database = value
-
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session,database_name=instance._database,schema_name=value)
-        instance._schema = value
-
-    def __delete__(self,instance):
-        del instance._schema
-
 class Name:   
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -285,7 +261,7 @@ class After:
         if value == 'NONE':
             instance._after = value
         else:
-            vo.task_exist(session=instance.parent.session,database=instance._database,schema=instance._schema,task=value)
+            vo.task_exist(session=instance.parent.session,database=instance.parent.attr.database,schema=instance.parent.attr.schema,task=value)
             instance._after = value
     
     def __delete__(self,instance):
@@ -437,8 +413,6 @@ class TaskAttrs:
     def __init__(self,parent):
         self.parent = parent
 
-    database = Database()
-    schema = Schema()
     name = Name()
     definition=Sql()
     warehouse = Warehouse()
@@ -463,27 +437,17 @@ class TaskAttrs:
 
 class Task(BaseObject):
     def __init__(self, session, user_id, logger):
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
         self.attr = TaskAttrs(self)
         self.session=session
         self.user_id=user_id
         self.logger=logger.getChild(self.__class__.__name__)
-
-
-    def set_database(self,value):
-        self.attr.database = value
-
-    def set_schema(self,value):
-        self.attr.schema = value
 
     def set_name(self,name):
         self.attr.name = name
 
     def set_definition(self,definition):
         self.attr.definition = definition 
-
-    def set_database(self,database):
-        self.attr.database = database
 
     def set_warehouse(self,warehouse):
         self.attr.warehouse = warehouse
@@ -560,7 +524,7 @@ class Task(BaseObject):
         set_flag(tags.SUSPEND_TASK_AFTER_NUM_FAILURES,"_suspend_task_after_num_failures")
         set_flag(tags.ERROR_INTEGRATION,"_error_integration")
         set_flag(tags.SUCCESS_INTEGRATION,"_success_integration")
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
         set_flag(tags.AFTER,"_after")
         set_flag(tags.WHEN,"_when")
         set_flag(tags.FINALIZE,"_finalize")
@@ -681,48 +645,6 @@ class Task(BaseObject):
     def create_task(self):
         self.execute_final_query()
 
-    def create_object(self,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-        self.set_database(kwargs[tags.DATABASE])
-        self.set_schema(kwargs[tags.SCHEMA])
-        self.set_name(kwargs[tags.NAME])
-        self.set_definition(kwargs[tags.SQL])
-        self.set_warehouse(kwargs[tags.WAREHOUSE])
-        self.set_user_task_managed_initial_warehouse_size(kwargs[tags.USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE])
-        self.set_schedule(kwargs[tags.SCHEDULE])
-        self.set_config(kwargs[tags.CONFIG])
-        self.set_allow_overlapping_execution(kwargs[tags.ALLOW_OVERLAPPING_EXECUTION])
-        self.set_user_task_timeout_ms(kwargs[tags.USER_TASK_TIMEOUT_MS])
-        self.set_suspend_task_after_num_failures(kwargs[tags.SUSPEND_TASK_AFTER_NUM_FAILURES])
-        self.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
-        self.set_success_integration(kwargs[tags.SUCCESS_INTEGRATION])
-        self.set_comment(kwargs[tags.COMMENT])
-        self.set_after(kwargs[tags.AFTER])
-        self.set_when(kwargs[tags.WHEN])
-        self.set_finalize(kwargs[tags.FINALIZE])
-        self.set_task_auto_retry_attempts(kwargs[tags.TASK_AUTO_RETRY_ATTEMPTS])
-        self.set_user_task_minimum_trigger_interval_in_seconds(kwargs[tags.USER_TASK_MINIMUM_TRIGGER_INTERVAL_IN_SECONDS])
-        self.set_target_completion_interval(kwargs[tags.TARGET_COMPLETION_INTERVAL])
-        self.set_serverless_task_min_statement_size(kwargs[tags.SERVERLESS_TASK_MIN_STATEMENT_SIZE])
-        self.set_serverless_task_max_statement_size(kwargs[tags.SERVERLESS_TASK_MAX_STATEMENT_SIZE])
-        self.set_qualified_name()
-
-        self.prepare_query()
-        self.create_task()
-        self.logger.info('create deployment entry')
-        self.create_deployment_entry(object_name=self.attr.name[0],
-                                        object_type=self.__class__.__name__,
-                                        object_database=self.attr.database,
-                                        object_schema=self.attr.schema)
-
-        self.logger.info('writing file to git')
-        self.write_file_to_git(object_name=self.attr.name[0],
-                                object_type=self.__class__.__name__,
-                                object_database=self.attr.database,
-                                object_schema=self.attr.schema)
-
 
 class Operation:
     @staticmethod
@@ -732,23 +654,7 @@ class Operation:
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
-
-        # set database
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.logger.info(f"set database: {kwargs[tags.DATABASE]}")
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.logger.info(f"set database: NONE")
-            obj_inst.set_database('NONE')
-
-        # set schema
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.logger.info(f"set schema: {kwargs[tags.SCHEMA]}")
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.logger.info(f"set schema: NONE")
-            obj_inst.set_schema('NONE')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         # set name
         if tags.NAME in kwargs.keys():
@@ -838,14 +744,6 @@ class Operation:
             obj_inst.logger.info(f"set success_integration: NONE")
             obj_inst.set_success_integration('NONE')
 
-        # set comment
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.logger.info(f"set comment: {kwargs[tags.COMMENT]}")
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.logger.info(f"set comment: NONE")
-            obj_inst.set_comment('NONE')
-
         # set after
         if tags.AFTER in kwargs.keys():
             obj_inst.logger.info(f"set after: {kwargs[tags.AFTER]}")
@@ -923,10 +821,7 @@ class Operation:
                                          object_database=obj_inst.attr.database,
                                          object_schema=obj_inst.attr.schema,)
         obj_inst.logger.info("writing to git")
-        obj_inst.write_file_to_git(object_name=obj_inst.attr.name[0],
-                                         object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.attr.database,
-                                         object_schema=obj_inst.attr.schema,)
+        obj_inst.write_file_to_git()
         
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],
