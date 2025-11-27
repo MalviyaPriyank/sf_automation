@@ -258,11 +258,29 @@ class After:
         return instance._after
     
     def __set__(self,instance,value):
-        if value == 'NONE':
-            instance._after = value
-        else:
-            vo.task_exist(session=instance.parent.session,database=instance.parent.attr.database,schema=instance.parent.attr.schema,task=value)
-            instance._after = value
+        if isinstance(value,str):
+            if value == 'NONE':
+                instance._after = value
+            else:
+                vo.task_exist(session=instance.parent.session,database=instance.parent.attr.database,schema=instance.parent.attr.schema,task=value)
+                instance._after = value
+        elif isinstance(value,list):
+            val_strng=""
+            if len(value)==0:
+                instance._after='NONE'
+            else:
+                for i in range(0,len(value)):
+                    vo.task_exist(
+                        session=instance.parent.session,
+                        database=instance.parent.attr.database,
+                        schema=instance.parent.attr.schema,
+                        task=value[i]
+                    )
+                if i != len(value)-1:
+                    val_strng=val_strng + value[i] + ","
+                elif i == len(value)-1:
+                    val_strng=val_strng + value[i]
+            instance._after = val_strng
     
     def __delete__(self,instance):
         del instance._after
@@ -816,10 +834,7 @@ class Operation:
         obj_inst.execute_final_query()
 
         obj_inst.logger.info("creating deployment entry")
-        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
-                                         object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.attr.database,
-                                         object_schema=obj_inst.attr.schema,)
+        obj_inst.create_deployment_entry()
         obj_inst.logger.info("writing to git")
         obj_inst.write_file_to_git()
         

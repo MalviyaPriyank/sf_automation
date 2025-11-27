@@ -539,10 +539,12 @@ class Privilege():
 class Config():
     def __init__(self):
         pass
+
     _config_database = "DB_CONFIG"
     _config_schema = "SCH_CONFIG"
     _config_stage = "STG_INT_CONFIG"
     _deployment_stage = "STG_INT_DEPLOY"
+    _deployment_control_new="DEPLOYMENT_DTLS"
     _deployment_control_table = "DEPLOYMENT_CONTROL"
     _deployment_scripts_table = "DEPLOYMENT_SCRIPTS"
     _deployment_log_table = "DEPLOYMENT_LOG"
