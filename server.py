@@ -29,13 +29,26 @@ from snowchainexception import (
 )
 
 import os
-chat_history = []
+# chat_history = []
 
 class EchoHandler(BaseHTTPRequestHandler):
     def _cors(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+
+    def get_history_file(self, username):
+        return Path(f"chat_history_{username}.json")
+
+    def load_history(self, username):
+        file = get_history_file(username)
+        if file.exists():
+            return json.loads(file.read_text())
+        return []
+    
+    def save_history(self, username, history):
+        file = get_history_file(username)
+        file.write_text(json.dumps(history))
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -54,7 +67,10 @@ class EchoHandler(BaseHTTPRequestHandler):
 
         # add frosty logic - start
         try:
-            global chat_history
+            # global chat_history
+            USERNAME = 'frosty'
+            try: chat_history = self.load_history(USERNAME)
+            except: chat_history = []
             session_inst = snowflake_session.Session()
     
             session_inst.set_user('frosty')
@@ -135,12 +151,12 @@ class EchoHandler(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"{traceback.print_exc()}")
             print(e)
-            chat_history=[]
+            try: chat_history = self.load_history(USERNAME)
+            except: chat_history = []
             reply = json.dumps({"reply": 'There was an issue processing your request, I have raised a ticket with details. Someone will reach out to you shortly.'}).encode("utf-8")
-            chat_history = []
 
         # Add frosty logic - end
-        
+        self.save_history(USERNAME, chat_history)
         #reply = json.dumps({"reply": message}).encode("utf-8")
         self.send_response(200)
         self._cors()
