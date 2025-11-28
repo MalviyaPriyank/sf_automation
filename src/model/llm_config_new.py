@@ -256,7 +256,55 @@ tools = {
                             },
                         },
                         "required":[
+                            "db","table_name"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"get_deployable_objects",
+                "description":"returns a list of objects in development that are allowed for deployment. always check this list before executing deployment. use the list to check with user to select objects for deployment from this list.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "query": {
+                                "type":"string",
+                                "description":"user request"
+                            },
+                        },
+                        "required":[
                             "query"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "toolSpec": {
+                "name":"deploy_objects",
+                "description":"always check list of allowed objects from get_deployable_objects tool, share the list with user to pick subset of objects. then use this tool to deploy objects.",
+                "inputSchema": {
+                    "json":{
+                        "type":"object",
+                        "properties": {
+                            "src_db": {
+                                "type":"string",
+                                "description":"source database name"
+                            },
+                            "tgt_db": {
+                                "type":"string",
+                                "description":"target database name"
+                            },
+                            "object_list": {
+                                "type":"string",
+                                "description":"user provided subset of objects from allowed objects of deployment list retrieved from get_deployable_objects tool"
+                            },
+                        },
+                        "required":[
+                            "src_db", "tgt_db", "object_list"
                         ]
                     }
                 }
