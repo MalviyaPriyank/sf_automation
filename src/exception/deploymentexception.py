@@ -17,6 +17,6 @@ class NoScriptsForObjectForDeployment(DeploymentException):
 
 class NoScriptsForDeployment(DeploymentException):
     def __init__(self, src_db, deployment_status):
-        error_message=f"No scripts with status {deployment_status} found in {src_db}"
+        error_message=f"No scripts ready for deployment found in {src_db}"
         super().__init__(error_message)
 

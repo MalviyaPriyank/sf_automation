@@ -8,8 +8,9 @@ from exception.deploymentexception import (
 class ValidateDeployment:
     def __init__(self):
         pass
-
-    def scripts_exist(self,lst,deployment_status,src_db,**kwargs):
+    
+    @staticmethod
+    def scripts_exist(lst,deployment_status,src_db,**kwargs):
         if len(lst):
             return True
         else:

@@ -101,6 +101,7 @@ class BaseObject(AbstractObject):
         self.is_create=kwargs[tags.IS_CREATE]
         
         if tags.DATABASE in kwargs.keys():
+
             self.set_database(kwargs[tags.DATABASE])
             self.logger.info(f"setting database for {self.__class__.__name__}")
             if self.__class__.__name__.upper()=='NETWORKRULE':

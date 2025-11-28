@@ -10,6 +10,7 @@ from vars.gvobject import Config as cfg
 import uuid
 from datetime import datetime
 from validation.validatedeployment import ValidateDeployment as vd
+import json
 
 _dev_env = 'DEV'
 _test_env = 'TEST'
@@ -112,7 +113,7 @@ class Deploy:
     def __init__(self,session,logger):
         self.attr = DeployAttr()
         self.session = session
-        self.logger = logger
+        self.logger = logger.getChild(self.__class__.__name__)
         self.deploy_id=str(uuid.uuid4())
 
     def set_object_type(self,value):
@@ -269,6 +270,7 @@ class Deploy:
             SELECT
                 sql_text
                 ,deploy_id
+                ,entry_timestamp
             FROM 
                 {cfg._config_database}.{cfg._config_schema}.DEPLOYMENT_DTLS
             WHERE 
@@ -279,12 +281,14 @@ class Deploy:
             SELECT 
                 sql_text
                 ,deploy_id
+                ,entry_timestamp
             FROM 
                 {cfg._config_database}.{cfg._config_schema}.DEPLOYMENT_DTLS
             WHERE
                 object_database='{src_db}'
             AND
-                object_type='{kwargs['OBJECT']}',
+                object_type='{kwargs['OBJECT']}'
+            AND
                 deployment_status='{cfg._deployment_status_in_development}'
             ORDER BY ENTRY_TIMESTAMP
             """
@@ -293,6 +297,7 @@ class Deploy:
             SELECT
                 sql_text
                 ,deploy_id
+                ,entry_timestamp
             FROM 
                 {cfg._config_database}.{cfg._config_schema}.DEPLOYMENT_DTLS
             WHERE 
@@ -303,12 +308,14 @@ class Deploy:
             SELECT 
                 sql_text
                 ,deploy_id
+                ,entry_timestamp
             FROM 
                 {cfg._config_database}.{cfg._config_schema}.DEPLOYMENT_DTLS
             WHERE
                 object_database='{src_db}'
             AND
                 deployment_status='{cfg._deployment_status_in_development}'
+            ORDER BY ENTRY_TIMESTAMP
             """
         
         res = self.session.sql(qry).collect()
@@ -351,17 +358,18 @@ class Deploy:
         """
         self.run_query(qry=qry)
 
-    def deploy_from_dev_to_test(self,**kwargs):
+    def deploy_from_dev_to_test(self,src_db,tgt_db,**kwargs):
         #dev_db = self.get_db_name_of_environment(_dev_env)
         #test_db = self.get_db_name_of_environment(_test_env)
 
-        src_db=kwargs['SRC_DB']
-        tgt_db=kwargs['TGT_DB']
         self.logger.info(f"deploying from {src_db} to {tgt_db}")
-        if 'OBJECT_LST' in kwargs:
+        self.logger.info(f" kwargs : {kwargs}")
+        if 'OBJECT_LST' in kwargs.keys():
+            kwargs['OBJECT_LST']=json.loads(kwargs['OBJECT_LST'])
             self.logger.info(f" for objects : {kwargs['OBJECT_LST']}")
             object_lst=kwargs['OBJECT_LST']
         
+        self.logger.info
         if len(object_lst):
             for obj in object_lst:
                 self.logger.info(f" getting scripts for {obj}")
@@ -375,10 +383,11 @@ class Deploy:
                 for i in range(0,len(sql_lst)):
                     qry=sql_lst[i]
                     id=id_lst[i]
-                    self.logger.info(f"deploying: {qry}")
+                    self.logger.info(f"src qry: {qry}")
                     self.logger.info(f"id  : {id}")
                     if src_db.upper() in qry.upper():
                         qry=qry.replace(src_db,tgt_db)
+                        self.logger.info(f"deploying qry: {qry}")
                         self.run_query(qry=qry)
                         self.__update_record_deployment_dtls(id=id)
                         self.logger.info(f" deployed : {id}")
