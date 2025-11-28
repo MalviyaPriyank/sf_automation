@@ -49,6 +49,7 @@ class CopyIntoTag(BaseTag,BaseMethod):
         attr_dict["MODEL_NAME"] = "user provided value for MODEL_NAME for database object. if value is not provided by user, DEFAULT value is set to NONE"
         attr_dict["MODEL_VERSION"] = "user provided value for MODEL_VERSION for database object. if value is not provided by user, DEFAULT value is set to NONE"
         attr_dict["LOAD_MODE"] = "user provided value for LOAD_MODE for database object. if value is not provided by user, DEFAULT value is set to NONE"
+        attr_dict["ONE_TIME_LOAD"]= "this is a flag to signify if the user wants to run one time load or if they are trying to setup a pipeline. Pass this as TRUE if its a one time load other wise FALSE"
         print(f'copy into keys: {attr_dict}')
         return attr_dict
 

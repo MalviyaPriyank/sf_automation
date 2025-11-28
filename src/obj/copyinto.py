@@ -15,39 +15,13 @@ from .baseobj import BaseObject
 from src.usr.user import ChatHistory
 
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(instance.parent.session,value)
-        instance._database = value
-
-    def __delete__(self,instance):
-        del instance._database
-
-    
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        instance._schema = value
-
-    def __delete__(self,instance):
-        del instance._schema
-
-
 class Table:
     def __get__(self,instance,owner):
         return instance._table
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.table_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema, table_name=value)
+        vo.table_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema, table_name=value)
         instance._table = value
 
     def __delete__(self,instance):
@@ -59,7 +33,7 @@ class Stage:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.stage_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, stage_name=value)
+        vo.stage_exist(session=instance.parent.session, database_name=instance.parent.attr.database, schema_name=instance.parent.attr.schema, stage_name=value)
         instance._stage = value
 
     def __delete__(self,instance):
@@ -72,7 +46,7 @@ class FileFormat:
 
     def __set__(self,instance,value):
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, file_format_name=value)
+        vo.file_format_exist(session=instance.parent.session, database_name=instance.parent.attr.database, schema_name=instance.parent.attr.schema, file_format_name=value)
         instance._file_format = value
 
     def __delete__(self,instance):
@@ -327,8 +301,6 @@ class CopyIntoAttrs:
         self.parent = parent
     
     table = Table()
-    schema = Schema()
-    database = Database()
     stage = Stage()
     file_format = FileFormat()
     on_error = OnError()
@@ -356,12 +328,6 @@ class CopyInto(BaseObject):
 
     def set_table(self,value):
         self.attr.table = value
-
-    def set_schema(self,value):
-        self.attr.schema = value
-
-    def set_database(self,value):
-        self.attr.database = value
 
     def set_stage(self,value):
         self.attr.stage = value
@@ -450,7 +416,13 @@ class CopyInto(BaseObject):
                 self.property_lst.append(prop)
 
     def set_copy_into_qry(self):
-        self.qry = f"COPY INTO {self.attr.database}.{self.attr.schema}.{self.attr.table} FROM @{self.attr.database}.{self.attr.schema}.{self.attr.stage}/{self.attr.table} FILE_FORMAT = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} "
+        self.qry = f"""
+        COPY INTO 
+        {self.attr.database}.{self.attr.schema}.{self.attr.table} 
+        FROM 
+        @{self.attr.database}.{self.attr.schema}.{self.attr.stage}/{self.attr.table} 
+        FILE_FORMAT = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} 
+        """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
@@ -493,78 +465,6 @@ class CopyInto(BaseObject):
         self.set_copy_into_qry()
         self.add_properties_to_query()
 
-    def create_query(self,**kwargs):
-        self.logger.info(f'dictionary passed {kwargs}')
-
-        self.logger.info('set database')
-        self.set_database(kwargs[tags.DATABASE])
-
-        self.logger.info('set _schema')
-        self.set_schema(kwargs[tags.SCHEMA])
-
-        self.logger.info('set _table')
-        self.set_table(kwargs[tags.TABLE])
-
-        self.logger.info('set _stage')
-        self.set_stage(kwargs[tags.STAGE])
-
-        self.logger.info('set _file_format')
-        self.set_file_format(kwargs[tags.FILE_FORMAT])
-
-        self.logger.info('set _on_error')
-        self.set_on_error(kwargs[tags.ON_ERROR])
-
-        self.logger.info('set _size_limit')
-        self.set_size_limit(kwargs[tags.SIZE_LIMIT])
-
-        self.logger.info('set _purge')
-        self.set_purge(kwargs[tags.PURGE])
-
-        self.logger.info('set _return_failed_only')
-        self.set_return_failed_only(kwargs[tags.RETURN_FAILED_ONLY])
-
-        self.logger.info('set _match_by_column_name')
-        self.set_match_by_column_name(kwargs[tags.MATCH_BY_COLUMN_NAME])
-
-        self.logger.info('set _include_metadata')
-        self.set_include_metadata(kwargs[tags.INCLUDE_METADATA])
-
-        self.logger.info('set _enforce_length')
-        self.set_enforce_length(kwargs[tags.ENFORCE_LENGTH])
-
-        self.logger.info('set _truncatecolumns')
-        self.set_truncatecolumns(kwargs[tags.TRUNCATECOLUMNS])
-
-        self.logger.info('set _force')
-        self.set_force(kwargs[tags.FORCE])
-
-        self.logger.info('set _load_uncertain_files')
-        self.set_load_uncertain_files(kwargs[tags.LOAD_UNCERTAIN_FILES])
-
-        self.logger.info('set _file_processor')
-        self.set_file_processor(kwargs[tags.FILE_PROCESSOR])
-
-        self.logger.info('set _scanner')
-        self.set_scanner(kwargs[tags.SCANNER])
-
-        self.logger.info('set _project_name')
-        self.set_project_name(kwargs[tags.PROJECT_NAME])
-
-        self.logger.info('set _model_name')
-        self.set_model_name(kwargs[tags.MODEL_NAME])
-
-        self.logger.info('set _model_version')
-        self.set_model_version(kwargs[tags.MODEL_VERSION])
-
-        self.logger.info('set _load_mode')
-        self.set_load_mode(kwargs[tags.LOAD_MODE])
-
-        self.logger.info(f"preparing copy into for {self.attr.table}")
-        self.prepare_query()
-        self.logger.info(f"Copy into query : {self.qry}")
-        return self.qry
-
-
 class Operation:
     @staticmethod
     def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
@@ -573,13 +473,7 @@ class Operation:
                          logger=logger)
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
-
-        obj_inst.logger.info('set database')
-        obj_inst.set_database(kwargs[tags.DATABASE])
-
-        obj_inst.logger.info('set _schema')
-        obj_inst.set_schema(kwargs[tags.SCHEMA])
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info('set _table')
         obj_inst.set_table(kwargs[tags.TABLE])
@@ -644,8 +538,11 @@ class Operation:
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                            object_identifier=obj_inst.attr.name[0],
                                            qry=obj_inst.qry)
-
-        return obj_inst.qry
+        
+        if (kwargs['ONE_TIME_LOAD']=='TRUE' or kwargs['ONE_TIME_LOAD']==True):
+            obj_inst.execute_final_query()
+        else:
+            return obj_inst.qry
     
     @classmethod
     def get_attributes(cls):
