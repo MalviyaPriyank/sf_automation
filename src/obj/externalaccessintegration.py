@@ -18,6 +18,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -56,6 +57,7 @@ class AllowedNetworkRules:
         return instance._allowed_network_rules
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -74,6 +76,7 @@ class Enabled:
         return instance._enabled
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -90,6 +93,7 @@ class AllowedAPIAuthenticationIntegrations:
         return instance._allowed_api_authentication_integration
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._allowed_api_authentication_integration="NONE"
         else:
@@ -107,6 +111,7 @@ class AllowedAuthenticationSecrets:
         return instance._allowed_authentication_secrets
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._allowed_authentication_secrets="NONE"
         elif value.upper()=="ALL":
@@ -125,6 +130,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._comment = value
     
     def __delete__(self,instance):
