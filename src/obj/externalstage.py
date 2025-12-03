@@ -400,31 +400,31 @@ class ExternalStage(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.FILE_FORMAT:
-                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} "
+                    self.qry = f" {self.qry} {tags.FILE_FORMAT} = {self.attr.database}.{self.attr.schema}.{self.attr.file_format} \n"
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' \n"
                 if prop == tags.URL:
-                    self.qry = f" {self.qry} {tags.URL} = {self.attr.url} "
+                    self.qry = f" {self.qry} {tags.URL} = {self.attr.url} \n"
                 if prop == tags.AWS_ACCESS_POINT_ARN:
-                    self.qry = f" {self.qry} {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn} "
+                    self.qry = f" {self.qry} {tags.AWS_ACCESS_POINT_ARN} = {self.attr.aws_access_point_arn} \n"
                 if prop == tags.STORAGE_INTEGRATION:
-                    self.qry = f" {self.qry} {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration} "
+                    self.qry = f" {self.qry} {tags.STORAGE_INTEGRATION} = {self.attr.storage_integration} \n"
                 if prop == tags.ENCRYPTION_TYPE:
-                    self.qry = f" {self.qry} {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type} "
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_TYPE} = {self.attr.encryption_type} \n"
                 if prop == tags.ENCRYPTION_MASTER_KEY:
-                    self.qry = f" {self.qry} {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key} "
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_MASTER_KEY} = {self.attr.encryption_master_key} \n"
                 if prop == tags.ENCRYPTION_KMS_KEY_ID:
-                    self.qry = f" {self.qry} {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id} "
+                    self.qry = f" {self.qry} {tags.ENCRYPTION_KMS_KEY_ID} = {self.attr.encryption_kms_key_id} \n"
                 if prop == tags.USE_PRIVATELINK_ENDPOINT:
-                    self.qry = f" {self.qry} {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint} "
+                    self.qry = f" {self.qry} {tags.USE_PRIVATELINK_ENDPOINT} = {self.attr.use_privatelink_endpoint} \n"
                 if prop == tags.ENABLE:
-                    self.qry = f" {self.qry} DIRECTORY = ( {tags.ENABLE} = {self.attr.enable} "
+                    self.qry = f" {self.qry} DIRECTORY = ( {tags.ENABLE} = {self.attr.enable} \n"
                     if tags.REFRESH_ON_CREATE in self.property_lst:
-                        self.qry=f" {self.qry} {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create}"
+                        self.qry=f" {self.qry} {tags.REFRESH_ON_CREATE} = {self.attr.refresh_on_create} \n"
                     if tags.AUTO_REFRESH in self.property_lst:
-                        self.qry=f" {self.qry} {tags.AUTO_REFRESH} = {self.attr.auto_refresh}"
+                        self.qry=f" {self.qry} {tags.AUTO_REFRESH} = {self.attr.auto_refresh} \n"
                     if tags.NOTIFICATION_INTEGRATION in self.property_lst:
-                        self.qry=f" {self.qry} {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration}"
+                        self.qry=f" {self.qry} {tags.NOTIFICATION_INTEGRATION} = {self.attr.notification_integration} \n"
                     self.qry=f" {self.qry} )"
 
     def prepare_query(self):

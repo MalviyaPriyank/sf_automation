@@ -391,21 +391,21 @@ class SecurityIntegrationAWS(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop==tags.OAUTH_TOKEN_ENDPOINT:
-                    self.qry= f" {self.qry} {tags.OAUTH_TOKEN_ENDPOINT} = {self.attr.oauth_token_endpoint}"
+                    self.qry= f" {self.qry} {tags.OAUTH_TOKEN_ENDPOINT} = {self.attr.oauth_token_endpoint} \n"
                 if prop==tags.OAUTH_CLIENT_AUTH_METHOD:
-                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_AUTH_METHOD} = {self.attr.oauth_client_auth_method}"
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_AUTH_METHOD} = {self.attr.oauth_client_auth_method} \n"
                 if prop==tags.OAUTH_CLIENT_ID:
-                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_ID} = {self.attr.oauth_client_id}"
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_ID} = {self.attr.oauth_client_id} \n"
                 if prop==tags.OAUTH_CLIENT_SECRET:
-                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_SECRET} = {self.attr.oauth_client_secret}"
+                    self.qry= f" {self.qry} {tags.OAUTH_CLIENT_SECRET} = {self.attr.oauth_client_secret} \n"
                 if prop==tags.OAUTH_ACCESS_TOKEN_VALIDITY:
-                    self.qry= f" {self.qry} {tags.OAUTH_ACCESS_TOKEN_VALIDITY} = {self.attr.oauth_access_token_validity}"
+                    self.qry= f" {self.qry} {tags.OAUTH_ACCESS_TOKEN_VALIDITY} = {self.attr.oauth_access_token_validity} \n"
                 if prop==tags.OAUTH_ALLOWED_SCOPES:
-                    self.qry= f" {self.qry} {tags.OAUTH_ALLOWED_SCOPES} = {self.attr.oauth_allowed_scopes}"
+                    self.qry= f" {self.qry} {tags.OAUTH_ALLOWED_SCOPES} = {self.attr.oauth_allowed_scopes} \n"
                 if prop==tags.OAUTH_AUTHORIZATION_ENDPOINT:
-                    self.qry= f" {self.qry} {tags.OAUTH_AUTHORIZATION_ENDPOINT} = {self.attr.oauth_authorization_endpoint}"
+                    self.qry= f" {self.qry} {tags.OAUTH_AUTHORIZATION_ENDPOINT} = {self.attr.oauth_authorization_endpoint} \n"
                 if prop==tags.OAUTH_REFRESH_TOKEN_VALIDITY:
-                    self.qry= f" {self.qry} {tags.OAUTH_REFRESH_TOKEN_VALIDITY} = {self.attr.oauth_refresh_token_validity}"
+                    self.qry= f" {self.qry} {tags.OAUTH_REFRESH_TOKEN_VALIDITY} = {self.attr.oauth_refresh_token_validity} \n"
                 if prop==tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 

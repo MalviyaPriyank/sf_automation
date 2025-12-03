@@ -124,10 +124,14 @@ class RecordDelimiter:
         return instance._record_delimiter
     
     def __set__(self,instance,value):
+        instance.parent.logger.info(f" setting {self.__class__.__name__} as {value}")
         if value=="NONE":
             instance._record_delimiter = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            if value == '\n':
+                instance.parent.logger.info("new line character detected")
+                value = "\\n"
             instance._record_delimiter=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
             vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
@@ -271,7 +275,7 @@ class SkipBlankLines:
             instance._skip_blank_lines=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
             vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            instance._skip_header=value
+            instance._skip_blank_lines=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
             vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
@@ -1096,83 +1100,86 @@ class FileFormat(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f"CREATE OR REPLACE FILE FORMAT  {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} "
+        self.qry = f"""
+        CREATE OR REPLACE FILE FORMAT  
+        {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} 
+        """
 
     def add_properties_to_query(self):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.TYPE:
-                    self.qry = f" {self.qry} {tags.TYPE} = {self.attr.type} "
+                    self.qry = f" {self.qry} {tags.TYPE} = {self.attr.type} \n"
                 if prop == tags.COMPRESSION:
-                    self.qry = f" {self.qry} {tags.COMPRESSION} = {self.attr.compression} "
+                    self.qry = f" {self.qry} {tags.COMPRESSION} = {self.attr.compression} \n"
                 if prop == tags.RECORD_DELIMITER:
-                    self.qry = f" {self.qry} {tags.RECORD_DELIMITER} = {self.attr.record_delimiter} "
+                    self.qry = f" {self.qry} {tags.RECORD_DELIMITER} = '{self.attr.record_delimiter}' \n"
                 if prop == tags.FIELD_DELIMITER:
-                    self.qry = f" {self.qry} {tags.FIELD_DELIMITER} = {self.attr.field_delimiter} "
+                    self.qry = f" {self.qry} {tags.FIELD_DELIMITER} = {self.attr.field_delimiter} \n"
                 if prop == tags.MULTI_LINE:
-                    self.qry = f" {self.qry} {tags.MULTI_LINE} = {self.attr.multi_line} "
+                    self.qry = f" {self.qry} {tags.MULTI_LINE} = {self.attr.multi_line} \n"
                 if prop == tags.FILE_EXTENSION:
-                    self.qry = f" {self.qry} {tags.FILE_EXTENSION} = {self.attr.file_extension} "
+                    self.qry = f" {self.qry} {tags.FILE_EXTENSION} = {self.attr.file_extension} \n"
                 if prop == tags.PARSE_HEADER:
-                    self.qry = f" {self.qry} {tags.PARSE_HEADER} = {self.attr.parse_header} "
+                    self.qry = f" {self.qry} {tags.PARSE_HEADER} = {self.attr.parse_header} \n"
                 if prop == tags.SKIP_HEADER:
-                    self.qry = f" {self.qry} {tags.SKIP_HEADER} = {self.attr.skip_header} "
+                    self.qry = f" {self.qry} {tags.SKIP_HEADER} = {self.attr.skip_header} \n"
                 if prop == tags.SKIP_BLANK_LINES:
-                    self.qry = f" {self.qry} {tags.SKIP_BLANK_LINES} = {self.attr.skip_blank_lines} "
+                    self.qry = f" {self.qry} {tags.SKIP_BLANK_LINES} = {self.attr.skip_blank_lines} \n"
                 if prop == tags.DATE_FORMAT:
-                    self.qry = f" {self.qry} {tags.DATE_FORMAT} = {self.attr.date_format} "
+                    self.qry = f" {self.qry} {tags.DATE_FORMAT} = {self.attr.date_format} \n"
                 if prop == tags.TIME_FORMAT:
-                    self.qry = f" {self.qry} {tags.TIME_FORMAT} = {self.attr.time_format} "
+                    self.qry = f" {self.qry} {tags.TIME_FORMAT} = {self.attr.time_format} \n"
                 if prop == tags.TIMESTAMP_FORMAT:
-                    self.qry = f" {self.qry} {tags.TIMESTAMP_FORMAT} = {self.attr.timestamp_format} "
+                    self.qry = f" {self.qry} {tags.TIMESTAMP_FORMAT} = {self.attr.timestamp_format} \n"
                 if prop == tags.BINARY_FORMAT:
-                    self.qry = f" {self.qry} {tags.BINARY_FORMAT} = {self.attr.binary_format} "
+                    self.qry = f" {self.qry} {tags.BINARY_FORMAT} = {self.attr.binary_format} \n"
                 if prop == tags.ESCAPE:
-                    self.qry = f" {self.qry} {tags.ESCAPE} = {self.attr.escape} "
+                    self.qry = f" {self.qry} {tags.ESCAPE} = {self.attr.escape} \n"
                 if prop == tags.ESCAPE_UNENCLOSED_FIELD:
-                    self.qry = f" {self.qry} {tags.ESCAPE_UNENCLOSED_FIELD} = {self.attr.escape_unenclosed_field} "
+                    self.qry = f" {self.qry} {tags.ESCAPE_UNENCLOSED_FIELD} = {self.attr.escape_unenclosed_field} \n"
                 if prop == tags.TRIM_SPACE:
-                    self.qry = f" {self.qry} {tags.TRIM_SPACE} = {self.attr.trim_space} "
+                    self.qry = f" {self.qry} {tags.TRIM_SPACE} = {self.attr.trim_space} \n"
                 if prop == tags.FIELD_OPTIONALLY_ENCLOSED_BY:
-                    self.qry = f" {self.qry} {tags.FIELD_OPTIONALLY_ENCLOSED_BY} = {self.attr.field_optionally_enclosed_by} "
+                    self.qry = f" {self.qry} {tags.FIELD_OPTIONALLY_ENCLOSED_BY} = {self.attr.field_optionally_enclosed_by} \n"
                 if prop == tags.NULL_IF:
-                    self.qry = f" {self.qry} {tags.NULL_IF} = {self.attr.null_if} "
+                    self.qry = f" {self.qry} {tags.NULL_IF} = {self.attr.null_if} \n"
                 if prop == tags.ERROR_ON_COLUMN_COUNT_MISMATCH:
-                    self.qry = f" {self.qry} {tags.ERROR_ON_COLUMN_COUNT_MISMATCH} = {self.attr.error_on_column_count_mismatch} "
+                    self.qry = f" {self.qry} {tags.ERROR_ON_COLUMN_COUNT_MISMATCH} = {self.attr.error_on_column_count_mismatch} \n"
                 if prop == tags.REPLACE_INVALID_CHARACTERS:
-                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} "
+                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} \n"
                 if prop == tags.EMPTY_FIELD_AS_NULL:
-                    self.qry = f" {self.qry} {tags.EMPTY_FIELD_AS_NULL} = {self.attr.empty_field_as_null} "
+                    self.qry = f" {self.qry} {tags.EMPTY_FIELD_AS_NULL} = {self.attr.empty_field_as_null} \n"
                 if prop == tags.SKIP_BYTE_ORDER_MARK:
-                    self.qry = f" {self.qry} {tags.SKIP_BYTE_ORDER_MARK} = {self.attr.skip_byte_order_mark} "
+                    self.qry = f" {self.qry} {tags.SKIP_BYTE_ORDER_MARK} = {self.attr.skip_byte_order_mark} \n"
                 if prop == tags.ENCODING:
-                    self.qry = f" {self.qry} {tags.ENCODING} = {self.attr.encoding} "
+                    self.qry = f" {self.qry} {tags.ENCODING} = {self.attr.encoding} \n"
                 if prop == tags.ENABLE_OCTAL:
-                    self.qry = f" {self.qry} {tags.ENABLE_OCTAL} = {self.attr.enable_octal} "
+                    self.qry = f" {self.qry} {tags.ENABLE_OCTAL} = {self.attr.enable_octal} \n"
                 if prop == tags.ALLOW_DUPLICATE:
-                    self.qry = f" {self.qry} {tags.ALLOW_DUPLICATE} = {self.attr.allow_duplicate} "
+                    self.qry = f" {self.qry} {tags.ALLOW_DUPLICATE} = {self.attr.allow_duplicate} \n"
                 if prop == tags.STRIP_OUTER_ARRAY:
-                    self.qry = f" {self.qry} {tags.STRIP_OUTER_ARRAY} = {self.attr.strip_outer_array} "
+                    self.qry = f" {self.qry} {tags.STRIP_OUTER_ARRAY} = {self.attr.strip_outer_array} \n"
                 if prop == tags.STRIP_NULL_VALUES:
-                    self.qry = f" {self.qry} {tags.STRIP_NULL_VALUES} = {self.attr.strip_null_values} "
+                    self.qry = f" {self.qry} {tags.STRIP_NULL_VALUES} = {self.attr.strip_null_values} \n"
                 if prop == tags.IGNORE_UTF8_ERRORS:
-                    self.qry = f" {self.qry} {tags.IGNORE_UTF8_ERRORS} = {self.attr.ignore_utf8_errors} "
+                    self.qry = f" {self.qry} {tags.IGNORE_UTF8_ERRORS} = {self.attr.ignore_utf8_errors} \n"
                 if prop == tags.SNAPPY_COMPRESSION:
-                    self.qry = f" {self.qry} {tags.SNAPPY_COMPRESSION} = {self.attr.snappy_compression} "
+                    self.qry = f" {self.qry} {tags.SNAPPY_COMPRESSION} = {self.attr.snappy_compression} \n"
                 if prop == tags.BINARY_AS_TEXT:
-                    self.qry = f" {self.qry} {tags.BINARY_AS_TEXT} = {self.attr.binary_as_text} "
+                    self.qry = f" {self.qry} {tags.BINARY_AS_TEXT} = {self.attr.binary_as_text} \n"
                 if prop == tags.USE_LOGICAL_TYPE:
-                    self.qry = f" {self.qry} {tags.USE_LOGICAL_TYPE} = {self.attr.use_logical_type} "
+                    self.qry = f" {self.qry} {tags.USE_LOGICAL_TYPE} = {self.attr.use_logical_type} \n"
                 if prop == tags.USE_VECTORIZED_SCANNER:
-                    self.qry = f" {self.qry} {tags.USE_VECTORIZED_SCANNER} = {self.attr.use_vectorized_scanner} "
+                    self.qry = f" {self.qry} {tags.USE_VECTORIZED_SCANNER} = {self.attr.use_vectorized_scanner} \n"
                 if prop == tags.PRESERVE_SPACE:
-                    self.qry = f" {self.qry} {tags.PRESERVE_SPACE} = {self.attr.preserve_space} "
+                    self.qry = f" {self.qry} {tags.PRESERVE_SPACE} = {self.attr.preserve_space} \n"
                 if prop == tags.STRIP_OUTER_ELEMENT:
-                    self.qry = f" {self.qry} {tags.STRIP_OUTER_ELEMENT} = {self.attr.strip_outer_element} "
+                    self.qry = f" {self.qry} {tags.STRIP_OUTER_ELEMENT} = {self.attr.strip_outer_element} \n"
                 if prop == tags.DISABLE_SNOWFLAKE_DATA:
-                    self.qry = f" {self.qry} {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data} "
+                    self.qry = f" {self.qry} {tags.DISABLE_SNOWFLAKE_DATA} = {self.attr.disable_snowflake_data} \n"
                 if prop == tags.DISABLE_AUTO_CONVERT:
-                    self.qry = f" {self.qry} {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert} "
+                    self.qry = f" {self.qry} {tags.DISABLE_AUTO_CONVERT} = {self.attr.disable_auto_convert} \n"
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 

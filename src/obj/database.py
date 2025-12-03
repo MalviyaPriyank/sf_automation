@@ -309,23 +309,23 @@ class Database(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} "
+                    self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} \n"
                 if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} "
+                    self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} \n"
                 if prop == tags.EXTERNAL_VOLUME:
-                    self.qry = f" {self.qry} {tags.EXTERNAL_VOLUME} = {self.attr.external_volume} "
+                    self.qry = f" {self.qry} {tags.EXTERNAL_VOLUME} = {self.attr.external_volume} \n"
                 if prop == tags.CATALOG:
-                    self.qry = f" {self.qry} {tags.CATALOG} = {self.attr.catalog} "
+                    self.qry = f" {self.qry} {tags.CATALOG} = {self.attr.catalog} \n"
                 if prop == tags.REPLACE_INVALID_CHARACTERS:
-                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} "
+                    self.qry = f" {self.qry} {tags.REPLACE_INVALID_CHARACTERS} = {self.attr.replace_invalid_characters} \n"
                 if prop == tags.DEFAULT_DDL_COLLATION:
-                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation} "
+                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = {self.attr.default_ddl_collation} \n"
                 if prop == tags.LOG_LEVEL:
-                    self.qry = f" {self.qry} {tags.LOG_LEVEL} = {self.attr.log_level} "
+                    self.qry = f" {self.qry} {tags.LOG_LEVEL} = {self.attr.log_level} \n"
                 if prop == tags.TRACE_LEVEL:
-                    self.qry = f" {self.qry} {tags.TRACE_LEVEL} = {self.attr.trace_level} "
+                    self.qry = f" {self.qry} {tags.TRACE_LEVEL} = {self.attr.trace_level} \n"
                 if prop == tags.STORAGE_SERIALIZATION_POLICY:
-                    self.qry = f" {self.qry} {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy} "
+                    self.qry = f" {self.qry} {tags.STORAGE_SERIALIZATION_POLICY} = {self.attr.storage_serialization_policy} \n"
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 

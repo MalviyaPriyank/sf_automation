@@ -154,11 +154,11 @@ class Contact(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.USERS:
-                    self.qry = f" {self.qry} {tags.USERS} = {self.attr.users} "
+                    self.qry = f" {self.qry} {tags.USERS} = {self.attr.users} \n"
                 if prop == tags.EMAIL_DISTRIBUTION_LIST:
-                    self.qry = f" {self.qry} {tags.EMAIL_DISTRIBUTION_LIST} = {self.attr.email_distribution_list} "
+                    self.qry = f" {self.qry} {tags.EMAIL_DISTRIBUTION_LIST} = {self.attr.email_distribution_list} \n"
                 if prop == tags.URL:
-                    self.qry = f" {self.qry} {tags.URL} = '{self.attr.url}' "
+                    self.qry = f" {self.qry} {tags.URL} = '{self.attr.url}' \n"
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 

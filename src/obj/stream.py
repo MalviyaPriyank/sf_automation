@@ -305,21 +305,21 @@ class Stream(BaseObject):
                 if tags.AT in self.property_lst:
                     self.qry = f" {self.qry} {tags.AT} ("
                     if tags.TIMESTAMP in self.property_lst:
-                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) "
+                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) \n"
                     elif tags.OFFSET in self.property_lst:
-                        self.qry=f" {tags.OFFSET} => {self.attr.offset}) "
+                        self.qry=f" {tags.OFFSET} => {self.attr.offset}) \n"
                 elif tags.BEFORE in self.property_lst:
                     self.qry = f" {self.qry} {tags.BEFORE} ("
                     if tags.TIMESTAMP in self.property_lst:
-                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) "
+                        self.qry=f" {tags.TIMESTAMP} => {self.attr.timestamp}) \n"
                     elif tags.OFFSET in self.property_lst:
-                        self.qry=f" {tags.OFFSET} => {self.attr.offset} "
+                        self.qry=f" {tags.OFFSET} => {self.attr.offset} \n"
                 if prop == tags.APPEND_ONLY:
-                    self.qry = f" {self.qry} {tags.APPEND_ONLY} = {self.attr.append_only} "
+                    self.qry = f" {self.qry} {tags.APPEND_ONLY} = {self.attr.append_only} \n"
                 if prop == tags.INSERT_ONLY:
-                    self.qry = f" {self.qry} {tags.INSERT_ONLY} = {self.attr.insert_only} "
+                    self.qry = f" {self.qry} {tags.INSERT_ONLY} = {self.attr.insert_only} \n"
                 if prop == tags.SHOW_INITIAL_ROWS:
-                    self.qry = f" {self.qry} {tags.SHOW_INITIAL_ROWS} = {self.attr.show_initial_rows} "
+                    self.qry = f" {self.qry} {tags.SHOW_INITIAL_ROWS} = {self.attr.show_initial_rows} \n"
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
 

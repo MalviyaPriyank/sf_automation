@@ -17,30 +17,6 @@ from vars.obj.snowpipe.gvsnowpipe import SnowpipeTag as tags
 from src.usr.user import ChatHistory
 
 
-class Database:
-    def __get__(self,instance,owner):
-        return instance._database
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.database_exist(session=instance.parent.session, database_name=value)
-        instance._database = value
-    
-    def __delete__(self,instance):
-        del instance._database
-
-class Schema:
-    def __get__(self,instance,owner):
-        return instance._schema
-    
-    def __set__(self,instance,value):
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
-        instance._schema = value
-    
-    def __delete__(self,instance):
-        del instance._schema
-
 class Name:   
     def __get__(self,instance,owner):
         return (instance._name,instance._rename_to)
@@ -52,8 +28,8 @@ class Name:
             instance.parent.logger.info(f" for create operation setting name: {name}")
             vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
             vo.is_new_pipe(session=instance.parent.session,
-                           database_name=instance._database,
-                           schema_name=instance._schema,
+                           database_name=instance.parent.attr.database,
+                           schema_name=instance.parent.attr.schema,
                            pipe_name=name)
             if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
                 and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
@@ -71,12 +47,12 @@ class Name:
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
                 vo.pipe_exist(session=instance.parent.session,
-                              database_name=instance._database,
-                              schema_name=instance._schema,
+                              database_name=instance.parent.attr.database,
+                              schema_name=instance.parent.attr.schema,
                               pipe_name=old_name)
                 vo.is_new_pipe(session=instance.parent.session,
-                               database_name=instance._database,
-                               schema_name=instance._schema,
+                               database_name=instance.parent.attr.database,
+                               schema_name=instance.parent.attr.schema,
                                pipe_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
@@ -146,38 +122,37 @@ class Integration:
         del instance._integration
 
 
-class Comment:
+class CopyInto:
     def __get__(self,instance,owner):
-        return instance._comment
+        return instance._copy_into
     
     def __set__(self,instance,value):
-        if value=="NONE":
-            instance._comment=value
-        else:
-            instance._comment = f"'{value}'"
+        vv.required_attribute_check(
+            value=value,
+            object_type=instance.parent.__class__.__name__,
+            attr_name=self.__class__.__name__
+        )
+        instance._copy_into = value
     
     def __delete__(self,instance):
-        del instance._comment
-
+        del instance._copy_into
 
 
 class SnowpipeAttrs:
     def __init__(self,parent):
         self.parent = parent
-
-    database = Database()
-    schema = Schema()
     name = Name()
     auto_ingest = AutoIngest()
     error_integration = ErrorIntegration()
     aws_sns_topic = AwsSnsTopic()
     integration = Integration()
-    comment = Comment()
+    copy_into=CopyInto()
+
 
 class Snowpipe(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
         self.attr = SnowpipeAttrs(self)
 
     def set_database(self,value):
@@ -190,7 +165,7 @@ class Snowpipe(BaseObject):
         self.attr.name = value
 
     def set_copy_into(self,value):
-        self.copy_into=value
+        self.attr.copy_into=value
 
     def set_auto_ingest(self,auto_ingest):
         self.attr.auto_ingest = auto_ingest
@@ -203,9 +178,6 @@ class Snowpipe(BaseObject):
 
     def set_integration(self,integration):
         self.attr.integration = integration
-
-    def set_comment(self,comment):
-        self.attr.comment = comment
 
     def set_qualified_name(self):
         self.qualified_name = f"{self.attr.database}.{self.attr.schema}.{self.attr.name}"
@@ -220,7 +192,7 @@ class Snowpipe(BaseObject):
         set_flag(tags.ERROR_INTEGRATION,"_error_integration")
         set_flag(tags.AWS_SNS_TOPIC,"_aws_sns_topic")
         set_flag(tags.INTEGRATION,"_integration")
-        set_flag(tags.COMMENT,"_comment")
+        set_flag(tags.COMMENT,"comment")
 
 
     def check_properties_to_set(self): 
@@ -230,7 +202,10 @@ class Snowpipe(BaseObject):
                 self.property_lst.append(prop)
 
     def set_create_qry(self):
-        self.qry = f'CREATE OR REPLACE PIPE {self.attr.database}.{self.attr.schema}.{self.attr.name[0]}  '
+        self.qry = f"""
+        CREATE OR REPLACE PIPE 
+        {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} 
+        """
 
 
     def add_properties_to_query(self):
@@ -245,8 +220,8 @@ class Snowpipe(BaseObject):
                 if prop == tags.INTEGRATION:
                     self.qry = f" {self.qry} {tags.INTEGRATION} = {self.attr.integration} "
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
-        self.qry= self.qry + f" AS {self.copy_into}"
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
+        self.qry= self.qry + f" AS {self.attr.copy_into}"
 
     def alter_object(self):
         for prop in self.property_lst:
@@ -295,28 +270,6 @@ class Snowpipe(BaseObject):
         self.execute_final_query()
         self.pause_snowpipe()
 
-    def create_object(self,*largs,**kwargs):
-        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        self.logger.info(f'dictionary passed {kwargs}')
-        self.is_create=kwargs[tags.IS_CREATE]
-        self.set_database(kwargs[tags.DATABASE])
-        self.set_schema(kwargs[tags.SCHEMA])
-        self.set_name(kwargs[tags.NAME])
-        self.set_copy_into(kwargs[tags.COPYINTO_QUERY])
-        self.set_auto_ingest(kwargs[tags.AUTO_INGEST])
-        self.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
-        self.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
-        self.set_integration(kwargs[tags.INTEGRATION])
-        self.set_comment(kwargs[tags.COMMENT])
-        self.set_qualified_name()
-        self.prepare_query()
-        self.logger.info(f"creating snowpipe : {self.attr.name}")
-        self.create_snowpipe()
-        self.resume_snowpipe()
-        if len(largs) == 0:
-            self.write_file_to_git(object_name=self.attr.name,object_type=self.__class__.__name__,object_database=self.attr.database,object_schema=self.attr.schema)
-
-
 
 class Operation:
     @staticmethod
@@ -324,75 +277,60 @@ class Operation:
         obj_inst=Snowpipe(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        logger.info("set database")
-        if tags.DATABASE in kwargs.keys():
-            obj_inst.set_database(kwargs[tags.DATABASE])
-        else:
-            obj_inst.set_database('NONE')
 
-        logger.info("set schema")
-        if tags.SCHEMA in kwargs.keys():
-            obj_inst.set_schema(kwargs[tags.SCHEMA])
-        else:
-            obj_inst.set_schema('NONE')
-
-        logger.info("set name")
+        
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
+        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
 
-        logger.info("set auto_ingest")
+        
         if tags.AUTO_INGEST in kwargs.keys():
             obj_inst.set_auto_ingest(kwargs[tags.AUTO_INGEST])
         else:
             obj_inst.set_auto_ingest('NONE')
+        obj_inst.logger.info(f"set auto_ingest {obj_inst.attr.auto_ingest}")
 
-        logger.info("set error_integration")
+        
         if tags.ERROR_INTEGRATION in kwargs.keys():
             obj_inst.set_error_integration(kwargs[tags.ERROR_INTEGRATION])
         else:
             obj_inst.set_error_integration('NONE')
+        obj_inst.logger.info(f"set error_integration {obj_inst.attr.error_integration}")
 
-        logger.info("set aws_sns_topic")
+
         if tags.AWS_SNS_TOPIC in kwargs.keys():
             obj_inst.set_aws_sns_topic(kwargs[tags.AWS_SNS_TOPIC])
         else:
             obj_inst.set_aws_sns_topic('NONE')
+        obj_inst.logger.info(f"set AWS_SNS_TOPIC {obj_inst.attr.aws_sns_topic}")
 
-        logger.info("set integration")
+        if tags.COPYINTO_QUERY in kwargs.keys():
+            obj_inst.set_copy_into(kwargs[tags.COPYINTO_QUERY])
+        else:
+            obj_inst.set_copy_into('NONE')
+
         if tags.INTEGRATION in kwargs.keys():
             obj_inst.set_integration(kwargs[tags.INTEGRATION])
         else:
             obj_inst.set_integration('NONE')
+        obj_inst.logger.info(f"set INTEGRATION {obj_inst.attr.integration}")
 
-        logger.info("set comment")
-        if tags.COMMENT in kwargs.keys():
-            obj_inst.set_comment(kwargs[tags.COMMENT])
-        else:
-            obj_inst.set_comment('NONE')
-
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
+        obj_inst.print_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
-                                         object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.attr.database,
-                                         object_schema=obj_inst.attr.schema)
-
-        logger.info('create deployment entry')
-        obj_inst.create_deployment_entry(object_name=obj_inst.attr.name[0],
-                                         object_type=obj_inst.__class__.__name__,
-                                         object_database=obj_inst.attr.database,
-                                         object_schema=obj_inst.attr.schema)
+        obj_inst.logger.info('create deployment entry')
+        obj_inst.create_deployment_entry()
+        obj_inst.write_file_to_git()
 
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],

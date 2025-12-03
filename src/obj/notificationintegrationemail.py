@@ -216,11 +216,11 @@ class NotificationIntegrationEmail(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == gv._allowed_recepients_tag:
-                    self.qry = f" {self.qry} {gv._allowed_recepients_tag} = ({self.attr.allowed_recipients}) "
+                    self.qry = f" {self.qry} {gv._allowed_recepients_tag} = ({self.attr.allowed_recipients}) \n"
                 if prop == gv._default_recepients_tag:
-                    self.qry = f" {self.qry} {gv._default_recepients_tag} = ({self.attr.default_recipients}) "
+                    self.qry = f" {self.qry} {gv._default_recepients_tag} = ({self.attr.default_recipients}) \n"
                 if prop == gv._default_subject_tag:
-                    self.qry = f" {self.qry} {gv._default_subject_tag} = {self.attr.default_subject} "
+                    self.qry = f" {self.qry} {gv._default_subject_tag} = {self.attr.default_subject} \n"
                 if prop == gv._comment_tag:
                     self.qry = f" {self.qry} {gv._comment_tag} = '{self.attr.comment}' "
     

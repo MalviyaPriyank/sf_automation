@@ -511,43 +511,43 @@ class User(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.PASSWORD:
-                    self.qry = f" {self.qry} {tags.PASSWORD} = {self.attr.password} "
+                    self.qry = f" {self.qry} {tags.PASSWORD} = {self.attr.password} \n"
                 if prop == tags.DISPLAY_NAME:
-                    self.qry = f" {self.qry} {tags.DISPLAY_NAME} = {self.attr.display_name} "
+                    self.qry = f" {self.qry} {tags.DISPLAY_NAME} = {self.attr.display_name} \n"
                 if prop == tags.FIRST_NAME:
-                    self.qry = f" {self.qry} {tags.FIRST_NAME} = {self.attr.first_name} "
+                    self.qry = f" {self.qry} {tags.FIRST_NAME} = {self.attr.first_name} \n"
                 if prop == tags.LAST_NAME:
-                    self.qry = f" {self.qry} {tags.LAST_NAME} = {self.attr.last_name} "
+                    self.qry = f" {self.qry} {tags.LAST_NAME} = {self.attr.last_name} \n"
                 if prop == tags.EMAIL:
-                    self.qry = f" {self.qry} {tags.EMAIL} = {self.attr.email} "
+                    self.qry = f" {self.qry} {tags.EMAIL} = {self.attr.email} \n"
                 if prop == tags.MUST_CHANGE_PASSWORD:
-                    self.qry = f" {self.qry} {tags.MUST_CHANGE_PASSWORD} = {self.attr.must_change_password} "
+                    self.qry = f" {self.qry} {tags.MUST_CHANGE_PASSWORD} = {self.attr.must_change_password} \n"
                 if prop == tags.DISABLED:
-                    self.qry = f" {self.qry} {tags.DISABLED} = {self.attr.disabled} "
+                    self.qry = f" {self.qry} {tags.DISABLED} = {self.attr.disabled} \n"
                 if prop == tags.DAYS_TO_EXPIRY:
-                    self.qry = f" {self.qry} {tags.DAYS_TO_EXPIRY} = {self.attr.days_to_expiry} "
+                    self.qry = f" {self.qry} {tags.DAYS_TO_EXPIRY} = {self.attr.days_to_expiry} \n"
                 if prop == tags.MINS_TO_UNLOCK:
-                    self.qry = f" {self.qry} {tags.MINS_TO_UNLOCK} = {self.attr.mins_to_unlock} "
+                    self.qry = f" {self.qry} {tags.MINS_TO_UNLOCK} = {self.attr.mins_to_unlock} \n"
                 if prop == tags.DEFAULT_WAREHOUSE:
-                    self.qry = f" {self.qry} {tags.DEFAULT_WAREHOUSE} = {self.attr.default_warehouse} "
+                    self.qry = f" {self.qry} {tags.DEFAULT_WAREHOUSE} = {self.attr.default_warehouse} \n"
                 if prop == tags.DEFAULT_ROLE:
-                    self.qry = f" {self.qry} {tags.DEFAULT_ROLE} = {self.attr.default_role} "
+                    self.qry = f" {self.qry} {tags.DEFAULT_ROLE} = {self.attr.default_role} \n"
                 if prop == tags.DEFAULT_SECONDARY_ROLES:
-                    self.qry = f" {self.qry} {tags.DEFAULT_SECONDARY_ROLES} = {self.attr.default_secondary_roles} "
+                    self.qry = f" {self.qry} {tags.DEFAULT_SECONDARY_ROLES} = {self.attr.default_secondary_roles} \n"
                 if prop == tags.MINS_TO_BY_PASS_MFA:
-                    self.qry = f" {self.qry} {tags.MINS_TO_BY_PASS_MFA} = {self.attr.mins_to_by_pass_mfa} "
+                    self.qry = f" {self.qry} {tags.MINS_TO_BY_PASS_MFA} = {self.attr.mins_to_by_pass_mfa} \n"
                 if prop == tags.RSA_PUBLIC_KEY:
-                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY} = {self.attr.rsa_public_key} "
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY} = {self.attr.rsa_public_key} \n"
                 if prop == tags.RSA_PUBLIC_KEY_FP:
-                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_FP} = {self.attr.rsa_public_key_fp} "
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_FP} = {self.attr.rsa_public_key_fp} \n"
                 if prop == tags.RSA_PUBLIC_KEY_2:
-                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2} = {self.attr.rsa_public_key_2} "
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2} = {self.attr.rsa_public_key_2} \n"
                 if prop == tags.RSA_PUBLIC_KEY_2_FP:
-                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2_FP} = {self.attr.rsa_public_key_2_fp} "
+                    self.qry = f" {self.qry} {tags.RSA_PUBLIC_KEY_2_FP} = {self.attr.rsa_public_key_2_fp} \n"
                 if prop == tags.TYPE:
-                    self.qry = f" {self.qry} {tags.TYPE} = {self.attr.type} "
+                    self.qry = f" {self.qry} {tags.TYPE} = {self.attr.type} \n"
                 if prop == tags.COMMENT:
-                    self.qry = f" {self.qry} {tags.COMMENT} = {self.attr.comment} "
+                    self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' \n"
                 if prop == tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR:
                     self.qry = f" {self.qry} {tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR} = {self.attr.enable_unredacted_query_syntax_error} "
 

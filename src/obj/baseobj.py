@@ -136,6 +136,9 @@ class BaseObject(AbstractObject):
     def print_query(self):
         self.logger.info(f" Query : {self.qry}")
 
+    def print_setter(self,setter_name,value):
+        self.logger.info(f" setting {setter_name} : {value}")
+
     def create_deployment_entry(self):
         deploy_inst = deploy.Deploy(self.session,logger=self.logger)
         self.logger.info(f"Tracking for deployment database object : {self.__class__.__name__}")

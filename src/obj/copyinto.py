@@ -119,7 +119,12 @@ class MatchByColumnName:
         if value == "NONE":
             instance._match_by_column_name = value
         else:
-            vv.allowed_value_check(value,tags.allowed_value_list().get(tags.MATCH_BY_COLUMN_NAME),instance.parent.__class__.__name__,self.__class__.__name__)
+            vv.is_allowed_value(
+                value=value,
+                allowed_list=tags.allowed_value_list().get(tags.MATCH_BY_COLUMN_NAME),
+                object_type=instance.parent.__class__.__name__,
+                attr_name=self.__class__.__name__
+            )
             instance._match_by_column_name = value
 
     def __delete__(self,instance):
@@ -323,7 +328,7 @@ class CopyIntoAttrs:
 class CopyInto(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=True,schema_required=True)
         self.attr = CopyIntoAttrs(self)
 
     def set_table(self,value):
@@ -474,72 +479,129 @@ class Operation:
         logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         logger.info(f'dictionary passed {kwargs}')
         obj_inst.set_base_attributes(kwargs=kwargs)
+    
+        if tags.TABLE in kwargs.keys():
+            obj_inst.set_table(kwargs[tags.TABLE])
+        else:
+            obj_inst.set_table('NONE')
+        obj_inst.logger.info(f"set TABLE {obj_inst.attr.table}")
 
-        obj_inst.logger.info('set _table')
-        obj_inst.set_table(kwargs[tags.TABLE])
 
-        obj_inst.logger.info('set _stage')
-        obj_inst.set_stage(kwargs[tags.STAGE])
+        if tags.STAGE in kwargs.keys():
+            obj_inst.set_stage(kwargs[tags.STAGE])
+        else:
+            obj_inst.set_stage('NONE')
+        obj_inst.logger.info(f"set STAGE {obj_inst.attr.stage}")
 
-        obj_inst.logger.info('set _file_format')
-        obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
+        if tags.FILE_FORMAT in kwargs.keys():
+            obj_inst.set_file_format(kwargs[tags.FILE_FORMAT])
+        else:
+            obj_inst.set_file_format('NONE')
+        obj_inst.logger.info(f"set FILE FORMAT {obj_inst.attr.file_format}")
 
-        obj_inst.logger.info('set _on_error')
-        obj_inst.set_on_error(kwargs[tags.ON_ERROR])
+        if tags.ON_ERROR in kwargs.keys():
+            obj_inst.set_on_error(kwargs[tags.ON_ERROR])
+        else:
+            obj_inst.set_on_error('NONE')
+        obj_inst.logger.info(f"set ON_ERROR {obj_inst.attr.on_error}")
 
-        obj_inst.logger.info('set _size_limit')
-        obj_inst.set_size_limit(kwargs[tags.SIZE_LIMIT])
+        if tags.SIZE_LIMIT in kwargs.keys():
+            obj_inst.set_size_limit(kwargs[tags.SIZE_LIMIT])
+        else:
+            obj_inst.set_size_limit('NONE')
+        obj_inst.logger.info(f"set SIZE_LIMIT {obj_inst.attr.size_limit}")
 
-        obj_inst.logger.info('set _purge')
-        obj_inst.set_purge(kwargs[tags.PURGE])
+        if tags.PURGE in kwargs.keys():
+            obj_inst.set_purge(kwargs[tags.PURGE])
+        else:
+            obj_inst.set_purge('NONE')
+        obj_inst.logger.info(f"set PURGE {obj_inst.attr.purge}")
 
-        obj_inst.logger.info('set _return_failed_only')
-        obj_inst.set_return_failed_only(kwargs[tags.RETURN_FAILED_ONLY])
+        if tags.RETURN_FAILED_ONLY in kwargs.keys():
+            obj_inst.set_return_failed_only(kwargs[tags.RETURN_FAILED_ONLY])
+        else:
+            obj_inst.set_return_failed_only('NONE')
+        obj_inst.logger.info(f"set RETURN_FAILED_ONLY {obj_inst.attr.return_failed_only}")
 
-        obj_inst.logger.info('set _match_by_column_name')
-        obj_inst.set_match_by_column_name(kwargs[tags.MATCH_BY_COLUMN_NAME])
+        if tags.MATCH_BY_COLUMN_NAME in kwargs.keys():
+            obj_inst.set_match_by_column_name(kwargs[tags.MATCH_BY_COLUMN_NAME])
+        else:
+            obj_inst.set_match_by_column_name('NONE')
+        obj_inst.logger.info(f"set MATCH_BY_COLUMN_NAME {obj_inst.attr.match_by_column_name}")
 
-        obj_inst.logger.info('set _include_metadata')
-        obj_inst.set_include_metadata(kwargs[tags.INCLUDE_METADATA])
+        if tags.INCLUDE_METADATA in kwargs.keys():
+            obj_inst.set_include_metadata(kwargs[tags.INCLUDE_METADATA])
+        else:
+            obj_inst.set_include_metadata('NONE')
+        obj_inst.logger.info(f"set INCLUDE_METADATA {obj_inst.attr.include_metadata}")
 
-        obj_inst.logger.info('set _enforce_length')
-        obj_inst.set_enforce_length(kwargs[tags.ENFORCE_LENGTH])
+        if tags.ENFORCE_LENGTH in kwargs.keys():
+            obj_inst.set_enforce_length(kwargs[tags.ENFORCE_LENGTH])
+        else:
+            obj_inst.set_enforce_length('NONE')
+        obj_inst.logger.info(f"set ENFORCE_LENGTH {obj_inst.attr.enforce_length}")
 
-        obj_inst.logger.info('set _truncatecolumns')
-        obj_inst.set_truncatecolumns(kwargs[tags.TRUNCATECOLUMNS])
+        if tags.TRUNCATECOLUMNS in kwargs.keys():
+            obj_inst.set_truncatecolumns(kwargs[tags.TRUNCATECOLUMNS])
+        else:
+            obj_inst.set_truncatecolumns('NONE')
+        obj_inst.logger.info(f"set TRUNCATECOLUMNS {obj_inst.attr.truncatecolumns}")
 
-        obj_inst.logger.info('set _force')
-        obj_inst.set_force(kwargs[tags.FORCE])
+        if tags.FORCE in kwargs.keys():
+            obj_inst.set_force(kwargs[tags.FORCE])
+        else:
+            obj_inst.set_force('NONE')
+        obj_inst.logger.info(f"set FORCE {obj_inst.attr.force}")
 
-        obj_inst.logger.info('set _load_uncertain_files')
-        obj_inst.set_load_uncertain_files(kwargs[tags.LOAD_UNCERTAIN_FILES])
+        if tags.LOAD_UNCERTAIN_FILES in kwargs.keys():
+            obj_inst.set_load_uncertain_files(kwargs[tags.LOAD_UNCERTAIN_FILES])
+        else:
+            obj_inst.set_load_uncertain_files('NONE')
+        obj_inst.logger.info(f"set LOAD_UNCERTAIN_FILES {obj_inst.attr.load_uncertain_files}")
 
-        obj_inst.logger.info('set _file_processor')
-        obj_inst.set_file_processor(kwargs[tags.FILE_PROCESSOR])
+        if tags.FILE_PROCESSOR in kwargs.keys():
+            obj_inst.set_file_processor(kwargs[tags.FILE_PROCESSOR])
+        else:
+            obj_inst.set_file_processor('NONE')
+        obj_inst.logger.info(f"set FILE_PROCESSOR {obj_inst.attr.file_processor}")
 
-        obj_inst.logger.info('set _scanner')
-        obj_inst.set_scanner(kwargs[tags.SCANNER])
+        if tags.SCANNER in kwargs.keys():
+            obj_inst.set_scanner(kwargs[tags.SCANNER])
+        else:
+            obj_inst.set_scanner('NONE')
+        obj_inst.logger.info(f"set SCANNER {obj_inst.attr.scanner}")
 
-        obj_inst.logger.info('set _project_name')
-        obj_inst.set_project_name(kwargs[tags.PROJECT_NAME])
+        if tags.PROJECT_NAME in kwargs.keys():
+            obj_inst.set_project_name(kwargs[tags.PROJECT_NAME])
+        else:
+            obj_inst.set_project_name('NONE')
+        obj_inst.logger.info(f"set PROJECT_NAME {obj_inst.attr.project_name}")
 
-        obj_inst.logger.info('set _model_name')
-        obj_inst.set_model_name(kwargs[tags.MODEL_NAME])
+        if tags.MODEL_NAME in kwargs.keys():
+            obj_inst.set_model_name(kwargs[tags.MODEL_NAME])
+        else:
+            obj_inst.set_model_name('NONE')
+        obj_inst.logger.info(f"set MODEL_NAME {obj_inst.attr.model_name}")
 
-        obj_inst.logger.info('set _model_version')
-        obj_inst.set_model_version(kwargs[tags.MODEL_VERSION])
+        if tags.MODEL_VERSION in kwargs.keys():
+            obj_inst.set_model_version(kwargs[tags.MODEL_VERSION])
+        else:
+            obj_inst.set_model_version('NONE')
+        obj_inst.logger.info(f"set MODEL_VERSION {obj_inst.attr.model_version}")
 
-        obj_inst.logger.info('set _load_mode')
-        obj_inst.set_load_mode(kwargs[tags.LOAD_MODE])
+        if tags.LOAD_MODE in kwargs.keys():
+            obj_inst.set_load_mode(kwargs[tags.LOAD_MODE])
+        else:
+            obj_inst.set_load_mode('NONE')
+        obj_inst.logger.info(f"set LOAD_MODE {obj_inst.attr.load_mode}")
+
 
         obj_inst.logger.info(f"preparing copy into for {obj_inst.attr.table}")
         obj_inst.prepare_query()
 
-        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
-                                           object_identifier=obj_inst.attr.name[0],
-                                           qry=obj_inst.qry)
         
-        if (kwargs['ONE_TIME_LOAD']=='TRUE' or kwargs['ONE_TIME_LOAD']==True):
+        if (kwargs['ONE_TIME_LOAD']=='TRUE' 
+            or kwargs['ONE_TIME_LOAD']==True):
             obj_inst.execute_final_query()
         else:
             return obj_inst.qry

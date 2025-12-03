@@ -304,11 +304,11 @@ class CortexSearch(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:
                 if prop == tags.EMBEDDING_MODEL:
-                    self.qry = f" {self.qry} {tags.EMBEDDING_MODEL} = {self.attr.embedding_model} "
+                    self.qry = f" {self.qry} {tags.EMBEDDING_MODEL} = {self.attr.embedding_model} \n"
                 if prop == tags.INITIALIZE:
-                    self.qry = f" {self.qry} {tags.INITIALIZE} = {self.attr.initialize} "
+                    self.qry = f" {self.qry} {tags.INITIALIZE} = {self.attr.initialize} \n"
                 if prop == tags.COMMENT:
-                    self.qry = f"{self.qry} {tags.COMMENT} = '{self.attr.comment}'"
+                    self.qry = f"{self.qry} {tags.COMMENT} = '{self.attr.comment}' \n"
                 if prop == tags.SERVICE_QUERY:
                     self.qry = f"{self.qry} AS ({self.attr.service_query})"
 

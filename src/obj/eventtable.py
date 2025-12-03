@@ -250,15 +250,15 @@ class EventTable(BaseObject):
         if len(self.property_lst) != 0 :
             for prop in self.property_lst:                
                 if prop == tags.CLUSTER_BY:
-                    self.qry = f" {self.qry} {tags.CLUSTER_BY} = ({self.attr.cluster_by}) "
+                    self.qry = f" {self.qry} {tags.CLUSTER_BY} = ({self.attr.cluster_by}) \n"
                 if prop == tags.DATA_RETENTION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} "
+                    self.qry = f" {self.qry} {tags.DATA_RETENTION_TIME_IN_DAYS} = {self.attr.data_retention_time_in_days} \n"
                 if prop == tags.MAX_DATA_EXTENSION_TIME_IN_DAYS:
-                    self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} "
+                    self.qry = f" {self.qry} {tags.MAX_DATA_EXTENSION_TIME_IN_DAYS} = {self.attr.max_data_extension_time_in_days} \n"
                 if prop == tags.CHANGE_TRACKING:
-                    self.qry = f" {self.qry} {tags.CHANGE_TRACKING} = {self.attr.change_tracking} "
+                    self.qry = f" {self.qry} {tags.CHANGE_TRACKING} = {self.attr.change_tracking} \n"
                 if prop == tags.DEFAULT_DDL_COLLATION:
-                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = '{self.attr.default_ddl_collation}' "
+                    self.qry = f" {self.qry} {tags.DEFAULT_DDL_COLLATION} = '{self.attr.default_ddl_collation}' \n"
                 if prop == tags.COMMENT:
                     self.qry = f" {self.qry} {tags.COMMENT} = '{self.attr.comment}' "
 
