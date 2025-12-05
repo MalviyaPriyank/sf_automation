@@ -155,6 +155,10 @@ class ValidateObject:
                 qry=f"SHOW EVENT TABLES IN SCHEMA {kwargs['DATABASE']}.{kwargs['SCHEMA']}"
         elif object_type=="EXTERNALVOLUME":
             qry=f"SHOW EXTERNAL VOLUMES"
+        elif object_type=='TAG':
+            database=kwargs['DATABASE']
+            schema=kwargs['SCHEMA']
+            qry=f"SHOW TAGS IN SCHEMA {database}.{schema}"
         else:    
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
@@ -212,6 +216,10 @@ class ValidateObject:
                 qry=f"SHOW EVENT TABLES IN SCHEMA {kwargs['DATABASE']}.{kwargs['SCHEMA']}"
         elif object_type=="EXTERNALVOLUME":
             qry=f"SHOW EXTERNAL VOLUMES"
+        elif object_type=='TAG':
+            database=kwargs['DATABASE']
+            schema=kwargs['SCHEMA']
+            qry=f"SHOW TAGS IN SCHEMA {database}.{schema}"
         else:
             qry=ValidateObject.return_show_query(object_type=object_type) # getting query SHOW STREAMS,TASKS etc
         df=session.sql(qry)
