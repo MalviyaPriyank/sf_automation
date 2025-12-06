@@ -198,12 +198,17 @@ class Operation:
                      user_id=user_id,
                      logger=logger)
         
+        obj_inst.logger.info(f"SHOW  {obj_inst.__class__.__name__}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
         obj_inst.set_base_attributes(kwargs=kwargs)
         return obj_inst.show_object()
 
 
     @classmethod
-    def get_attributes(cls):
-        return tags().get_attributes_with_description()
+    def get_attributes(cls,**kwargs):
+        if kwargs['SHOW_OBJECT']:
+            return tags().get_show_attributes_with_description()
+        else:
+            return tags().get_attributes_with_description()
 
 
