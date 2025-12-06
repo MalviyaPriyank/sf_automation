@@ -21,7 +21,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_object",
-                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute.",
+                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -32,11 +32,31 @@ tools = {
                             },
                             "data_dict": {
                                 "type":"string",
-                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys"
+                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool."
                             }
                         },
                         "required":[
                             "obj_type","data_dict"
+                        ]
+                    }
+                }
+            },
+        },
+        {
+            "toolSpec": {
+                "name":"get_tag_objects",
+                "description":"Use this tool to get available tags for an object, create a new tag object if none apply. if schema is one of the allowed values for creating an object, you need to pass a tag as well using this tool. if no tag objects exists that fit the need, you should create a new tag object.",
+                "inputSchema": {
+                    "json":{ 
+                        "type":"object",
+                        "properties": {
+                            "data_dict": {
+                                "type":"string",
+                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys"
+                            }
+                        },
+                        "required":[
+                            "data_dict"
                         ]
                     }
                 }
@@ -52,7 +72,7 @@ tools = {
                         "properties": {
                             "obj_type": {
                                 "type":"string",
-                                "description":f"allowed values are {ALLOWED_OBJS}"
+                                "description":f"allowed values are {ALLOWED_OBJS}. if 'schema' is in this list of allowed values, you need to add a 'tag' to the list as well, for value of tag use the get_schema_tag tool."
                             },
                         },
                         "required":[
@@ -213,26 +233,6 @@ tools = {
                         },
                         "required":[
                             "object_type","object_identifier","role","privilege","database_name","schema"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
-                "name":"deploy_all_dev_to_test",
-                "description":"deploys all objects from dev environment to test environment.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "query": {
-                                "type":"string",
-                                "description":"user query"
-                            }
-                        },
-                        "required":[
-                            "query"
                         ]
                     }
                 }
