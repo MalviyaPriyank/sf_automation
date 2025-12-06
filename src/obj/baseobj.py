@@ -110,12 +110,14 @@ class BaseObject(AbstractObject):
     def execute_qry_and_get_pandas_df(self,qry):
         return self.session.sql(qry).to_pandas()
 
-    def set_base_attributes(self,kwargs):
+    def set_base_attributes(self,kwargs,**args):
         self.logger.info("Setting base attributes")
-        self.is_create=kwargs[tags.IS_CREATE]
+
+        # dont set is_create when its a call for create object
+        if 'SHOW_OBJECT' not in args:
+            self.is_create=kwargs[tags.IS_CREATE]
         
         if tags.DATABASE in kwargs.keys():
-
             self.set_database(kwargs[tags.DATABASE])
             self.logger.info(f"setting database for {self.__class__.__name__}")
             if self.__class__.__name__.upper()=='NETWORKRULE':

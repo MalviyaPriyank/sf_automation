@@ -69,6 +69,7 @@ class AllowedValue:
     def __get__(self, instance, owner):
         return instance._allowed_values
     def __set__(self, instance, value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.is_list(
             value=value,
             object_type=instance.parent.__class__.__name__,
@@ -76,7 +77,7 @@ class AllowedValue:
         )
         val_str=""
         if len(value)==1:
-            instance._allowed_values=f"'{value[0]}'"
+            val_str=f"'{value[0]}'"
         else:
             for i in range(0,len(value)):
                 if i != len(value)-1:
@@ -200,7 +201,7 @@ class Operation:
         
         obj_inst.logger.info(f"SHOW  {obj_inst.__class__.__name__}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.set_base_attributes(kwargs=kwargs)
+        obj_inst.set_base_attributes(kwargs=kwargs,**{'SHOW_OBJECT':'TRUE'})
         return obj_inst.show_object()
 
 
