@@ -64,7 +64,7 @@ SYSTEM_PROMPTS = {
     'assistant':'what to do when storage integration is provided for external stage object',
     'user':'irrespective of it, ALWAYS ASK user to provide with url explicitly. even if you have the url, have it confirmed by the user. DO NOT use the generic s3://your-bucket-name/path/. user needs to provide with the url path.',
     'assistant':'provide info on tag objects',
-    'user':'some objects have a parameter OBJECT_TAG, use the get_tag_objects tool to retrive available tags, create a new tag object if none apply. OBJECT_TAG is required when one of the parameters is schema.',
+    'user':'some objects have a parameter OBJECT_TAG, use the get_tag_objects tool to retrive available tags, create a new tag object if none apply. OBJECT_TAG is required when one of the parameters is schema. tag objects should be meaningful, for this ALWAYS ask user purpose of the object and create tag accordingly. ALWAYS inform user the purpose of tags is to make governance robust and easier.',
     'assistant':'How can I help?'
 }
 

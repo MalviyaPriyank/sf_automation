@@ -120,7 +120,7 @@ class LLMTools:
         self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
 
-    def get_tag_objects(self, DATABASE, SCHEMA):
+    def get_tag_objects(self, DATABASE, SCHEMA='TAG_MANAGEMENT'):
         tags = tag.Operation().show_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs={'DATABASE':DATABASE, 'SCHEMA':SCHEMA})
         return f"allowed tags for this object are {tags}"
 

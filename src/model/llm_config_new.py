@@ -21,7 +21,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_object",
-                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool.",
+                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool. tag objects should be meaningful, for this ALWAYS ask user purpose of the object and create tag accordingly. ALWAYS inform user the purpose of tags is to make governance robust and easier.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -53,14 +53,10 @@ tools = {
                             "DATABASE": {
                                 "type":"string",
                                 "description":"database name"
-                            },
-                            "SCHEMA": {
-                                "type":"string",
-                                "description":"schema name"
                             }
                         },
                         "required":[
-                            "DATABASE","SCHEMA"
+                            "DATABASE"
                         ]
                     }
                 }
