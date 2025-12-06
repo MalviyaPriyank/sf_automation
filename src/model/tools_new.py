@@ -30,7 +30,7 @@ from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 #from salesforce import salesforceextract
 import src.obj.utils as util
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch,tag
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
@@ -115,10 +115,14 @@ class LLMTools:
         OperationClass = getattr(module, "Operation")
         return OperationClass()
 
-    def get_object_params(self, obj_type):
+    def get_object_params(self, obj_type, data_dict):
         operation = self.import_module(obj_type)
         self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
+
+    def get_tag_objects(self):
+        tags = tag.Operation().show_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
+        return f"allowed tags for this object are {tags}"
 
     # def get_obj_dependency(self, obj_type):
     #    return f"heres the list of dependencies for {obj_type}: {base_dependency.ObjectDependency().get_dependencies()}"
