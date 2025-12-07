@@ -25,7 +25,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        instance.parent.logger.info(f"inside to set name {value}")
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
@@ -78,6 +78,7 @@ class ColumnNameList:
         return instance._column_name_list
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == None :
             raise KeyError
         else:
@@ -91,6 +92,7 @@ class ColumnTypeList:
         return instance._column_type_list
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == None :
             raise KeyError
         else:

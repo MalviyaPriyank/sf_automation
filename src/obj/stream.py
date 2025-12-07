@@ -23,6 +23,7 @@ class ObjectType:
         return instance._object_type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         #vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__) 
         #vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.OBJECT_TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._object_type = 'TABLE'
@@ -35,7 +36,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        instance.parent.logger.info(f"inside to set name {value}")
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
@@ -70,6 +71,7 @@ class TableName:
         return instance._table_name
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         database=instance.parent.attr.database
         schema=instance.parent.attr.schema
         vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
@@ -88,6 +90,7 @@ class At:
         return instance._at
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._at=value
         else:
@@ -102,6 +105,7 @@ class Before:
         return instance._before
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._before=value
         else:
@@ -116,6 +120,7 @@ class Timestamp:
         return instance._timestamp
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._timestamp=value
         else:
@@ -130,6 +135,7 @@ class Offset:
         return instance._offset
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._offset=value
         else:
@@ -144,6 +150,7 @@ class AppendOnly:
         return instance._append_only
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._append_only=value
         else:
@@ -162,6 +169,7 @@ class InsertOnly:
         return instance._insert_only
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._object_type=="EXTERNAL TABLE":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,*['if stream is created on EXTERNAL TABLE'])
             instance._insert_only=value
@@ -178,6 +186,7 @@ class ShowInitialRows:
         return instance._show_initial_rows
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._show_initial_rows=value
         else:
@@ -192,6 +201,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._comment = value
         else:

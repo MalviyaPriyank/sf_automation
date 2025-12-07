@@ -23,6 +23,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         database_name=instance.parent.attr.database
         schema_name=instance.parent.attr.schema
@@ -65,6 +66,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._type=value
         else:
@@ -79,6 +81,7 @@ class Compression:
         return instance._compression
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._compression=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -124,6 +127,7 @@ class RecordDelimiter:
         return instance._record_delimiter
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f" setting {self.__class__.__name__} as {value}")
         if value=="NONE":
             instance._record_delimiter = value
@@ -152,6 +156,7 @@ class FieldDelimiter:
         return instance._field_delimiter
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._field_delimiter=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
@@ -176,6 +181,7 @@ class MultiLine:
         return instance._multi_line
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._multi_line=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] 
@@ -200,6 +206,7 @@ class FileExtension:
         return instance._file_extension
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._file_extension=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -223,6 +230,7 @@ class ParseHeader:
         return instance._parse_header
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._parse_header=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
@@ -247,6 +255,7 @@ class SkipHeader:
         return instance._skip_header
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._skip_header = value  
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
@@ -271,6 +280,7 @@ class SkipBlankLines:
         return instance._skip_blank_lines
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._skip_blank_lines=value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
@@ -295,6 +305,7 @@ class DateFormat:
         return instance._date_format
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._date_format=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -318,6 +329,7 @@ class TimeFormat:
         return instance._time_format
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._time_format=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -341,6 +353,7 @@ class TimestampFormat:
         return instance._timestamp_format
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._timestamp_format=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -365,6 +378,7 @@ class BinaryFormat:
         return instance._binary_format
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._binary_format=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -388,6 +402,7 @@ class Escape:
         return instance._escape
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._escape = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -412,6 +427,7 @@ class EscapeUnenclosedField:
         return instance._escape_unenclosed_field
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._escape_unenclosed_field = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -436,6 +452,7 @@ class TrimSpace:
         return instance._trim_space
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._trim_space=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
@@ -456,6 +473,7 @@ class FieldOptionallyEnclosedBy:
         return instance._field_optionally_enclosed_by
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._field_optionally_enclosed_by = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -481,6 +499,7 @@ class NullIf:
         return instance._null_if
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._null_if=value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] or
@@ -501,6 +520,7 @@ class ErrorOnColumnCountMismatch:
         return instance._error_on_column_count_mismatch
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._error_on_column_count_mismatch = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -526,6 +546,7 @@ class ReplaceInvalidCharacters:
         return instance._replace_invalid_characters
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._replace_invalid_characters = value
         else: 
@@ -540,6 +561,7 @@ class EmptyFieldAsNull:
         return instance._empty_field_as_null
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._empty_field_as_null = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -564,6 +586,7 @@ class SkipByteOrderMark:
         return instance._skip_byte_order_mark
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._skip_byte_order_mark = value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] or
@@ -582,6 +605,7 @@ class Encoding:
         return instance._encoding
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._encoding = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -607,6 +631,7 @@ class EnableOctal:
         return instance._enable_octal
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._enable_octal = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -631,6 +656,7 @@ class AllowDuplicate:
         return instance._allow_duplicate
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._allow_duplicate = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -657,6 +683,7 @@ class StripOuterArray:
         return instance._strip_outer_array
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._strip_outer_array = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -682,6 +709,7 @@ class StripNullValues:
         return instance._strip_null_values
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._strip_null_values = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
@@ -707,6 +735,7 @@ class IgnoreUTF8Errors:
         return instance._ignore_utf8_errors
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._ignore_utf8_errors = value
         elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[1] or
@@ -727,6 +756,7 @@ class SnappyCompression:
         return instance._snappy_compression
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._snappy_compression = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
@@ -749,6 +779,7 @@ class BinaryAsText:
         return instance._binary_as_text
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._binary_as_text = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
@@ -771,6 +802,7 @@ class UseLogicalType:
         return instance._use_logical_type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._use_logical_type = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
@@ -791,6 +823,7 @@ class UseVectorizedScanner:
         return instance._use_vectorized_scanner
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._use_vectorized_scanner = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
@@ -811,6 +844,7 @@ class PreserveSpace:
         return instance._preserve_space
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._preserve_space = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
@@ -831,6 +865,7 @@ class StripOuterElement:
         return instance._strip_outer_element
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._strip_outer_element = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
@@ -851,6 +886,7 @@ class DisableSnowflakeData:
         return instance._disable_snowflake_data
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._disable_snowflake_data = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
@@ -871,6 +907,7 @@ class DisableAutoConvert:
         return instance._disable_auto_convert
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._disable_auto_convert = value
         elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML

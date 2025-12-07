@@ -19,6 +19,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -69,6 +70,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -87,6 +89,7 @@ class ValueList:
         return instance._value_list
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
 
         vv.required_attribute_check(value=value,
                                 object_type=instance.parent.__class__.__name__,
@@ -162,6 +165,7 @@ class Mode:
         return instance._mode
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)

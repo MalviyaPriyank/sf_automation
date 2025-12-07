@@ -25,6 +25,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.is_new_integration(session=instance.parent.session,object_type=instance.parent.__class__.__name__,object_name=value)
         if ( vv.starts_with_alphabet(value,instance.parent.__class__.__name__,self.__class__.__name__) 
@@ -34,6 +35,7 @@ class Name:
             instance._name = value
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -72,6 +74,7 @@ class Enabled:
         return instance._enabled
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vv.is_bool(value=value, object_type= instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._enabled = value
@@ -85,6 +88,7 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._type = value
     
     def __delete__(self,instance):
@@ -95,6 +99,7 @@ class AllowedRecipients:
         return instance._allowed_recipients
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside allowed recipient to set {value}")
         if value=="NONE":
             instance._allowed_recipients=value
@@ -122,6 +127,7 @@ class DefaultRecipients:
         return instance._default_recipients
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=='NONE':
             instance._default_recipients=value
         else:
@@ -145,6 +151,7 @@ class DefaultSubject:
         return instance._default_subject
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=='NONE':
             instance._default_subject=value
         else:

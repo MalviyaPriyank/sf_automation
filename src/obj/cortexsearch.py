@@ -16,6 +16,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -55,6 +56,7 @@ class BaseTable:
         return instance._base_table
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -73,6 +75,7 @@ class On:
         return instance._on
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -92,6 +95,7 @@ class Attributes:
         return instance._attributes
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._attributes=""
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
@@ -121,6 +125,7 @@ class Warehouse:
         return instance._warehouse
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -137,6 +142,7 @@ class TargetLagUnit:
         return instance._target_lag_unit
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -153,6 +159,7 @@ class TargetLag:
         return instance._target_lag
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -169,6 +176,7 @@ class EmbeddingModel:
         return instance._embedding_model
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._embedding_model=value
         else:
@@ -186,6 +194,7 @@ class Initialize:
         return instance._initialize
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._initialize='NONE'
         else:
@@ -204,6 +213,7 @@ class ServiceQuery:
         return instance._service_query
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)

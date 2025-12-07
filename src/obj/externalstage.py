@@ -19,6 +19,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -57,6 +58,7 @@ class FileFormat:
         return instance._file_format
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._file_format=value
         else:
@@ -73,6 +75,7 @@ class Url:
         return instance._url
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._url = value
         else:
@@ -87,6 +90,7 @@ class AwsAccessPointArn:
         return instance._aws_access_point_arn
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._aws_access_point_arn = value
         else:
@@ -101,6 +105,7 @@ class StorageIntegration:
         return instance._storage_integration
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._storage_integration=value
         else:
@@ -115,6 +120,7 @@ class EncryptionType:
         return instance._encryption_type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._encryption_type=value
         else:
@@ -136,6 +142,7 @@ class EncryptionMasterKey:
         return instance._encryption_master_key
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._encryption_master_key=value
         else:
@@ -156,6 +163,7 @@ class EncryptionKmsKeyId:
         return instance._encryption_kms_key_id
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._encryption_kms_key_id = value
         else:
@@ -177,6 +185,7 @@ class UsePrivatelinkEndpoint:
         return instance._use_privatelink_endpoint
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._use_privatelink_endpoint=value
         else:
@@ -194,6 +203,7 @@ class Enable:
         return instance._enable
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._enable = value
         else:
@@ -208,6 +218,7 @@ class RefreshOnCreate:
         return instance._refresh_on_create
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._refresh_on_create = value
         else:
@@ -222,6 +233,7 @@ class AutoRefresh:
         return instance._auto_refresh
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._auto_refresh=value
         else:
@@ -236,6 +248,7 @@ class NotificationIntegration:
         return instance._notification_integration
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._notification_integration=value
         else:

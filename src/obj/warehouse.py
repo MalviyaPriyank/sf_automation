@@ -25,6 +25,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -69,6 +70,7 @@ class WarehouseType:
         return instance._warehouse_type
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._warehouse_type=value
         else:
@@ -83,6 +85,7 @@ class WarehouseSize:
         return instance._warehouse_size
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._warehouse_size=value
         else:
@@ -97,6 +100,7 @@ class ResourceConstraint:
         return instance._resource_constraint
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._resource_constraint = "NONE"
         elif instance._warehouse_type == 'SNOWPARK-OPTIMIZED': 
@@ -112,6 +116,7 @@ class MaxClusterCount:
         return instance._max_cluster_count
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._max_cluster_count=value
         else:
@@ -127,6 +132,7 @@ class MinClusterCount:
         return instance._min_cluster_count
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._min_cluster_count=value
         else:
@@ -142,6 +148,7 @@ class ScalingPolicy:
         return instance._scaling_policy
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._scaling_policy=value
         else:
@@ -157,6 +164,7 @@ class AutoSuspend:
         return instance._auto_suspend
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._auto_suspend=value
         else:
@@ -171,6 +179,7 @@ class AutoResume:
         return instance._auto_resume
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._auto_resume=value
         else:
@@ -185,6 +194,7 @@ class InitiallySuspended:
         return instance._initially_suspended
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._initially_suspended=value
         else:
@@ -199,6 +209,7 @@ class ResourceMonitor:
         return instance._resource_monitor
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._resource_monitor=value
         else:
@@ -213,6 +224,7 @@ class Comment:
         return instance._comment
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._comment = value
         else:
@@ -227,6 +239,7 @@ class EnableQueryAcceleration:
         return instance._enable_query_acceleration
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._enable_query_acceleration=value
         else:
@@ -241,6 +254,7 @@ class QueryAccelerationMaxScaleFactor:
         return instance._query_acceleration_max_scale_factor
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._query_acceleration_max_scale_factor=value
         else:
@@ -255,6 +269,7 @@ class MaxConcurrencyLevel:
         return instance._max_concurrency_level
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._max_concurrency_level=value
         else:
@@ -268,6 +283,7 @@ class StatementQueuedTimeoutInSeconds:
         return instance._statement_queued_timeout_in_seconds
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._statement_queued_timeout_in_seconds=value
         else:
@@ -282,6 +298,7 @@ class StatementTimeoutInSeconds:
         return instance._statement_timeout_in_seconds
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._statement_timeout_in_seconds=value
         else:

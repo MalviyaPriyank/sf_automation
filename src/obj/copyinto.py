@@ -20,6 +20,7 @@ class Table:
         return instance._table
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.table_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema, table_name=value)
         instance._table = value
@@ -32,6 +33,7 @@ class Stage:
         return instance._stage
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.stage_exist(session=instance.parent.session, database_name=instance.parent.attr.database, schema_name=instance.parent.attr.schema, stage_name=value)
         instance._stage = value
@@ -45,6 +47,7 @@ class FileFormat:
         return instance._file_format
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.file_format_exist(session=instance.parent.session, database_name=instance.parent.attr.database, schema_name=instance.parent.attr.schema, file_format_name=value)
         instance._file_format = value
@@ -57,6 +60,7 @@ class OnError:
         return instance._on_error
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._on_error=value
         else:
@@ -72,6 +76,7 @@ class SizeLimit:
         return instance._size_limit
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._size_limit = value
         else: 
@@ -87,6 +92,7 @@ class Purge:
         return instance._purge
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._purge = value
         else: 
@@ -102,6 +108,7 @@ class ReturnFailedOnly:
         return instance._return_failed_only
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._return_failed_only = value
         else: 
@@ -116,6 +123,7 @@ class MatchByColumnName:
         return instance._match_by_column_name
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._match_by_column_name = value
         else:
@@ -136,6 +144,7 @@ class IncludeMetadata:
         return instance._include_metadata
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._include_metadata = value
         elif not vv.is_dependent_param_null(instance._match_by_column_name,instance.parent.__class__.__name__,self.__class__.__name__,'MatchByColumnName'):
@@ -150,6 +159,7 @@ class EnforceLength:
         return instance._enforce_length
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._enforce_length = value
         else: 
@@ -164,6 +174,7 @@ class TruncateColumns:
         return instance._truncatecolumns
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._truncatecolumns = value
         else: 
@@ -179,6 +190,7 @@ class Force:
         return instance._force
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._force = value
         else: 
@@ -193,6 +205,7 @@ class LoadUncertainFiles:
         return instance._load_uncertain_files
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._load_uncertain_files=value
         else:
@@ -208,6 +221,7 @@ class FileProcessor:
         return instance._file_processor
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._file_processor=value
         else:
@@ -222,6 +236,7 @@ class Scanner:
         return instance._scanner
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._scanner=value
         else:
@@ -238,6 +253,7 @@ class ProjectName:
         return instance._project_name
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._project_name=value
         else:
@@ -253,6 +269,7 @@ class ModelName:
         return instance._model_name
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._scanner=='document_ai':
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._model_name=f"'{value}'"
@@ -272,6 +289,7 @@ class ModelVersion:
         return instance._model_version
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._scanner=='document_ai':
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._model_version=f"'{value}'"
@@ -291,6 +309,7 @@ class LoadMode:
         return instance._load_mode
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._load_mode = value
         else:
