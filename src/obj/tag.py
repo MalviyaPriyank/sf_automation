@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.tag.gvtag import TagTag as tags
+from src.validation.validatevalue import ValidateValue as vv
 
 class TagName:
     def __get__(self, instance, owner):
@@ -18,7 +19,6 @@ class TagAllowedValues:
     def __get__(self, instance, owner):
         return instance._allowed_values
     def __set__(self, instance, value):
-<<<<<<< HEAD
         instance.parent.print_setter(self.__class__.__name__,value)
         vv.is_list(
             value=value,
@@ -28,14 +28,14 @@ class TagAllowedValues:
         val_str=""
         if len(value)==1:
             val_str=f"'{value[0]}'"
-=======
-        # expects list or single string
-        if isinstance(value, list):
-            val_list = ", ".join(f"'{v}'" for v in value)
->>>>>>> parent of 6bce9b7 (add tag to base)
         else:
-            val_list = f"'{value}'"
-        instance._allowed_values = f"ALLOWED_VALUES {val_list}"
+            for i in range(0,len(value)):
+                if i != len(value)-1:
+                    val_str=val_str + f"'{value[i]}',"
+                elif i == len(value)-1:
+                    val_str=val_str + f"'{value[i]}'"
+
+        instance._allowed_values = val_str
     def __delete__(self, instance):
         del instance._allowed_values
 
@@ -222,26 +222,6 @@ class Operation:
         logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
-<<<<<<< HEAD
-        obj_inst.logger.info('write to git')
-        obj_inst.write_file_to_git()
-
-        user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
-                                                object_identifier=obj_inst.attr.name[0],
-                                                qry=obj_inst.qry)
-    
-    def show_object(session,user_id,kwargs,logger):
-        obj_inst=Tag(session=session,
-                     user_id=user_id,
-                     logger=logger)
-        
-        obj_inst.logger.info(f"SHOW  {obj_inst.__class__.__name__}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.set_base_attributes(kwargs=kwargs,**{'SHOW_OBJECT':'TRUE'})
-        return obj_inst.show_object()
-
-=======
->>>>>>> parent of 6bce9b7 (add tag to base)
 
     @classmethod
     def get_attributes(cls):

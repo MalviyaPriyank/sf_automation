@@ -99,9 +99,8 @@ class BaseObject(AbstractObject):
     def set_base_attributes(self,kwargs):
         self.logger.info("Setting base attributes")
 
-        # dont set is_create when its a call for create object
-        if 'SHOW_OBJECT' not in args:
-            self.is_create=kwargs[tags.IS_CREATE]
+        
+        self.is_create=kwargs[tags.IS_CREATE]
         
         if tags.DATABASE in kwargs.keys():
             self.set_database(kwargs[tags.DATABASE])
