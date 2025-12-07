@@ -50,17 +50,13 @@ tools = {
                     "json":{ 
                         "type":"object",
                         "properties": {
-                            "DATABASE": {
+                            "data_dict": {
                                 "type":"string",
-                                "description":"database name"
-                            },
-                            "SCHEMA": {
-                                "type":"string",
-                                "description":"schema name"
+                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys"
                             }
                         },
                         "required":[
-                            "DATABASE","SCHEMA"
+                            "data_dict"
                         ]
                     }
                 }

@@ -115,13 +115,13 @@ class LLMTools:
         OperationClass = getattr(module, "Operation")
         return OperationClass()
 
-    def get_object_params(self, obj_type):
+    def get_object_params(self, obj_type, data_dict):
         operation = self.import_module(obj_type)
         self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
 
-    def get_tag_objects(self, DATABASE, SCHEMA):
-        tags = tag.Operation().show_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs={'DATABASE':DATABASE, 'SCHEMA':SCHEMA})
+    def get_tag_objects(self):
+        tags = tag.Operation().show_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
         return f"allowed tags for this object are {tags}"
 
     # def get_obj_dependency(self, obj_type):
