@@ -26,7 +26,6 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -84,7 +83,6 @@ class Logic:
         return instance._logic
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._logic = value
         else:
@@ -99,7 +97,6 @@ class Language:
         return instance._language
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         object_type=instance.parent.__class__.__name__
         attr_name=self.__class__.__name__
         if value == 'NONE':
@@ -116,7 +113,6 @@ class Packages:
         return instance._packages
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._packages = value
         else:
@@ -130,7 +126,6 @@ class Handler:
         return instance._handler
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._handler = value
         else:
@@ -144,7 +139,6 @@ class ReturnType:
         return instance._return_type
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._return_type = value
         else:

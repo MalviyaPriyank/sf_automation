@@ -14,7 +14,6 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -55,7 +54,6 @@ class CreditQuota:
         return instance._credit_quota
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._credit_quota=value
         else:
@@ -70,7 +68,6 @@ class Frequency:
         return instance._frequency
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._frequency=value
         else:
@@ -85,7 +82,6 @@ class StartTimestamp:
         return instance._start_timestamp
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance._start_timestamp="IMMEDIATELY"
     
     def __delete__(self,instance):
@@ -96,7 +92,6 @@ class EndTimestamp:
         return instance._end_timestamp
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance._end_timestamp = value
     
     def __delete__(self,instance):
@@ -109,7 +104,6 @@ class NotifyUsers:
     
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
 
         name_string=""
         if value=="NONE" or len(value)==0:
@@ -134,7 +128,6 @@ class Threshold:
         return instance._threshold
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if isinstance(value,list):
             for vals in value:
                 vv.is_positive_number(value=vals,
@@ -156,7 +149,6 @@ class Triggers:
         return instance._triggers
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside triggers to set: {value}")
         if value=="NONE":
             instance._triggers="NONE"
@@ -171,7 +163,6 @@ class Action:
         return instance._action
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if isinstance(value,list):
             for vals in value:
                 vv.is_allowed_value(value=vals,

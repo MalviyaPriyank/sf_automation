@@ -25,7 +25,6 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         db_name=instance.parent.attr.database
         schema_name=instance.parent.attr.schema
 
@@ -101,7 +100,6 @@ class ClusterBy:
         return instance._cluster_by
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._cluster_by = value
         else:   
@@ -122,7 +120,6 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._data_retention_time_in_days = value
         else:
@@ -139,7 +136,6 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._max_data_extension_time_in_days = value
         else:
@@ -155,7 +151,6 @@ class ChangeTracking:
         return instance._change_tracking
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._change_tracking = value
         else:
@@ -174,7 +169,6 @@ class DefaultDDLCollation:
         return instance._default_ddl_collation
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._default_ddl_collation = value
         else:

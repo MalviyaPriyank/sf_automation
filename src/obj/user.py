@@ -20,7 +20,6 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -65,7 +64,6 @@ class Password:
         return instance._password
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._password=value
         else:
@@ -81,7 +79,6 @@ class LoginName:
         return instance._login_name
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._login_name=value
         else:
@@ -96,7 +93,6 @@ class DisplayName:
         return instance._display_name
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._display_name=value
         else:
@@ -111,7 +107,6 @@ class FirstName:
         return instance._first_name
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._first_name=value
         else:
@@ -126,7 +121,6 @@ class MiddleName:
         return instance._middle_name
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._middle_name=value
         else:
@@ -141,7 +135,6 @@ class LastName:
         return instance._last_name
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._last_name=value
         else:
@@ -156,7 +149,6 @@ class Email:
         return instance._email
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._email=value
         else:
@@ -171,7 +163,6 @@ class MustChangePassword:
         return instance._must_change_password
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         #if value == "NONE":
         #    instance._must_change_password = value
         #else: 
@@ -186,7 +177,6 @@ class Disabled:
         return instance._disabled
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._disabled = value
         else: 
@@ -201,7 +191,6 @@ class DaysToExpiry:
         return instance._days_to_expiry
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._days_to_expiry=value
         else:
@@ -217,7 +206,6 @@ class MinsToUnlock:
         return instance._mins_to_unlock
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._mins_to_unlock=value
         else:
@@ -232,7 +220,6 @@ class DefaultWarehouse:
         return instance._default_warehouse
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._default_warehouse=value
         else:
@@ -247,7 +234,6 @@ class DefaultRole:
         return instance._default_role
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._default_role=value
         else:
@@ -262,7 +248,6 @@ class DefaultSecondaryRoles:
         return instance._default_secondary_roles
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._default_secondary_roles=value
         else:
@@ -277,7 +262,6 @@ class MinsToByPassMFA:
         return instance._mins_to_by_pass_mfa
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._mins_to_by_pass_mfa=value
         else:
@@ -292,7 +276,6 @@ class RSAPublicKey:
         return instance._rsa_public_key
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._rsa_public_key=value
         else:
@@ -307,7 +290,6 @@ class RSAPublicKeyFP:
         return instance._rsa_public_key_fp
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._rsa_public_key_fp=value
         else:
@@ -322,7 +304,6 @@ class RSAPublicKey2:
         return instance._rsa_public_key_2
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._rsa_public_key_2=value
         else:
@@ -337,7 +318,6 @@ class RSAPublicKey2FP:
         return instance._rsa_public_key_2_fp
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._rsa_public_key_2_fp=value
         else:
@@ -352,7 +332,6 @@ class Type:
         return instance._type
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._type=value
         else:
@@ -367,7 +346,6 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._comment=value
         else:
@@ -382,7 +360,6 @@ class EnableUnredactedQuerySyntaxError:
         return instance._enable_unredacted_query_syntax_error
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._enable_unredacted_query_syntax_error=value
         else:

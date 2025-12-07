@@ -25,7 +25,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
+        instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
@@ -63,7 +63,7 @@ class DataRetentionTimeInDays:
         return instance._data_retention_time_in_days
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
+        logger.info(f"setting data retention time in days {value}")
         if value == "NONE":
             instance._data_retention_time_in_days = value
         else:
@@ -80,7 +80,6 @@ class MaxDataExtensionTimeInDays:
         return instance._max_data_extension_time_in_days
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._max_data_extension_time_in_days = value
         else:
@@ -97,7 +96,6 @@ class ExternalVolume:
         return instance._external_volume
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._external_volume = value
         else:
@@ -112,7 +110,6 @@ class Catalog:
         return instance._catalog
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._catalog=value
         else:
@@ -129,7 +126,6 @@ class ReplaceInvalidCharacters:
         return instance._replace_invalid_characters
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._replace_invalid_characters = value
         elif vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__):
@@ -144,7 +140,6 @@ class DefaultDdlCollation:
         return instance._default_ddl_collation
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._default_ddl_collation=value
         else:
@@ -160,7 +155,6 @@ class LogLevel:
         return instance._log_level
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._log_level=value
         else:
@@ -176,7 +170,6 @@ class TraceLevel:
         return instance._trace_level
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._trace_level=value
         else:
@@ -192,7 +185,6 @@ class StorageSerializationPolicy:
         return instance._storage_serialization_policy
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == "NONE":
             instance._storage_serialization_policy = value
         else:
@@ -208,7 +200,6 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._comment = value
         else:
