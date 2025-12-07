@@ -14,13 +14,6 @@ class TagTag(BaseTag):
         attr_dict=super().get_attributes_with_description()
         attr_dict["ALLOWED_VALUES"]="Specifies a comma-separated list of the possible string values that can be assigned to the tag when the tag is set on an object.Pass it as a list."        
         return attr_dict
-    
-    @classmethod
-    def get_show_attributes_with_description(cls):
-        return {
-            'DATABASE':'Specifies name of the database.',
-            'SCHEMA':'Specifies name of the schema.'
-        }
 
     @classmethod
     def allowed_value_list(cls):
