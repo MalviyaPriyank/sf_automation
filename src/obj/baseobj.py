@@ -144,7 +144,7 @@ class BaseObject(AbstractObject):
             self.set_object_tag(kwargs[tags.OBJECT_TAG])
         else:
             self.set_object_tag('NONE')
-        self.logger.info(f"Object tag : {self.attr.object_tag}")
+        self.logger.info(f"COMMENT : {self.attr.OBJECT_TAG}")
 
     def show_object(self):
         if self.__class__.__name__.upper() == 'TAG':

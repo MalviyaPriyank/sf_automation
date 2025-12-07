@@ -57,4 +57,3 @@ class Repository:
         self.__add_file_for_push(filepath=filepath,commit_msg=commit_msg)
         self.__push_file_to_remote()
         self.logger.info("EXITING: sync_repo")
-
