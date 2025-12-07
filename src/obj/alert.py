@@ -24,6 +24,7 @@ class Database:
         return instance._database
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.database_exist(session=instance.parent.session, database_name=value)
         instance._database = value
@@ -36,6 +37,7 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         vo.schema_exist(session=instance.parent.session,database_name=instance._database,schema_name=value)
         instance._schema = value
@@ -48,6 +50,7 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -94,6 +97,7 @@ class Schedule:
         return instance._schedule
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside schedule setting : {value}")
         vv.is_valid_cron(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._schedule = f"'{value}'"
@@ -107,6 +111,7 @@ class Iff:
         return instance._iff
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._iff=value  
 
@@ -118,6 +123,7 @@ class Then:
         return instance._action_type
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value=value,
                                     object_type=instance.parent.__class__.__name__,
                                     attr_name=self.__class__.__name__)
@@ -131,6 +137,7 @@ class ActionSql:
         return instance._action_sql
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._action_type.upper()=="SQL":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._action_sql = value
@@ -143,6 +150,7 @@ class IntegrationName:
         return instance._integration_name
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._action_type.upper()=="INTEGRATION":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             vo.integration_exist(session=instance.parent.session,integration_name=value)
@@ -156,6 +164,7 @@ class EmailAddress:
         return instance._email_address
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._action_type.upper()=="INTEGRATION":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._email_address = f"'{value}'"
@@ -168,6 +177,7 @@ class EmailSubject:
         return instance._email_subject
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._action_type.upper()=="INTEGRATION":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._email_subject = f"'{value}'"
@@ -180,6 +190,7 @@ class EmailContent:
         return instance._email_content
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._action_type.upper()=="INTEGRATION":
             vv.required_attribute_check(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._email_content = f"'{value}'"
@@ -192,6 +203,7 @@ class Warehouse:
         return instance._warehouse
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vo.warehouse_exist(session=instance.parent.session,warehouse_name=value)
         instance._warehouse = f"'{value}'"
 
@@ -203,6 +215,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._comment = f"'{value}'"
 
     def __delete__(self,instance):

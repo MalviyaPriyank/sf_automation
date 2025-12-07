@@ -21,6 +21,7 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -67,6 +68,7 @@ class Sql:
         return instance._sql
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
         instance._sql = value
 
@@ -79,6 +81,7 @@ class Warehouse:
         return instance._warehouse
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._warehouse=value
         else:
@@ -93,6 +96,7 @@ class UserTaskManagedInitialWarehouseSize:
         return instance._user_task_managed_initial_warehouse_size
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._warehouse == 'NONE':
             instance._user_task_managed_initial_warehouse_size = 'MEDIUM'
         else:
@@ -111,6 +115,7 @@ class Schedule:
         return instance._schedule    
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._schedule = value
         else:
@@ -142,6 +147,7 @@ class Config:
         return instance._config
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._config = value
         else:
@@ -157,6 +163,7 @@ class AllowOverlappingExecution:
         return instance._allow_overlapping_execution
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._allow_overlapping_execution = value
         else:
@@ -172,6 +179,7 @@ class UserTaskTimeoutMs:
         return instance._user_task_timeout_ms
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._user_task_timeout_ms = value
         else:
@@ -187,6 +195,7 @@ class SuspendTaskAfterNumFailures:
         return instance._suspend_task_after_num_failures
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._suspend_task_after_num_failures = value
         else:
@@ -201,6 +210,7 @@ class ErrorIntegration:
         return instance._error_integration
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._error_integration = value
         else:
@@ -216,6 +226,7 @@ class SuccessIntegration:
         return instance._success_integration
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._success_integration = value
         else:
@@ -230,6 +241,7 @@ class LogLevel:
         return instance._log_level
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._log_level = value
         else:
@@ -244,6 +256,7 @@ class Comment:
         return instance._comment
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._comment = value
         else:
@@ -258,6 +271,7 @@ class After:
         return instance._after
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if isinstance(value,str):
             if value == 'NONE':
                 instance._after = value
@@ -291,6 +305,7 @@ class When:
         return instance._when
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._when="NONE"
     
     def __delete__(self,instance):
@@ -302,6 +317,7 @@ class Tag:
         return instance._tag
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._tag = value
         else:
@@ -316,6 +332,7 @@ class Finalize:
         return instance._finalize
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         instance._finalize="NONE"
     
     def __delete__(self,instance):
@@ -326,6 +343,7 @@ class TaskAutoRetryAttempts:
         return instance._task_auto_retry_attempts
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._task_auto_retry_attempts = value
         else:
@@ -340,6 +358,7 @@ class UserTaskMinimumTriggerIntervalInSeconds:
         return instance._user_task_minimum_trigger_interval_in_seconds
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         if value == 'NONE':
             instance._user_task_minimum_trigger_interval_in_seconds = value
         else:
@@ -354,6 +373,7 @@ class TargetCompletionInterval:
         return instance._target_completion_interval
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         object_type=instance.parent.__class__.__name__
         attr_name=self.__class__.__name__
         if value == 'NONE':
@@ -382,6 +402,7 @@ class ServerlessTaskMinStatementSize:
         return instance._serverless_task_min_statement_size
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         object_type=instance.parent.__class__.__name__
         attr_name=self.__class__.__name__
         if value == 'NONE':
@@ -406,6 +427,7 @@ class ServerlessTaskMaxStatementSize:
         return instance._serverless_task_max_statement_size
     
     def __set__(self,instance,value):
+        instance.parent.print_setter(self.__class__.__name__,value)
         object_type=instance.parent.__class__.__name__
         attr_name=self.__class__.__name__
         if value == 'NONE':
