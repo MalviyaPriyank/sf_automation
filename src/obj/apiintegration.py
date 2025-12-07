@@ -19,7 +19,6 @@ class Name:
         return (instance._name,instance._rename_to)
 
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -78,7 +77,6 @@ class APIType:
         return instance._api_type
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         value=value.upper()
         vv.required_attribute_check(
             value=value,
@@ -102,7 +100,6 @@ class APIProvider:
         return instance._api_provider
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type == 'GIT':
             instance._api_provider = 'git_https_api'  
         elif instance._api_type=='AMAZON':
@@ -131,7 +128,6 @@ class APIAWSRoleARN:
         return instance._api_aws_role_arn
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type=='AMAZON':
             vv.required_attribute_check(
                 value=value,
@@ -152,7 +148,6 @@ class APIKey:
         return instance._api_key
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if (instance._api_type=='AZURE' or 
             instance._api_type=='AMAZON'):
             instance._api_key=value
@@ -167,7 +162,6 @@ class APIAllowedPrefixes:
         return instance._api_allowed_prefixes
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(
             value=value,
             object_type=instance.parent.object_type,
@@ -205,7 +199,6 @@ class Enabled:
         return instance._enabled
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(
             value=value,
             object_type=instance.parent.object_type,
@@ -226,7 +219,6 @@ class AzureTenantID:
         return instance._azure_tenant_id
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type!='AZURE' and value =='NONE':
             instance._azure_tenant_id="NONE"
         elif instance._api_type!='AZURE' and value != 'NONE':
@@ -247,7 +239,6 @@ class AzureADApplicationID:
         return instance._azure_ad_application_id
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type!='AZURE' and value =='NONE':
             instance._azure_ad_application_id="NONE"
         elif instance._api_type!='AZURE' and value != 'NONE':
@@ -268,7 +259,6 @@ class APIBlockedPrefixes:
         return instance._api_blocked_prefixes
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._api_blocked_prefixes="NONE"
         else:
@@ -304,7 +294,6 @@ class GoogleAudience:
         return instance._google_audience
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type=='GOOGLE':
             vv.required_attribute_check(
                 value=value,
@@ -322,7 +311,6 @@ class AllowedAuthenticationSecrets:
         return instance._allowed_authentication_secrets
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if instance._api_type=='GIT':
             if isinstance(value,list):
                 if ('none' in value or 'NONE' in value):

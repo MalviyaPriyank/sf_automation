@@ -22,7 +22,6 @@ class Name:
         return (instance._name,instance._rename_to)
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f"inside to set name {value}")
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
@@ -71,7 +70,6 @@ class AutoIngest:
         return instance._auto_ingest
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._auto_ingest=value
         else:
@@ -86,7 +84,6 @@ class ErrorIntegration:
         return instance._error_integration
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._error_integration=value
         else:
@@ -101,7 +98,6 @@ class AwsSnsTopic:
         return instance._aws_sns_topic
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._aws_sns_topic=value
         else:
@@ -116,7 +112,6 @@ class Integration:
         return instance._integration
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._integration=value
         else:
@@ -132,7 +127,6 @@ class CopyInto:
         return instance._copy_into
     
     def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
         vv.required_attribute_check(
             value=value,
             object_type=instance.parent.__class__.__name__,
