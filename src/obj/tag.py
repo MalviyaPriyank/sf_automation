@@ -207,10 +207,9 @@ class Operation:
 
     @classmethod
     def get_attributes(cls,**kwargs):
-        if 'SHOW_OBJECT' in kwargs:
-            if kwargs['SHOW_OBJECT']:
-                return tags().get_show_attributes_with_description()
-        
-        return tags().get_attributes_with_description()
+        if kwargs['SHOW_OBJECT']:
+            return tags().get_show_attributes_with_description()
+        else:
+            return tags().get_attributes_with_description()
 
 
