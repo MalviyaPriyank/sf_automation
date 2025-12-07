@@ -56,16 +56,6 @@ class Schema:
     def __del__(self,instance):
         del instance._schema
 
-class ObjectTag:
-    def __get__(self,instance,owner):
-        return instance._object_tag
-    
-    def __set__(self,instance,value):
-        instance._object_tag = f"'{value}'"
-    
-    def __delete__(self,instance):
-        del instance._object_tag
-
 class Comment:
     def __get__(self,instance,owner):
         return instance._comment
@@ -83,7 +73,6 @@ class BaseAttrs:
     database=Database()
     schema=Schema()
     comment=Comment()
-    object_tag=ObjectTag()
 
 class BaseObject(AbstractObject):
     def __init__(self, session, user_id, logger,database_required,schema_required):
@@ -107,10 +96,7 @@ class BaseObject(AbstractObject):
     def run_query(self,qry):
         self.session.sql(qry).collect()
 
-    def execute_qry_and_get_pandas_df(self,qry):
-        return self.session.sql(qry).to_pandas()
-
-    def set_base_attributes(self,kwargs,**args):
+    def set_base_attributes(self,kwargs):
         self.logger.info("Setting base attributes")
 
         # dont set is_create when its a call for create object
@@ -140,17 +126,6 @@ class BaseObject(AbstractObject):
             self.set_comment('NONE')
         self.logger.info(f"COMMENT : {self.attr.comment}")
 
-        if tags.OBJECT_TAG in kwargs.keys():
-            self.set_object_tag(kwargs[tags.OBJECT_TAG])
-        else:
-            self.set_object_tag('NONE')
-        self.logger.info(f"COMMENT : {self.attr.OBJECT_TAG}")
-
-    def show_object(self):
-        if self.__class__.__name__.upper() == 'TAG':
-            df=self.execute_qry_and_get_pandas_df(qry=f"SHOW TAGS IN SCHEMA {self.attr.database}.{self.attr.schema}")
-        return df
-
     def set_database(self,val):
         self.attr.database=val
     
@@ -159,9 +134,6 @@ class BaseObject(AbstractObject):
 
     def set_comment(self,val):
         self.attr.comment=val
-
-    def set_object_tag(self,val):
-        self.attr.object_tag=val
     
     def print_query(self):
         self.logger.info(f" Query : {self.qry}")

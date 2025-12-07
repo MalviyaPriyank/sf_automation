@@ -8,12 +8,11 @@ from base.basetag import BaseTag
 class TagTag(BaseTag):
     NAME = "NAME"
     ALLOWED_VALUES = "ALLOWED_VALUES"
-
-    @classmethod
-    def get_attributes_with_description(cls):
-        attr_dict=super().get_attributes_with_description()
-        attr_dict["ALLOWED_VALUES"]="Specifies a comma-separated list of the possible string values that can be assigned to the tag when the tag is set on an object.Pass it as a list."        
-        return attr_dict
+    PROPAGATE = "PROPAGATE"
+    ON_CONFLICT = "ON_CONFLICT"
+    COMMENT = "COMMENT"
+    TAG_CLAUSE = "TAG_CLAUSE"
+    IS_CREATE = "IS_CREATE"
 
     @classmethod
     def allowed_value_list(cls):

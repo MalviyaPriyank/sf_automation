@@ -5,70 +5,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
 from vars.obj.tag.gvtag import TagTag as tags
-from validation.validatevalue import ValidateValue as vv
-from validation.validateobject import ValidateObject as vo
-from src.usr.user import ChatHistory
 
-
-class Name:
-    def __get__(self,instance,owner):
-        return (instance._name,instance._rename_to)
-
-    def __set__(self,instance,value):
-        instance.parent.print_setter(self.__class__.__name__,value)
-        if instance.parent.is_create=="TRUE":
-            name=value["NAME"]
-            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_object(
-                session=instance.parent.session,
-                object_type=instance.parent.__class__.__name__,
-                object_name=name,
-                **{'DATABASE': instance.parent.attr.database,
-                   'SCHEMA':instance.parent.attr.schema}
-            )
-            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
-                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
-                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
-                ):
-                instance._name = name
-                instance._rename_to="NONE"
-        else:
-            instance.parent.logger.info(f" for alter operation")
-            old_name=value["NAME"]
-            instance.parent.logger.info(f"old name {old_name}")
-            new_name=value.get("RENAME_TO","NONE")
-            instance.parent.logger.info(f"new name {new_name}")
-            if new_name!="NONE":
-                instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
-                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.object_exist(
-                    session=instance.parent.session,
-                    object_type=instance.parent.__class__.__name__,
-                    object_name=old_name,
-                    **{'DATABASE':instance.parent.attr.database,
-                       'SCHEMA':instance.parent.attr.schema}
-                )
-                vo.is_new_object(
-                    session=instance.parent.session,
-                    object_type=instance.parent.__class__.__name__,
-                    object_name=new_name,
-                    **{'DATABASE': instance.parent.attr.database,
-                        'SCHEMA':instance.parent.attr.schema}
-                )
-                instance._name=old_name
-                instance._rename_to=new_name
-            else:
-                instance._name=old_name
-                instance._rename_to="NONE"
-
-    def __delete__(self,instance):
+class TagName:
+    def __get__(self, instance, owner):
+        return instance._name
+    def __set__(self, instance, value):
+        instance._name = value
+    def __delete__(self, instance):
         del instance._name
-        del instance._rename_to
 
-class AllowedValue:
+class TagAllowedValues:
     def __get__(self, instance, owner):
         return instance._allowed_values
     def __set__(self, instance, value):
+<<<<<<< HEAD
         instance.parent.print_setter(self.__class__.__name__,value)
         vv.is_list(
             value=value,
@@ -78,39 +28,79 @@ class AllowedValue:
         val_str=""
         if len(value)==1:
             val_str=f"'{value[0]}'"
+=======
+        # expects list or single string
+        if isinstance(value, list):
+            val_list = ", ".join(f"'{v}'" for v in value)
+>>>>>>> parent of 6bce9b7 (add tag to base)
         else:
-            for i in range(0,len(value)):
-                if i != len(value)-1:
-                    val_str=val_str+ f"'{value[i]}', "
-                elif i == len(value)-1:
-                    val_str=val_str + f"'{value[i]}'"
-        instance._allowed_values=val_str
-
-
+            val_list = f"'{value}'"
+        instance._allowed_values = f"ALLOWED_VALUES {val_list}"
     def __delete__(self, instance):
         del instance._allowed_values
 
+class TagPropagate:
+    def __get__(self, instance, owner):
+        return instance._propagate
+    def __set__(self, instance, value):
+        # value expected as one of the allowed keywords:
+        instance._propagate = f"PROPAGATE = {value}"
+    def __delete__(self, instance):
+        del instance._propagate
+
+class TagOnConflict:
+    def __get__(self, instance, owner):
+        return instance._on_conflict
+    def __set__(self, instance, value):
+        # value might be a string literal or ALLOWED_VALUES_SEQUENCE
+        instance._on_conflict = f"ON_CONFLICT = {value}"
+    def __delete__(self, instance):
+        del instance._on_conflict
+
+class TagComment:
+    def __get__(self, instance, owner):
+        return instance._comment
+    def __set__(self, instance, value):
+        instance._comment = f"COMMENT = '{value}'"
+    def __delete__(self, instance):
+        del instance._comment
+
+class TagTagClause:
+    def __get__(self, instance, owner):
+        return instance._tag_clause
+    def __set__(self, instance, value):
+        # fallback / generic tag clause (rarely used here)
+        if isinstance(value, dict):
+            clause = ", ".join(f"{k} = '{v}'" for k, v in value.items())
+        else:
+            k, v = next(iter(value.items()))
+            clause = f"{k} = '{v}'"
+        instance._tag_clause = f"TAG {clause}"
+    def __delete__(self, instance):
+        del instance._tag_clause
+
 class TagAttrs:
-    def __init__(self,parent):
-        self.parent=parent
-    name = Name()
-    allowed_values = AllowedValue()
+    name = TagName()
+    allowed_values = TagAllowedValues()
+    propagate = TagPropagate()
+    on_conflict = TagOnConflict()
+    comment = TagComment()
+    tag_clause = TagTagClause()
 
 class Tag(BaseObject):
     def __init__(self, session, user_id, logger):
-        super().__init__(
-            session=session,
-            user_id=user_id,
-            logger=logger,
-            database_required=True,
-            schema_required=True
-        )
-        self.attr = TagAttrs(parent=self)
+        self.attr = TagAttrs()
+        self.session = session
+        self.user_id = user_id
         self.logger = logger.getChild(self.__class__.__name__)
 
     # setter convenience methods
     def set_name(self, v): self.attr.name = v
     def set_allowed_values(self, v): self.attr.allowed_values = v
+    def set_propagate(self, v): self.attr.propagate = v
+    def set_on_conflict(self, v): self.attr.on_conflict = v
+    def set_comment(self, v): self.attr.comment = v
+    def set_tag_clause(self, v): self.attr.tag_clause = v
 
     def set_object_properties_flag(self):
         self.flag_dic = {}
@@ -118,20 +108,32 @@ class Tag(BaseObject):
             self.flag_dic[tag] = 1 if getattr(self.attr, attrname, None) is not None else 0
 
         set_flag(tags.ALLOWED_VALUES, "allowed_values")
+        set_flag(tags.PROPAGATE, "propagate")
+        set_flag(tags.ON_CONFLICT, "on_conflict")
         set_flag(tags.COMMENT, "comment")
+        set_flag(tags.TAG_CLAUSE, "tag_clause")
 
     def check_properties_to_set(self):
         self.property_lst = [p for p, flag in self.flag_dic.items() if flag == 1]
 
     def set_create_tag_qry(self):
-        self.qry = f"""CREATE TAG 
-        {self.attr.database}.{self.attr.schema}.{self.attr.name[0]} """
+        self.qry = "CREATE TAG"
+        # optionally OR REPLACE or IF NOT EXISTS could be managed via flags (you can extend)
+        self.qry += f" {self.attr.name[0]}"
 
     def add_properties_to_query(self):
         for prop in self.property_lst:
             if prop == tags.ALLOWED_VALUES:
-                self.qry += f"\n {tags.ALLOWED_VALUES} {self.attr.allowed_values}"
-    '''
+                self.qry += f" {self.attr.allowed_values}"
+            if prop == tags.PROPAGATE:
+                self.qry += f" {self.attr.propagate}"
+            if prop == tags.ON_CONFLICT:
+                self.qry += f" {self.attr.on_conflict}"
+            if prop == tags.COMMENT:
+                self.qry += f" {self.attr.comment}"
+            if prop == tags.TAG_CLAUSE:
+                self.qry += f" {self.attr.tag_clause}"
+
     def alter_object(self):
         for prop in self.property_lst:
             # SET some property
@@ -142,7 +144,6 @@ class Tag(BaseObject):
             self.qry = f"ALTER TAG {self.attr.name[0]} RENAME TO {self.attr.name[1]}"
             self.logger.info(f"Renaming tag {self.attr.name[0]} to {self.attr.name[1]}")
             self.execute_final_query()
-    '''
 
     def prepare_query(self):
         self.set_object_properties_flag()
@@ -150,42 +151,78 @@ class Tag(BaseObject):
         if self.is_create == "TRUE":
             self.set_create_tag_qry()
             self.add_properties_to_query()
-        #else:
-        #    self.alter_object()
+        else:
+            self.alter_object()
+
+    def create_object(self, *largs, **kwargs):
+        self.is_create = kwargs.get(tags.IS_CREATE)
+        self.set_name(kwargs.get(tags.NAME))
+        self.set_allowed_values(kwargs.get(tags.ALLOWED_VALUES))
+        self.set_propagate(kwargs.get(tags.PROPAGATE))
+        self.set_on_conflict(kwargs.get(tags.ON_CONFLICT))
+        self.set_comment(kwargs.get(tags.COMMENT))
+        self.set_tag_clause(kwargs.get(tags.TAG_CLAUSE))
+
+        self.prepare_query()
+        self.execute_final_query()
+
 
 class Operation:
     @staticmethod
-    def create_object(session,user_chat_inst:ChatHistory,user_id,logger,kwargs,*largs):
+    def create_object(session,user_id,logger,kwargs,*largs):
         obj_inst=Tag(session=session,
                          user_id=user_id,
                          logger=logger)
-        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.set_base_attributes(kwargs=kwargs)
+        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        logger.info(f'dictionary passed {kwargs}')
+        obj_inst.is_create=kwargs[tags.IS_CREATE]
 
-        
+        logger.info("set name")
         if tags.NAME in kwargs.keys():
             obj_inst.set_name(kwargs[tags.NAME])
         else:
             obj_inst.set_name('NONE')
-        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
 
+        logger.info("set allowed_values")
         if tags.ALLOWED_VALUES in kwargs.keys():
             obj_inst.set_allowed_values(kwargs[tags.ALLOWED_VALUES])
         else:
             obj_inst.set_allowed_values('NONE')
-        obj_inst.logger.info(f"set ALLOWED_VALUES {obj_inst.attr.allowed_values}")
 
+        logger.info("set propagate")
+        if tags.PROPAGATE in kwargs.keys():
+            obj_inst.set_propagate(kwargs[tags.PROPAGATE])
+        else:
+            obj_inst.set_propagate('NONE')
 
-        obj_inst.logger.info('prepare query')
+        logger.info("set on_conflict")
+        if tags.ON_CONFLICT in kwargs.keys():
+            obj_inst.set_on_conflict(kwargs[tags.ON_CONFLICT])
+        else:
+            obj_inst.set_on_conflict('NONE')
+
+        logger.info("set comment")
+        if tags.COMMENT in kwargs.keys():
+            obj_inst.set_comment(kwargs[tags.COMMENT])
+        else:
+            obj_inst.set_comment('NONE')
+
+        logger.info("set tag_clause")
+        if tags.TAG_CLAUSE in kwargs.keys():
+            obj_inst.set_tag_clause(kwargs[tags.TAG_CLAUSE])
+        else:
+            obj_inst.set_tag_clause('NONE')
+
+        logger.info('prepare query')
         obj_inst.prepare_query()
         
-        obj_inst.logger.info('execute query')
+        logger.info('execute query')
         obj_inst.execute_final_query()
 
-        obj_inst.logger.info('create deployment entry')
+        logger.info('create deployment entry')
         obj_inst.create_deployment_entry()
 
+<<<<<<< HEAD
         obj_inst.logger.info('write to git')
         obj_inst.write_file_to_git()
 
@@ -203,9 +240,9 @@ class Operation:
         obj_inst.set_base_attributes(kwargs=kwargs,**{'SHOW_OBJECT':'TRUE'})
         return obj_inst.show_object()
 
+=======
+>>>>>>> parent of 6bce9b7 (add tag to base)
 
     @classmethod
     def get_attributes(cls):
         return tags().get_attributes_with_description()
-
-

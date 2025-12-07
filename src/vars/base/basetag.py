@@ -8,7 +8,6 @@ class BaseTag:
     NAME="NAME"
     COMMENT="COMMENT"
     IS_CREATE="IS_CREATE"
-    OBJECT_TAG="OBJECT_TAG"
 
     @classmethod
     def get_attributes_with_description(cls):
