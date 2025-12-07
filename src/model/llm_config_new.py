@@ -21,7 +21,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_object",
-                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_schema_tag tool.",
+                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -37,26 +37,6 @@ tools = {
                         },
                         "required":[
                             "obj_type","data_dict"
-                        ]
-                    }
-                }
-            },
-        },
-        {
-            "toolSpec": {
-                "name":"get_tag_objects",
-                "description":"Use this tool to get available tags for an object, create a new tag object if none apply. if schema is one of the input attributes for creating an object, you need to pass a tag as well using this tool.",
-                "inputSchema": {
-                    "json":{ 
-                        "type":"object",
-                        "properties": {
-                            "data_dict": {
-                                "type":"string",
-                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys"
-                            }
-                        },
-                        "required":[
-                            "data_dict"
                         ]
                     }
                 }

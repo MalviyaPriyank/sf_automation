@@ -30,7 +30,7 @@ from schema import llm_chat_schema as lcs
 from schema import streamlit_schema as ss
 #from salesforce import salesforceextract
 import src.obj.utils as util
-from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch,tag
+from src.obj import account,database,share,internalstage,snowpipe,externalstage,role,fileformat,resourcemonitor,user,warehouse,table,copyinto,schema,task,stream,alert,notificationintegrationemail,storageintegration,storedprocedure,cortexsearch
 from src.infschema import tables, columns
 from src.governance import maskingpolicy
 from src.setup.initial import InitialSetup
@@ -115,14 +115,10 @@ class LLMTools:
         OperationClass = getattr(module, "Operation")
         return OperationClass()
 
-    def get_object_params(self, obj_type, data_dict):
+    def get_object_params(self, obj_type):
         operation = self.import_module(obj_type)
         self.logger.info(f" allowed keys for {obj_type} : {operation.get_attributes()}")
         return f"the allowed keys for {obj_type} are: {operation.get_attributes()}"
-
-    def get_tag_objects(self):
-        tags = tag.Operation().show_object(session=self.sf_session, user_id=self.user_id, logger=self.logger, kwargs=data_dict)
-        return f"allowed tags for this object are {tags}"
 
     # def get_obj_dependency(self, obj_type):
     #    return f"heres the list of dependencies for {obj_type}: {base_dependency.ObjectDependency().get_dependencies()}"
@@ -150,12 +146,12 @@ class LLMTools:
     def ingestion_pipeline_instructions(self, question):
         return "to create an ingestion pipeline, you first create a file format object, then external stage object, then copy into object, and finally snowpipe object. for each object, be sure to get their input params using get_object_params tool. use the query returned from copy into as an input to snowpipe object."
 
-    '''
     def deploy_all_dev_to_test(self, query):
         deploy_obj = deploy.Deploy(session=self.sf_session,logger=self.logger)
         deploy_obj.deploy_from_dev_to_test()
         return 'All objects from dev are deployed to test successfully'
 
+    '''
     def get_salesforce_cols(self, object_type, object_identifier):
         salesforce_obj = salesforceextract.SForce()
         columns_list = salesforce_obj.get_columns_of_object(object_type=object_type)
@@ -211,7 +207,7 @@ class LLMTools:
 
     def deploy_objects(self, src_db, tgt_db, object_list):
         deploy_inst = deploy.Deploy(self.sf_session,logger=self.logger)
-        deploy_inst.deploy_from_dev_to_test(src_db=src_db,tgt_db=tgt_db, **{'OBJECT_LST': object_list})
+        deploy_inst.deploy_from_dev_to_test(SRC_DB=src_db,TGT_DB=tgt_db, **{'OBJECT_LST': object_list})
         return "Deployment completed successfully"
 
     def tool_call(self, content, tool_result):
