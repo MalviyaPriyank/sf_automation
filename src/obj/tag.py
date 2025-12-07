@@ -192,8 +192,7 @@ class Operation:
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                                 object_identifier=obj_inst.attr.name[0],
                                                 qry=obj_inst.qry)
-
-    @staticmethod
+    
     def show_object(session,user_id,kwargs,logger):
         obj_inst=Tag(session=session,
                      user_id=user_id,

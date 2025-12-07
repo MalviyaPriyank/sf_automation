@@ -21,7 +21,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"create_object",
-                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool.",
+                "description":"Use this tool to create an object. ALWAYS use the get_object_params tool before this tool FOR EACH OBJECT, to get the dictionary keys and their description for data_dict attribute. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_schema_tag tool.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -32,7 +32,7 @@ tools = {
                             },
                             "data_dict": {
                                 "type":"string",
-                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys. if schema is one of the input attributes, you need to pass a tag as well in data_dict, for this use the get_tag_objects tool."
+                                "description":"use the get_object_params tool to get the dictionary keys and their description. pass key value pair for the dictionary from the allowed keys"
                             }
                         },
                         "required":[
@@ -45,7 +45,7 @@ tools = {
         {
             "toolSpec": {
                 "name":"get_tag_objects",
-                "description":"Use this tool to get available tags for an object, create a new tag object if none apply. if schema is one of the allowed values for creating an object, you need to pass a tag as well using this tool. if no tag objects exists that fit the need, you should create a new tag object.",
+                "description":"Use this tool to get available tags for an object, create a new tag object if none apply. if schema is one of the input attributes for creating an object, you need to pass a tag as well using this tool.",
                 "inputSchema": {
                     "json":{ 
                         "type":"object",
@@ -72,7 +72,7 @@ tools = {
                         "properties": {
                             "obj_type": {
                                 "type":"string",
-                                "description":f"allowed values are {ALLOWED_OBJS}. if 'schema' is in this list of allowed values, you need to add a 'tag' to the list as well, for value of tag use the get_schema_tag tool."
+                                "description":f"allowed values are {ALLOWED_OBJS}"
                             },
                         },
                         "required":[

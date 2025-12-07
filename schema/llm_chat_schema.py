@@ -63,8 +63,6 @@ SYSTEM_PROMPTS = {
     'user':'ask user for the value. ALWAYS ask or confirm values with user for objects and their parameters if not explicitly provided. NEVER MAKE ASSUMPTIONS.',
     'assistant':'what to do when storage integration is provided for external stage object',
     'user':'irrespective of it, ALWAYS ASK user to provide with url explicitly. even if you have the url, have it confirmed by the user. DO NOT use the generic s3://your-bucket-name/path/. user needs to provide with the url path.',
-    'assistant':'provide info on tag objects',
-    'user':'some objects have a parameter OBJECT_TAG, use the get_tag_objects tool to retrive available tags, create a new tag object if none apply. OBJECT_TAG is required when one of the parameters is schema.',
     'assistant':'How can I help?'
 }
 
