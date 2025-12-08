@@ -1,0 +1,81 @@
+from pyspark.sql import SparkSession
+
+class User:
+    def __get__(self,instance,owner):
+        return instance._user
+    
+    def __set__(self,instance,value):
+        instance._user = value
+
+    def __delete__(self,instance):
+        del instance._user
+
+class Password:
+    def __get__(self,instance,owner):
+        return instance._password
+    
+    def __set__(self,instance,value):
+        instance._password = value
+
+    def __delete__(self,instance):
+        del instance._password
+
+class Account:
+    def __get__(self,instance,owner):
+        return instance._account
+    
+    def __set__(self,instance,value):
+        instance._account = value
+
+    def __delete__(self,instance):
+        del instance._account
+
+class Session:
+    def __get__(self,instance,owner):
+        return instance._session
+    
+    def __set__(self,instance,value):
+        instance._session = value
+
+    def __delete__(self,instance):
+        del instance._session
+
+class SessionAttr:
+    def __init__(self,parent):
+        self.parent = parent
+
+    user = User()
+    password = Password()
+    account = Account()
+    session = Session()
+
+class Session:
+    def __init__(self):
+        self.attr = SessionAttr(self)
+    
+    def set_user(self,value):
+        self.attr.user = value
+    
+    def set_password(self,value):
+        self.attr.password = value
+
+    def set_account(self,value):
+        self.attr.account = value
+
+    def set_session(self,value):
+        self.attr.session = value
+
+    def set_passcode(self,value):
+        self.passcode=value
+
+    def get_session(self):
+        self.set_user(self.attr.user)
+        self.set_password(self.attr.password)
+        self.set_account(self.attr.account)
+        session = (SparkSession.builder.config(map={"account": self.attr.account, 
+                                                    "user": self.attr.user,
+                                                    "password": self.attr.password}).create()
+                  )
+        self.set_session(session)
+        return self.attr.session
+    
