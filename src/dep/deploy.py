@@ -327,14 +327,25 @@ class Deploy:
         return qry_lst,id_lst
 
 
-    def __get_all_objects_ready_for_deployment(self,deployment_status):
+    def __get_all_objects_ready_for_deployment(self,deployment_status,src_db):
         qry=f"""
         SELECT
-        DISTINCT OBJECT_TYPE
+        distinct object_type
         FROM 
-        {cfg._config_database}.{cfg._config_schema}.DEPLOYMENT_DTLS
+        {cfg._config_database}.{cfg._config_schema}.deployment_dtls
         WHERE
-        DEPLOYMENT_STATUS = '{deployment_status}'
+        deployment_status = '{deployment_status}'
+        AND 
+        object_name='{src_db}'
+        UNION
+        SELECT
+        distinct object_type
+        FROM 
+        {cfg._config_database}.{cfg._config_schema}.deployment_dtls
+        WHERE
+        deployment_status = '{deployment_status}'
+        AND 
+        object_database='{src_db}'
         """
         object_types=self.session.sql(qry).collect()
         return object_types
@@ -430,8 +441,8 @@ class Deploy:
         self.set_deployment_status(cfg._deployment_status_in_development)
         self.insert_into_deploy_control_table()
 
-    def get_objects_ready_for_deployment(self,deployment_status):
+    def get_objects_ready_for_deployment(self,deployment_status,src_db):
         self.logger.info(f" fetching objects ready for deployment : {deployment_status}")
-        return self.__get_all_objects_ready_for_deployment(deployment_status=deployment_status)
+        return self.__get_all_objects_ready_for_deployment(deployment_status=deployment_status,src_db=src_db)
     
     
