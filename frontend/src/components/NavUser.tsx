@@ -1,23 +1,36 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "./ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { EllipsisVertical, LogOut, LogOutIcon, ReceiptText, Settings } from "lucide-react"
-import { useState } from "react"
-import SettingsDialog from "./SettingsDialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "./ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  EllipsisVertical,
+  LogOut,
+  ReceiptText,
+  Settings,
+} from "lucide-react";
+import { useState } from "react";
+import SettingsDialog from "./SettingsDialog";
+import useUser from "@/hooks/useUser";
+import { Skeleton } from "./ui/skeleton";
 
-type User = {
-  name: string
-  email: string
-  avatar: string
-}
-type NavUserProps = {
-  user: User
-}
+const NavUser = () => {
+  const { isMobile } = useSidebar();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { user } = useUser();
 
+  const displayName = user?.name?.trim() || <Skeleton className="h-4 w-[100px] mb-1" />;
+  const displayEmail = user?.email?.trim() || <Skeleton className="h-4 w-[150px] mt-1" />;
 
-const NavUser = ({ user: { name, email, avatar } }: NavUserProps) => {
-  const { isMobile } = useSidebar()
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <>
@@ -25,15 +38,17 @@ const NavUser = ({ user: { name, email, avatar } }: NavUserProps) => {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg">
+              <SidebarMenuButton size="lg">
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@name" />
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@name"
+                  />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span>{name}</span>
-                  <span className="text-muted-foreground text-xs">{email}</span>
+                  <span>{displayName}</span>
+                  <span className="text-muted-foreground text-xs">{displayEmail}</span>
                 </div>
                 <EllipsisVertical className="ml-auto" />
               </SidebarMenuButton>
@@ -64,11 +79,12 @@ const NavUser = ({ user: { name, email, avatar } }: NavUserProps) => {
         </SidebarMenuItem>
       </SidebarMenu>
 
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-
-      </SettingsDialog>
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+      ></SettingsDialog>
     </>
-  )
-}
+  );
+};
 
-export default NavUser
+export default NavUser;

@@ -1,6 +1,6 @@
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
-import { Brain, SquarePen } from 'lucide-react'
+import { Brain } from 'lucide-react'
 
 const NavHeader = () => {
   return (
@@ -9,12 +9,6 @@ const NavHeader = () => {
         <SidebarMenuButton >
           <Brain/>
           <a href="#" className='text-base font-semibold'>Gyrus Inc.</a>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton >
-          <SquarePen/>
-          <a href="#" className=''>New Chat</a>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

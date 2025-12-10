@@ -4,7 +4,6 @@ import axios from "axios"
 import { useSidebar } from "./ui/sidebar"
 import PromptInput from "./PromptInput"
 import Message from "./Message"
-import EmailDialog from "./EmailDialog"
 
 type MessageType = {
   role: "user" | "assistant"
@@ -35,7 +34,7 @@ const Chat = () => {
     setMessage("")
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/echo", { message })
+      const res = await axios.post("http://localhost:80/echo", { message })
       const assistantMessage: MessageType = {
         role: "assistant",
         content: res.data.reply,
@@ -102,8 +101,6 @@ const Chat = () => {
           />
         </div>
       </div>
-      
-      <EmailDialog/>
     </>
   )
 }
