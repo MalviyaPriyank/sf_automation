@@ -200,14 +200,14 @@ class LLMTools:
         privilege_obj.grant_privilege(privilege_type=privilege, role=role)
         return f'Privilege {privilege} granted successfully'
 
-    def get_deployable_objects(self, query, src_db):
+    def get_deployable_objects(self, src_db):
         deploy_inst = deploy.Deploy(self.sf_session,logger=self.logger)
-        allowed_objects = deploy_inst.get_objects_ready_for_deployment("IN DEVELOPMENT")
+        allowed_objects = deploy_inst.get_objects_ready_for_deployment("IN DEVELOPMENT", src_db=src_db)
         return f"Allowed objects for deployment: {allowed_objects}"
 
-    def deploy_objects(self, src_db, tgt_db, object_list):
+    def deploy_objects(self, src_db, tgt_db):
         deploy_inst = deploy.Deploy(self.sf_session,logger=self.logger)
-        deploy_inst.deploy_from_dev_to_test(src_db=src_db,tgt_db=tgt_db, **{'OBJECT_LST': object_list})
+        deploy_inst.deploy_from_dev_to_test(src_db=src_db,tgt_db=tgt_db)
         return "Deployment completed successfully"
 
     def tool_call(self, content, tool_result):
