@@ -32,7 +32,7 @@ class CortexSearchTag(BaseTag,BaseMethod):
         region (filter_column),
         agent_id (filter_column)
         FROM support_transcripts"""
-        attr_dict["BASE_TABLE"]="user provided value for base table on which the search service will be created."
+        attr_dict["BASE_TABLE"]="Name of the table from service query. eg support_transcripts"
         return attr_dict
 
     @classmethod

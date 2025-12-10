@@ -335,7 +335,7 @@ class WarehouseAttrs:
 class Warehouse(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False,schema_required=False)
         self.attr = WarehouseAttrs(self)
 
     def set_name(self, value):
@@ -421,7 +421,7 @@ class Warehouse(BaseObject):
 
 
     def set_create_warehouse_qry(self):
-        self.qry = f"CREATE WAREHOUSE IF NOT EXISTS {self.attr.name[0]} "
+        self.qry = f"CREATE OR REPLACE WAREHOUSE {self.attr.name[0]} "
 
 
     def add_properties_to_query(self):
@@ -479,7 +479,7 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():

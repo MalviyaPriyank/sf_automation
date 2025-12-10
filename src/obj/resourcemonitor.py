@@ -207,7 +207,7 @@ class ResourceMonitorAttrs:
 class ResourceMonitor(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False, schema_required=False)
         self.attr = ResourceMonitorAttrs(self)
     
     def validate_user(self):
@@ -335,7 +335,7 @@ class Operation:
                          logger=logger)
         obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
         obj_inst.logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
         
         if tags.NAME in kwargs.keys():

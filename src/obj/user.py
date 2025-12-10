@@ -423,7 +423,7 @@ class UserAttrs:
 class User(BaseObject):
     def __init__(self, session, user_id, logger):
         logger=logger.getChild(self.__class__.__name__)
-        super().__init__(session, user_id, logger)
+        super().__init__(session, user_id, logger,database_required=False,schema_required=False)
         self.attr = UserAttrs(self)
 
     def set_name(self, value):
@@ -638,11 +638,11 @@ class Operation:
         obj_inst=User(session=session,
                          user_id=user_id,
                          logger=logger)
-        logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
-        logger.info(f'dictionary passed {kwargs}')
-        obj_inst.is_create=kwargs[tags.IS_CREATE]
+        obj_inst.logger.info(f"Operating on {obj_inst.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        obj_inst.logger.info(f'dictionary passed {kwargs}')
+        obj_inst.set_base_attributes(kwargs=kwargs)
 
-        logger.info("set name")
+        obj_inst.logger.info("set name")
         if tags.NAME in kwargs.keys():
             logger.info("name found in dictionary")
             logger.info(f"{kwargs[tags.NAME]}")
@@ -650,127 +650,127 @@ class Operation:
         else:
             obj_inst.set_name('NONE')
 
-        logger.info("set password")
+        obj_inst.logger.info("set password")
         if tags.PASSWORD in kwargs.keys():
             obj_inst.set_password(kwargs[tags.PASSWORD])
         else:
             obj_inst.set_password('NONE')
 
-        logger.info("set login_name")
+        obj_inst.logger.info("set login_name")
         if tags.LOGIN_NAME in kwargs.keys():
             obj_inst.set_login_name(kwargs[tags.LOGIN_NAME])
         else:
             obj_inst.set_login_name('NONE')
 
-        logger.info("set display_name")
+        obj_inst.logger.info("set display_name")
         if tags.DISPLAY_NAME in kwargs.keys():
             obj_inst.set_display_name(kwargs[tags.DISPLAY_NAME])
         else:
             obj_inst.set_display_name('NONE')
 
-        logger.info("set first_name")
+        obj_inst.logger.info("set first_name")
         if tags.FIRST_NAME in kwargs.keys():
             obj_inst.set_first_name(kwargs[tags.FIRST_NAME])
         else:
             obj_inst.set_first_name('NONE')
 
-        logger.info("set last_name")
+        obj_inst.logger.info("set last_name")
         if tags.LAST_NAME in kwargs.keys():
             obj_inst.set_last_name(kwargs[tags.LAST_NAME])
         else:
             obj_inst.set_last_name('NONE')
 
-        logger.info("set email")
+        obj_inst.logger.info("set email")
         if tags.EMAIL in kwargs.keys():
             obj_inst.set_email(kwargs[tags.EMAIL])
         else:
             obj_inst.set_email('NONE')
 
-        logger.info("set must_change_password")
+        obj_inst.logger.info("set must_change_password")
         if tags.MUST_CHANGE_PASSWORD in kwargs.keys():
             obj_inst.set_must_change_password(kwargs[tags.MUST_CHANGE_PASSWORD])
         else:
             obj_inst.set_must_change_password('NONE')
 
-        logger.info("set disabled")
+        obj_inst.logger.info("set disabled")
         if tags.DISABLED in kwargs.keys():
             obj_inst.set_disabled(kwargs[tags.DISABLED])
         else:
             obj_inst.set_disabled('NONE')
 
-        logger.info("set days_to_expiry")
+        obj_inst.logger.info("set days_to_expiry")
         if tags.DAYS_TO_EXPIRY in kwargs.keys():
             obj_inst.set_days_to_expiry(kwargs[tags.DAYS_TO_EXPIRY])
         else:
             obj_inst.set_days_to_expiry('NONE')
 
-        logger.info("set mins_to_unlock")
+        obj_inst.logger.info("set mins_to_unlock")
         if tags.MINS_TO_UNLOCK in kwargs.keys():
             obj_inst.set_mins_to_unlock(kwargs[tags.MINS_TO_UNLOCK])
         else:
             obj_inst.set_mins_to_unlock('NONE')
 
-        logger.info("set default_warehouse")
+        obj_inst.logger.info("set default_warehouse")
         if tags.DEFAULT_WAREHOUSE in kwargs.keys():
             obj_inst.set_default_warehouse(kwargs[tags.DEFAULT_WAREHOUSE])
         else:
             obj_inst.set_default_warehouse('NONE')
 
-        logger.info("set default_role")
+        obj_inst.logger.info("set default_role")
         if tags.DEFAULT_ROLE in kwargs.keys():
             obj_inst.set_default_role(kwargs[tags.DEFAULT_ROLE])
         else:
             obj_inst.set_default_role('NONE')
 
-        logger.info("set default_secondary_roles")
+        obj_inst.logger.info("set default_secondary_roles")
         if tags.DEFAULT_SECONDARY_ROLES in kwargs.keys():
             obj_inst.set_default_secondary_roles(kwargs[tags.DEFAULT_SECONDARY_ROLES])
         else:
             obj_inst.set_default_secondary_roles('NONE')
 
-        logger.info("set mins_to_by_pass_mfa")
+        obj_inst.logger.info("set mins_to_by_pass_mfa")
         if tags.MINS_TO_BY_PASS_MFA in kwargs.keys():
             obj_inst.set_mins_to_by_pass_mfa(kwargs[tags.MINS_TO_BY_PASS_MFA])
         else:
             obj_inst.set_mins_to_by_pass_mfa('NONE')
 
-        logger.info("set rsa_public_key")
+        obj_inst.logger.info("set rsa_public_key")
         if tags.RSA_PUBLIC_KEY in kwargs.keys():
             obj_inst.set_rsa_public_key(kwargs[tags.RSA_PUBLIC_KEY])
         else:
             obj_inst.set_rsa_public_key('NONE')
 
-        logger.info("set rsa_public_key_fp")
+        obj_inst.logger.info("set rsa_public_key_fp")
         if tags.RSA_PUBLIC_KEY_FP in kwargs.keys():
             obj_inst.set_rsa_public_key_fp(kwargs[tags.RSA_PUBLIC_KEY_FP])
         else:
             obj_inst.set_rsa_public_key_fp('NONE')
 
-        logger.info("set rsa_public_key_2")
+        obj_inst.logger.info("set rsa_public_key_2")
         if tags.RSA_PUBLIC_KEY_2 in kwargs.keys():
             obj_inst.set_rsa_public_key_2(kwargs[tags.RSA_PUBLIC_KEY_2])
         else:
             obj_inst.set_rsa_public_key_2('NONE')
 
-        logger.info("set rsa_public_key_2_fp")
+        obj_inst.logger.info("set rsa_public_key_2_fp")
         if tags.RSA_PUBLIC_KEY_2_FP in kwargs.keys():
             obj_inst.set_rsa_public_key_2_fp(kwargs[tags.RSA_PUBLIC_KEY_2_FP])
         else:
             obj_inst.set_rsa_public_key_2_fp('NONE')
 
-        logger.info("set type")
+        obj_inst.logger.info("set type")
         if tags.TYPE in kwargs.keys():
             obj_inst.set_type(kwargs[tags.TYPE])
         else:
             obj_inst.set_type('NONE')
 
-        logger.info("set comment")
+        obj_inst.logger.info("set comment")
         if tags.COMMENT in kwargs.keys():
             obj_inst.set_comment(kwargs[tags.COMMENT])
         else:
             obj_inst.set_comment('NONE')
 
-        logger.info("set enable_unredacted_query_syntax_error")
+        obj_inst.logger.info("set enable_unredacted_query_syntax_error")
         if tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR in kwargs.keys():
             obj_inst.set_enable_unredacted_query_syntax_error(kwargs[tags.ENABLE_UNREDACTED_QUERY_SYNTAX_ERROR])
         else:
@@ -778,13 +778,13 @@ class Operation:
 
 
 
-        logger.info('prepare query')
+        obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
         
-        logger.info('execute query')
+        obj_inst.logger.info('execute query')
         obj_inst.execute_final_query()
 
-        logger.info('git sync')
+        obj_inst.logger.info('git sync')
         obj_inst.write_file_to_git()
         
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
