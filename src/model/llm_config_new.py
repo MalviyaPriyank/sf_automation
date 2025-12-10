@@ -250,9 +250,9 @@ tools = {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "query": {
+                            "src_db": {
                                 "type":"string",
-                                "description":"user request"
+                                "description":"source database name"
                             },
                         },
                         "required":[
@@ -284,7 +284,7 @@ tools = {
                             },
                         },
                         "required":[
-                            "src_db", "tgt_db", "object_list"
+                            "src_db", "tgt_db"
                         ]
                     }
                 }

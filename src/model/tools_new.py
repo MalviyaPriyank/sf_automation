@@ -205,7 +205,7 @@ class LLMTools:
         allowed_objects = deploy_inst.get_objects_ready_for_deployment("IN DEVELOPMENT")
         return f"Allowed objects for deployment: {allowed_objects}"
 
-    def deploy_objects(self, tgt_db, object_list):
+    def deploy_objects(self, src_db, tgt_db, object_list):
         deploy_inst = deploy.Deploy(self.sf_session,logger=self.logger)
         deploy_inst.deploy_from_dev_to_test(src_db=src_db,tgt_db=tgt_db, **{'OBJECT_LST': object_list})
         return "Deployment completed successfully"

@@ -220,26 +220,6 @@ tools = {
         },
         {
             "toolSpec": {
-                "name":"deploy_all_dev_to_test",
-                "description":"deploys all objects from dev environment to test environment.",
-                "inputSchema": {
-                    "json":{
-                        "type":"object",
-                        "properties": {
-                            "query": {
-                                "type":"string",
-                                "description":"user query"
-                            }
-                        },
-                        "required":[
-                            "query"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "toolSpec": {
                 "name":"create_cdc",
                 "description":"pull incremental data from SQL Server to Snowflake, one-time load not a pipeline.",
                 "inputSchema": {
@@ -270,9 +250,9 @@ tools = {
                     "json":{
                         "type":"object",
                         "properties": {
-                            "query": {
+                            "src_db": {
                                 "type":"string",
-                                "description":"user request"
+                                "description":"source database name"
                             },
                         },
                         "required":[
@@ -304,7 +284,7 @@ tools = {
                             },
                         },
                         "required":[
-                            "src_db", "tgt_db", "object_list"
+                            "src_db", "tgt_db"
                         ]
                     }
                 }
