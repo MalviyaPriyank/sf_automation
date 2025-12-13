@@ -16,7 +16,7 @@ from validation.validateobject import ValidateObject as vo
 from dep import deploy
 from setup import privilege 
 from processing.stage import Stage
-from .baseobj import BaseObject 
+from src.obj.baseobj import BaseObject 
 from vars.obj.notificationintegrationemail.gvnotificationintegrationemai import NotificationIntegrationEmailTag as tags
 from src.usr.user import ChatHistory
 
@@ -30,14 +30,8 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
-            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
-            vo.is_new_integration(session=instance.parent.session,object_type=instance.parent.__class__.__name__,object_name=name)
-            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
-                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
-                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
-                ):
-                instance._name = name
-                instance._rename_to="NONE"
+            instance._name = name
+            instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for alter operation")
             old_name=value["NAME"]
@@ -46,9 +40,6 @@ class Name:
             instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
-                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
-                vo.integration_exist(session=instance.parent.session,integration_name=old_name)
-                vo.is_new_integration(session=instance.parent.session,object_type=instance.parent.__class__.__name__,object_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -65,8 +56,6 @@ class Enabled:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
-        vv.is_bool(value=value, object_type= instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
         instance._enabled = value
 
     
@@ -100,7 +89,6 @@ class AllowedRecipients:
             for email in value:
                 email=f"{email}"
                 instance.parent.logger.info(f"checking if {email} is valid user")
-                vo.is_valid_user_email(session=instance.parent.session,user_email=email)
                 instance.parent.logger.info(f"{email} passed valid user check")
             for i in range(0,len(value)):
                 if i != len(value)-1:
@@ -125,7 +113,6 @@ class DefaultRecipients:
             vv.is_list(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             for email in value:
                 email=f"{email}"
-                vo.is_valid_user_email(session=instance.parent.session,user_email=email)
             for i in range(0,len(value)):
                 if i != len(value)-1:
                     value_str=value_str+f"'{email}',"
@@ -142,12 +129,7 @@ class DefaultSubject:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        if value=='NONE':
-            instance._default_subject=value
-        else:
-            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
-            vv.is_string_of_allowed_length(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,allowed_length=gv._allowed_length_subject)
-            instance._default_subject = f"'{value}'"
+        instance._default_subject=value
 
     def __delete__(self,instance):
         del instance._default_subject
@@ -282,13 +264,6 @@ class Operation:
 
         logger.info('prepare query')
         obj_inst.prepare_query()
-        
-        logger.info('execute query')
-        obj_inst.execute_final_query()
-
-        logger.info('create deployment entry')
-        obj_inst.write_file_to_git()
-
         
         user_chat_inst.add_to_chat_history(object_type=obj_inst.__class__.__name__,
                                         object_identifier=obj_inst.attr.name[0],

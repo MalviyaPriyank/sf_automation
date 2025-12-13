@@ -374,58 +374,25 @@ class Deploy:
         #test_db = self.get_db_name_of_environment(_test_env)
 
         self.logger.info(f"deploying from {src_db} to {tgt_db}")
-        self.logger.info(f" kwargs : {kwargs}")
-        if 'OBJECT_LST' in kwargs.keys():
-            kwargs['OBJECT_LST']=json.loads(kwargs['OBJECT_LST'])
-            self.logger.info(f" for objects : {kwargs['OBJECT_LST']}")
-            object_lst=kwargs['OBJECT_LST']
-        
-        self.logger.info
-        if len(object_lst):
-            for obj in object_lst:
-                self.logger.info(f" getting scripts for {obj}")
-                sql_lst,id_lst = self.__get_scripts_to_deploy(src_db,**{'OBJECT':obj})
-                vd.scripts_exist(
-                    lst=sql_lst,
-                    deployment_status=f'{cfg._deployment_status_in_development}',
-                    src_db=src_db,
-                    **{'OBJECT':obj}
-                )
-                for i in range(0,len(sql_lst)):
-                    qry=sql_lst[i]
-                    id=id_lst[i]
-                    self.logger.info(f"src qry: {qry}")
-                    self.logger.info(f"id  : {id}")
-                    if src_db.upper() in qry.upper():
-                        qry=qry.replace(src_db,tgt_db)
-                        self.logger.info(f"deploying qry: {qry}")
-                        self.run_query(qry=qry)
-                        self.__update_record_deployment_dtls(id=id)
-                        self.logger.info(f" deployed : {id}")
-                    else:
-                        self.logger.info(f"{src_db.upper()} not found id {qry.upper()} ") 
-                    self.logger.info(f"All scripts deployed successfully for {obj} ")
-            self.logger.info("All objects deployed successfully")
-        else:
-            self.logger.info(f"deploying all objects for {src_db}")
-            sql_lst,id_lst = self.__get_scripts_to_deploy(src_db)
-            vd.scripts_exist(
-                lst=sql_lst,
-                deployment_status=f'{cfg._deployment_status_in_development}',
-                src_db=src_db
-            )
-            for i in range(0,len(sql_lst)):
-                qry=sql_lst[i]
-                id=id_lst[i]
-                self.logger.info(f"deploying: {qry}")
-                self.logger.info(f"id  : {id}")
-                if src_db.upper() in qry.upper():
-                    qry=qry.replace(src_db,tgt_db)
-                    self.run_query(qry=qry)
-                    self.__update_record_deployment_dtls(id=id)
-                    self.logger.info(f" deployed : {id}")
-                else:
-                    self.logger.info(f"{src_db.upper()} not found id {qry.upper()} ")
+        self.logger.info(f"deploying all objects for {src_db}")
+        sql_lst,id_lst = self.__get_scripts_to_deploy(src_db)
+        vd.scripts_exist(
+            lst=sql_lst,
+            deployment_status=f'{cfg._deployment_status_in_development}',
+            src_db=src_db
+        )
+        for i in range(0,len(sql_lst)):
+            qry=sql_lst[i]
+            id=id_lst[i]
+            self.logger.info(f"deploying: {qry}")
+            self.logger.info(f"id  : {id}")
+            if src_db.upper() in qry.upper():
+                qry=qry.replace(src_db,tgt_db)
+                self.run_query(qry=qry)
+                self.__update_record_deployment_dtls(id=id)
+                self.logger.info(f" deployed : {id}")
+            else:
+                self.logger.info(f"{src_db.upper()} not found id {qry.upper()} ")
             self.logger.info(f" Deployment successfull for {src_db}")
         return 'Deployment Successful'
 
