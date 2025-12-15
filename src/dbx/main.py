@@ -1,4 +1,4 @@
-from session import DatabricksSession as dbx
+from session import DbxSession as dbx
 
 if __name__=='__main__':
     dbx_inst=dbx()

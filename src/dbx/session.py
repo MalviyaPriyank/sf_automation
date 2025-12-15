@@ -1,13 +1,14 @@
+from databricks.connect import DatabricksSession
+import os
 
-# add import here 
-
-class DatabricksSession:
-    def __init__(self,):
-        pass
+class DbxSession:
+    def __init__(self):
+        self.host = "dbc-cdf6749f-447c.cloud.databricks.com"
+        self.token = "dapic1831193e6dae964a67886c786849648"
 
     def __set_environment_variables(self):
-        #set your envmt variables here
-        pass
+        os.environ["DATABRICKS_HOST"] = f"https://{self.host}"
+        os.environ["DATABRICKS_TOKEN"] = self.token
 
     def __get_serverless_connection(self):
         self.__set_environment_variables()
@@ -19,4 +20,3 @@ class DatabricksSession:
             session=self.__get_serverless_connection()
         return session
 
-    
