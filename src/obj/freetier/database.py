@@ -8,13 +8,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../exception'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../processing'))
 
-import logging
-logger = logging.getLogger('Database logs')
+
 from validation.validatevalue import ValidateValue as vv
-from validation.validateobject import ValidateObject as vo
 from vars.obj.database.gvdatabase import DatabaseTag as tags
 from src.obj.baseobj import BaseObject 
 from src.usr.user import ChatHistory
+
 
 class Name:
     def __get__(self,instance,owner):
@@ -41,6 +40,8 @@ class Name:
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
                 vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                #vo.database_exist(session=instance.parent.session,database_name=old_name)
+                #vo.is_new_database(session=instance.parent.session,database_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -94,6 +95,7 @@ class ExternalVolume:
         if value=="NONE":
             instance._external_volume = value
         else:
+            #vo.is_valid_external_volume(session=instance.parent.session,external_volume_identifier=value,object_type=self.__class__.__name__)
             instance._external_volume=value
 
     def __delete__(self,instance):
@@ -109,6 +111,7 @@ class Catalog:
             instance._catalog=value
         else:
             vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            #vo.is_valid_catalog(session=instance.parent.session,catalog_identifier=value,object_type=self.__class__.__name__)
             instance._catalog=value
 
     def __delete__(self,instance):
@@ -382,6 +385,7 @@ class Database(BaseObject):
 
     def create_database(self):
         self.execute_final_query()
+
     
 class Operation:
     @staticmethod
@@ -470,6 +474,12 @@ class Operation:
             db_inst.prepare_query()
 
             if kwargs[tags.IS_CREATE] == "TRUE":
+                db_inst.logger.info('execute query')
+                #db_inst.create_database()
+
+                db_inst.logger.info('grant default priv')
+                #self.grant_default_privileges()
+
                 user_chat_inst.add_to_chat_history(object_type=db_inst.__class__.__name__,
                                                 object_identifier=db_inst.attr.name[0],
                                                 qry=db_inst.qry)

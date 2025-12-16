@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from src.obj.baseobj import BaseObject
 from vars.obj.failovergroup.gvfailovergroup import FailoverGroupTag as tags
+
 from validation.validatevalue import ValidateValue as vv
 from src.usr.user import ChatHistory
 
@@ -17,8 +18,13 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
-            instance._name = name
-            instance._rename_to="NONE"
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for alter operation")
             old_name=value["NAME"]
@@ -27,6 +33,7 @@ class Name:
             instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -44,6 +51,13 @@ class ObjectTypes:
         return instance._object_types
 
     def __set__(self, instance, value):
+        vv.required_attribute_check(value=value,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get("OBJECT TYPES"),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
         instance._object_types=value
         
 
@@ -56,6 +70,7 @@ class AllowedDatabases:
         return instance._allowed_databases
 
     def __set__(self, instance, value):
+        # expects list of database names
         instance._allowed_databases=value
 
     def __delete__(self, instance):
@@ -89,6 +104,9 @@ class ReplicationSchedule:
         return instance._replication_schedule
 
     def __set__(self, instance, value):
+        vv.is_valid_cron(value=value,
+                         object_type=instance.parent.__class__.__name__,
+                         attr_name=self.__class__.__name__)
         instance._replication_schedule = value
 
     def __delete__(self, instance):
@@ -174,6 +192,21 @@ class FailoverGroup(BaseObject):
             if self.attr.name[1] != "NONE":
                 self.property_lst.append(tags.NAME)
             self.alter_object()
+
+    def create_object(self, *largs, **kwargs):
+        self.logger.info(f"Operating on {self.__class__.__name__}, create flag : {kwargs[tags.IS_CREATE]}")
+        self.logger.info(f"Dictionary passed {kwargs}")
+        self.is_create = kwargs[tags.IS_CREATE]
+
+        self.set_name(kwargs[tags.NAME])
+        self.set_object_types(kwargs[tags.OBJECT_TYPES])
+        self.set_allowed_databases(kwargs[tags.ALLOWED_DATABASES])
+        self.set_allowed_shares(kwargs[tags.ALLOWED_SHARES])
+        self.set_allowed_accounts(kwargs[tags.ALLOWED_ACCOUNTS])
+        self.set_replication_schedule(kwargs[tags.REPLICATION_SCHEDULE])
+
+        self.prepare_query()
+        self.execute_final_query()
 
 class Operation:
     @staticmethod

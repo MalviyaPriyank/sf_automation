@@ -6,13 +6,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../validation'))
 sys.path.append(os.path.join(os.path.dirname(__file__),'../deploy'))
 
 
-from vars.gvobject import Config as cfg,Privilege as gv_priv
 from validation.validatevalue import ValidateValue as vv
 from vars.obj.internalstage.gvinternalstage import InternalStageTag as tags
-from dep.deploy import Deploy
 from validation.validateobject import ValidateObject as vo
-from setup import privilege
-from .baseobj import BaseObject 
+from src.obj.baseobj import BaseObject 
 from src.usr.user import ChatHistory
 
 class Database:
@@ -20,6 +17,9 @@ class Database:
         return instance._database
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #vo.database_exist(session=instance.parent.session, database_name=value)
+        #if vo.database_exist(value):
         instance._database = value
     
     def __delete__(self,instance):
@@ -31,6 +31,9 @@ class Schema:
         return instance._schema
     
     def __set__(self,instance,value):
+        vv.required_attribute_check(value,instance.parent.__class__.__name__,self.__class__.__name__)
+        #vo.schema_exist(session=instance.parent.session, database_name=instance._database, schema_name=value)
+        #if vo.schema_exist(instance._database,value):
         instance._schema = value
     
     def __delete__(self,instance):
@@ -45,8 +48,14 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
-            instance._name = name
-            instance._rename_to="NONE"
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            #vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._schema,stage=name,obj_type=instance.parent.__class__.__name__,obj_name=self.__class__.__name__)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for alter operation")
             old_name=value["NAME"]
@@ -55,6 +64,9 @@ class Name:
             instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                #vo.stage_exist(session=instance.parent.session,database_name=instance._database,schema_name=instance._schema,stage_name=old_name)
+                #vo.is_new_stage(session=instance.parent.session,database=instance._database,schema=instance._schema,stage=new_name,obj_type=instance.parent.__class__.__name__,obj_name=instance.__class__.__name__)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -74,6 +86,7 @@ class FileFormat:
         if value=='NONE':
             instance._file_format=value
         else:
+            #vo.file_format_exist(session=instance.parent.session, database_name=instance._database, schema_name=instance._schema, file_format_name=value)
             instance._file_format = value
 
     def __delete__(self,instance):
@@ -99,6 +112,7 @@ class Encryption:
         if value == "NONE":
             instance._encryption = value
         else:
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.ENCRYPTION) ,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._encryption = value
 
     def __delete__(self,instance):
@@ -113,6 +127,7 @@ class Enable:
         if value == "NONE":
             instance._enable = value
         else:
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._enable = value
 
     def __delete__(self,instance):
@@ -128,6 +143,7 @@ class RefreshOnCreate:
             instance._refresh_on_create = value
         else:
             if instance._enable != "NONE":
+                vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
                 instance._refresh_on_create = value
             else:
                 vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=" when Directory table is not enabled")
@@ -373,6 +389,8 @@ class Operation:
             obj_inst.set_refresh_on_create(kwargs[tags.REFRESH_ON_CREATE])
         else:
             obj_inst.set_refresh_on_create('NONE')
+
+
 
         logger.info('prepare query')
         obj_inst.prepare_query()

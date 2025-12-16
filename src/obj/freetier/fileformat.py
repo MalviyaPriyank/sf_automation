@@ -30,8 +30,14 @@ class Name:
         if instance.parent.is_create=="TRUE":
             name=value["NAME"]
             instance.parent.logger.info(f" for create operation setting name: {name}")
-            instance._name = name
-            instance._rename_to="NONE"
+            vv.required_attribute_check(name,instance.parent.__class__.__name__,self.__class__.__name__)
+            #vo.is_new_file_format(session=instance.parent.session,database_name=database_name,schema_name=schema_name,file_format_name=name)
+            if ( vv.starts_with_alphabet(name,instance.parent.__class__.__name__,self.__class__.__name__) 
+                and not vv.has_space(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                and not vv.has_special_characters_except_underscore(name,instance.parent.__class__.__name__,self.__class__.__name__)
+                ):
+                instance._name = name
+                instance._rename_to="NONE"
         else:
             instance.parent.logger.info(f" for alter operation")
             old_name=value["NAME"]
@@ -40,6 +46,9 @@ class Name:
             instance.parent.logger.info(f"new name {new_name}")
             if new_name!="NONE":
                 instance.parent.logger.info(f" changing name from {old_name} to {new_name}")
+                vv.required_attribute_check(old_name,instance.parent.__class__.__name__,self.__class__.__name__)
+                #vo.file_format_exist(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,file_format_name=old_name)
+                #vo.is_new_file_format(session=instance.parent.session,database_name=instance.parent.attr.database,schema_name=instance.parent.attr.schema,file_format_name=new_name)
                 instance._name=old_name
                 instance._rename_to=new_name
             else:
@@ -61,6 +70,7 @@ class Type:
         if value=="NONE":
             instance._type=value
         else:
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.TYPE),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
             instance._type = value
 
     def __del__(self,instance):
@@ -74,7 +84,39 @@ class Compression:
         instance.parent.print_setter(self.__class__.__name__,value)
         if value=="NONE":
             instance._compression=value
-        else:
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_allowed_value( value=value
+                                ,allowed_list=tags.allowed_value_list().get(tags.COMPRESSION)[tags.allowed_value_list().get(tags.TYPE)[0]]
+                                ,object_type=instance.parent.__class__.__name__
+                                ,attr_name=self.__class__.__name__)
+            instance._compression=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.is_allowed_value(value=value
+                                ,allowed_list=tags.allowed_value_list().get(tags.COMPRESSION)[tags.allowed_value_list().get(tags.TYPE)[1]]
+                                ,object_type=instance.parent.__class__.__name__
+                                ,attr_name=self.__class__.__name__)
+            instance._compression=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.is_allowed_value(value=value
+                                ,allowed_list=tags.allowed_value_list().get(tags.COMPRESSION)[tags.allowed_value_list().get(tags.TYPE)[2]]
+                                ,object_type=instance.parent.__class__.__name__
+                                ,attr_name=self.__class__.__name__)
+            instance._compression=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__
+                            ,attr_name=self.__class__.__name__
+                            ,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.is_allowed_value(value=value
+                                ,allowed_list=tags.allowed_value_list().get(tags.COMPRESSION)[tags.allowed_value_list().get(tags.TYPE)[4]]
+                                ,object_type=instance.parent.__class__.__name__
+                                ,attr_name=self.__class__.__name__)
+            instance._compression=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.is_allowed_value(value=value
+                                ,allowed_list=tags.allowed_value_list().get(tags.COMPRESSION)[tags.allowed_value_list().get(tags.TYPE)[5]]
+                                ,object_type=instance.parent.__class__.__name__
+                                ,attr_name=self.__class__.__name__)
             instance._compression=value
 
     def __del__(self,instance):
@@ -87,8 +129,24 @@ class RecordDelimiter:
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
         instance.parent.logger.info(f" setting {self.__class__.__name__} as {value}")
-        instance._record_delimiter = value
-
+        if value=="NONE":
+            instance._record_delimiter = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            if value == '\n':
+                instance.parent.logger.info("new line character detected")
+                value = "\\n"
+            instance._record_delimiter=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._record_delimiter
@@ -99,7 +157,21 @@ class FieldDelimiter:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._field_delimiter=value
+        if value=="NONE":
+            instance._field_delimiter=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._field_delimiter=f"'{value}'"
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._field_delimiter
@@ -110,7 +182,21 @@ class MultiLine:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._multi_line=value
+        if value=="NONE":
+            instance._multi_line=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] 
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV & JSON
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._multi_line=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+
 
     def __del__(self,instance):
         del instance._multi_line  
@@ -121,7 +207,20 @@ class FileExtension:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._file_extension=value
+        if value=="NONE":
+            instance._file_extension=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._file_extension=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._file_extension      
@@ -132,7 +231,21 @@ class ParseHeader:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._parse_header=value
+        if value=="NONE":
+            instance._parse_header=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._parse_header=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._parse_header
@@ -143,7 +256,21 @@ class SkipHeader:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._skip_header = value  
+        if value == "NONE":
+            instance._skip_header = value  
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._skip_header=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._skip_header
@@ -154,8 +281,22 @@ class SkipBlankLines:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._skip_blank_lines=value
-
+        if value=="NONE":
+            instance._skip_blank_lines=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]:#CSV
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._skip_blank_lines=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+       
     def __del__(self,instance):
         del instance._skip_blank_lines
 
@@ -165,8 +306,21 @@ class DateFormat:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._date_format=value
-        
+        if value=="NONE":
+            instance._date_format=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._date_format=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+
     def __del__(self,instance):
         del instance._date_format
 
@@ -176,7 +330,20 @@ class TimeFormat:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._time_format=value
+        if value=="NONE":
+            instance._time_format=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._time_format=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._time_format
@@ -187,7 +354,20 @@ class TimestampFormat:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._timestamp_format=value
+        if value=="NONE":
+            instance._timestamp_format=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._timestamp_format=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -199,8 +379,21 @@ class BinaryFormat:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._binary_format=value
-     
+        if value=="NONE":
+            instance._binary_format=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]):#CSV
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.BINARY_FORMAT),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._binary_format=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+
     def __del__(self,instance):
         del instance._binary_format
 
@@ -210,7 +403,21 @@ class Escape:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._escape = value
+        if value == "NONE":
+            instance._escape = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._escape = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._escape
@@ -221,7 +428,21 @@ class EscapeUnenclosedField:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._escape_unenclosed_field = value
+        if value == "NONE":
+            instance._escape_unenclosed_field = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._escape_unenclosed_field = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         
     def __del__(self,instance):
         del instance._escape_unenclosed_field
@@ -232,7 +453,17 @@ class TrimSpace:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._trim_space=value
+        if value=="NONE":
+            instance._trim_space=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]):
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._trim_space=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]:
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._trim_space
@@ -243,7 +474,21 @@ class FieldOptionallyEnclosedBy:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._field_optionally_enclosed_by = value
+        if value == "NONE":
+            instance._field_optionally_enclosed_by = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            #vv.is_single_byte_characetr(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._field_optionally_enclosed_by = 'NONE'
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -255,7 +500,17 @@ class NullIf:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._null_if=value
+        if value=="NONE":
+            instance._null_if=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[1] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[2] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[3] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[4]):
+            vv.is_string(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._null_if=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._null_if
@@ -266,7 +521,21 @@ class ErrorOnColumnCountMismatch:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._error_on_column_count_mismatch = value
+        if value == "NONE":
+            instance._error_on_column_count_mismatch = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._error_on_column_count_mismatch = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
             
 
     def __del__(self,instance):
@@ -278,7 +547,11 @@ class ReplaceInvalidCharacters:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._replace_invalid_characters = value
+        if value == "NONE":
+            instance._replace_invalid_characters = value
+        else: 
+            vv.is_bool(value,instance.parent.__class__.__name__,self.__class__.__name__)
+            instance._replace_invalid_characters = value
             
     def __del__(self,instance):
         del instance._replace_invalid_characters
@@ -289,7 +562,21 @@ class EmptyFieldAsNull:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._empty_field_as_null = value
+        if value == "NONE":
+            instance._empty_field_as_null = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._empty_field_as_null = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._empty_field_as_null
@@ -300,7 +587,15 @@ class SkipByteOrderMark:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._skip_byte_order_mark = value
+        if value == "NONE":
+            instance._skip_byte_order_mark = value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[1] or 
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[5] ):
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._skip_byte_order_mark=value
+        else:
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._skip_byte_order_mark
@@ -311,7 +606,21 @@ class Encoding:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._encoding = value
+        if value == "NONE":
+            instance._encoding = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.is_allowed_value(value=value,allowed_list=tags.allowed_value_list().get(tags.ENCODING),object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._encoding = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -323,7 +632,21 @@ class EnableOctal:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._enable_octal = value
+        if value == "NONE":
+            instance._enable_octal = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._enable_octal=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._enable_octal    
@@ -334,7 +657,21 @@ class AllowDuplicate:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._allow_duplicate = value
+        if value == "NONE":
+            instance._allow_duplicate = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._allow_duplicate=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -347,7 +684,21 @@ class StripOuterArray:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._strip_outer_array = value
+        if value == "NONE":
+            instance._strip_outer_array = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._strip_outer_array=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
         
     def __del__(self,instance):
@@ -359,7 +710,21 @@ class StripNullValues:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._strip_null_values = value
+        if value == "NONE":
+            instance._strip_null_values = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[0]: #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[1]: #JSON
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._strip_null_values=value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[2]: #AVRO
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[3]: #ORC
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} Files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
         
     def __del__(self,instance):
@@ -371,7 +736,17 @@ class IgnoreUTF8Errors:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._ignore_utf8_errors = value
+        if value == "NONE":
+            instance._ignore_utf8_errors = value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[1] or
+            instance._type == tags.allowed_value_list().get(tags.TYPE)[5]) : #JSON and XML
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._ignore_utf8_errors=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]): #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
         
     def __del__(self,instance):
         del instance._ignore_utf8_errors
@@ -382,8 +757,18 @@ class SnappyCompression:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._snappy_compression = value
-       
+        if value == "NONE":
+            instance._snappy_compression = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._snappy_compression=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[5]): #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
+        
 
     def __del__(self,instance):
         del instance._snappy_compression
@@ -395,7 +780,17 @@ class BinaryAsText:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._binary_as_text = value
+        if value == "NONE":
+            instance._binary_as_text = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._binary_as_text=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[5]): #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
 
     def __del__(self,instance):
@@ -408,7 +803,17 @@ class UseLogicalType:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._use_logical_type = value
+        if value == "NONE":
+            instance._use_logical_type = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._use_logical_type=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[5]): #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._use_logical_type
@@ -419,7 +824,17 @@ class UseVectorizedScanner:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._use_vectorized_scanner = value
+        if value == "NONE":
+            instance._use_vectorized_scanner = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[4]: #PARQUET
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._use_vectorized_scanner=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[5]): #CSV
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._use_vectorized_scanner
@@ -430,7 +845,17 @@ class PreserveSpace:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._preserve_space = value
+        if value == "NONE":
+            instance._preserve_space = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._preserve_space=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]): 
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._preserve_space
@@ -441,7 +866,17 @@ class StripOuterElement:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._strip_outer_element = value
+        if value == "NONE":
+            instance._strip_outer_element = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._strip_outer_element=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]): 
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._strip_outer_element
@@ -452,7 +887,17 @@ class DisableSnowflakeData:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._disable_snowflake_data = value
+        if value == "NONE":
+            instance._disable_snowflake_data = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._disable_snowflake_data=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]): 
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._disable_snowflake_data
@@ -463,7 +908,17 @@ class DisableAutoConvert:
     
     def __set__(self,instance,value):
         instance.parent.print_setter(self.__class__.__name__,value)
-        instance._disable_auto_convert = value
+        if value == "NONE":
+            instance._disable_auto_convert = value
+        elif instance._type == tags.allowed_value_list().get(tags.TYPE)[5]: #XML
+            vv.is_bool(value=value,object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__)
+            instance._disable_auto_convert=value
+        elif (instance._type == tags.allowed_value_list().get(tags.TYPE)[0]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[1]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[2]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[3]
+              or instance._type == tags.allowed_value_list().get(tags.TYPE)[4]): 
+            vv.not_required(object_type=instance.parent.__class__.__name__,attr_name=self.__class__.__name__,condition=f" for {instance._type} files ")
 
     def __del__(self,instance):
         del instance._disable_auto_convert
@@ -893,6 +1348,9 @@ class FileFormat(BaseObject):
             if self.attr.name[1] != "NONE":
                 self.property_lst.append(tags.NAME)
             self.alter_object()
+
+    def create_file_format(self):
+        self.execute_final_query()
 
 class Operation:
     @staticmethod
