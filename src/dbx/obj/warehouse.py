@@ -163,7 +163,7 @@ class WarehouseAttrs:
     cluster_size=ClusterSize()
     creator_name=CreatorName()
     enable_photon=EnablePhoton()
-    enables_serverless_compute=EnableServerlessCompute()
+    enable_serverless_compute=EnableServerlessCompute()
     instance_profile_arn=InstanceProfileARN()
     max_num_clusters=MaxNumClusters()
     min_num_clusters=MinNumClusters()
@@ -186,7 +186,7 @@ class Warehouse():
     def set_cluster_size(self, v): self.attr.cluster_size = v
     def set_creator_name(self, v): self.attr.creator_name = v
     def set_enable_photon(self, v): self.attr.enable_photon = v
-    def set_enables_serverless_compute(self, v): self.attr.enables_serverless_compute = v
+    def set_enable_serverless_compute(self, v): self.attr.enable_serverless_compute = v
     def set_instance_profile_arn(self, v): self.attr.instance_profile_arn = v
     def set_max_num_clusters(self, v): self.attr.max_num_clusters = v
     def set_min_num_clusters(self, v): self.attr.min_num_clusters = v
@@ -264,26 +264,85 @@ class Operation:
             obj_inst.set_auto_stop_mins('NONE')
         obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
 
+        #channel_dbsql_version and channel_name
         
         if tags.CLUSTER_SIZE in kwargs.keys():
             obj_inst.set_cluster_size(kwargs[tags.CLUSTER_SIZE])
         else:
             obj_inst.set_cluster_size('NONE')
-        obj_inst.logger.info(f"set users {obj_inst.attr.users}")
+        obj_inst.logger.info(f"set cluster_size {obj_inst.attr.cluster_size}")
 
         
-        if tags.EMAIL_DISTRIBUTION_LIST in kwargs.keys():
-            obj_inst.set_email_distribution_list(kwargs[tags.EMAIL_DISTRIBUTION_LIST])
+        if tags.CREATOR_NAME in kwargs.keys():
+            obj_inst.set_creator_name(kwargs[tags.CREATOR_NAME])
         else:
-            obj_inst.set_email_distribution_list('NONE')
-        obj_inst.logger.info(f"set email_distribution_list {obj_inst.attr.email_distribution_list}")
+            obj_inst.set_creator_name('NONE')
+        obj_inst.logger.info(f"set creator_name {obj_inst.attr.creator_name}")
 
         
-        if tags.URL in kwargs.keys():
-            obj_inst.set_url(kwargs[tags.URL])
+        if tags.ENABLE_PHOTON in kwargs.keys():
+            obj_inst.set_enable_photon(kwargs[tags.ENABLE_PHOTON])
         else:
-            obj_inst.set_url('NONE')
-        obj_inst.logger.info(f"set url {obj_inst.attr.url}")
+            obj_inst.set_enable_photon('NONE')
+        obj_inst.logger.info(f"set enable_photon {obj_inst.attr.enable_photon}")
+
+
+        if tags.ENABLE_SERVERLESS_COMPUTE in kwargs.keys():
+            obj_inst.set_enable_serverless_compute(kwargs[tags.ENABLE_SERVERLESS_COMPUTE])
+        else:
+            obj_inst.set_enable_serverless_compute('NONE')
+        obj_inst.logger.info(f"set enable_serverless_compute {obj_inst.attr.enable_serverless_compute}")
+
+
+        if tags.INSTANCE_PROFILE_ARN in kwargs.keys():
+            obj_inst.set_instance_profile_arn(kwargs[tags.INSTANCE_PROFILE_ARN])
+        else:
+            obj_inst.set_instance_profile_arn('NONE')
+        obj_inst.logger.info(f"set instance_profile_arn {obj_inst.attr.instance_profile_arn}")
+
+        
+        if tags.MAX_NUM_CLUSTERS in kwargs.keys():
+            obj_inst.set_max_num_clusters(kwargs[tags.MAX_NUM_CLUSTERS])
+        else:
+            obj_inst.set_max_num_clusters('NONE')
+        obj_inst.logger.info(f"set max_num_clusters {obj_inst.attr.max_num_clusters}")
+
+        
+        if tags.MIN_NUM_CLUSTERS in kwargs.keys():
+            obj_inst.set_min_num_clusters(kwargs[tags.MIN_NUM_CLUSTERS])
+        else:
+            obj_inst.set_min_num_clusters('NONE')
+        obj_inst.logger.info(f"set min_num_clusters {obj_inst.attr.min_num_clusters}")
+
+
+        if tags.NAME in kwargs.keys():
+            obj_inst.set_name(kwargs[tags.NAME])
+        else:
+            obj_inst.set_name('NONE')
+        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
+
+        
+        if tags.SPOT_INSTANCE_POLICY in kwargs.keys():
+            obj_inst.set_spot_instance_policy(kwargs[tags.SPOT_INSTANCE_POLICY])
+        else:
+            obj_inst.set_spot_instance_policy('NONE')
+        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+
+        
+        if tags.TAGS in kwargs.keys():
+            obj_inst.set_tags(kwargs[tags.TAGS])
+        else:
+            obj_inst.set_tags('NONE')
+        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+
+
+        if tags.WAREHOUSE_TYPE in kwargs.keys():
+            obj_inst.set_warehouse_type(kwargs[tags.WAREHOUSE_TYPE])
+        else:
+            obj_inst.set_warehouse_type('NONE')
+        obj_inst.logger.info(f"set warehouse_type {obj_inst.attr.warehouse_type}")
+
+
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
