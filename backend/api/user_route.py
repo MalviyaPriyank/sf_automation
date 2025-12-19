@@ -1,10 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from models.user import User
-# from db.mongo import collection_users
-# from schema.user import individual_serial
-# from bson import ObjectId
-
-from db.mongo import mongo_service
+from db.mongo import MongoService
+mongo_service = MongoService()
 
 router = APIRouter()
 
