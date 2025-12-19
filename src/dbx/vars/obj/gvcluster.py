@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
-class Cluster_Tags:
+class ClusterTags:
     APPLY_POLICY_DEFAULT_VALUES="APPLY_POLICY_DEFAULT_VALUES"
     AUTO_SCALE_MAX_WORKERS="AUTO_SCALE_MAX_WORKERS"
     AUTO_SCALE_MIN_WORKERS="AUTO_SCALE_MIN_WORKERS"

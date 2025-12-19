@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../vars'))
 
 from .baseobj import BaseObject
-from src.dbx.vars.obj.gvcluster import Cluster_Tags as tags
+from src.dbx.vars.obj.gvcluster import ClusterTags as tags
 from src.validation.validatevalue import ValidateValue as vv
 from src.validation.validateobject import ValidateObject as vo
 from src.usr.user import ChatHistory
@@ -921,407 +921,404 @@ class Operation:
         obj_inst.logger.info(f'dictionary passed {kwargs}')
 
         if tags.APPLY_POLICY_DEFAULT_VALUES in kwargs.keys():
-            obj_inst.set_auto_stop_mins(kwargs[tags.APPLY_POLICY_DEFAULT_VALUES])
+            obj_inst.set_apply_policy_default_values(kwargs[tags.APPLY_POLICY_DEFAULT_VALUES])
         else:
-            obj_inst.set_auto_stop_mins('NONE')
-        obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
+            obj_inst.set_apply_policy_default_values('NONE')
+        obj_inst.logger.info(f"set apply_policy_default_values {obj_inst.attr.apply_policy_default_values}")
 
-        #channel_dbsql_version and channel_name
         
         if tags.AUTO_SCALE_MAX_WORKERS in kwargs.keys():
-            obj_inst.set_cluster_size(kwargs[tags.AUTO_SCALE_MAX_WORKERS])
+            obj_inst.set_auto_scale_max_workers(kwargs[tags.AUTO_SCALE_MAX_WORKERS])
         else:
-            obj_inst.set_cluster_size('NONE')
-        obj_inst.logger.info(f"set cluster_size {obj_inst.attr.cluster_size}")
+            obj_inst.set_auto_scale_max_workers('NONE')
+        obj_inst.logger.info(f"set auto_scale_max_workers {obj_inst.attr.auto_scale_max_workers}")
 
         
         if tags.AUTO_SCALE_MIN_WORKERS in kwargs.keys():
-            obj_inst.set_creator_name(kwargs[tags.AUTO_SCALE_MIN_WORKERS])
+            obj_inst.set_auto_scale_min_workers(kwargs[tags.AUTO_SCALE_MIN_WORKERS])
         else:
-            obj_inst.set_creator_name('NONE')
-        obj_inst.logger.info(f"set creator_name {obj_inst.attr.creator_name}")
+            obj_inst.set_auto_scale_min_workers('NONE')
+        obj_inst.logger.info(f"set auto_scale_min_workers {obj_inst.attr.auto_scale_min_workers}")
 
         
         if tags.AUTOTERMINATION_MINUTES in kwargs.keys():
-            obj_inst.set_enable_photon(kwargs[tags.AUTOTERMINATION_MINUTES])
+            obj_inst.set_autotermination_minutes(kwargs[tags.AUTOTERMINATION_MINUTES])
         else:
-            obj_inst.set_enable_photon('NONE')
-        obj_inst.logger.info(f"set enable_photon {obj_inst.attr.enable_photon}")
+            obj_inst.set_autotermination_minutes('NONE')
+        obj_inst.logger.info(f"set autotermination_minutes {obj_inst.attr.autotermination_minutes}")
 
 
         if tags.AWS_ATTRIBUTES_AVAILABILITY in kwargs.keys():
-            obj_inst.set_enable_serverless_compute(kwargs[tags.AWS_ATTRIBUTES_AVAILABILITY])
+            obj_inst.set_aws_attributes_availability(kwargs[tags.AWS_ATTRIBUTES_AVAILABILITY])
         else:
-            obj_inst.set_enable_serverless_compute('NONE')
-        obj_inst.logger.info(f"set enable_serverless_compute {obj_inst.attr.enable_serverless_compute}")
+            obj_inst.set_aws_attributes_availability('NONE')
+        obj_inst.logger.info(f"set aws_attributes_availability {obj_inst.attr.aws_attributes_availability}")
 
 
         if tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT in kwargs.keys():
-            obj_inst.set_instance_profile_arn(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT])
+            obj_inst.set_aws_attributes_ebs_volume_count(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT])
         else:
-            obj_inst.set_instance_profile_arn('NONE')
-        obj_inst.logger.info(f"set instance_profile_arn {obj_inst.attr.instance_profile_arn}")
+            obj_inst.set_aws_attributes_ebs_volume_count('NONE')
+        obj_inst.logger.info(f"set aws_attributes_ebs_volume_count {obj_inst.attr.aws_attributes_ebs_volume_count}")
 
         
         if tags.AWS_ATTRIBUTES_EBS_VOLUME_IOPS in kwargs.keys():
-            obj_inst.set_max_num_clusters(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_IOPS])
+            obj_inst.set_aws_attributes_ebs_volume_iops(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_IOPS])
         else:
-            obj_inst.set_max_num_clusters('NONE')
-        obj_inst.logger.info(f"set max_num_clusters {obj_inst.attr.max_num_clusters}")
+            obj_inst.set_aws_attributes_ebs_volume_iops('NONE')
+        obj_inst.logger.info(f"set aws_attributes_ebs_volume_iops {obj_inst.attr.aws_attributes_ebs_volume_iops}")
 
         
         if tags.AWS_ATTRIBUTES_EBS_VOLUME_SIZE in kwargs.keys():
-            obj_inst.set_min_num_clusters(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_SIZE])
+            obj_inst.set_aws_attributes_ebs_volume_size(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_SIZE])
         else:
-            obj_inst.set_min_num_clusters('NONE')
-        obj_inst.logger.info(f"set min_num_clusters {obj_inst.attr.min_num_clusters}")
+            obj_inst.set_aws_attributes_ebs_volume_size('NONE')
+        obj_inst.logger.info(f"set aws_attributes_ebs_volume_size {obj_inst.attr.aws_attributes_ebs_volume_size}")
 
 
         if tags.AWS_ATTRIBUTES_EBS_VOLUME_THROUGHPUT in kwargs.keys():
-            obj_inst.set_name(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_THROUGHPUT])
+            obj_inst.set_aws_attributes_ebs_volume_throughput(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_THROUGHPUT])
         else:
-            obj_inst.set_name('NONE')
-        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
+            obj_inst.set_aws_attributes_ebs_volume_throughput('NONE')
+        obj_inst.logger.info(f"set aws_attributes_ebs_volume_throughput {obj_inst.attr.aws_attributes_ebs_volume_throughput}")
 
         
         if tags.AWS_ATTRIBUTES_EBS_VOLUME_TYPE in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_TYPE])
+            obj_inst.set_aws_attributes_ebs_volume_type(kwargs[tags.AWS_ATTRIBUTES_EBS_VOLUME_TYPE])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_aws_attributes_ebs_volume_type('NONE')
+        obj_inst.logger.info(f"set aws_attributes_ebs_volume_type {obj_inst.attr.aws_attributes_ebs_volume_type}")
 
         
         if tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND])
+            obj_inst.set_aws_attributes_first_on_demand(kwargs[tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_aws_attributes_first_on_demand('NONE')
+        obj_inst.logger.info(f"set aws_attributes_first_on_demand {obj_inst.attr.aws_attributes_first_on_demand}")
 
 
         if tags.AWS_ATTRIBUTES_INSTANCE_PROFILE_ARN in kwargs.keys():
-            obj_inst.set_warehouse_type(kwargs[tags.AWS_ATTRIBUTES_INSTANCE_PROFILE_ARN])
+            obj_inst.set_aws_attributes_instance_profile_arn(kwargs[tags.AWS_ATTRIBUTES_INSTANCE_PROFILE_ARN])
         else:
-            obj_inst.set_warehouse_type('NONE')
-        obj_inst.logger.info(f"set warehouse_type {obj_inst.attr.warehouse_type}")
+            obj_inst.set_aws_attributes_instance_profile_arn('NONE')
+        obj_inst.logger.info(f"set aws_attributes_instance_profile_arn {obj_inst.attr.aws_attributes_instance_profile_arn}")
 
 
         if tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT])
+            obj_inst.set_aws_attributes_spot_bid_price_percent(kwargs[tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_aws_attributes_spot_bid_price_percent('NONE')
+        obj_inst.logger.info(f"set aws_attributes_spot_bid_price_percent {obj_inst.attr.aws_attributes_spot_bid_price_percent}")
 
         
         if tags.AWS_ATTRIBUTES_ZONE_ID in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.AWS_ATTRIBUTES_ZONE_ID])
+            obj_inst.set_aws_attributes_zone_id(kwargs[tags.AWS_ATTRIBUTES_ZONE_ID])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_aws_attributes_zone_id('NONE')
+        obj_inst.logger.info(f"set aws_attributes_zone_id {obj_inst.attr.aws_attributes_zone_id}")
 
 
         if tags.CLONE_FROM_SOURCE_CLUSTER_ID in kwargs.keys():
-            obj_inst.set_auto_stop_mins(kwargs[tags.CLONE_FROM_SOURCE_CLUSTER_ID])
+            obj_inst.set_clone_from_source_cluster_id(kwargs[tags.CLONE_FROM_SOURCE_CLUSTER_ID])
         else:
-            obj_inst.set_auto_stop_mins('NONE')
-        obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
+            obj_inst.set_clone_from_source_cluster_id('NONE')
+        obj_inst.logger.info(f"set clone_from_source_cluster_id {obj_inst.attr.clone_from_source_cluster_id}")
 
         
         if tags.CLUSTER_LOG_CONF_DBFS in kwargs.keys():
-            obj_inst.set_cluster_size(kwargs[tags.CLUSTER_LOG_CONF_DBFS])
+            obj_inst.set_cluster_log_conf_dbfs(kwargs[tags.CLUSTER_LOG_CONF_DBFS])
         else:
-            obj_inst.set_cluster_size('NONE')
-        obj_inst.logger.info(f"set cluster_size {obj_inst.attr.cluster_size}")
+            obj_inst.set_cluster_log_conf_dbfs('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_dbfs {obj_inst.attr.cluster_log_conf_dbfs}")
 
         
         if tags.CLUSTER_LOG_CONF_S3 in kwargs.keys():
-            obj_inst.set_creator_name(kwargs[tags.CLUSTER_LOG_CONF_S3])
+            obj_inst.set_cluster_log_conf_s3(kwargs[tags.CLUSTER_LOG_CONF_S3])
         else:
-            obj_inst.set_creator_name('NONE')
-        obj_inst.logger.info(f"set creator_name {obj_inst.attr.creator_name}")
+            obj_inst.set_cluster_log_conf_s3('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3 {obj_inst.attr.cluster_log_conf_s3}")
 
         
         if tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS in kwargs.keys():
-            obj_inst.set_enable_photon(kwargs[tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS])
+            obj_inst.set_cluster_log_conf_volumes_destinations(kwargs[tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS])
         else:
-            obj_inst.set_enable_photon('NONE')
-        obj_inst.logger.info(f"set enable_photon {obj_inst.attr.enable_photon}")
+            obj_inst.set_cluster_log_conf_volumes_destinations('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_volumes_destinations {obj_inst.attr.cluster_log_conf_volumes_destinations}")
 
 
         if tags.CLUSTER_NAME in kwargs.keys():
-            obj_inst.set_enable_serverless_compute(kwargs[tags.CLUSTER_NAME])
+            obj_inst.set_cluster_name(kwargs[tags.CLUSTER_NAME])
         else:
-            obj_inst.set_enable_serverless_compute('NONE')
-        obj_inst.logger.info(f"set enable_serverless_compute {obj_inst.attr.enable_serverless_compute}")
+            obj_inst.set_cluster_name('NONE')
+        obj_inst.logger.info(f"set cluster_name {obj_inst.attr.cluster_name}")
 
 
         if tags.CUSTOM_TAGS_RESOURCECLASS in kwargs.keys():
-            obj_inst.set_instance_profile_arn(kwargs[tags.CUSTOM_TAGS_RESOURCECLASS])
+            obj_inst.set_custom_tags_resourceclass(kwargs[tags.CUSTOM_TAGS_RESOURCECLASS])
         else:
-            obj_inst.set_instance_profile_arn('NONE')
-        obj_inst.logger.info(f"set instance_profile_arn {obj_inst.attr.instance_profile_arn}")
+            obj_inst.set_custom_tags_resourceclass('NONE')
+        obj_inst.logger.info(f"set custom_tags_resourceclass {obj_inst.attr.custom_tags_resourceclass}")
 
         
         if tags.DATA_SECURITY_MODE in kwargs.keys():
-            obj_inst.set_max_num_clusters(kwargs[tags.DATA_SECURITY_MODE])
+            obj_inst.set_data_security_mode(kwargs[tags.DATA_SECURITY_MODE])
         else:
-            obj_inst.set_max_num_clusters('NONE')
-        obj_inst.logger.info(f"set max_num_clusters {obj_inst.attr.max_num_clusters}")
+            obj_inst.set_data_security_mode('NONE')
+        obj_inst.logger.info(f"set data_security_mode {obj_inst.attr.data_security_mode}")
 
         
         if tags.DOCKER_IMAGE_BASIC_AUTH in kwargs.keys():
-            obj_inst.set_min_num_clusters(kwargs[tags.DOCKER_IMAGE_BASIC_AUTH])
+            obj_inst.set_docker_image_basic_auth(kwargs[tags.DOCKER_IMAGE_BASIC_AUTH])
         else:
-            obj_inst.set_min_num_clusters('NONE')
-        obj_inst.logger.info(f"set min_num_clusters {obj_inst.attr.min_num_clusters}")
+            obj_inst.set_docker_image_basic_auth('NONE')
+        obj_inst.logger.info(f"set docker_image_basic_auth {obj_inst.attr.docker_image_basic_auth}")
 
 
         if tags.DOCKER_IMAGE_URL in kwargs.keys():
-            obj_inst.set_name(kwargs[tags.DOCKER_IMAGE_URL])
+            obj_inst.set_docker_image_url(kwargs[tags.DOCKER_IMAGE_URL])
         else:
-            obj_inst.set_name('NONE')
-        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
+            obj_inst.set_docker_image_url('NONE')
+        obj_inst.logger.info(f"set docker_image_url {obj_inst.attr.docker_image_url}")
 
         
         if tags.DRIVER_INSTANCE_POOL_ID in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.DRIVER_INSTANCE_POOL_ID])
+            obj_inst.set_driver_instance_pool_id(kwargs[tags.DRIVER_INSTANCE_POOL_ID])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_driver_instance_pool_id('NONE')
+        obj_inst.logger.info(f"set driver_instance_pool_id {obj_inst.attr.driver_instance_pool_id}")
 
         
         if tags.DRIVER_NODE_TYPE_ID in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.DRIVER_NODE_TYPE_ID])
+            obj_inst.set_driver_node_type_id(kwargs[tags.DRIVER_NODE_TYPE_ID])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_driver_node_type_id('NONE')
+        obj_inst.logger.info(f"set driver_node_type_id {obj_inst.attr.driver_node_type_id}")
 
 
         if tags.ENABLE_ELASTIC_DISK in kwargs.keys():
-            obj_inst.set_warehouse_type(kwargs[tags.ENABLE_ELASTIC_DISK])
+            obj_inst.set_enable_elastic_disk(kwargs[tags.ENABLE_ELASTIC_DISK])
         else:
-            obj_inst.set_warehouse_type('NONE')
-        obj_inst.logger.info(f"set warehouse_type {obj_inst.attr.warehouse_type}")
+            obj_inst.set_enable_elastic_disk('NONE')
+        obj_inst.logger.info(f"set enable_elastic_disk {obj_inst.attr.enable_elastic_disk}")
 
 
         if tags.ENABLE_LOCAL_DISK_ENCRYPTION in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.ENABLE_LOCAL_DISK_ENCRYPTION])
+            obj_inst.set_enable_local_disk_encryption(kwargs[tags.ENABLE_LOCAL_DISK_ENCRYPTION])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_enable_local_disk_encryption('NONE')
+        obj_inst.logger.info(f"set enable_local_disk_encryption {obj_inst.attr.enable_local_disk_encryption}")
 
         
         if tags.INIT_SCRIPTS_ABFSS_DESTINATION in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.INIT_SCRIPTS_ABFSS_DESTINATION])
+            obj_inst.set_init_scripts_abfss_destination(kwargs[tags.INIT_SCRIPTS_ABFSS_DESTINATION])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_init_scripts_abfss_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_abfss_destination {obj_inst.attr.init_scripts_abfss_destination}")
 
 
         if tags.INIT_SCRIPTS_DBFS_DESTINATION in kwargs.keys():
-            obj_inst.set_auto_stop_mins(kwargs[tags.INIT_SCRIPTS_DBFS_DESTINATION])
+            obj_inst.set_init_scripts_dbfs_destination(kwargs[tags.INIT_SCRIPTS_DBFS_DESTINATION])
         else:
-            obj_inst.set_auto_stop_mins('NONE')
-        obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
+            obj_inst.set_init_scripts_dbfs_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_dbfs_destination {obj_inst.attr.init_scripts_dbfs_destination}")
 
         
         if tags.INIT_SCRIPTS_FILE_DESTINATION in kwargs.keys():
-            obj_inst.set_cluster_size(kwargs[tags.INIT_SCRIPTS_FILE_DESTINATION])
+            obj_inst.set_init_scripts_file_destination(kwargs[tags.INIT_SCRIPTS_FILE_DESTINATION])
         else:
-            obj_inst.set_cluster_size('NONE')
-        obj_inst.logger.info(f"set cluster_size {obj_inst.attr.cluster_size}")
+            obj_inst.set_init_scripts_file_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_file_destination {obj_inst.attr.init_scripts_file_destination}")
 
         
         if tags.INIT_SCRIPTS_GCS_DESTINATION in kwargs.keys():
-            obj_inst.set_creator_name(kwargs[tags.INIT_SCRIPTS_GCS_DESTINATION])
+            obj_inst.set_init_scripts_gcs_destination(kwargs[tags.INIT_SCRIPTS_GCS_DESTINATION])
         else:
-            obj_inst.set_creator_name('NONE')
-        obj_inst.logger.info(f"set creator_name {obj_inst.attr.creator_name}")
+            obj_inst.set_init_scripts_gcs_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_gcs_destination {obj_inst.attr.init_scripts_gcs_destination}")
 
         
         if tags.INIT_SCRIPTS_S3_CANNED_ACL in kwargs.keys():
-            obj_inst.set_enable_photon(kwargs[tags.INIT_SCRIPTS_S3_CANNED_ACL])
+            obj_inst.set_init_scripts_s3_canned_acl(kwargs[tags.INIT_SCRIPTS_S3_CANNED_ACL])
         else:
-            obj_inst.set_enable_photon('NONE')
-        obj_inst.logger.info(f"set enable_photon {obj_inst.attr.enable_photon}")
+            obj_inst.set_init_scripts_s3_canned_acl('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_canned_acl {obj_inst.attr.init_scripts_s3_canned_acl}")
 
 
         if tags.INIT_SCRIPTS_S3_DESTINATION in kwargs.keys():
-            obj_inst.set_enable_serverless_compute(kwargs[tags.INIT_SCRIPTS_S3_DESTINATION])
+            obj_inst.set_init_scripts_s3_destination(kwargs[tags.INIT_SCRIPTS_S3_DESTINATION])
         else:
-            obj_inst.set_enable_serverless_compute('NONE')
-        obj_inst.logger.info(f"set enable_serverless_compute {obj_inst.attr.enable_serverless_compute}")
+            obj_inst.set_init_scripts_s3_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_destination {obj_inst.attr.init_scripts_s3_canned_acl}")
 
 
         if tags.INIT_SCRIPTS_S3_ENABLE_ENCRYPTION in kwargs.keys():
-            obj_inst.set_instance_profile_arn(kwargs[tags.INIT_SCRIPTS_S3_ENABLE_ENCRYPTION])
+            obj_inst.set_init_scripts_s3_enable_encryption(kwargs[tags.INIT_SCRIPTS_S3_ENABLE_ENCRYPTION])
         else:
-            obj_inst.set_instance_profile_arn('NONE')
-        obj_inst.logger.info(f"set instance_profile_arn {obj_inst.attr.instance_profile_arn}")
+            obj_inst.set_init_scripts_s3_enable_encryption('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_enable_encryption {obj_inst.attr.init_scripts_s3_enable_encryption}")
 
         
         if tags.INIT_SCRIPTS_S3_ENCRYPTION_TYPE in kwargs.keys():
-            obj_inst.set_max_num_clusters(kwargs[tags.INIT_SCRIPTS_S3_ENCRYPTION_TYPE])
+            obj_inst.set_init_scripts_s3_encryption_type(kwargs[tags.INIT_SCRIPTS_S3_ENCRYPTION_TYPE])
         else:
-            obj_inst.set_max_num_clusters('NONE')
-        obj_inst.logger.info(f"set max_num_clusters {obj_inst.attr.max_num_clusters}")
+            obj_inst.set_init_scripts_s3_encryption_type('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_encryption_type {obj_inst.attr.init_scripts_s3_encryption_type}")
 
         
         if tags.INIT_SCRIPTS_S3_ENDPOINT in kwargs.keys():
-            obj_inst.set_min_num_clusters(kwargs[tags.INIT_SCRIPTS_S3_ENDPOINT])
+            obj_inst.set_init_scripts_s3_endpoint(kwargs[tags.INIT_SCRIPTS_S3_ENDPOINT])
         else:
-            obj_inst.set_min_num_clusters('NONE')
-        obj_inst.logger.info(f"set min_num_clusters {obj_inst.attr.min_num_clusters}")
+            obj_inst.set_init_scripts_s3_endpoint('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_endpoint {obj_inst.attr.init_scripts_s3_endpoint}")
 
 
         if tags.INIT_SCRIPTS_S3_KMS_KEY in kwargs.keys():
-            obj_inst.set_name(kwargs[tags.INIT_SCRIPTS_S3_KMS_KEY])
+            obj_inst.set_init_scripts_s3_kms_key(kwargs[tags.INIT_SCRIPTS_S3_KMS_KEY])
         else:
-            obj_inst.set_name('NONE')
-        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
+            obj_inst.set_init_scripts_s3_kms_key('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_kms_key {obj_inst.attr.init_scripts_s3_kms_key}")
 
         
         if tags.INIT_SCRIPTS_S3_REGION in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.INIT_SCRIPTS_S3_REGION])
+            obj_inst.set_init_scripts_s3_region(kwargs[tags.INIT_SCRIPTS_S3_REGION])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_init_scripts_s3_region('NONE')
+        obj_inst.logger.info(f"set init_scripts_s3_region {obj_inst.attr.init_scripts_s3_region}")
 
         
         if tags.INIT_SCRIPTS_VOLUMES_DESTINATION in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.INIT_SCRIPTS_VOLUMES_DESTINATION])
+            obj_inst.set_init_scripts_volumes_destination(kwargs[tags.INIT_SCRIPTS_VOLUMES_DESTINATION])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_init_scripts_volumes_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_volumes_destination {obj_inst.attr.init_scripts_volumes_destination}")
 
 
         if tags.INIT_SCRIPTS_WORKSPACE_DESTINATION in kwargs.keys():
-            obj_inst.set_warehouse_type(kwargs[tags.INIT_SCRIPTS_WORKSPACE_DESTINATION])
+            obj_inst.set_init_scripts_workspace_destination(kwargs[tags.INIT_SCRIPTS_WORKSPACE_DESTINATION])
         else:
-            obj_inst.set_warehouse_type('NONE')
-        obj_inst.logger.info(f"set warehouse_type {obj_inst.attr.warehouse_type}")
+            obj_inst.set_init_scripts_workspace_destination('NONE')
+        obj_inst.logger.info(f"set init_scripts_workspace_destination {obj_inst.attr.init_scripts_workspace_destination}")
 
 
         if tags.INSTANCE_POOL_ID in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.INSTANCE_POOL_ID])
+            obj_inst.set_instance_pool_id(kwargs[tags.INSTANCE_POOL_ID])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_instance_pool_id('NONE')
+        obj_inst.logger.info(f"set instance_pool_id {obj_inst.attr.instance_pool_id}")
 
         
         if tags.IS_SINGLE_NODE in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.IS_SINGLE_NODE])
+            obj_inst.set_is_single_node(kwargs[tags.IS_SINGLE_NODE])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_is_single_node('NONE')
+        obj_inst.logger.info(f"set is_single_node {obj_inst.attr.is_single_node}")
 
 
         if tags.KIND in kwargs.keys():
-            obj_inst.set_auto_stop_mins(kwargs[tags.KIND])
+            obj_inst.set_kind(kwargs[tags.KIND])
         else:
-            obj_inst.set_auto_stop_mins('NONE')
-        obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
+            obj_inst.set_kind('NONE')
+        obj_inst.logger.info(f"set kind {obj_inst.attr.kind}")
 
         
         if tags.NODE_TYPE_ID in kwargs.keys():
-            obj_inst.set_cluster_size(kwargs[tags.NODE_TYPE_ID])
+            obj_inst.set_node_type_id(kwargs[tags.NODE_TYPE_ID])
         else:
-            obj_inst.set_cluster_size('NONE')
-        obj_inst.logger.info(f"set cluster_size {obj_inst.attr.cluster_size}")
+            obj_inst.set_node_type_id('NONE')
+        obj_inst.logger.info(f"set node_type_id {obj_inst.attr.node_type_id}")
 
         
         if tags.NUM_WORKERS in kwargs.keys():
-            obj_inst.set_creator_name(kwargs[tags.NUM_WORKERS])
+            obj_inst.set_num_workers(kwargs[tags.NUM_WORKERS])
         else:
-            obj_inst.set_creator_name('NONE')
-        obj_inst.logger.info(f"set creator_name {obj_inst.attr.creator_name}")
+            obj_inst.set_num_workers('NONE')
+        obj_inst.logger.info(f"set num_workers {obj_inst.attr.num_workers}")
 
         
         if tags.POLICY_ID in kwargs.keys():
-            obj_inst.set_enable_photon(kwargs[tags.POLICY_ID])
+            obj_inst.set_policy_id(kwargs[tags.POLICY_ID])
         else:
-            obj_inst.set_enable_photon('NONE')
-        obj_inst.logger.info(f"set enable_photon {obj_inst.attr.enable_photon}")
+            obj_inst.set_policy_id('NONE')
+        obj_inst.logger.info(f"set policy_id {obj_inst.attr.policy_id}")
 
 
         if tags.RUNTIME_ENGINE in kwargs.keys():
-            obj_inst.set_enable_serverless_compute(kwargs[tags.RUNTIME_ENGINE])
+            obj_inst.set_runtime_engine(kwargs[tags.RUNTIME_ENGINE])
         else:
-            obj_inst.set_enable_serverless_compute('NONE')
-        obj_inst.logger.info(f"set enable_serverless_compute {obj_inst.attr.enable_serverless_compute}")
+            obj_inst.set_runtime_engine('NONE')
+        obj_inst.logger.info(f"set runtime_engine {obj_inst.attr.runtime_engine}")
 
 
         if tags.SINGLE_USER_NAME in kwargs.keys():
-            obj_inst.set_instance_profile_arn(kwargs[tags.SINGLE_USER_NAME])
+            obj_inst.set_single_user_name(kwargs[tags.SINGLE_USER_NAME])
         else:
-            obj_inst.set_instance_profile_arn('NONE')
-        obj_inst.logger.info(f"set instance_profile_arn {obj_inst.attr.instance_profile_arn}")
+            obj_inst.set_single_user_name('NONE')
+        obj_inst.logger.info(f"set single_user_name {obj_inst.attr.single_user_name}")
 
         
         if tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE in kwargs.keys():
-            obj_inst.set_max_num_clusters(kwargs[tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE])
+            obj_inst.set_spark_conf_spark_databricks_cluster_profile(kwargs[tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE])
         else:
-            obj_inst.set_max_num_clusters('NONE')
-        obj_inst.logger.info(f"set max_num_clusters {obj_inst.attr.max_num_clusters}")
+            obj_inst.set_spark_conf_spark_databricks_cluster_profile('NONE')
+        obj_inst.logger.info(f"set spark_conf_spark_databricks_cluster_profile {obj_inst.attr.spark_conf_spark_databricks_cluster_profile}")
 
         
         if tags.SPARK_CONF_MASTER in kwargs.keys():
-            obj_inst.set_min_num_clusters(kwargs[tags.SPARK_CONF_MASTER])
+            obj_inst.set_spark_conf_master(kwargs[tags.SPARK_CONF_MASTER])
         else:
-            obj_inst.set_min_num_clusters('NONE')
-        obj_inst.logger.info(f"set min_num_clusters {obj_inst.attr.min_num_clusters}")
+            obj_inst.set_spark_conf_master('NONE')
+        obj_inst.logger.info(f"set spark_conf_master {obj_inst.attr.spark_conf_master}")
 
 
         if tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY in kwargs.keys():
-            obj_inst.set_name(kwargs[tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY])
+            obj_inst.set_spark_env_vars_spark_worker_memory(kwargs[tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY])
         else:
-            obj_inst.set_name('NONE')
-        obj_inst.logger.info(f"set name {obj_inst.attr.name}")
+            obj_inst.set_spark_env_vars_spark_worker_memory('NONE')
+        obj_inst.logger.info(f"set spark_env_vars_spark_worker_memory {obj_inst.attr.spark_env_vars_spark_worker_memory}")
 
         
         if tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS])
+            obj_inst.set_spark_env_vars_spark_daemon_java_opts(kwargs[tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_spark_env_vars_spark_daemon_java_opts('NONE')
+        obj_inst.logger.info(f"set spark_env_vars_spark_daemon_java_opts {obj_inst.attr.spark_env_vars_spark_daemon_java_opts}")
 
         
         if tags.SPARK_VERSION in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.SPARK_VERSION])
+            obj_inst.set_spark_version(kwargs[tags.SPARK_VERSION])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_spark_version('NONE')
+        obj_inst.logger.info(f"set spark_version {obj_inst.attr.spark_version}")
 
 
         if tags.SSH_PUBLIC_KEYS in kwargs.keys():
-            obj_inst.set_warehouse_type(kwargs[tags.SSH_PUBLIC_KEYS])
+            obj_inst.set_ssh_public_keys(kwargs[tags.SSH_PUBLIC_KEYS])
         else:
-            obj_inst.set_warehouse_type('NONE')
-        obj_inst.logger.info(f"set warehouse_type {obj_inst.attr.warehouse_type}")
+            obj_inst.set_ssh_public_keys('NONE')
+        obj_inst.logger.info(f"set ssh_public_keys {obj_inst.attr.ssh_public_keys}")
 
 
         if tags.USE_ML_RUNTIME in kwargs.keys():
-            obj_inst.set_spot_instance_policy(kwargs[tags.USE_ML_RUNTIME])
+            obj_inst.set_use_ml_runtime(kwargs[tags.USE_ML_RUNTIME])
         else:
-            obj_inst.set_spot_instance_policy('NONE')
-        obj_inst.logger.info(f"set spot_instance_policy {obj_inst.attr.spot_instance_policy}")
+            obj_inst.set_use_ml_runtime('NONE')
+        obj_inst.logger.info(f"set use_ml_runtime {obj_inst.attr.use_ml_runtime}")
 
         
         if tags.WORKLOAD_TYPE_CLIENTS_JOBS in kwargs.keys():
-            obj_inst.set_tags(kwargs[tags.WORKLOAD_TYPE_CLIENTS_JOBS])
+            obj_inst.set_workload_type_clients_jobs(kwargs[tags.WORKLOAD_TYPE_CLIENTS_JOBS])
         else:
-            obj_inst.set_tags('NONE')
-        obj_inst.logger.info(f"set tags {obj_inst.attr.tags}")
+            obj_inst.set_workload_type_clients_jobs('NONE')
+        obj_inst.logger.info(f"set workload_type_clients_jobs {obj_inst.attr.workload_type_clients_jobs}")
 
 
         if tags.WORKLOAD_TYPE_CLIENTS_NOTEBOOKS in kwargs.keys():
-            obj_inst.set_auto_stop_mins(kwargs[tags.WORKLOAD_TYPE_CLIENTS_NOTEBOOKS])
+            obj_inst.set_workload_type_clients_notebooks(kwargs[tags.WORKLOAD_TYPE_CLIENTS_NOTEBOOKS])
         else:
-            obj_inst.set_auto_stop_mins('NONE')
-        obj_inst.logger.info(f"set set_auto_stop_mins {obj_inst.attr.auto_stop_mins}")
+            obj_inst.set_workload_type_clients_notebooks('NONE')
+        obj_inst.logger.info(f"set workload_type_clients_notebooks {obj_inst.attr.workload_type_clients_notebooks}")
 
-
-        
-
+   
 
         obj_inst.logger.info('prepare query')
         obj_inst.prepare_query()
