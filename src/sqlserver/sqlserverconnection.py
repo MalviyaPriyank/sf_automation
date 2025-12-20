@@ -79,7 +79,26 @@ class SqlServerOperations:
         res=self.__execute_query_and_get_result(qry=qry,**{'INCREMENT_LSN':lsn})
         self.logger.info(f" LSN incremented succefully")
         return res[0]
+    
+
+    def create_table_query(self, table_name: str, column_name_list: list, column_name_type: list, primary_key: str, foreign_keys: dict) -> str:
+        lines = []
         
+        # column section
+        for name, type in zip(column_name_list, column_name_type):
+            if name == primary_key:
+                lines.append(f"{name} {type} PRIMARY KEY")
+            else:
+                lines.append(f"{name} {type}")
+
+        # foreign keys section
+        for table, key in foreign_keys.items():
+            lines.append(f"FOREIGN KEY ({key}) REFERENCES {table}({key})")
+
+        self.qry = f"CREATE TABLE {table_name} \n "
+        self.qry += ",\n ".join(lines)
+        self.qry += f"\n)"
+        return self.qry    
     
     def get_incremental_data(self,cdc_inst:CDC,table_name,db_name):
         res=cdc_inst.get_latest_identifier(server='MSSQL',object_name=table_name,database_name=db_name)
