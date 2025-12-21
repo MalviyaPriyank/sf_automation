@@ -57,7 +57,12 @@ class AutoScaleMinWorkers:
         return instance._auto_scale_min_workers
     
     def __set__(self, instance, value):
-        instance._auto_scale_min_workers=value
+        if instance._cluster_type=='AUTO_SCALING':
+            vv.required_attribute_check(value=value,
+                                        object_type=instance.parent.__class__.__name__,
+                                        attr_name=self.__class__.__name__)
+            
+            instance._auto_scale_min_workers=value
 
     def __delete__(self, instance):
         del instance._auto_scale_min_workers
