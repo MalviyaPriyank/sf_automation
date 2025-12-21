@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from base import BaseMethod
 
 @dataclass(frozen=True)
-class ClusterTags:
+class ClusterTags(BaseMethod):
+    CLUSTER_TYPE='CLUSTER_TYPE'
     APPLY_POLICY_DEFAULT_VALUES="APPLY_POLICY_DEFAULT_VALUES"
     AUTO_SCALE_MAX_WORKERS="AUTO_SCALE_MAX_WORKERS"
     AUTO_SCALE_MIN_WORKERS="AUTO_SCALE_MIN_WORKERS"
@@ -60,4 +62,12 @@ class ClusterTags:
     WORKLOAD_TYPE_CLIENTS_JOBS="WORKLOAD_TYPE_CLIENTS_JOBS"
     WORKLOAD_TYPE_CLIENTS_NOTEBOOKS="WORKLOAD_TYPE_CLIENTS_NOTEBOOKS"
 
+    @classmethod
+    def allowed_value_list(cls):
+        return {
+            "CLUSTER_TYPE": ["AUTOSCALING", "ML_WITH_KIND","SINGLE_NODE","SINGLE_NODE_WITH_KIND","SPOT_INSTANCES"],
+            "API_PROVIDER":{
+                "AMAZON":["aws_api_gateway","aws_private_api_gateway","aws_gov_api_gateway","aws_gov_private_api_gateway"]
+            }
+        }
 

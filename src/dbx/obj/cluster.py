@@ -10,6 +10,22 @@ from src.validation.validateobject import ValidateObject as vo
 from src.usr.user import ChatHistory
 
 
+class ClusterType:
+    def __get__(self, instance, owner):
+        return instance._cluster_type
+    
+    def __set__(self, instance, value):
+        # Bot should first ask for what type of cluster user wants to create.
+        vv.is_allowed_value(value=value,
+                            allowed_list=tags.allowed_value_list().get(tags.CLUSTER_TYPE),
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__
+                            )
+        instance._cluster_type=value
+
+    def __delete__(self, instance):
+        del instance._cluster_type
+
 class ApplyPolicyDefaultValues:
     def __get__(self, instance, owner):
         return instance._apply_policy_default_values
@@ -26,6 +42,10 @@ class AutoScaleMaxWorkers:
         return instance._auto_scale_max_workers
     
     def __set__(self, instance, value):
+        vv.is_greater_than_or_equal_to(value_base=value,
+                                    value_ref=instance._auto_scale_min_workers,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
         instance._auto_scale_max_workers=value
 
     def __delete__(self, instance):
@@ -200,6 +220,7 @@ class ClusterName:
         return instance._cluster_name
     
     def __set__(self, instance, value):
+        # vo.cluster_exist() TBA
         instance._cluster_name=value
 
     def __delete__(self, instance):
@@ -624,7 +645,8 @@ class WorkloadTypeClientsNotebooks:
 class ClusterAttrs:
     def __init__(self,parent):
         self.parent=parent
-
+    
+    cluster_type=ClusterType()
     apply_policy_default_values=ApplyPolicyDefaultValues()
     auto_scale_max_workers=AutoScaleMaxWorkers()
     auto_scale_min_workers=AutoScaleMinWorkers()
@@ -690,10 +712,10 @@ class Cluster():
         self.attr = ClusterAttrs(self)
         self.logger = logger.getChild(self.__class__.__name__)
 
-
+    def cluster_type(self,v): self.attr.cluster_type=v
     def set_apply_policy_default_values(self, v): self.attr.apply_policy_default_values = v
-    def set_auto_scale_max_workers(self, v): self.attr.auto_scale_max_workers = v
     def set_auto_scale_min_workers(self, v): self.attr.auto_scale_min_workers = v
+    def set_auto_scale_max_workers(self, v): self.attr.auto_scale_max_workers = v
     def set_autotermination_minutes(self, v): self.attr.autotermination_minutes = v
     def set_aws_attributes_availability(self, v): self.attr.aws_attributes_availability = v
     def set_aws_attributes_ebs_volume_count(self, v): self.attr.aws_attributes_ebs_volume_count = v
@@ -887,6 +909,12 @@ class Cluster():
         self.check_properties_to_set()
         self.payload={}
         for prop in self.property_lst:
+            if self.attr.cluster_type=="AUTO_SCALE":
+                if prop==tags.AUTO_SCALE_MAX_WORKERS:
+                    self.payload[tags.AUTO_SCALE_MAX_WORKERS]=self.attr.auto_scale_max_workers
+                if prop==tags.AUTO_SCALE_MIN_WORKERS:
+                    self.payload[tags.AUTO_SCALE_MIN_WORKERS]=self.attr.auto_scale_min_workers
+
             if prop == tags.AUTO_STOP_MINS:
                 self.payload[tags.AUTO_STOP_MINS] = self.attr.auto_stop_mins
             if prop==tags.CLUSTER_SIZE:
