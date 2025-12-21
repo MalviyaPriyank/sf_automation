@@ -78,12 +78,26 @@ class AutoterminationMinutes:
     def __delete__(self, instance):
         del instance._autotermination_minutes
 
+
+class AWSAttribute:
+    def __get__(self, instance, owner):
+        return instance._aws_attribute
+    
+    def __set__(self, instance, value):
+        instance._aws_attribute=value
+
+    def __delete__(self, instance):
+        del instance._aws_attribute
+
+
 class AwsAttributesAvailability:
     def __get__(self, instance, owner):
         return instance._aws_attributes_availability
     
     def __set__(self, instance, value):
-        instance._aws_attributes_availability=value
+        if value != "NONE":
+            instance._aws_attributes_availability=value
+            instance.parent.attr.aws_attribute='TRUE'
 
     def __delete__(self, instance):
         del instance._aws_attributes_availability
@@ -93,7 +107,9 @@ class AwsAttributesEbsVolumeCount:
         return instance._aws_attributes_ebs_volume_count
     
     def __set__(self, instance, value):
-        instance._aws_attributes_ebs_volume_count=value
+        if value != "NONE":
+            instance._aws_attributes_ebs_volume_count=value
+            instance.parent.attr.aws_attribute='TRUE'
 
     def __delete__(self, instance):
         del instance._aws_attributes_ebs_volume_count
@@ -650,7 +666,9 @@ class WorkloadTypeClientsNotebooks:
 class ClusterAttrs:
     def __init__(self,parent):
         self.parent=parent
+
     
+    aws_attribute=AWSAttribute()    
     cluster_type=ClusterType()
     apply_policy_default_values=ApplyPolicyDefaultValues()
     auto_scale_max_workers=AutoScaleMaxWorkers()
@@ -915,10 +933,19 @@ class Cluster():
         self.payload={}
         for prop in self.property_lst:
             if self.attr.cluster_type=="AUTO_SCALE":
+                self.payload['autoscale']={}
                 if prop==tags.AUTO_SCALE_MAX_WORKERS:
-                    self.payload[tags.AUTO_SCALE_MAX_WORKERS]=self.attr.auto_scale_max_workers
+                    self.payload['autoscale'][tags.AUTO_SCALE_MAX_WORKERS]=self.attr.auto_scale_max_workers
                 if prop==tags.AUTO_SCALE_MIN_WORKERS:
-                    self.payload[tags.AUTO_SCALE_MIN_WORKERS]=self.attr.auto_scale_min_workers
+                    self.payload['autoscale'][tags.AUTO_SCALE_MIN_WORKERS]=self.attr.auto_scale_min_workers
+                if self.attr.aws_attribute:
+                    self.payload['aws_attribute']={}
+                    if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+
+
+                
+
 
             if prop == tags.AUTO_STOP_MINS:
                 self.payload[tags.AUTO_STOP_MINS] = self.attr.auto_stop_mins
