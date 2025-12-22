@@ -166,6 +166,6 @@ class EchoHandler(BaseHTTPRequestHandler):
         self.wfile.write(reply)
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("0.0.0.0", 8000), EchoHandler)
-    print("Backend running at http://0.0.0.0:8000")
+    server = ThreadingHTTPServer(("0.0.0.0", 4004), EchoHandler)
+    print("Backend running at http://0.0.0.0:4004")
     server.serve_forever()
