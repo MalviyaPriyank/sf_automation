@@ -584,6 +584,16 @@ class SparkConfMaster:
     def __delete__(self, instance):
         del instance._spark_conf_master
 
+class SparkConfSpeculation:
+     def __get__(self, instance, owner):
+        return instance._spark_conf_speculation
+    
+    def __set__(self, instance, value):
+        instance._spark_conf_speculation=value
+
+    def __delete__(self, instance):
+        del instance._spark_conf_speculation   
+
 
 class SparkEnvVarsSparkWorkerMemory:
     def __get__(self, instance, owner):
@@ -612,6 +622,7 @@ class SparkVersion:
         return instance._spark_version
     
     def __set__(self, instance, value):
+        #vo required
         instance._spark_version=value
 
     def __delete__(self, instance):
@@ -720,6 +731,7 @@ class ClusterAttrs:
     single_user_name=SingleUserName()
     spark_conf_spark_databricks_cluster_profile=SparkConfSparkDatabricksClusterProfile()
     spark_conf_master=SparkConfMaster()
+    spark_conf_speculation=SparkConfSpeculation()
     spark_env_vars_spark_worker_memory=SparkEnvVarsSparkWorkerMemory()
     spark_env_vars_spark_daemon_java_opts=SparkEnvVarsSparkDaemonJavaOpts()
     spark_version=SparkVersion()
@@ -786,6 +798,7 @@ class Cluster():
     def set_single_user_name(self, v): self.attr.single_user_name = v
     def set_spark_conf_spark_databricks_cluster_profile(self, v): self.attr.spark_conf_spark_databricks_cluster_profile = v
     def set_spark_conf_master(self, v): self.attr.spark_conf_master = v
+    def set_spark_conf_speculation(self, v): self.attr.spark_conf_speculation = v
     def set_spark_env_vars_spark_worker_memory(self, v): self.attr.spark_env_vars_spark_worker_memory = v
     def set_spark_env_vars_spark_daemon_java_opts(self, v): self.attr.spark_env_vars_spark_daemon_java_opts = v
     def set_spark_version(self, v): self.attr.spark_version = v
@@ -851,6 +864,7 @@ class Cluster():
         set_flag(tags.SINGLE_USER_NAME,"single_user_name")
         set_flag(tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE,"spark_conf_spark_databricks_cluster_profile")
         set_flag(tags.SPARK_CONF_MASTER,"spark_conf_master")
+        set_flag(tags.SPARK_CONF_SPECULATION,"spark_conf_speculation")
         set_flag(tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY,"spark_env_vars_spark_worker_memory")
         set_flag(tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS,"spark_env_vars_spark_daemon_java_opts")
         set_flag(tags.SPARK_VERSION,"spark_version")
@@ -863,68 +877,6 @@ class Cluster():
     def check_properties_to_set(self):
         self.property_lst = [prop for prop, flag in self.flag_dic.items() if flag == 1]
 
-# Different payload specs
-#     class Autoscaling_Cluster_Tags:
-#     AUTO_SCALE_MAX_WORKERS="AUTO_SCALE_MAX_WORKERS"
-#     AUTO_SCALE_MIN_WORKERS="AUTO_SCALE_MIN_WORKERS"
-#     AWS_ATTRIBUTES_AVAILABILITY="AWS_ATTRIBUTES_AVAILABILITY"
-#     AWS_ATTRIBUTES_EBS_VOLUME_COUNT="AWS_ATTRIBUTES_EBS_VOLUME_COUNT"
-#     AWS_ATTRIBUTES_FIRST_ON_DEMAND="AWS_ATTRIBUTES_FIRST_ON_DEMAND"
-#     AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT="AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT"
-#     AWS_ATTRIBUTES_ZONE_ID="AWS_ATTRIBUTES_ZONE_ID"
-#     CLUSTER_NAME="CLUSTER_NAME"
-#     NODE_TYPE_ID="NODE_TYPE_ID"
-#     SPARK_VERSION="SPARK_VERSION"
-
-# class Machine_Learning_Runtime_With_Kind_Cluster_Tags:
-#     AWS_ATTRIBUTES_AVAILABILITY="AWS_ATTRIBUTES_AVAILABILITY"
-#     AWS_ATTRIBUTES_EBS_VOLUME_COUNT="AWS_ATTRIBUTES_EBS_VOLUME_COUNT"
-#     AWS_ATTRIBUTES_FIRST_ON_DEMAND="AWS_ATTRIBUTES_FIRST_ON_DEMAND"
-#     AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT="AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT"
-#     AWS_ATTRIBUTES_ZONE_ID="AWS_ATTRIBUTES_ZONE_ID"
-#     CLUSTER_NAME="CLUSTER_NAME"
-#     KIND="KIND"
-#     NODE_TYPE_ID="NODE_TYPE_ID"
-#     NUM_WORKERS="NUM_WORKERS"
-#     SPARK_VERSION="SPARK_VERSION"
-#     USE_ML_RUNTIME="USE_ML_RUNTIME"
-
-# class Single_Node_Cluster_Tags:
-#     AWS_ATTRIBUTES_AVAILABILITY="AWS_ATTRIBUTES_AVAILABILITY"
-#     AWS_ATTRIBUTES_EBS_VOLUME_COUNT="AWS_ATTRIBUTES_EBS_VOLUME_COUNT"
-#     AWS_ATTRIBUTES_FIRST_ON_DEMAND="AWS_ATTRIBUTES_FIRST_ON_DEMAND"
-#     AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT="AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT"
-#     AWS_ATTRIBUTES_ZONE_ID="AWS_ATTRIBUTES_ZONE_ID"
-#     CLUSTER_NAME="CLUSTER_NAME"
-#     CUSTOMER_TAGS_RESOURCECLASS="CUSTOMER_TAGS_RESOURCECLASS"
-#     NODE_TYPE_ID="NODE_TYPE_ID"
-#     NUM_WORKERS="NUM_WORKERS"
-#     SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE="SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE"
-#     SPARK_CONF_MASTER="SPARK_CONF_MASTER"
-#     SPARK_VERSION="SPARK_VERSION"
-#     USE_ML_RUNTIME="USE_ML_RUNTIME"
-
-# class Single_Node_With_Kind_Cluster_Tags:
-#     AWS_ATTRIBUTES_AVAILABILITY="AWS_ATTRIBUTES_AVAILABILITY"
-#     AWS_ATTRIBUTES_EBS_VOLUME_COUNT="AWS_ATTRIBUTES_EBS_VOLUME_COUNT"
-#     AWS_ATTRIBUTES_FIRST_ON_DEMAND="AWS_ATTRIBUTES_FIRST_ON_DEMAND"
-#     AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT="AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT"
-#     AWS_ATTRIBUTES_ZONE_ID="AWS_ATTRIBUTES_ZONE_ID"
-#     CLUSTER_NAME="CLUSTER_NAME"
-#     IS_SINGLE_NODE="IS_SINGLE_NODE"
-#     KIND="KIND"
-#     NODE_TYPE_ID="NODE_TYPE_ID"
-#     SPARK_VERSION="SPARK_VERSION"
-
-# class Cluster_With_Spot_Instances_Tags:
-#     AWS_ATTRIBUTES_AVAILABILITY="AWS_ATTRIBUTES_AVAILABILITY"
-#     AWS_ATTRIBUTES_FIRST_ON_DEMAND="AWS_ATTRIBUTES_FIRST_ON_DEMAND"
-#     AWS_ATTRIBUTES_ZONE_ID="AWS_ATTRIBUTES_ZONE_ID"
-#     CLUSTER_NAME="CLUSTER_NAME"
-#     NODE_TYPE_ID="NODE_TYPE_ID"
-#     NUM_WORKERS="NUM_WORKERS"
-#     SPARK_CONF_SPARK_SPECULATION="SPARK_CONF_SPARK_SPECULATION"
-#     SPARK_VERSION="SPARK_VERSION"
     
 #5 payloads could be required depending on type of cluster
     def prepare_payload(self):
@@ -942,33 +894,118 @@ class Cluster():
                     self.payload['aws_attribute']={}
                     if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
                         self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+                    if prop==tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT]=self.attr.aws_attributes_ebs_volume_count
+                    if prop==tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND]=self.attr.aws_attributes_first_on_demand
+                    if prop==tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT]=self.attr.aws_attributes_spot_bid_price_percent
+                    if prop==tags.AWS_ATTRIBUTES_ZONE_ID:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_ZONE_ID]=self.attr.aws_attributes_zone_id
+                if prop==tags.CLUSTER_NAME:
+                    self.payload['cluster_name']=self.attr.cluster_name
+                # Node Type ID
+                if prop==tags.SPARK_VERSION:
+                    self.payload['spark_version']=self.attr.spark_version
 
-
+            if self.attr.cluster_type=="ML_WITH_KIND":
+                if self.attr.aws_attribute:
+                    self.payload['aws_attribute']={}
+                    if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+                    if prop==tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT]=self.attr.aws_attributes_ebs_volume_count
+                    if prop==tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND]=self.attr.aws_attributes_first_on_demand
+                    if prop==tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT]=self.attr.aws_attributes_spot_bid_price_percent
+                    if prop==tags.AWS_ATTRIBUTES_ZONE_ID:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_ZONE_ID]=self.attr.aws_attributes_zone_id
+                if prop==tags.CLUSTER_NAME:
+                    self.payload['cluster_name']=self.attr.cluster_name
+                if prop==tags.KIND:
+                    self.payload['kind']=self.attr.kind
+                # Might need to check that Kind="CLASSIC_PREVIEW" made by default
+                # Node Type ID
+                if prop==tags.NUM_WORKERS:
+                    self.payload['num_workers']=self.attr.num_workers
+                if prop==tags.SPARK_VERSION:
+                    self.payload['spark_version']=self.attr.spark_version
+                if prop==tags.USE_ML_RUNTIME:
+                    self.payload['use_mll_runtime']=self.attr.use_ml_runtime
                 
-
-
-            if prop == tags.AUTO_STOP_MINS:
-                self.payload[tags.AUTO_STOP_MINS] = self.attr.auto_stop_mins
-            if prop==tags.CLUSTER_SIZE:
-                self.payload[tags.CLUSTER_SIZE]=self.attr.cluster_size
-            if prop == tags.CREATOR_NAME:
-                self.payload[tags.CREATOR_NAME] = self.attr.creator_name
-            if prop==tags.ENABLE_PHOTON:
-                self.payload[tags.ENABLE_PHOTON]=self.attr.enable_photon
-            if prop == tags.ENABLE_SERVERLESS_COMPUTE:
-                self.payload[tags.ENABLE_SERVERLESS_COMPUTE] = self.attr.enable_serverless_compute
-            if prop==tags.INSTANCE_PROFILE_ARN:
-                self.payload[tags.INSTANCE_PROFILE_ARN]=self.attr.instance_profile_arn
-            if prop == tags.MAX_NUM_CLUSTERS:
-                self.payload[tags.MAX_NUM_CLUSTERS] = self.attr.max_num_clusters
-            if prop==tags.MIN_NUM_CLUSTERS:
-                self.payload[tags.MIN_NUM_CLUSTERS]=self.attr.min_num_clusters
-            if prop == tags.NAME:
-                self.payload[tags.NAME] = self.attr.name
-            if prop==tags.SPOT_INSTANCE_POLICY:
-                self.payload[tags.SPOT_INSTANCE_POLICY]=self.attr.spot_instance_policy
-            if prop==tags.WAREHOUSE_TYPE:
-                self.payload[tags.WAREHOUSE_TYPE] = self.attr.warehouse_type
+            if self.attr.cluster_type=="SINGLE_NODE":
+                if self.attr.aws_attribute:
+                    self.payload['aws_attribute']={}
+                    if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+                    if prop==tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT]=self.attr.aws_attributes_ebs_volume_count
+                    if prop==tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND]=self.attr.aws_attributes_first_on_demand
+                    if prop==tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT]=self.attr.aws_attributes_spot_bid_price_percent
+                    if prop==tags.AWS_ATTRIBUTES_ZONE_ID:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_ZONE_ID]=self.attr.aws_attributes_zone_id
+                if prop==tags.CLUSTER_NAME:
+                    self.payload['cluster_name']=self.attr.cluster_name
+                if prop==tags.CUSTOM_TAGS_RESOURCECLASS:
+                    self.payload['custom_tags']={}
+                    self.payload['custom_tags'][tags.CUSTOM_TAGS_RESOURCECLASS]=self.attr.custom_tags_resourceclass
+                # Node Type ID
+                if prop==tags.NUM_WORKERS:
+                    self.payload['num_workers']=self.attr.num_workers
+                self.payload['spark_conf']={}
+                if prop==tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE:
+                    self.payload['spark_conf'][tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE]=self.attr.spark_conf_spark_databricks_cluster_profile
+                if prop==tags.SPARK_CONF_MASTER:
+                    self.payload['spark_conf'][tags.SPARK_CONF_MASTER]=self.attr.spark_conf_master
+                if prop==tags.SPARK_VERSION:
+                    self.payload['spark_version']=self.attr.spark_version
+                
+            if self.attr.cluster_type=="SINGLE_NODE_WITH_KIND":
+                if self.attr.aws_attribute:
+                    self.payload['aws_attribute']={}
+                    if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+                    if prop==tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_EBS_VOLUME_COUNT]=self.attr.aws_attributes_ebs_volume_count
+                    if prop==tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND]=self.attr.aws_attributes_first_on_demand
+                    if prop==tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT]=self.attr.aws_attributes_spot_bid_price_percent
+                    if prop==tags.AWS_ATTRIBUTES_ZONE_ID:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_ZONE_ID]=self.attr.aws_attributes_zone_id
+                if prop==tags.CLUSTER_NAME:
+                    self.payload['cluster_name']=self.attr.cluster_name
+                if prop==tags.IS_SINGLE_NODE:
+                    self.payload['is_single_node']=self.attr.is_single_node
+                if prop==tags.KIND:
+                    self.payload['kind']=self.attr.kind
+                # Might need to check that Kind="CLASSIC_PREVIEW" made by default
+                #Node Type ID
+                if prop==tags.SPARK_VERSION:
+                    self.payload['spark_version']=self.attr.spark_version
+                
+            if self.attr.cluster_type=="SPOT_INSTANCES":
+                if self.attr.aws_attribute:
+                    self.payload['aws_attribute']={}
+                    if prop==tags.AWS_ATTRIBUTES_AVAILABILITY:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_AVAILABILITY]=self.attr.aws_attributes_availability
+                    if prop==tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_FIRST_ON_DEMAND]=self.attr.aws_attributes_first_on_demand
+                    if prop==tags.AWS_ATTRIBUTES_ZONE_ID:
+                        self.payload['aws_attribute'][tags.AWS_ATTRIBUTES_ZONE_ID]=self.attr.aws_attributes_zone_id
+                if prop==tags.CLUSTER_NAME:
+                    self.payload['cluster_name']=self.attr.cluster_name
+                #Node Type ID
+                if prop==tags.NUM_WORKERS:
+                    self.payload['num_workers']=self.attr.num_workers
+                if prop==tags.SPARK_CONF_SPECULATION:
+                    self.payload['spark_conf']={}
+                    self.payload['spark_conf'][tags.SPARK_CONF_SPECULATION]=self.attr.spark_conf_speculation           
+                if prop==tags.SPARK_VERSION:
+                    self.payload['spark_version']=self.attr.spark_version
 
 
 class Operation:
@@ -1328,6 +1365,13 @@ class Operation:
         else:
             obj_inst.set_spark_conf_master('NONE')
         obj_inst.logger.info(f"set spark_conf_master {obj_inst.attr.spark_conf_master}")
+
+
+        if tags.SPARK_CONF_SPECULATION in kwargs.keys():
+            obj_inst.set_spark_conf_speculation(kwargs[tags.SPARK_CONF_SPECULATION])
+        else:
+            obj_inst.set_spark_conf_speculation('NONE')
+        obj_inst.logger.info(f"set spark_conf_speculation {obj_inst.attr.spark_conf_speculation}")
 
 
         if tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY in kwargs.keys():
