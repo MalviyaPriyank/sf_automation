@@ -206,35 +206,108 @@ class CloneFromSourceClusterID:
     def __delete__(self, instance):
         del instance._clone_from_source_cluster_id
 
-class ClusterLogConfDbfs:
+
+class ClusterLogConfDbfsDestination:
     def __get__(self, instance, owner):
-        return instance._cluster_log_conf_dbfs
+        return instance._cluster_log_conf_dbfs_destination
     
     def __set__(self, instance, value):
-        instance._cluster_log_conf_dbfs=value
+        #required and posssible vo
+        instance._cluster_log_conf_dbfs_destination=value
 
     def __delete__(self, instance):
-        del instance._cluster_log_conf_dbfs
+        del instance._cluster_log_conf_dbfs_destination
 
-class ClusterLogConfS3:
+
+class ClusterLogConfS3CannedACL:
     def __get__(self, instance, owner):
-        return instance._cluster_log_conf_s3
+        return instance._cluster_log_conf_s3_canned_acl
     
     def __set__(self, instance, value):
-        instance._cluster_log_conf_s3=value
+        instance._cluster_log_conf_s3_canned_acl=value
 
     def __delete__(self, instance):
-        del instance._cluster_log_conf_s3
+        del instance._cluster_log_conf_s3_canned_acl
 
-class ClusterLogConfVolumesDestinations:
+
+class ClusterLogConfS3Destination:
     def __get__(self, instance, owner):
-        return instance._cluster_log_conf_volumes_destinations
+        return instance._cluster_log_conf_s3_destination
     
     def __set__(self, instance, value):
-        instance._cluster_log_conf_volumes_destinations=value
+        #required
+        instance._cluster_log_conf_s3_destination=value
 
     def __delete__(self, instance):
-        del instance._cluster_log_conf_volumes_destinations
+        del instance._cluster_log_conf_s3_destination
+
+
+class ClusterLogConfS3EnableEncryption:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_s3_enable_encryption
+    
+    def __set__(self, instance, value):
+        instance._cluster_log_conf_s3_enable_encryption=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_s3_enable_encryption
+
+
+class ClusterLogConfS3EncryptionType:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_s3_encryption_type
+    
+    def __set__(self, instance, value):
+        instance._cluster_log_conf_s3_encryption_type=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_s3_encryption_type
+
+
+class ClusterLogConfS3Endpoint:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_s3_endpoint
+    
+    def __set__(self, instance, value):
+        instance._cluster_log_conf_s3_endpoint=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_s3_endpoint
+
+
+class ClusterLogConfS3KMSKey:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_s3_kms_key
+    
+    def __set__(self, instance, value):
+        instance._cluster_log_conf_s3_kms_key=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_s3_kms_key
+
+
+class ClusterLogConfS3Region:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_s3_region
+    
+    def __set__(self, instance, value):
+        instance._cluster_log_conf_s3_region=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_s3_region
+
+
+class ClusterLogConfVolumesDestination:
+    def __get__(self, instance, owner):
+        return instance._cluster_log_conf_volumes_destination
+    
+    def __set__(self, instance, value):
+        #Required and possible vo
+        instance._cluster_log_conf_volumes_destination=value
+
+    def __delete__(self, instance):
+        del instance._cluster_log_conf_volumes_destination
+
 
 class ClusterName:
     def __get__(self, instance, owner):
@@ -247,6 +320,7 @@ class ClusterName:
     def __delete__(self, instance):
         del instance._cluster_name
 
+
 class CustomTagsResourceClass:
     def __get__(self, instance, owner):
         return instance._custom_tags_resourceclass
@@ -256,6 +330,7 @@ class CustomTagsResourceClass:
 
     def __delete__(self, instance):
         del instance._custom_tags_resourceclass
+
 
 class DataSecurityMode:
     def __get__(self, instance, owner):
@@ -267,15 +342,28 @@ class DataSecurityMode:
     def __delete__(self, instance):
         del instance._data_security_mode
 
-class DockerImageBasicAuth:
+
+class DockerImageBasicAuthPassword:
     def __get__(self, instance, owner):
-        return instance._docker_image_basic_auth
+        return instance._docker_image_basic_auth_password
     
     def __set__(self, instance, value):
-        instance._docker_image_basic_auth=value
+        instance._docker_image_basic_auth_password=value
 
     def __delete__(self, instance):
-        del instance._docker_image_basic_auth
+        del instance._docker_image_basic_auth_password
+
+
+class DockerImageBasicAuthUsername:
+    def __get__(self, instance, owner):
+        return instance._docker_image_basic_auth_username
+    
+    def __set__(self, instance, value):
+        instance._docker_image_basic_auth_username=value
+
+    def __delete__(self, instance):
+        del instance._docker_image_basic_auth_username
+
 
 class DockerImageURL:
     def __get__(self, instance, owner):
@@ -337,6 +425,7 @@ class InitScriptsAbfssDestination:
         return instance._init_scripts_abfss_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_abfss_destination=value
 
     def __delete__(self, instance):
@@ -348,6 +437,7 @@ class InitScriptsDbfsDestination:
         return instance._init_scripts_dbfs_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_dbfs_destination=value
 
     def __delete__(self, instance):
@@ -359,6 +449,7 @@ class InitScriptsFileDestination:
         return instance._init_scripts_file_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_file_destination=value
 
     def __delete__(self, instance):
@@ -370,6 +461,7 @@ class InitScriptsGcsDestination:
         return instance._init_scripts_gcs_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_gcs_destination=value
 
     def __delete__(self, instance):
@@ -392,6 +484,7 @@ class InitScriptsS3Destination:
         return instance._init_scripts_s3_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_s3_destination=value
 
     def __delete__(self, instance):
@@ -458,6 +551,7 @@ class InitScriptsVolumesDestination:
         return instance._init_scripts_volumes_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_volumes_destination=value
 
     def __delete__(self, instance):
@@ -574,25 +668,48 @@ class SparkConfSparkDatabricksClusterProfile:
         del instance._spark_conf_spark_databricks_cluster_profile
 
 
-class SparkConfMaster:
+class SparkConfSparkMaster:
     def __get__(self, instance, owner):
-        return instance._spark_conf_master
+        return instance._spark_conf_spark_master
     
     def __set__(self, instance, value):
-        instance._spark_conf_master=value
+        instance._spark_conf_spark_master=value
 
     def __delete__(self, instance):
-        del instance._spark_conf_master
+        del instance._spark_conf_spark_master
 
-class SparkConfSpeculation:
+
+class SparkConfSparkSpeculation:
      def __get__(self, instance, owner):
-        return instance._spark_conf_speculation
+        return instance._spark_conf_spark_speculation
     
     def __set__(self, instance, value):
-        instance._spark_conf_speculation=value
+        instance._spark_conf_spark_speculation=value
 
     def __delete__(self, instance):
-        del instance._spark_conf_speculation   
+        del instance._spark_conf_spark_speculation 
+
+
+class SparkConfSparkDriverExtraJavaOptions:
+     def __get__(self, instance, owner):
+        return instance._spark_conf_spark_driver_extrajavaoptions
+    
+    def __set__(self, instance, value):
+        instance._spark_conf_spark_driver_extrajavaoptions=value
+
+    def __delete__(self, instance):
+        del instance._spark_conf_spark_driver_extrajavaoptions 
+
+
+class SparkConfSparkExecutorExtraJavaOptions:
+     def __get__(self, instance, owner):
+        return instance._spark_conf_spark_executor_extrajavaoptions
+    
+    def __set__(self, instance, value):
+        instance._spark_conf_spark_executor_extrajavaoptions=value
+
+    def __delete__(self, instance):
+        del instance._spark_conf_spark_executor_extrajavaoptions 
 
 
 class SparkEnvVarsSparkWorkerMemory:
@@ -604,6 +721,17 @@ class SparkEnvVarsSparkWorkerMemory:
 
     def __delete__(self, instance):
         del instance._spark_env_vars_spark_worker_memory
+
+
+class SparkEnvVarsSparkLocalDirs:
+    def __get__(self, instance, owner):
+        return instance._spark_env_vars_spark_local_dirs
+    
+    def __set__(self, instance, value):
+        instance._spark_env_vars_spark_local_dirs=value
+
+    def __delete__(self, instance):
+        del instance._spark_env_vars_spark_local_dirs
 
 
 class SparkEnvVarsSparkDaemonJavaOpts:
@@ -651,6 +779,7 @@ class UseMLRuntime:
         del instance._use_ml_runtime
 
 
+#Workload Type Client is required
 class WorkloadTypeClientsJobs:
     def __get__(self, instance, owner):
         return instance._workload_type_clients_jobs
@@ -696,13 +825,20 @@ class ClusterAttrs:
     aws_attributes_spot_bid_price_percent=AwsAttributesSpotBidPricePercent()
     aws_attributes_zone_id=AwsAttributesZoneID()
     clone_from_source_cluster_id=CloneFromSourceClusterID()
-    cluster_log_conf_dbfs=ClusterLogConfDbfs()
-    cluster_log_conf_s3=ClusterLogConfS3()
-    cluster_log_conf_volumes_destinations=ClusterLogConfVolumesDestinations()
+    cluster_log_conf_dbfs_destination=ClusterLogConfDbfsDestination()
+    cluster_log_conf_s3_canned_acl=ClusterLogConfS3CannedACL()
+    cluster_log_conf_s3_destination=ClusterLogConfS3Destination()
+    cluster_log_conf_s3_enable_encryption=ClusterLogConfS3EnableEncryption()
+    cluster_log_conf_s3_encryption_type=ClusterLogConfS3EncryptionType()
+    cluster_log_conf_s3_endpoint=ClusterLogConfS3Endpoint()
+    cluster_log_conf_s3_kms_key=ClusterLogConfS3KMSKey()
+    cluster_log_conf_s3_region=ClusterLogConfS3Region()
+    cluster_log_conf_volumes_destination=ClusterLogConfVolumesDestination()
     cluster_name=ClusterName()
     custom_tags_resourceclass=CustomTagsResourceClass()
     data_security_mode=DataSecurityMode()
-    docker_image_basic_auth=DockerImageBasicAuth()
+    docker_image_basic_auth_password=DockerImageBasicAuthPassword()
+    docker_image_basic_auth_username=DockerImageBasicAuthUsername()
     docker_image_url=DockerImageURL()
     driver_instance_pool_id=DriverInstancePoolID()
     driver_node_type_id=DriverNodeTypeID()
@@ -730,9 +866,12 @@ class ClusterAttrs:
     runtime_engine=RuntimeEngine()
     single_user_name=SingleUserName()
     spark_conf_spark_databricks_cluster_profile=SparkConfSparkDatabricksClusterProfile()
-    spark_conf_master=SparkConfMaster()
-    spark_conf_speculation=SparkConfSpeculation()
+    spark_conf_spark_master=SparkConfSparkMaster()
+    spark_conf_spark_speculation=SparkConfSparkSpeculation()
+    spark_conf_spark_driver_extrajavaoptions=SparkConfSparkDriverExtraJavaOptions()
+    spark_conf_spark_executor_extrajavaoptions=SparkConfSparkExecutorExtraJavaOptions()
     spark_env_vars_spark_worker_memory=SparkEnvVarsSparkWorkerMemory()
+    spark_env_vars_spark_local_dirs=SparkEnvVarsSparkLocalDirs()
     spark_env_vars_spark_daemon_java_opts=SparkEnvVarsSparkDaemonJavaOpts()
     spark_version=SparkVersion()
     ssh_public_keys=SSHPublicKeys()
@@ -763,13 +902,20 @@ class Cluster():
     def set_aws_attributes_spot_bid_price_percent(self, v): self.attr.aws_attributes_spot_bid_price_percent = v
     def set_aws_attributes_zone_id(self, v): self.attr.aws_attributes_zone_id = v
     def set_clone_from_source_cluster_id(self, v): self.attr.clone_from_source_cluster_id = v
-    def set_cluster_log_conf_dbfs(self, v): self.attr.cluster_log_conf_dbfs = v
-    def set_cluster_log_conf_s3(self, v): self.attr.cluster_log_conf_s3 = v
-    def set_cluster_log_conf_volumes_destinations(self, v): self.attr.cluster_log_conf_volumes_destinations = v
+    def set_cluster_log_conf_dbfs_destination(self, v): self.attr.cluster_log_conf_dbfs_destination = v
+    def set_cluster_log_conf_s3_canned_acl(self, v): self.attr.cluster_log_conf_s3_canned_acl = v
+    def set_cluster_log_conf_s3_destination(self, v): self.attr.cluster_log_conf_s3_destination = v
+    def set_cluster_log_conf_s3_enable_encryption(self, v): self.attr.cluster_log_conf_s3_enable_encryption = v
+    def set_cluster_log_conf_s3_encryption_type(self, v): self.attr.cluster_log_conf_s3_encryption_type = v
+    def set_cluster_log_conf_s3_endpoint(self, v): self.attr.cluster_log_conf_s3_endpoint = v
+    def set_cluster_log_conf_s3_kms_key(self, v): self.attr.cluster_log_conf_s3_kms_key = v
+    def set_cluster_log_conf_s3_region(self, v): self.attr.cluster_log_conf_s3_region = v
+    def set_cluster_log_conf_volumes_destination(self, v): self.attr.cluster_log_conf_volumes_destination = v
     def set_cluster_name(self, v): self.attr.cluster_name = v
     def set_custom_tags_resourceclass(self, v): self.attr.custom_tags_resourceclass = v
     def set_data_security_mode(self, v): self.attr.data_security_mode = v
-    def set_docker_image_basic_auth(self, v): self.attr.docker_image_basic_auth = v
+    def set_docker_image_basic_auth_password(self, v): self.attr.docker_image_basic_auth_password = v
+    def set_docker_image_basic_auth_username(self, v): self.attr.docker_image_basic_auth_username= v
     def set_docker_image_url(self, v): self.attr.docker_image_url = v
     def set_driver_instance_pool_id(self, v): self.attr.driver_instance_pool_id = v
     def set_driver_node_type_id(self, v): self.attr.driver_node_type_id = v
@@ -797,9 +943,12 @@ class Cluster():
     def set_runtime_engine(self, v): self.attr.runtime_engine = v
     def set_single_user_name(self, v): self.attr.single_user_name = v
     def set_spark_conf_spark_databricks_cluster_profile(self, v): self.attr.spark_conf_spark_databricks_cluster_profile = v
-    def set_spark_conf_master(self, v): self.attr.spark_conf_master = v
-    def set_spark_conf_speculation(self, v): self.attr.spark_conf_speculation = v
+    def set_spark_conf_spark_master(self, v): self.attr.spark_conf_spark_master = v
+    def set_spark_conf_spark_speculation(self, v): self.attr.spark_conf_spark_speculation = v
+    def set_spark_conf_spark_driver_extrajavaoptions(self, v): self.attr.spark_conf_spark_driver_extrajavaoptions = v
+    def set_spark_conf_spark_executor_extrajavaoptions(self, v): self.attr.spark_conf_spark_executor_extrajavaoptions = v
     def set_spark_env_vars_spark_worker_memory(self, v): self.attr.spark_env_vars_spark_worker_memory = v
+    def set_spark_env_vars_spark_local_dirs(self, v): self.attr.spark_env_vars_spark_local_dirs = v
     def set_spark_env_vars_spark_daemon_java_opts(self, v): self.attr.spark_env_vars_spark_daemon_java_opts = v
     def set_spark_version(self, v): self.attr.spark_version = v
     def set_ssh_public_keys(self, v): self.attr.ssh_public_keys = v
@@ -829,13 +978,20 @@ class Cluster():
         set_flag(tags.AWS_ATTRIBUTES_SPOT_BID_PRICE_PERCENT,"aws_attributes_spot_bid_price_percent")
         set_flag(tags.AWS_ATTRIBUTES_ZONE_ID,"aws_attributes_zone_id")
         set_flag(tags.CLONE_FROM_SOURCE_CLUSTER_ID,"clone_from_source_cluster_id")
-        set_flag(tags.CLUSTER_LOG_CONF_DBFS,"cluster_log_conf_dbfs")
-        set_flag(tags.CLUSTER_LOG_CONF_S3,"cluster_log_conf_s3")
-        set_flag(tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS,"cluster_log_conf_volumes_destinations")
+        set_flag(tags.CLUSTER_LOG_CONF_DBFS_Destination,"cluster_log_conf_dbfs_destination")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_CANNED_ACL,"cluster_log_conf_s3_cannedl_acl")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_DESTINATION,"cluster_log_conf_s3_destination")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_ENABLE_ENCRYPTION,"cluster_log_conf_s3_enable_encryption")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_ENCRYPTION_TYPE,"cluster_log_conf_s3_encryption_type")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_ENDPOINT,"cluster_log_conf_s3_endpoint")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_KMS_KEY,"cluster_log_conf_s3_kms_key")
+        set_flag(tags.CLUSTER_LOG_CONF_S3_REGION,"cluster_log_conf_s3_region")
+        set_flag(tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATION,"cluster_log_conf_volumes_destination")
         set_flag(tags.CLUSTER_NAME,"cluster_name")
         set_flag(tags.CUSTOM_TAGS_RESOURCECLASS,"custom_tags_resourceclass")
         set_flag(tags.DATA_SECURITY_MODE,"data_security_mode")
-        set_flag(tags.DOCKER_IMAGE_BASIC_AUTH,"docker_image_basic_auth")
+        set_flag(tags.DOCKER_IMAGE_BASIC_AUTH_PASSWORD,"docker_image_basic_auth_password")
+        set_flag(tags.DOCKER_IMAGE_BASIC_AUTH_USERNAME,"docker_image_basic_auth_username")
         set_flag(tags.DOCKER_IMAGE_URL,"docker_image_url")
         set_flag(tags.DRIVER_INSTANCE_POOL_ID,"driver_instance_pool_id")
         set_flag(tags.DRIVER_NODE_TYPE_ID,"driver_node_type_id")
@@ -863,9 +1019,12 @@ class Cluster():
         set_flag(tags.RUNTIME_ENGINE,"runtime_engine")
         set_flag(tags.SINGLE_USER_NAME,"single_user_name")
         set_flag(tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE,"spark_conf_spark_databricks_cluster_profile")
-        set_flag(tags.SPARK_CONF_MASTER,"spark_conf_master")
-        set_flag(tags.SPARK_CONF_SPECULATION,"spark_conf_speculation")
+        set_flag(tags.SPARK_CONF_SPARK_MASTER,"spark_conf_spark_master")
+        set_flag(tags.SPARK_CONF_SPARK_SPECULATION,"spark_conf_spark_speculation")
+        set_flag(tags.SPARK_CONF_SPARK_DRIVER_EXTRAJAVAOPTIONS,"spark_conf_spark_driver_extrajavaoptions")
+        set_flag(tags.SPARK_CONF_SPARK_EXECUTOR_EXTRAJAVAOPTIONS,"spark_conf_spark_executor_extrajavaoptions")
         set_flag(tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY,"spark_env_vars_spark_worker_memory")
+        set_flag(tags.SPARK_ENV_VARS_SPARK_LOCAL_DIRS,"spark_env_vars_spark_local_dirs")
         set_flag(tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS,"spark_env_vars_spark_daemon_java_opts")
         set_flag(tags.SPARK_VERSION,"spark_version")
         set_flag(tags.SSH_PUBLIC_KEYS,"ssh_public_keys")
@@ -932,7 +1091,7 @@ class Cluster():
                 if prop==tags.SPARK_VERSION:
                     self.payload['spark_version']=self.attr.spark_version
                 if prop==tags.USE_ML_RUNTIME:
-                    self.payload['use_mll_runtime']=self.attr.use_ml_runtime
+                    self.payload['use_ml_runtime']=self.attr.use_ml_runtime
                 
             if self.attr.cluster_type=="SINGLE_NODE":
                 if self.attr.aws_attribute:
@@ -958,8 +1117,8 @@ class Cluster():
                 self.payload['spark_conf']={}
                 if prop==tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE:
                     self.payload['spark_conf'][tags.SPARK_CONF_SPARK_DATABRICKS_CLUSTER_PROFILE]=self.attr.spark_conf_spark_databricks_cluster_profile
-                if prop==tags.SPARK_CONF_MASTER:
-                    self.payload['spark_conf'][tags.SPARK_CONF_MASTER]=self.attr.spark_conf_master
+                if prop==tags.SPARK_CONF_SPARK_MASTER:
+                    self.payload['spark_conf'][tags.SPARK_CONF_SPARK_MASTER]=self.attr.spark_conf_spark_master
                 if prop==tags.SPARK_VERSION:
                     self.payload['spark_version']=self.attr.spark_version
                 
@@ -1001,9 +1160,9 @@ class Cluster():
                 #Node Type ID
                 if prop==tags.NUM_WORKERS:
                     self.payload['num_workers']=self.attr.num_workers
-                if prop==tags.SPARK_CONF_SPECULATION:
+                if prop==tags.SPARK_CONF_SPARK_SPECULATION:
                     self.payload['spark_conf']={}
-                    self.payload['spark_conf'][tags.SPARK_CONF_SPECULATION]=self.attr.spark_conf_speculation           
+                    self.payload['spark_conf'][tags.SPARK_CONF_SPARK_SPECULATION]=self.attr.spark_conf_spark_speculation           
                 if prop==tags.SPARK_VERSION:
                     self.payload['spark_version']=self.attr.spark_version
 
@@ -1122,25 +1281,67 @@ class Operation:
         obj_inst.logger.info(f"set clone_from_source_cluster_id {obj_inst.attr.clone_from_source_cluster_id}")
 
         
-        if tags.CLUSTER_LOG_CONF_DBFS in kwargs.keys():
-            obj_inst.set_cluster_log_conf_dbfs(kwargs[tags.CLUSTER_LOG_CONF_DBFS])
+        if tags.CLUSTER_LOG_CONF_DBFS_Destination in kwargs.keys():
+            obj_inst.set_cluster_log_conf_dbfs_destination(kwargs[tags.CLUSTER_LOG_CONF_DBFS_Destination])
         else:
-            obj_inst.set_cluster_log_conf_dbfs('NONE')
-        obj_inst.logger.info(f"set cluster_log_conf_dbfs {obj_inst.attr.cluster_log_conf_dbfs}")
+            obj_inst.set_cluster_log_conf_dbfs_destination('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_dbfs_destination {obj_inst.attr.cluster_log_conf_dbfs_destination}")
 
         
-        if tags.CLUSTER_LOG_CONF_S3 in kwargs.keys():
-            obj_inst.set_cluster_log_conf_s3(kwargs[tags.CLUSTER_LOG_CONF_S3])
+        if tags.CLUSTER_LOG_CONF_S3_CANNED_ACL in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_canned_acl(kwargs[tags.CLUSTER_LOG_CONF_S3_CANNED_ACL])
         else:
-            obj_inst.set_cluster_log_conf_s3('NONE')
-        obj_inst.logger.info(f"set cluster_log_conf_s3 {obj_inst.attr.cluster_log_conf_s3}")
+            obj_inst.set_cluster_log_conf_s3_canned_acl('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_canned_acl {obj_inst.attr.cluster_log_conf_s3_canned_acl}")
 
-        
-        if tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS in kwargs.keys():
-            obj_inst.set_cluster_log_conf_volumes_destinations(kwargs[tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATIONS])
+
+        if tags.CLUSTER_LOG_CONF_S3_DESTINATION in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_destination(kwargs[tags.CLUSTER_LOG_CONF_S3_DESTINATION])
         else:
-            obj_inst.set_cluster_log_conf_volumes_destinations('NONE')
-        obj_inst.logger.info(f"set cluster_log_conf_volumes_destinations {obj_inst.attr.cluster_log_conf_volumes_destinations}")
+            obj_inst.set_cluster_log_conf_s3_destination('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_destination {obj_inst.attr.cluster_log_conf_s3_destination}")
+
+
+        if tags.CLUSTER_LOG_CONF_S3_ENABLE_ENCRYPTION in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_enable_encryption(kwargs[tags.CLUSTER_LOG_CONF_S3_ENABLE_ENCRYPTION])
+        else:
+            obj_inst.set_cluster_log_conf_s3_enable_encryption('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_enable_encryption {obj_inst.attr.cluster_log_conf_s3_enable_encryption}")
+
+
+        if tags.CLUSTER_LOG_CONF_S3_ENCRYPTION_TYPE in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_encryption_type(kwargs[tags.CLUSTER_LOG_CONF_S3_ENCRYPTION_TYPE])
+        else:
+            obj_inst.set_cluster_log_conf_s3_encryption_type('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_encryption_type {obj_inst.attr.cluster_log_conf_s3_encryption_type}")
+
+
+        if tags.CLUSTER_LOG_CONF_S3_ENDPOINT in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_endpoint(kwargs[tags.CLUSTER_LOG_CONF_S3_ENDPOINT])
+        else:
+            obj_inst.set_cluster_log_conf_s3_endpoint('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_endpoint {obj_inst.attr.cluster_log_conf_s3_endpoint}")
+
+
+        if tags.CLUSTER_LOG_CONF_S3_KMS_KEY in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_kms_key(kwargs[tags.CLUSTER_LOG_CONF_S3_KMS_KEY])
+        else:
+            obj_inst.set_cluster_log_conf_s3_kms_key('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_kms_key {obj_inst.attr.cluster_log_conf_s3_kms_key}")
+
+
+        if tags.CLUSTER_LOG_CONF_S3_REGION in kwargs.keys():
+            obj_inst.set_cluster_log_conf_s3_region(kwargs[tags.CLUSTER_LOG_CONF_S3_REGION])
+        else:
+            obj_inst.set_cluster_log_conf_s3_region('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_s3_region {obj_inst.attr.cluster_log_conf_s3_region}")
+
+
+        if tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATION in kwargs.keys():
+            obj_inst.set_cluster_log_conf_volumes_destination(kwargs[tags.CLUSTER_LOG_CONF_VOLUMES_DESTINATION])
+        else:
+            obj_inst.set_cluster_log_conf_volumes_destination('NONE')
+        obj_inst.logger.info(f"set cluster_log_conf_volumes_destination {obj_inst.attr.cluster_log_conf_volumes_destination}")
 
 
         if tags.CLUSTER_NAME in kwargs.keys():
@@ -1164,11 +1365,18 @@ class Operation:
         obj_inst.logger.info(f"set data_security_mode {obj_inst.attr.data_security_mode}")
 
         
-        if tags.DOCKER_IMAGE_BASIC_AUTH in kwargs.keys():
-            obj_inst.set_docker_image_basic_auth(kwargs[tags.DOCKER_IMAGE_BASIC_AUTH])
+        if tags.DOCKER_IMAGE_BASIC_AUTH_PASSWORD in kwargs.keys():
+            obj_inst.set_docker_image_basic_auth_password(kwargs[tags.DOCKER_IMAGE_BASIC_AUTH_PASSWORD])
         else:
-            obj_inst.set_docker_image_basic_auth('NONE')
-        obj_inst.logger.info(f"set docker_image_basic_auth {obj_inst.attr.docker_image_basic_auth}")
+            obj_inst.set_docker_image_basic_auth_password('NONE')
+        obj_inst.logger.info(f"set docker_image_basic_auth_password {obj_inst.attr.docker_image_basic_auth_password}")
+
+
+        if tags.DOCKER_IMAGE_BASIC_AUTH_USERNAME in kwargs.keys():
+            obj_inst.set_docker_image_basic_auth_username(kwargs[tags.DOCKER_IMAGE_BASIC_AUTH_USERNAME])
+        else:
+            obj_inst.set_docker_image_basic_auth_username('NONE')
+        obj_inst.logger.info(f"set docker_image_basic_auth_username {obj_inst.attr.docker_image_basic_auth_username}")
 
 
         if tags.DOCKER_IMAGE_URL in kwargs.keys():
@@ -1360,18 +1568,32 @@ class Operation:
         obj_inst.logger.info(f"set spark_conf_spark_databricks_cluster_profile {obj_inst.attr.spark_conf_spark_databricks_cluster_profile}")
 
         
-        if tags.SPARK_CONF_MASTER in kwargs.keys():
-            obj_inst.set_spark_conf_master(kwargs[tags.SPARK_CONF_MASTER])
+        if tags.SPARK_CONF_SPARK_MASTER in kwargs.keys():
+            obj_inst.set_spark_conf_spark_master(kwargs[tags.SPARK_CONF_SPARK_MASTER])
         else:
-            obj_inst.set_spark_conf_master('NONE')
-        obj_inst.logger.info(f"set spark_conf_master {obj_inst.attr.spark_conf_master}")
+            obj_inst.set_spark_conf_spark_master('NONE')
+        obj_inst.logger.info(f"set spark_conf_spark_master {obj_inst.attr.spark_conf_spark_master}")
 
 
-        if tags.SPARK_CONF_SPECULATION in kwargs.keys():
-            obj_inst.set_spark_conf_speculation(kwargs[tags.SPARK_CONF_SPECULATION])
+        if tags.SPARK_CONF_SPARK_SPECULATION in kwargs.keys():
+            obj_inst.set_spark_conf_spark_speculation(kwargs[tags.SPARK_CONF_SPARK_SPECULATION])
         else:
-            obj_inst.set_spark_conf_speculation('NONE')
-        obj_inst.logger.info(f"set spark_conf_speculation {obj_inst.attr.spark_conf_speculation}")
+            obj_inst.set_spark_conf_spark_speculation('NONE')
+        obj_inst.logger.info(f"set spark_conf_spark_speculation {obj_inst.attr.spark_conf_spark_speculation}")
+
+
+        if tags.SPARK_CONF_SPARK_DRIVER_EXTRAJAVAOPTIONS in kwargs.keys():
+            obj_inst.set_spark_conf_spark_driver_extrajavaoptions(kwargs[tags.SPARK_CONF_SPARK_DRIVER_EXTRAJAVAOPTIONS])
+        else:
+            obj_inst.set_spark_conf_spark_driver_extrajavaoptions('NONE')
+        obj_inst.logger.info(f"set spark_conf_spark_driver_extrajavaoptions {obj_inst.attr.spark_conf_spark_driver_extrajavaoptions}")
+
+
+        if tags.SPARK_CONF_SPARK_EXECUTOR_EXTRAJAVAOPTIONS in kwargs.keys():
+            obj_inst.set_spark_conf_spark_executor_extrajavaoptions(kwargs[tags.SPARK_CONF_SPARK_EXECUTOR_EXTRAJAVAOPTIONS])
+        else:
+            obj_inst.set_spark_conf_spark_executor_extrajavaoptions('NONE')
+        obj_inst.logger.info(f"set spark_conf_spark_executor_extrajavaoptions {obj_inst.attr.spark_conf_spark_executor_extrajavaoptions}")
 
 
         if tags.SPARK_ENV_VARS_SPARK_WORKER_MEMORY in kwargs.keys():
@@ -1379,6 +1601,13 @@ class Operation:
         else:
             obj_inst.set_spark_env_vars_spark_worker_memory('NONE')
         obj_inst.logger.info(f"set spark_env_vars_spark_worker_memory {obj_inst.attr.spark_env_vars_spark_worker_memory}")
+
+
+        if tags.SPARK_ENV_VARS_SPARK_LOCAL_DIRS in kwargs.keys():
+            obj_inst.set_spark_env_vars_spark_local_dirs(kwargs[tags.SPARK_ENV_VARS_SPARK_LOCAL_DIRS])
+        else:
+            obj_inst.set_spark_env_vars_spark_local_dirs('NONE')
+        obj_inst.logger.info(f"set spark_env_vars_spark_local_dirs {obj_inst.attr.spark_env_vars_spark_local_dirs}")
 
         
         if tags.SPARK_ENV_VARS_SPARK_DAEMON_JAVA_OPTS in kwargs.keys():
