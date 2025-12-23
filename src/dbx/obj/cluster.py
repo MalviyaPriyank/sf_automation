@@ -680,7 +680,7 @@ class SparkConfSparkMaster:
 
 
 class SparkConfSparkSpeculation:
-     def __get__(self, instance, owner):
+    def __get__(self, instance, owner):
         return instance._spark_conf_spark_speculation
     
     def __set__(self, instance, value):
@@ -691,7 +691,7 @@ class SparkConfSparkSpeculation:
 
 
 class SparkConfSparkDriverExtraJavaOptions:
-     def __get__(self, instance, owner):
+    def __get__(self, instance, owner):
         return instance._spark_conf_spark_driver_extrajavaoptions
     
     def __set__(self, instance, value):
@@ -702,7 +702,7 @@ class SparkConfSparkDriverExtraJavaOptions:
 
 
 class SparkConfSparkExecutorExtraJavaOptions:
-     def __get__(self, instance, owner):
+    def __get__(self, instance, owner):
         return instance._spark_conf_spark_executor_extrajavaoptions
     
     def __set__(self, instance, value):
