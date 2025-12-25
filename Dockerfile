@@ -81,6 +81,8 @@ RUN python3 -m venv /app/venv
 ENV BACKEND_CORS_ORIGIN='http://localhost:5173'
 ENV MONGO_URI='mongodb+srv://samuel:x8xKpSX9v2EgewBH@mongodb-cluster.yv1iz2o.mongodb.net/?appName=mongodb-cluster'
 ENV PATH="/app/venv/bin:$PATH"
+# Ensure Python can import backend package
+ENV PYTHONPATH="/app:/app/backend"
 
 # Install requirements inside the venv
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
@@ -91,6 +93,7 @@ COPY --from=frontend-build /app/frontend/dist /app/frontend
 # Copy nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+EXPOSE 80 4004
 
-CMD python3 server.py & nginx -g "daemon off;"
+# Run FastAPI app behind nginx
+CMD /app/venv/bin/uvicorn main:app --host 0.0.0.0 --port 4004 --app-dir /app/backend & nginx -g "daemon off;"

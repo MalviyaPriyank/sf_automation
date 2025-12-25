@@ -6,7 +6,6 @@ snowflake
 langchain_aws
 langchain_community
 snowflake-snowpark-python
-snowflake
 datetime
 croniter
 slack_bolt
@@ -18,3 +17,6 @@ pyodbc
 fastapi
 uvicorn
 requests
+pymongo
+certifi
+pydantic-settings
