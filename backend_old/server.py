@@ -22,6 +22,7 @@ from src.utils import helper
 from src.usr.user import User,ChatHistory,Session
 from src.model.tools_new import LLMTools
 from src.model.bedrock import Bedrock
+from agent import DataAgent 
 from schema import streamlit_schema as ss
 from schema import llm_chat_schema as lcs
 from snowchainexception import (
@@ -69,26 +70,31 @@ class EchoHandler(BaseHTTPRequestHandler):
     
             session_state = session_inst.get_session()
             root = session_inst.get_root_object()
-    
+            prompt = message
+            agent=DataAgent(session_state=session_state,
+                            user_name='frosty',
+                            logger=logger,
+                            root=root,
+                            prompt=prompt)
+            '''
             user=User(user_name='frosty')
             user_session=Session()
             user_session.register_session(user,session_state)
-            chat_inst=ChatHistory(user=user,session=user_session)
             bedrock_obj = Bedrock()
             tools = LLMTools(sf_session=session_state,
                              root = root, 
                              logger=logger, 
                              bedrock_obj=bedrock_obj,
                              user_chat_inst=chat_inst)
-
-            prompt = message
-            
-            chat_inst.add_prompt(prompt=prompt)
-            chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
-            response = bedrock_obj.converse(messages=chat_history)
-            chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
+            '''
+            agent.initialize_chat_history(prompt=prompt)
+            reply=agent.converse()
+            #chat_inst.add_prompt(prompt=prompt)
+            #chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
+            #response = bedrock_obj.converse(messages=chat_history)
+            #chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
             logger.info(f'response: {response}')
-            
+            '''
             for content in response:
                 if ss.TEXT in content:
                     reply = json.dumps({"reply": content[ss.TEXT]}).encode("utf-8")
@@ -129,7 +135,7 @@ class EchoHandler(BaseHTTPRequestHandler):
             
                 if done_tool_call: 
                     break 
-                    
+            '''
         except Exception as e:
             print(f"{traceback.print_exc()}")
             print(e)

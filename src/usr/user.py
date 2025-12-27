@@ -51,6 +51,7 @@ class ChatHistory:
         self.session_id=session.session_id
         self.chat_id=str(uuid.uuid4())
         self.work_dict={}
+        self.chat_history=[]
 
     def __add_object_to_work_dict(self,object_type,object_identifier,qry):
         if object_type not in self.work_dict:
