@@ -1,81 +1,86 @@
-import { useState, useRef, useEffect } from "react"
-import axios from "axios"
+import { useState, useRef, useEffect } from "react";
 
-import { useSidebar } from "./ui/sidebar"
-import PromptInput from "./PromptInput"
-import Message from "./Message"
-import EmailDialog from "./EmailDialog"
+import { useSidebar } from "./ui/sidebar";
+import PromptInput from "./PromptInput";
+import Message from "./Message";
+import EmailDialog from "./EmailDialog";
+import { useMutation } from "@tanstack/react-query";
+import { sendMessage, type SendMessagePayload } from "@/lib/api";
+import queryClient from "@/config/queryClient";
+import { MESSAGE } from "@/hooks/useMessage";
+import useMessage from "@/hooks/useMessage"
 
-type MessageType = {
-  role: "user" | "assistant"
-  content: string
-}
+
+// type MessageType = {
+//   role: "user" | "assistant";
+//   content: string;
+// };
 
 const Chat = () => {
-  const { state, isMobile } = useSidebar()
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
 
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<MessageType[]>([])
+  const { state, isMobile } = useSidebar();
 
-  const inputRef = useRef<HTMLTextAreaElement>(null)
-  const bottomRef = useRef<HTMLDivElement | null>(null)
+  const [message, setMessage] = useState("");
+  // const [messages, setMessages] = useState<MessageType[]>([]);
+
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const getLeftPadding = () => {
-    if (isMobile) return "1rem"
-    return state === "expanded" ? "calc(var(--sidebar-width) + 1rem)" : "1rem"
-  }
+    if (isMobile) return "1rem";
+    return state === "expanded" ? "calc(var(--sidebar-width) + 1rem)" : "1rem";
+  };
 
-  const handleSend = async () => {
-    if (!message.trim()) return
+  // const { data: messages = [], isLoading } = useMessages(userId);
+  // const { mutate: send, isPending } = useSendMessage();
 
-    const userMessage: MessageType = { role: "user", content: message }
+  const { messages = [] } = useMessage();
 
-    // Add user message immediately
-    setMessages(prev => [...prev, userMessage])
+  const {
+    mutate: send,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
+    onSuccess: (saved) => {
+      const key = [MESSAGE, saved.userId];
+      queryClient.setQueryData(key, (prev: any[]) => [...prev, saved]);
+    },
+  });
+
+  const handleSend = () => {
+    if (!message.trim() || !userId) return;
+    send({ userId, role: "user", content: message });
     setMessage("")
-
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/echo", { message })
-      const assistantMessage: MessageType = {
-        role: "assistant",
-        content: res.data.reply,
-      }
-
-      setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
-      console.error("Error sending message:", error)
-    }
-  }
+  };
 
   // Auto-focus textarea when user starts typing and nothing is focused
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.key.length === 1 &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        !e.altKey
-      ) {
-        const activeElement = document.activeElement
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const activeElement = document.activeElement;
         if (
           activeElement?.tagName !== "INPUT" &&
           activeElement?.tagName !== "TEXTAREA"
         ) {
-          inputRef.current?.focus()
+          inputRef.current?.focus();
         }
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Smooth scroll to bottom whenever messages change
   useEffect(() => {
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" })
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages])
+  }, [messages]);
 
   return (
     <>
@@ -102,10 +107,10 @@ const Chat = () => {
           />
         </div>
       </div>
-      
-      <EmailDialog/>
-    </>
-  )
-}
 
-export default Chat
+      <EmailDialog />
+    </>
+  );
+};
+
+export default Chat;

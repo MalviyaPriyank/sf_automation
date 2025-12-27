@@ -5,10 +5,13 @@ from config import settings
 
 from models.user import User
 from models.conversation import Conversation
+from models.message import Message
 from bson import ObjectId
 from schema.user import individual_serial as user_serial
 from schema.conversation import individual_serial as convo_serial
-from schema.conversation import list_serial
+from schema.message import individual_serial as message_serial
+from schema.conversation import list_serial as convo_list
+from schema.message import list_serial as message_list
 
 class MongoService():
   def __init__(self):
@@ -32,7 +35,7 @@ class MongoService():
     return convo_serial(saved)
 
   def get_conversations(self, user_id: str):
-    return list_serial(self.db["conversations"].find({"userId" : ObjectId(user_id)}))
+    return convo_list(self.db["conversations"].find({"userId" : ObjectId(user_id)}))
   
   def get_conversation(self, id: str):
     conversation = self.db["conversations"].find_one({"_id" : ObjectId(id)})
@@ -41,6 +44,16 @@ class MongoService():
   def delete_conversation(self, id: str):
     self.db["conversations"].find_one_and_delete({"_id" : ObjectId(id)})
     return { "message" : "conversation deleted"}
+  
+  def add_message(self, message: Message):
+    payload = message.model_dump()
+    payload["userId"] = ObjectId(payload["userId"])
+    res = self.db["messages"].insert_one(payload)
+    saved = self.db["messages"].find_one({"_id": res.inserted_id})
+    return message_serial(saved)
+  
+  def get_message(self, user_id: str):
+    return message_list(self.db["messages"].find({"userId" : ObjectId(user_id)}))
   
 
 mongo_service = MongoService()

@@ -12,7 +12,15 @@ export type Conversation = {
   title: string;
 };
 
+export type Message = {
+  _id: string;
+  userId: string;
+  role: 'user' | 'assistant'
+  content: string;
+}
+
 export type CreateUserPayload = Omit<User, "id">;
+export type SendMessagePayload = Omit<Message, "_id">
 
 export const getUser = (userId: string) =>
   API.get<User>("/user", { params: { user_id: userId } }).then(
@@ -29,3 +37,11 @@ export const getConversations = (userId: string) =>
 
 export const deleteConversations = (id: Conversation["_id"]) =>
   API.delete(`/conversation/${id}`);
+
+export const sendMessage = (payload: SendMessagePayload) =>
+  API.post<Message>("/message", payload).then((res) => res.data);
+
+export const getMessages = (userId: string) =>
+  API.get<Message[]>("/message", {
+    params: { user_id: userId },
+  }).then((res) => res.data);

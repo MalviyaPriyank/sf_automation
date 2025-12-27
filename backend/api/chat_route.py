@@ -23,4 +23,3 @@ async def get_conversation(id: str):
 @router.delete("/conversation/{id}")
 async def delete_conversation(id: str):
   return mongo_service.delete_conversation(id)
-
