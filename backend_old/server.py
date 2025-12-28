@@ -93,7 +93,7 @@ class EchoHandler(BaseHTTPRequestHandler):
             #chat_history.append(helper.append_chat_history(role=ss.USER, prompt=prompt))                                        
             #response = bedrock_obj.converse(messages=chat_history)
             #chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
-            logger.info(f'response: {response}')
+            #logger.info(f'response: {response}')
             '''
             for content in response:
                 if ss.TEXT in content:

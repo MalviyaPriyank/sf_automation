@@ -28,6 +28,8 @@ from snowchainexception import (
     SnowchainException
 )
 
+from dataagent import DataAgent
+
 import os
 # chat_history = []
 

@@ -2,12 +2,21 @@ from src.model.tools_new import LLMTools
 from src.model.bedrock import Bedrock
 from src.usr.user import User,ChatHistory,Session
 import json
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__),'../src'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../conf'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'../schema'))
 
+from snowchainexception import (
+    SnowchainException
+)
 class DataAgent:
     def __init__(self,session_state,user_name,logger,root):
         self.logger=logger.getChild(self.__class__.__name__)
         self.user_chat_inst=ChatHistory(user=self.user,session=self.user_session)
         self.bedrock_obj=Bedrock()
+        self.session_state=session_state
         self.tools=LLMTools(logger=logger,
                             sf_session=session_state,
                             root=root,
@@ -21,7 +30,15 @@ class DataAgent:
     def initialize_chat_history(self,prompt):
         self.user_chat_inst.add_prompt(prompt=prompt)
         self.chat_history.append({'role':'user',
-                'content':[{'text':prompt}]})
+                                  'content':[{'text':[prompt]}]})
+        
+    def add_user_message(self,prompt):
+        self.chat_history.append({'role':'user',
+                                  'content':prompt})
+        
+    def add_assistant_message(self,prompt):
+        self.chat_history.append({'role': 'assistant',
+                                    'content': prompt})
         
     def converse(self):
         response = self.bedrock_obj.converse(messages=self.chat_history)
@@ -38,24 +55,24 @@ class DataAgent:
                 if ('text' in content) and (len(response)==1): 
                     done_tool_call = True
                     if self.tools.query_count !=0:
-                        self.user_chat_inst.store_chat_history(snowflake_session=session_state)
+                        self.user_chat_inst.store_chat_history(snowflake_session=self.session_state)
                     break
                 if 'toolUse' in content:
                     try:
                         tool_result = self.tools.tool_call(content, tool_result)                            
                     except SnowchainException as e:
                         self.logger.info('attr-error')
-                        tool_result.append({lcs.TOOL_RESULT:{
-                            lcs.TOOL_USE_ID: content[lcs.TOOL_USE][lcs.TOOL_USE_ID],
-                            lcs.CONTENT: [{lcs.JSON: {lcs.RESULT: "Error raised due to invalid input"}}]
+                        tool_result.append({'toolResult':{
+                            'toolUseId': content['toolUse']['toolUseId'],
+                            'content': [{'json': {'result': "Error raised due to invalid input"}}]
                         }})
-                        self.chat_history.append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                        self.add_user_message(prompt=tool_result)
                         done_tool_call=True
                         break
-                    self.chat_history.append(helper.append_chat_history(role=ss.USER, is_text=False, prompt=tool_result))
+                    self.add_user_message(prompt=tool_result)
                 
                     response = self.bedrock_obj.converse(messages=self.chat_history)
-                    self.chat_history.append(helper.append_chat_history(is_text=False, prompt=response))
+                    self.add_assistant_message(prompt=response)
                         
                     
                     for content in response:
