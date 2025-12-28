@@ -40,9 +40,6 @@ const Chat = () => {
 
   const {
     mutate: send,
-    isPending,
-    isError,
-    error,
   } = useMutation({
     mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
     onSuccess: (saved) => {

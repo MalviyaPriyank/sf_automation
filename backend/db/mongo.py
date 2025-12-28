@@ -7,11 +7,11 @@ from models.user import User
 from models.conversation import Conversation
 from models.message import Message
 from bson import ObjectId
-from schema.user import individual_serial as user_serial
-from schema.conversation import individual_serial as convo_serial
-from schema.message import individual_serial as message_serial
-from schema.conversation import list_serial as convo_list
-from schema.message import list_serial as message_list
+from serializers.user import individual_serial as user_serial
+from serializers.conversation import individual_serial as convo_serial
+from serializers.message import individual_serial as message_serial
+from serializers.conversation import list_serial as convo_list
+from serializers.message import list_serial as message_list
 
 class MongoService():
   def __init__(self):
