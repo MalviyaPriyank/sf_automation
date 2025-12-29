@@ -5,7 +5,7 @@ import PromptInput from "./PromptInput";
 import Message from "./Message";
 import EmailDialog from "./EmailDialog";
 import { useMutation } from "@tanstack/react-query";
-import { sendMessage, type SendMessagePayload } from "@/lib/api";
+import { sendMessage, type SendMessagePayload, type Message as ApiMessage } from "@/lib/api";
 import queryClient from "@/config/queryClient";
 import { MESSAGE } from "@/hooks/useMessage";
 import useMessage from "@/hooks/useMessage"
@@ -37,14 +37,43 @@ const Chat = () => {
   // const { mutate: send, isPending } = useSendMessage();
 
   const { messages = [] } = useMessage();
+  const queryKey = [MESSAGE, userId];
 
   const {
     mutate: send,
   } = useMutation({
     mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
-    onSuccess: (saved) => {
-      const key = [MESSAGE, saved.userId];
-      queryClient.setQueryData(key, (prev: any[]) => [...prev, saved]);
+    onMutate: async (payload) => {
+      if (!userId) return;
+
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ApiMessage[]>(queryKey) || [];
+
+      const optimistic: ApiMessage = {
+        _id: Date.now().toString(),
+        userId: payload.userId,
+        role: payload.role,
+        content: payload.content,
+      };
+
+      queryClient.setQueryData<ApiMessage[]>(queryKey, [...previous, optimistic]);
+
+      return { previous, tempId: optimistic._id };
+    },
+    onError: (_err, _payload, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+    },
+    onSuccess: (saved, _payload, context) => {
+      if (!context) return;
+
+      queryClient.setQueryData<ApiMessage[]>(queryKey, (prev = []) =>
+        prev.map((msg) => (msg._id === context.tempId ? saved : msg))
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 

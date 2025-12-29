@@ -2,6 +2,7 @@ import asyncio
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from models.message import Message
 from db.mongo import MongoService
+import json
 mongo_service = MongoService()
 router = APIRouter()
 
@@ -30,16 +31,19 @@ def build_agent():
   return DataAgent(session_state=session_state, user_name="frosty", logger=logger, root=root)
 
 @router.post("/message")
-async def post_message(message: Message, bg: BackgroundTasks):
+async def post_message(message: Message):
   try:
     mongo_service.add_message(message)
     logger.info("building agent")
     agent = build_agent()
     logger.info("build complete")
     agent.initialize_chat_history(message.content)
-    reply = agent.converse()
-    mongo_service.add_message(Message(userId=message.userId, role="assistant", content=reply))
-    return {"reply": reply}
+    reply_raw = agent.converse()                 # bytes/str like b'{"reply": "..."}'
+    reply_obj = json.loads(reply_raw)
+    reply_text = reply_obj.get("reply", "")
+    assistant_msg = Message(userId=message.userId, role="assistant", content=reply_text)
+    mongo_service.add_message(assistant_msg)
+    return assistant_msg
 
   except Exception as e:
     logger.exception("agent error")

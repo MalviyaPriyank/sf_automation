@@ -18,7 +18,7 @@ const useMessage = () => {
     queryFn: () => getMessages(userId!),
     enabled: !!userId,
     refetchOnWindowFocus: false,
-    refetchInterval: 2000,
+    // refetchInterval: 2000,
   });
 
   return {
