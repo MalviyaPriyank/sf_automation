@@ -1,5 +1,5 @@
 from abc import ABC,abstractmethod
-from src.usr.user import User,Session
+from src.usr.user import User
 from src.model.bedrock import Bedrock
 from src.model.tools_new import LLMTools
 import json
@@ -34,18 +34,30 @@ class AgentABC(ABC):
 
     @abstractmethod
     def __init_tool_call_counter(self):
+        '''
+        This method initialize the tool call counter to keep track of total tool calls made per call.
+        '''
         pass
 
     @abstractmethod
     def __increment_tool_call_counter(self):
+        '''
+        This method increment tool call counter by 1 each time a new tool is called.
+        '''
         pass
 
     @abstractmethod
     def __init_tool_call_list(self):
+        '''
+        This method instantiate a list to hold the tool names called per call.
+        '''
         pass
 
     @abstractmethod 
     def __append_tool_to_list(self):
+        '''
+        This method to append the name of tool called, each time a new tool is called by the agent.
+        '''
         pass
 
     @abstractmethod
