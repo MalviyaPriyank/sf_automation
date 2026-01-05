@@ -27,11 +27,32 @@ class DataAgent:
                             user_chat_inst=self.user_chat_inst)
         self.chat_history=[]
 
-    def initialize_chat_history(self,prompt):
-        self.user_chat_inst.add_prompt(prompt=prompt)
-        self.chat_history.append({'role':'user',
-                                  'content':[{'text':prompt}]})
+    def initialize_chat_history(self, prompt):
+        if isinstance(prompt, str):
+            prompt = [{'role': 'user', 'content': prompt}]
+
+        self.chat_history = []
+        last_user_prompt = None
+
+        for msg in prompt:
+            role = msg.get('role', 'user')
+            content = msg.get('content', '')
+            if isinstance(content, str):
+                content = [{'text': content}]
+            self.chat_history.append({'role': role, 'content': content})
+            if role == 'user':
+                # store the last user text for ChatHistory logging
+                for part in content:
+                    if 'text' in part:
+                        last_user_prompt = part['text']
+
+        if last_user_prompt:
+            self.user_chat_inst.add_prompt(prompt=last_user_prompt)
         self.logger.info(f"chat history initialized: {self.chat_history}")
+        # self.user_chat_inst.add_prompt(prompt=prompt)
+        # self.chat_history.append({'role':'user',
+        #                           'content':[{'text':prompt}]})
+        # self.logger.info(f"chat history initialized: {self.chat_history}")
         
     def add_user_message(self,prompt):
         self.chat_history.append({'role':'user',

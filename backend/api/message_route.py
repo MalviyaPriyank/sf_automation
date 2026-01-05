@@ -34,10 +34,11 @@ def build_agent():
 async def post_message(message: Message):
   try:
     mongo_service.add_message(message)
+    history = mongo_service.get_message(message.userId)
     logger.info("building agent")
     agent = build_agent()
     logger.info("build complete")
-    agent.initialize_chat_history(message.content)
+    agent.initialize_chat_history(history)
     reply_raw = agent.converse()                 # bytes/str like b'{"reply": "..."}'
     reply_obj = json.loads(reply_raw)
     reply_text = reply_obj.get("reply", "")
