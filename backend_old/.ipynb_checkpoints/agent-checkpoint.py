@@ -14,47 +14,23 @@ from snowchainexception import (
 class DataAgent:
     def __init__(self,session_state,user_name,logger,root):
         self.logger=logger.getChild(self.__class__.__name__)
-        self.logger.setLevel(logging.ERROR)
-        logger.setLevel(logging.ERROR)
+        self.user_chat_inst=ChatHistory(user=self.user,session=self.user_session)
         self.bedrock_obj=Bedrock()
         self.session_state=session_state
-        self.user=User(user_name=user_name)
-        self.user_session=Session()
-        self.user_session.register_session(user=self.user,snowflake_session=session_state)
-        self.user_chat_inst=ChatHistory(user=self.user,session=self.user_session)
         self.tools=LLMTools(logger=logger,
                             sf_session=session_state,
                             root=root,
                             bedrock_obj=Bedrock(),
                             user_chat_inst=self.user_chat_inst)
+        self.user=User(user_name=user_name)
+        self.user_session=Session()
+        self.user_session.register_session(user=self.user,snowflake_session=session_state)
         self.chat_history=[]
 
-    def initialize_chat_history(self, prompt):
-        if isinstance(prompt, str):
-            prompt = [{'role': 'user', 'content': prompt}]
-
-        self.chat_history = []
-        last_user_prompt = None
-
-        for msg in prompt:
-            role = msg.get('role', 'user')
-            content = msg.get('content', '')
-            if isinstance(content, str):
-                content = [{'text': content}]
-            self.chat_history.append({'role': role, 'content': content})
-            if role == 'user':
-                # store the last user text for ChatHistory logging
-                for part in content:
-                    if 'text' in part:
-                        last_user_prompt = part['text']
-
-        if last_user_prompt:
-            self.user_chat_inst.add_prompt(prompt=last_user_prompt)
-        # self.logger.info(f"chat history initialized: {self.chat_history}")
-        # self.user_chat_inst.add_prompt(prompt=prompt)
-        # self.chat_history.append({'role':'user',
-        #                           'content':[{'text':prompt}]})
-        # self.logger.info(f"chat history initialized: {self.chat_history}")
+    def initialize_chat_history(self,prompt):
+        self.user_chat_inst.add_prompt(prompt=prompt)
+        self.chat_history.append({'role':'user',
+                                  'content':[{'text':[prompt]}]})
         
     def add_user_message(self,prompt):
         self.chat_history.append({'role':'user',
@@ -72,7 +48,7 @@ class DataAgent:
             if 'text' in content:
                 reply = json.dumps({"reply": content['text']}).encode("utf-8")
         while len(response)>0:
-            # self.logger.info(self.chat_history)
+            self.logger.info(self.chat_history)
             tool_result = []
             done_tool_call = False
             for content in response:
@@ -107,3 +83,4 @@ class DataAgent:
             if done_tool_call: 
                 break 
         return reply
+    
