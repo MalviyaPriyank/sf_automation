@@ -26,6 +26,7 @@ class ClusterType:
     def __delete__(self, instance):
         del instance._cluster_type
 
+
 class ApplyPolicyDefaultValues:
     def __get__(self, instance, owner):
         return instance._apply_policy_default_values
@@ -102,6 +103,7 @@ class AwsAttributesAvailability:
     def __delete__(self, instance):
         del instance._aws_attributes_availability
 
+
 class AwsAttributesEbsVolumeCount:
     def __get__(self, instance, owner):
         return instance._aws_attributes_ebs_volume_count
@@ -125,15 +127,25 @@ class AwsAttributesEbsVolumeIops:
     def __delete__(self, instance):
         del instance._aws_attributes_ebs_volume_iops
 
+
 class AwsAttributesEbsVolumeSize:
     def __get__(self, instance, owner):
         return instance._aws_attributes_ebs_volume_size
     
     def __set__(self, instance, value):
+        vv.is_greater_than_or_equal_to(value_base=value,
+                                    value_ref=500,
+                                    object_type=instance.parent.__class__.__name__,
+                                    attr_name=self.__class__.__name__)
+        vv.is_less_than_or_equal_to(value_base=value,
+                            value_ref=4096,
+                            object_type=instance.parent.__class__.__name__,
+                            attr_name=self.__class__.__name__)
         instance._aws_attributes_ebs_volume_size=value
 
     def __delete__(self, instance):
         del instance._aws_attributes_ebs_volume_size
+
 
 class AwsAttributesEbsVolumeThroughput:
     def __get__(self, instance, owner):
@@ -145,6 +157,7 @@ class AwsAttributesEbsVolumeThroughput:
     def __delete__(self, instance):
         del instance._aws_attributes_ebs_volume_throughput
 
+
 class AwsAttributesEbsVolumeType:
     def __get__(self, instance, owner):
         return instance._aws_attributes_ebs_volume_type
@@ -154,6 +167,7 @@ class AwsAttributesEbsVolumeType:
 
     def __delete__(self, instance):
         del instance._aws_attributes_ebs_volume_type
+
 
 class AwsAttributesFirstOnDemand:
     def __get__(self, instance, owner):
@@ -165,6 +179,7 @@ class AwsAttributesFirstOnDemand:
     def __delete__(self, instance):
         del instance._aws_attributes_first_on_demand
 
+
 class AwsAttributesInstanceProfileArn:
     def __get__(self, instance, owner):
         return instance._aws_attributes_instance_profile_arn
@@ -175,6 +190,7 @@ class AwsAttributesInstanceProfileArn:
     def __delete__(self, instance):
         del instance._aws_attributes_instance_profile_arn
 
+
 class AwsAttributesSpotBidPricePercent:
     def __get__(self, instance, owner):
         return instance._aws_attributes_spot_bid_price_percent
@@ -184,6 +200,7 @@ class AwsAttributesSpotBidPricePercent:
 
     def __delete__(self, instance):
         del instance._aws_attributes_spot_bid_price_percent
+
 
 class AwsAttributesZoneID:
     def __get__(self, instance, owner):
@@ -263,7 +280,7 @@ class ClusterLogConfS3EncryptionType:
     def __delete__(self, instance):
         del instance._cluster_log_conf_s3_encryption_type
 
-
+#Endpoint or region needs to be set, if both set, endpoint used
 class ClusterLogConfS3Endpoint:
     def __get__(self, instance, owner):
         return instance._cluster_log_conf_s3_endpoint
@@ -331,7 +348,7 @@ class CustomTagsResourceClass:
     def __delete__(self, instance):
         del instance._custom_tags_resourceclass
 
-
+#some modes allowed when kind=CLASSIC_PREVIEW, others can be used regardless
 class DataSecurityMode:
     def __get__(self, instance, owner):
         return instance._data_security_mode
@@ -397,7 +414,7 @@ class DriverNodeTypeID:
     def __delete__(self, instance):
         del instance._driver_node_type_id
 
-
+#requires specific AWS permissions--see User Guide
 class EnableElasticDisk:
     def __get__(self, instance, owner):
         return instance._enable_elastic_disk
@@ -431,7 +448,7 @@ class InitScriptsAbfssDestination:
     def __delete__(self, instance):
         del instance._init_scripts_abfss_destination
 
-
+#Deprecated?
 class InitScriptsDbfsDestination:
     def __get__(self, instance, owner):
         return instance._init_scripts_dbfs_destination
@@ -512,7 +529,7 @@ class InitScriptsS3EncryptionType:
     def __delete__(self, instance):
         del instance._init_scripts_s3_encryption_type
 
-
+#Endpoint or region needs to be set, if both set, endpoint used
 class InitScriptsS3Endpoint:
     def __get__(self, instance, owner):
         return instance._init_scripts_s3_endpoint
@@ -563,6 +580,7 @@ class InitScriptsWorkspaceDestination:
         return instance._init_scripts_workspace_destination
     
     def __set__(self, instance, value):
+        #required
         instance._init_scripts_workspace_destination=value
 
     def __delete__(self, instance):
@@ -579,7 +597,7 @@ class InstancePoolID:
     def __delete__(self, instance):
         del instance._instance_pool_id
 
-
+#Can only be used if kind=CLASSIC_PREVIEW
 class IsSingleNode:
     def __get__(self, instance, owner):
         return instance._is_single_node
@@ -767,7 +785,7 @@ class SSHPublicKeys:
     def __delete__(self, instance):
         del instance._ssh_public_keys
 
-
+#kind=CLASSIC_PREVIEW
 class UseMLRuntime:
     def __get__(self, instance, owner):
         return instance._use_ml_runtime
