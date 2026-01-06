@@ -5,9 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 
 export const MESSAGE = "message";
 
-const useMessage = () => {
-  const userId =
-    typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
+const useMessage = (userId: string | null) => {
+  // const userId =
+    // typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
 
   const {
     data: messages,

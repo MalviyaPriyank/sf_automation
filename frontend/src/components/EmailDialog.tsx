@@ -14,7 +14,9 @@ import { USER } from "@/hooks/useUser";
 import { createUser } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 
-const EmailDialog = () => {
+type EmailDialogProps = { onUserCreated?: (id: string) => void };
+
+const EmailDialog = ({ onUserCreated }: EmailDialogProps) => {
   const [open, setOpen] = useState(() => {
     if (typeof window === "undefined") return true;
     return !localStorage.getItem("user_id");
@@ -66,6 +68,7 @@ const EmailDialog = () => {
       const createdUser = await createUser(payload);
       qc.setQueryData([USER], createdUser);
       localStorage.setItem("user_id", createdUser.id);
+      onUserCreated?.(createdUser.id);
     } catch (error) {
       console.error("Error creating user", error);
       return;

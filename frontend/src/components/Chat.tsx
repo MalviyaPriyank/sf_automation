@@ -22,8 +22,9 @@ import { Badge } from "./ui/badge";
 // };
 
 const Chat = () => {
-  const userId =
-    typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
+  const [userId, setUserId] = useState<string | null>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("user_id") : null
+  );
 
   const { state, isMobile } = useSidebar();
 
@@ -41,7 +42,7 @@ const Chat = () => {
   // const { data: messages = [], isLoading } = useMessages(userId);
   // const { mutate: send, isPending } = useSendMessage();
 
-  const { messages = [] } = useMessage();
+  const { messages = [] } = useMessage(userId);
   const queryKey = [MESSAGE, userId];
 
   const { mutate: send, isPending } = useMutation({
@@ -144,12 +145,12 @@ const Chat = () => {
             message={message}
             onMessageChange={setMessage}
             onSend={handleSend}
-            disabled={!message.trim()}
+            disabled={!message.trim() || !userId}
           />
         </div>
       </div>
 
-      <EmailDialog />
+      <EmailDialog onUserCreated={setUserId}/>
     </>
   );
 };
