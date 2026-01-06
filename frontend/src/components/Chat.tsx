@@ -5,11 +5,16 @@ import PromptInput from "./PromptInput";
 import Message from "./Message";
 import EmailDialog from "./EmailDialog";
 import { useMutation } from "@tanstack/react-query";
-import { sendMessage, type SendMessagePayload, type Message as ApiMessage } from "@/lib/api";
+import {
+  sendMessage,
+  type SendMessagePayload,
+  type Message as ApiMessage,
+} from "@/lib/api";
 import queryClient from "@/config/queryClient";
 import { MESSAGE } from "@/hooks/useMessage";
-import useMessage from "@/hooks/useMessage"
-
+import useMessage from "@/hooks/useMessage";
+import { Spinner } from "./ui/spinner";
+import { Badge } from "./ui/badge";
 
 // type MessageType = {
 //   role: "user" | "assistant";
@@ -39,9 +44,7 @@ const Chat = () => {
   const { messages = [] } = useMessage();
   const queryKey = [MESSAGE, userId];
 
-  const {
-    mutate: send,
-  } = useMutation({
+  const { mutate: send, isPending } = useMutation({
     mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
     onMutate: async (payload) => {
       if (!userId) return;
@@ -56,7 +59,10 @@ const Chat = () => {
         content: payload.content,
       };
 
-      queryClient.setQueryData<ApiMessage[]>(queryKey, [...previous, optimistic]);
+      queryClient.setQueryData<ApiMessage[]>(queryKey, [
+        ...previous,
+        optimistic,
+      ]);
 
       return { previous, tempId: optimistic._id };
     },
@@ -80,7 +86,7 @@ const Chat = () => {
   const handleSend = () => {
     if (!message.trim() || !userId) return;
     send({ userId, role: "user", content: message });
-    setMessage("")
+    setMessage("");
   };
 
   // Auto-focus textarea when user starts typing and nothing is focused
@@ -114,6 +120,15 @@ const Chat = () => {
         {messages.map((msg, index) => (
           <Message key={index} role={msg.role} content={msg.content} />
         ))}
+
+        {isPending && (
+          <div className="max-w-4xl mx-auto">
+            <Badge variant="outline">
+              <Spinner className="size-5" />
+              Processing
+            </Badge>
+          </div>
+        )}
 
         {/* Dummy div to scroll into view */}
         <div ref={bottomRef} />
