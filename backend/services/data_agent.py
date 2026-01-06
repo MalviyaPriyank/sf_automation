@@ -1,6 +1,7 @@
 from src.model.tools_new import LLMTools
 from src.model.bedrock import Bedrock
 from src.usr.user import User,ChatHistory,Session
+import logging
 import json
 import sys
 import os
