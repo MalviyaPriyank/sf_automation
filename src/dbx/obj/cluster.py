@@ -308,6 +308,12 @@ class ClusterLogConfS3Region:
         return instance._cluster_log_conf_s3_region
     
     def __set__(self, instance, value):
+        if instance._cluster_log_conf_s3_endpoint == "NONE":
+            vv.required_attribute_check(value=value,
+                                        object_type=instance.parent.__class__.__name__,
+                                        attr_name=self.__class__.__name__,
+                                        *[f"Attribute ClusterLogConfS3Region or ClusterLogConfS3Endpoint of {instance.parent.__class__.__name__} needs to be set. Both of them cannot be NONE."]
+                                        )
         instance._cluster_log_conf_s3_region=value
 
     def __delete__(self, instance):

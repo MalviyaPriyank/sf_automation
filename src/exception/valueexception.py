@@ -8,11 +8,16 @@ from snowchainexception import SnowchainException
 class AttributeValidationError(SnowchainException):
     """Base class for attribute validation exceptions"""
     def __init__(self, object_type, attr_name, message,**kwargs):
+        """
+        """ 
         self.object_type = object_type
         self.attr_name = attr_name
         self.message = message
         if len(kwargs)==0:
-            self.error_message = f" Attribute {self.attr_name} of {self.object_type} {self.message}. Please provide different value."
+            if object_type.upper()=='CLUSTER' & attr_name.upper()=='CLUSTERLOGCONFS3REGION':
+                self.error_message=message
+            else:
+                self.error_message = f" Attribute {self.attr_name} of {self.object_type} {self.message}. Please provide different value."
         else:
             for key,value in kwargs.items():
                 self.error_message=f"Attribute {key} {value}. Please provide different value."
@@ -53,12 +58,19 @@ class MustBeBetween(AttributeValidationError):
 class IsARequiredAttribute(AttributeValidationError):
     def __init__(self,object_type,attr_name,*largs):
         if object_type.upper()=='APIINTEGRATION' and attr_name.upper()=='APIAWSROLEARN':
-            super().__init__(object_type=object_type,attr_name=attr_name,message=f" is required for AMAZON API_TYPE")
+            super().__init__(object_type=object_type,
+                             attr_name=attr_name,
+                             message=f" is required for AMAZON API_TYPE")
         if len(largs)==0:
             super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL")
         else:
             for stmt in largs:
-                super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL,{stmt}")
+                if object_type.upper()=='CLUSTER' and attr_name.upper()=='CLUSTERLOGCONFS3REGION':
+                    super().__init__(object_type=object_type,
+                                     attr_name=attr_name,
+                                     message=stmt)
+                else:
+                    super().__init__(object_type, attr_name,f"is a required attribute and cannot be NULL,{stmt}")
 
 class MustBeJSON(AttributeValidationError):
     def __init__(self, object_type, attr_name, message):
