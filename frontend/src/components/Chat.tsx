@@ -15,6 +15,7 @@ import { MESSAGE } from "@/hooks/useMessage";
 import useMessage from "@/hooks/useMessage";
 import { Spinner } from "./ui/spinner";
 import { Badge } from "./ui/badge";
+import { Link } from "react-router-dom";
 
 // type MessageType = {
 //   role: "user" | "assistant";
@@ -147,6 +148,19 @@ const Chat = () => {
             onSend={handleSend}
             disabled={!message.trim() || !userId}
           />
+        </div>
+        <div className="max-w-4xl mx-auto bg-background rounded-lg pt-4 w-fit">
+          <p className="text-muted-foreground text-xs">
+            By messaging Frosty, an AI chatbot, you agree to our{" "}
+            <Link to="/policies/terms-of-use" className="underline">
+              Terms
+            </Link>{" "}
+            and have read our{" "}
+            <Link to="/policies/privacy-policy" className="underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </div>
       </div>
 
