@@ -3,3 +3,6 @@ uvicorn
 pydantic
 pydantic_settings
 pip3 install 'pymongo[srv]'
+authlib
+itsdangerous
+httpx

@@ -5,6 +5,10 @@ class Settings(BaseSettings):
     # Default keeps the app startable even if env is missing
     backend_cors_origin: str
     mongo_uri: str
+    client_secret: str
+    client_id: str
+    oauth_redirect_uri: str
+
 
     model_config = SettingsConfigDict(env_file=".env")
 

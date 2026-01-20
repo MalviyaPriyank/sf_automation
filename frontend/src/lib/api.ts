@@ -4,6 +4,16 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  picture?: string;
+};
+
+export type SessionUser = {
+  email?: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  picture?: string;
+  sub?: string;
 };
 
 export type Conversation = {
@@ -29,6 +39,12 @@ export const getUser = (userId: string) =>
 
 export const createUser = (payload: CreateUserPayload) =>
   API.post<User>("/user", payload).then((res) => res.data);
+
+export const getSessionUser = () =>
+  API.get<SessionUser>("/auth/me").then((res) => res.data);
+
+export const logout = () =>
+  API.post("/auth/logout").then((res) => res.data)
 
 export const getConversations = (userId: string) =>
   API.get<Conversation[]>("/conversation", {

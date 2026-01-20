@@ -7,8 +7,8 @@ router = APIRouter()
 
 @router.post("/user")
 async def post_user(user: User): 
-  inserted_id = mongo_service.add_user(user)
-  return { "id": str(inserted_id), **user.model_dump()}
+  saved = mongo_service.add_user(user)
+  return saved
 
 @router.get("/user")
 async def get_user(user_id: str):

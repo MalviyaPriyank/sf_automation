@@ -22,6 +22,8 @@ import { useState } from "react";
 import SettingsDialog from "./SettingsDialog";
 import useUser from "@/hooks/useUser";
 import { Skeleton } from "./ui/skeleton";
+import { logout } from "@/lib/api";
+import queryClient from "@/config/queryClient";
 
 const NavUser = () => {
   const { isMobile } = useSidebar();
@@ -30,6 +32,22 @@ const NavUser = () => {
 
   const displayName = user?.name?.trim() || <Skeleton className="h-4 w-[100px] mb-1" />;
   const displayEmail = user?.email?.trim() || <Skeleton className="h-4 w-[150px] mt-1" />;
+  const nameOrEmail = (user?.name || user?.email || "").trim();
+  const initials = nameOrEmail
+    ? nameOrEmail
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join("")
+    : "U";
+  const displayPicture = user?.picture;
+
+  const handleLogout = async () => {
+    await logout();
+    localStorage.removeItem("user_id");
+    queryClient.clear();
+    window.location.reload();
+  }
 
 
   return (
@@ -41,10 +59,10 @@ const NavUser = () => {
               <SidebarMenuButton size="lg">
                 <Avatar>
                   <AvatarImage
-                    src="https://github.com/shadcn.png"
+                    src={displayPicture || "https://github.com/shadcn.png"}
                     alt="@name"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span>{displayName}</span>
@@ -70,7 +88,7 @@ const NavUser = () => {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLogout()}>
                 <LogOut />
                 <span>Sign out</span>
               </DropdownMenuItem>

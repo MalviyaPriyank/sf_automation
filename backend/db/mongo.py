@@ -19,8 +19,25 @@ class MongoService():
     self.db = self.client.gyrus_db
 
   def add_user(self, user: User):
-    res = self.db["users"].insert_one(user.model_dump())
-    return res.inserted_id
+    payload = user.model_dump(exclude_none=True)
+    email = payload.get("email")
+
+    if email:
+      existing = self.db["users"].find_one({"email": email})
+      if existing:
+        update = {}
+        if payload.get("name"):
+          update["name"] = payload["name"]
+        if payload.get("picture"):
+          update["picture"] = payload["picture"]
+        if update:
+          self.db["users"].update_one({"_id": existing["_id"]}, {"$set": update})
+          existing = self.db["users"].find_one({"_id": existing["_id"]})
+        return user_serial(existing)
+
+    res = self.db["users"].insert_one(payload)
+    saved = self.db["users"].find_one({"_id": res.inserted_id})
+    return user_serial(saved)
   
   def get_user(self, user_id: str):
     res = user_serial(self.db["users"].find_one({"_id": ObjectId(user_id)}))
