@@ -17,6 +17,10 @@ pyodbc
 fastapi
 uvicorn
 requests
-pymongo
+Authlib
+pymongo[srv]
 certifi
 pydantic-settings
+pydantic
+itsdangerous
+httpx

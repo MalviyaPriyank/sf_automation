@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     client_secret: str
     client_id: str
     oauth_redirect_uri: str
+    frontend_url: str
 
 
     model_config = SettingsConfigDict(env_file=".env")

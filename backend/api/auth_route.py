@@ -33,7 +33,7 @@ async def callback(request: Request):
   user = token.get("userinfo")
   if user:
     request.session["user"] = dict(user)
-  return RedirectResponse("http://localhost:5173")
+  return RedirectResponse(settings.frontend_url)
 
 @router.get("/me")
 async def me(request: Request):
