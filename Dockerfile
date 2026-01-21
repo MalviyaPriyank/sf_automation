@@ -79,8 +79,10 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
 # Create venv for Python packages (PEP 668 safe)
 RUN python3 -m venv /app/venv
 ENV BACKEND_CORS_ORIGIN='http://0.0.0.0:5173'
-ENV OAUTH_REDIRECT_URI='http://localhost:80/api/auth/callback'
-ENV FRONTEND_URL='http://localhost:80'
+# ENV OAUTH_REDIRECT_URI='http://localhost:80/api/auth/callback'
+ENV OAUTH_REDIRECT_URI='https://frosty.thegyrus.com/api/auth/callback'
+# ENV FRONTEND_URL='http://localhost:80'
+ENV FRONTEND_URL='https://frosty.thegyrus.com/'
 ENV MONGO_URI='mongodb+srv://samuel:x8xKpSX9v2EgewBH@mongodb-cluster.yv1iz2o.mongodb.net/?appName=mongodb-cluster'
 ENV CLIENT_ID='662907179065-d8fogs9f5m468nktki41pgg5qtt06kb6.apps.googleusercontent.com'
 ENV CLIENT_SECRET='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'

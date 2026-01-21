@@ -17,7 +17,7 @@ type EmailDialogProps = { onUserCreated?: (id: string) => void };
 
 const EmailDialog = ({ onUserCreated }: EmailDialogProps) => {
   const oauthLoginUrl =
-    import.meta.env.VITE_AUTH_LOGIN_URL || "http://localhost:4004/auth/login";
+    import.meta.env.VITE_AUTH_LOGIN_URL || "https://frosty.thegyrus.com/api/auth/login";
 
   const [open, setOpen] = useState(() => {
     if (typeof window === "undefined") return true;
